@@ -7,17 +7,52 @@
     "apollo-link-ws": "^1.0.0",
     "graphql": "^0.11.7",
     "graphql-tag": "^2.5.0",
+    "ramda": "^0.25.0",
     "react": "^16.0.0",
     "react-apollo": "^2.0.0",
     "react-dom": "^16.0.0",
     "react-router": "^4.2.0",
     "react-router-dom": "^4.2.2",
-    "react-scripts": "1.0.17"
+    "react-scripts": "1.0.17",
+    "rescape-ramda": "^1.2.8",
+    "rescape-validate": "^1.2.3"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
+  },
+  "jest": {
+    "modulePaths": [
+      "<rootDir>/source"
+    ],
+    "setupFiles": [
+      "<rootDir>/jestsetup.js"
+    ],
+    "testPathIgnorePatterns": [
+      "__snapshots__"
+    ],
+    "snapshotSerializers": [
+      "<rootDir>/node_modules/enzyme-to-json/serializer"
+    ],
+    "moduleNameMapper": {
+      "mapbox-gl$": "<rootDir>/node_modules/mapbot-gl/dist/mapbox-gl.js",
+      "webworkify": "<rootDir>/node_modules/webworkify-webpack",
+      "\\.(css|less)$": "identity-obj-proxy"
+    },
+    "bail": true
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-preset-env": "^1.6.1",
+    "enzyme": "^3.2.0",
+    "enzyme-adapter-react-16": "^1.1.0",
+    "eslint": "^4.12.0",
+    "eslint-plugin-jest": "^21.3.2",
+    "jest": "^21.2.1",
+    "webpack": "^3.8.1"
   }
 }
