@@ -1,0 +1,9 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`immutablHelperFunctions Should be a plain old javascript object 1`] = `
+Array [
+  Object {
+    "foo": 1,
+  },
+]
+`;
