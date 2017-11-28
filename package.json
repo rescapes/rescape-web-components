@@ -23,26 +23,7 @@
     "test": "react-scripts test --env=jsdom",
     "eject": "react-scripts eject"
   },
-  "jest": {
-    "modulePaths": [
-      "<rootDir>/source"
-    ],
-    "setupFiles": [
-      "<rootDir>/jestsetup.js"
-    ],
-    "testPathIgnorePatterns": [
-      "__snapshots__"
-    ],
-    "snapshotSerializers": [
-      "<rootDir>/node_modules/enzyme-to-json/serializer"
-    ],
-    "moduleNameMapper": {
-      "mapbox-gl$": "<rootDir>/node_modules/mapbot-gl/dist/mapbox-gl.js",
-      "webworkify": "<rootDir>/node_modules/webworkify-webpack",
-      "\\.(css|less)$": "identity-obj-proxy"
-    },
-    "bail": true
-  },
+
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.0",
