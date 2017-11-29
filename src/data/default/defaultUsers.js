@@ -35,26 +35,26 @@ const {ADMINISTRATE, MANAGE, USE, VISIT} = module.exports.permissions = {
 module.exports.users = {
   [APP_ADMIN]: {
     // Admin access to application
-    permission: ADMINISTRATE,
+    permissions: [ADMINISTRATE],
     regions: {
       ids: {}
     }
   },
   [REGION_MANAGER]: {
     // Can manage regions listed in ids
-    permission: MANAGE,
+    permissions: [MANAGE],
     regions: {
     }
   },
   [REGION_USER]: {
     // Can use regions listed in ids, creating projects, etc
-    permission: USE,
+    permissions: [USE],
     regions: {
     }
   },
   [REGION_VISITOR]: {
     // Can use regions listed in ids, creating projects, etc
-    permission: VISIT,
+    permissions: [VISIT],
     regions: {
     }
   }

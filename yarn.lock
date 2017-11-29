@@ -4315,6 +4315,10 @@ graphql-anywhere@^4.0.0:
   dependencies:
     apollo-utilities "^1.0.0"
 
+graphql-geojson@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/graphql-geojson/-/graphql-geojson-1.0.0.tgz#62287a1bc63940f5e51accde8f99fe01f41e39d4"
+
 graphql-tag@^2.4.2, graphql-tag@^2.5.0:
   version "2.5.0"
   resolved "https://registry.yarnpkg.com/graphql-tag/-/graphql-tag-2.5.0.tgz#b43bfd8b5babcd2c205ad680c03e98b238934e0f"
