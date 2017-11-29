@@ -1,3 +1,3 @@
-{
-  "environment": "test"
+export default {
+  environment: "test"
 }

@@ -9,14 +9,14 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const configuredEnv = require('env.json');
+const {default: configuredEnv} = require('env');
 const R = require('ramda');
 const {mergeDeep, throwing: {reqPath}} = require('rescape-ramda');
 const environment = reqPath(['environment'], configuredEnv);
 
 /**
- * The active environment according to env.json
- * @params {String} env Defaults to the environment string value in {ROOT_DIR}/env.json.
+ * The active environment according to env.js
+ * @params {String} env Defaults to the environment string value in {ROOT_DIR}/env.js.
  * Overrideable for testing
  * @type {any|*}
  */
@@ -28,7 +28,7 @@ const currentConfig = module.exports.currentConfig = (env = environment) => R.co
  throw new Error('No production environment is implemented');
 }],
     [R.T, () => {
- throw new Error('No known environment was specified in env.json');
+ throw new Error('No known environment was specified in env.js');
 }]
   ]
 )(env);

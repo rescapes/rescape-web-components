@@ -12,7 +12,6 @@
 const {environmentConfig} = require('environments/testConfig');
 const users = require('./globalUsers.sample').default;
 const R = require('ramda');
-const {applyRegionsToUsers} = require('data/configHelpers');
 
 // globalSampleConfig just defines a global admin that isn't region specific
 module.exports.globalSampleConfig = R.merge(environmentConfig, {

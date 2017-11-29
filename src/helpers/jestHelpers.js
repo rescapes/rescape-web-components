@@ -8,10 +8,12 @@
  *
  * THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-const {makeMockStore} = require('rescape-cycle');
-const {taskToPromise} = require('rescape-ramda');
+const {taskToPromise, mergeDeep} = require('rescape-ramda');
 const {sampleConfig} = require('data/samples/sampleConfig');
 const {default: initialState} = require('data/initialState');
+const {default: configureStore} = require('redux-mock-store');
+const {default: thunk} = require('redux-thunk');
+const middlewares = [thunk];
 
 /**
  * Given a task, wraps it in promise and passes it to Jest's expect.
@@ -63,4 +65,20 @@ const makeSampleInitialState = module.exports.makeSampleInitialState = (sampleUs
 module.exports.propsFromSampleStateAndContainer = (containerPropMaker, sampleOwnProps = {}) =>
   containerPropMaker(makeSampleInitialState(), sampleOwnProps);
 
-
+/**
+ * Makes a mock store with the given state and optional sampleUserSettings. If the sampleUserSettings
+ * they are merged into the state with deepMerge, so make sure the structure matches the state
+ * @param {Object} state The initial redux state
+ * @param {Object} sampleUserSettings Merges in sample local settings, like those from a browser cache
+ * @returns {Object} A mock redux store
+ */
+const makeMockStore = module.exports.makeMockStore = (state, sampleUserSettings = {}) => {
+  const mockStore = configureStore(middlewares);
+  // Creates a mock store that merges the initial state with local user settings.
+  return mockStore(
+    mergeDeep(
+      state,
+      sampleUserSettings
+    )
+  );
+};

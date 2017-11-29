@@ -1,12 +1,14 @@
 import React, { Component } from 'react'
 import { Link } from 'react-router-dom'
 import { withRouter } from 'react-router'
-import { GC_USER_ID, GC_AUTH_TOKEN } from '../constants'
+import { throwing } from 'rescape-ramda';
+const {reqPath} = throwing
 
 class Header extends Component {
 
-  render() {
-    const userId = localStorage.getItem(GC_USER_ID)
+  render(props) {
+    const {userIdKey, userAuthTokenKey} = reqPath(['settings', 'graphcool'], props)
+    const userId = localStorage.getItem(userIdKey)
     return (
       <div className='flex pa1 justify-between nowrap orange'>
         <div className='flex flex-fixed black'>
@@ -26,8 +28,8 @@ class Header extends Component {
         <div className='flex flex-fixed'>
           {userId ?
             <div className='ml1 pointer black' onClick={() => {
-              localStorage.removeItem(GC_USER_ID)
-              localStorage.removeItem(GC_AUTH_TOKEN)
+              localStorage.removeItem(userIdKey)
+              localStorage.removeItem(userAuthTokenKey)
               this.props.history.push(`/new/1`)
             }}>logout</div>
             :

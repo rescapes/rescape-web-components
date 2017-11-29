@@ -101,12 +101,12 @@ const makeRegionSelector = module.exports.makeRegionSelector = () => region => c
     makeFeaturesByTypeSelector(),
     makeMarkersByTypeSelector()
   ],
-  (featuresByType, markersByType) =>
+  (featuresByType, locationsByType) =>
     mergeDeep(region, {
       geojson: {
         osm: {
           featuresByType,
-          markersByType
+          locationsByType
         }
       }
     })
@@ -118,7 +118,7 @@ const makeRegionSelector = module.exports.makeRegionSelector = () => region => c
  * @returns {Object} An object keyed by region id and valued by regions that have merged
  * in userSettings (e.g. isSelected) and derived data
  */
-const makeRegionsSelector = module.exports.regionsSelector = () => state => createStructuredSelector(
+const makeRegionsSelector = module.exports.makeRegionsSelector = () => state => createStructuredSelector(
   R.map(
     // Each region needs to make its own regionSelector.
     // TODO This should only happen once per region, so we need a memoize algorithm that caches on region id
@@ -147,13 +147,12 @@ const makeRegionsSelector = module.exports.regionsSelector = () => state => crea
  * an object containing settings, regions, and users, where regions and users must limited to
  * one each
  */
-module.exports.makeActiveUserAndRegionStateSelector = () => {
+module.exports.makeActiveUserAndRegionStateSelector = () =>
   createStructuredSelector({
     settings: settingsSelector,
-    regions: makeRegionSelector(),
+    regions: makeRegionsSelector(),
     users: activeUserSelector,
   });
-};
 
 /**
  * Makes a selector that expects a state containing regions, which each contain a Mapbox viewport

@@ -85,11 +85,11 @@ const fetchTransit = module.exports.fetchTransit = R.curry((options, bounds) => 
  * @returns {Object} Chained Tasks to fetch the data
  */
 const fetchTransitCelled = ({cellSize, sleepBetweenCalls, testBounds}, bounds) => {
-    const units = 'kilometers';
+    const options = {units: 'kilometers'};
     // Use turf's squareGrid function to break up the bbox by cellSize squares
     const squares = R.map(
         polygon => bbox(polygon),
-        squareGrid(bounds, cellSize, units).features);
+        squareGrid(bounds, cellSize, options).features);
 
     // fetchTasks :: Array (Task Object)
     const fetchTasks = R.map(fetchTransit({sleepBetweenCalls, testBounds}), squares);

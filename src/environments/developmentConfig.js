@@ -1,4 +1,4 @@
-const privateConfig = require('config.json');
+const privateConfig = require('config.jn');
 const {mergeDeep} = require('rescape-ramda');
 
 module.exports.environmentConfig = mergeDeep(privateConfig, {

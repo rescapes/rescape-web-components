@@ -15,10 +15,10 @@ const {expectTask} = require('helpers/jestHelpers');
 const fs = require('fs');
 const {LA_SAMPLE, LA_BOUNDS} = require('async/queryOverpass.sample');
 
-let mock;
-mock = false;
-jest.unmock('query-overpass');
-//mock = true; jest.mock('query-overpass');
+let mock = true;
+//mock = false;
+//jest.unmock('query-overpass');
+jest.mock('query-overpass');
 
 // requires are used below since the jest includes aren't available at compile time
 describe('overpassHelpersUnmocked', () => {
