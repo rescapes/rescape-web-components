@@ -8,15 +8,42 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+import { makeExecutableSchema } from 'graphql-tools';
 
-import createClient from './apolloClient';
-import {combineReducers} from 'redux';
+// Original example from: https://github.com/apollographql/graphql-tools
+const resolvers = {
+  Query: {
+    posts() {
+      return posts;
+    },
+  },
+  Mutation: {
+    upvotePost(_, { postId }) {
+      const post = find(posts, { id: postId });
+      if (!post) {
+        throw new Error(`Couldn't find post with id ${postId}`);
+      }
+      post.votes += 1;
+      return post;
+    },
+  },
+  Author: {
+    posts(author) {
+      return filter(posts, { authorId: author.id });
+    },
+  },
+  Post: {
+    author(post) {
+      return find(authors, { id: post.authorId });
+    },
+  },
+};
 
 /**
- * Combine reducers, supplying an optional mock apollo reducer for testing
- * @param {OBject} [apollo] Reducer for apollow if testing a
+ * Creates a mock executable Schemea for testing
+ * @param typeDefs GraphQL typedefs defining the structure of the data storage
  */
-export default (apollo = createClient().reducer()) => combineReducers({
-  // ... Other reducers go here
-  apollo: createClient().reducer(),
+export default mockExecutableSchema = typeDefs => makeExecutableSchema({
+  typeDefs,
+  resolvers,
 });

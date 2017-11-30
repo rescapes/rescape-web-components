@@ -54,7 +54,7 @@ export default () => {
     }
   });
 
-// Split queries between HTTP for Queries/Mutations and Websockets for Subscriptions.
+  // Split queries between HTTP for Queries/Mutations and Websockets for Subscriptions.
   const link = split(
     // query is the Operation
     ({query}) => {
@@ -65,6 +65,7 @@ export default () => {
     wsLink,
     // Else use HttpLink with auth token
     httpLinkWithAuthToken
+  )
 
   // Create the ApolloClient using the following ApolloClientOptions
   return new ApolloClient({

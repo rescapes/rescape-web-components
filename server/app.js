@@ -17,7 +17,7 @@ import path from 'path';
 import fs from 'fs';
 import { graphql } from 'graphql';
 import { introspectionQuery } from 'graphql/utilities';
-import schema from './schema/schema';
+import schema from './schema/typeDefs';
 import morgan from 'morgan';
 import cors from 'cors';
 // constants needed
