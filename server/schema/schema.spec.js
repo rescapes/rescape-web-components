@@ -8,11 +8,26 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-const { makeExecutableSchema } = require('graphql-tools');
-const {default: typeDefs} = require('./typeDefs')
+const {gql} = require('apollo-client-preset');
+const {graphql} = require('graphql');
+const {addMockFunctionsToSchema} = require('graphql-tools');
+const {default: schema} = require('./schema');
 
-describe('typeDefs', () => {
-  test('default', () => {
-    const schema = makeExecutableSchema({ typeDefs });
-  })
-})
+describe('schema', () => {
+  test('Can process schema', () => {
+    // Add mocks, modifies schema in place
+    addMockFunctionsToSchema({schema});
+
+    const query = `
+        query tasksForUser {
+            store {
+                regions {
+                    name
+                },
+            }
+        }
+    `;
+
+    graphql(schema, query).then((result) => console.log('Got result', result));
+  });
+});

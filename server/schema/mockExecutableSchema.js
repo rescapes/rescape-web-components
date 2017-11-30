@@ -13,8 +13,8 @@ import { makeExecutableSchema } from 'graphql-tools';
 // Original example from: https://github.com/apollographql/graphql-tools
 const resolvers = {
   Query: {
-    posts() {
-      return posts;
+    store() {
+      return state;
     },
   },
   Mutation: {
