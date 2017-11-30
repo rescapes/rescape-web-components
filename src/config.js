@@ -4,8 +4,8 @@ export default {
     // Graphcool configuration. This probably belongs in a graphcool config
     graphcool: {
       userId: 'graphcool-user-id',
-      authToken: 'graphcool-auth-token',
-      serviceId:'cjajyycub38710185wt87zsm8',
+      authTokenKey: 'graphcool-auth-token',
+      serviceIdKey:'cjajyycub38710185wt87zsm8',
       // This is just from the tutorial code
       linksPerPage: 5,
     },

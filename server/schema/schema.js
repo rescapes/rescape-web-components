@@ -31,6 +31,7 @@ const PermissionType = new GraphQLObjectType({
     name: {type: GraphQLString}
   })
 });
+
 const UserType = new GraphQLObjectType({
   name: 'User',
   fields: () => ({

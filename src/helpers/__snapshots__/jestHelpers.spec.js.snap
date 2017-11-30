@@ -2534,7 +2534,9 @@ Object {
       "sampleAdmin": Object {
         "id": "sampleAdmin",
         "name": "Ty Coon",
-        "permission": "administrate",
+        "permissions": Array [
+          "administrate",
+        ],
         "regions": Object {
           "ids": Object {},
         },
@@ -2544,7 +2546,9 @@ Object {
       "id": "californiaManager",
       "isActive": true,
       "name": "Jerry Brown",
-      "permission": "manage",
+      "permissions": Array [
+        "manage",
+      ],
       "regions": Array [
         Object {
           "id": "oakland",
@@ -2555,7 +2559,9 @@ Object {
     "californiaUser": Object {
       "id": "californiaUser",
       "name": "Nancy Pelosi",
-      "permission": "use",
+      "permissions": Array [
+        "use",
+      ],
       "regions": Array [
         Object {
           "id": "oakland",
@@ -2566,7 +2572,9 @@ Object {
     "californiaVisitor": Object {
       "id": "californiaVisitor",
       "name": "Angela Merkel",
-      "permission": "visit",
+      "permissions": Array [
+        "visit",
+      ],
       "regions": Array [
         Object {
           "id": "oakland",
@@ -2577,7 +2585,9 @@ Object {
     "parisManager": Object {
       "id": "parisManager",
       "name": "Paris Manager",
-      "permission": "manage",
+      "permissions": Array [
+        "manage",
+      ],
       "regions": Array [
         Object {
           "id": "paris",
@@ -2588,7 +2598,9 @@ Object {
     "parisUser": Object {
       "id": "parisUser",
       "name": "Paris User",
-      "permission": "use",
+      "permissions": Array [
+        "use",
+      ],
       "regions": Array [
         Object {
           "id": "paris",
@@ -2599,7 +2611,9 @@ Object {
     "parisVisitor": Object {
       "id": "parisVisitor",
       "name": "Paris Visitor",
-      "permission": "visit",
+      "permissions": Array [
+        "visit",
+      ],
       "regions": Array [
         Object {
           "id": "paris",

@@ -27,16 +27,30 @@ global.navigator = {};
 global.document = new JSDOM();
 global.window = global
 Error.stackTraceLimit = Infinity;
-// Have exceptions traces traverse async processes
-if (process.env.NODE_ENV !== 'production'){
-    require('longjohn');
-}
 
-// Make the __database__ dir to store local databases
-// Local databases are only need in Node since they are normally stored in the browser
-const PATH = global.NODE_POUCH_DB_PATH = `${__dirname}/src/data/__databases__/`;
-if (!fs.existsSync(PATH))
-    fs.mkdirSync(PATH);
+class LocalStorageMock {
+  constructor() {
+    this.store = {};
+  }
+
+  clear() {
+    this.store = {};
+  }
+
+  getItem(key) {
+    return this.store[key] || null;
+  }
+
+  setItem(key, value) {
+    this.store[key] = value.toString();
+  }
+
+  removeItem(key) {
+    delete this.store[key];
+  }
+};
+
+global.localStorage = new LocalStorageMock;
 
 // Fail tests on any warning
 /*
