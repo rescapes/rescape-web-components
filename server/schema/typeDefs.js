@@ -9,101 +9,267 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import {gql} from 'apollo-client-preset';
+const {gql} = require('apollo-client-preset');
+const {
+  GraphQLSchema,
+  GraphQLObjectType,
+  GraphQLInt,
+  GraphQLString,
+  GraphQLList
+} = require('graphql');
 
 /**
  * The TypeDefs that define the structure of our data store on the client
  * These are resolved using resolvers, either in a test data environment or against running database
  */
-export default typeDefs = gql`
-    type Permssion {
-        id: ID!
-        name: String
-    }
 
-    type User {
-        id: ID!
-        name: String
-        email: String
-        password: String
-        permissions: [Permission]
+  // Permission operation
+const operation = new GraphQLObjectType({
+    name: 'Operation',
+    fields: {
+      id: {type: GraphQLString},
+      name: {type: GraphQLString},
+      description: {type: GraphQLString}
     }
+  });
 
-    type Osm {
-    }
+const user = new GraphQLObjectType({
+    # User;
+permission;
+type;
+Permssion;
+{
+  id: ID;
+  !
+    name;
+:
+  String;
+  operations: [Operation];
+}
 
-    type Location {
-    }
+type;
+User;
+{
+  id: ID;
+  !
+    name;
+:
+  String;
+  email: String;
+  password: String;
+  permissions: [Permission];
+}
 
-    type GeoJson {
-        osm: Osm
-        locations: [Location]
-    }
+})
+const feature = new GraphQLObjectType({
+    # Features;
+from;
+OpenStreetMap;
+type;
+Osm;
+{
+  type: String;
+  generator: String;
+  copyright: String;
+  timestamp: String;
+  features: [GeoJSONInterface];
+}
 
-    type Bounds {
-        min: PointObject
-        max: PointObject
-    }
+})
+const geospatial = new GraphQLObjectType({
+    # Geospatial;
+Location;
+type;
+Location;
+{
+  type: String;
+  generator: String;
+  copyright: String;
+  timestamp: String;
+  features: [GeoJSONInterface];
+}
 
-    type Geospatial {
-        bounds: Bounds
-    }
+})
 
-    type Viewport {
-        latitude: Float
-        longitude: Float
-    }
+const geojson = new GraphQLObjectType({
+    # Container;
+for all geospatial
+data;
+type;
+Geojson;
+{
+  osm: Osm;
+  locations: [Location];
+}
 
-    type Mapbox {
-        viewport: Viewport
-    }
+})
+const bounds = new GraphQLObjectType({
+    # Bounds;
+of;
+a;
+geospatial;
+area;
+type;
+Bounds;
+{
+  min: PointObject;
+  max: PointObject;
+}
 
-    type Region {
-        id: ID!
-        name: String
-        description: String
-        geojson: Geojson
-        geospatial: Geospatial
-        mapbox: Mapbox
-    }
+})
 
-    type MapboxSettings {
-        mapboxApiAccessToken: String
-        iconAtlas: String
-        showCluster: Boolean
-    }
-  
-    type ApiSettingsType {
-        protocol: String
-        host: String
-        port: String
-        root: String
-    }
-  
-    type OverpassSettings {
-        cellSize: Int
-        sleepBetweenCalls: Int
-    }
-  
-    type Settings {
-        id: ID!
-        domain: String
-        mapbox: MapboxSettings
-        api: ApiSettings
-        overpass: OverpassSettings
-    }
-  
-    type Store {
-        regions: [Region]
-        users: [User]
-        settings: [Settings]
-    }
-  
-    type Query {
-        store: Store
-    }
-  
-    type Mutation {
-        
-    }
-`;
+const geospatial = new GraphQLObjectType({
+    # Defines;
+the;
+bounds;
+and;
+other;
+properties;
+of;
+a;
+geospatial;
+area;
+type;
+Geospatial;
+{
+  bounds: Bounds;
+}
+
+})
+
+const viewport = new GraphQLObjectType({
+    # The;
+Mapbox;
+Viewport;
+type;
+Viewport;
+{
+  latitude: Float;
+  longitude: Float;
+}
+
+})
+const mapbox = new GraphQLObjectType({
+    # Mapbox;
+state;
+type;
+Mapbox;
+{
+  viewport: Viewport;
+}
+
+})
+const region = new GraphQLObjectType({
+    # A;
+user;
+defined;
+geospatial;
+region;
+type;
+Region;
+{
+  id: ID;
+  !
+    name;
+:
+  String;
+  description: String;
+  geojson: Geojson;
+  geospatial: Geospatial;
+  mapbox: Mapbox;
+}
+})
+const settings = new GraphQLObjectType({
+
+    # Settings;
+for Mapbox
+  type
+MapboxSettings;
+{
+  mapboxApiAccessToken: String;
+  iconAtlas: String;
+  showCluster: Boolean;
+}
+
+})
+const api = new GraphQLObjectType({
+    # Api;
+Settings;
+type;
+ApiSettingsType;
+{
+  protocol: String;
+  host: String;
+  port: String;
+  root: String;
+}
+})
+const overpass = new GraphQLObjectType({
+    # Overpass;
+Api(OpenStreetMap);
+Settings;
+type;
+OverpassSettings;
+{
+  cellSize: Int;
+  sleepBetweenCalls: Int;
+}
+
+})
+const settings = new GraphQLObjectType({
+    # Settings;
+container;
+type;
+Settings;
+{
+  id: ID;
+  !
+    domain;
+:
+  String;
+  mapbox: MapboxSettings;
+  api: ApiSettings;
+  overpass: OverpassSettings;
+}
+
+})
+const store = new GraphQLObjectType({
+    # Store;
+corresponding;
+to;
+what;
+we;
+store;
+on;
+the;
+client;
+type;
+Store;
+{
+  regions: [Region];
+  users: [User];
+  settings: [Settings];
+}
+
+})
+const query = new GraphQLObjectType({
+    # GraphQL;
+Query;
+type;
+Query;
+{
+  store: Store;
+}
+
+})
+const mutation = new GraphQLObjectType({
+    # GraphQL;
+Mutation;
+type;
+Mutation;
+{
+
+}
+})
+
+export new graphql.GraphQLSchema({query: queryType});
