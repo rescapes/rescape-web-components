@@ -12,5 +12,9 @@
     "graphql-geojson": "^1.0.0",
     "graphql-request": "^1.4.0",
     "validator": "^9.0.0"
+  },
+  "devDependencies": {
+    "graphql-tester": "^0.0.5",
+    "jest": "^21.2.1"
   }
 }

@@ -2,7 +2,7 @@
 const express = require('express');
 const graphqlHTTP = require('express-graphql');
 const { makeExecutableSchema } = require('graphql-tools');
-const {default: typeDefs} = require('./schema/schema')
+const {default: typeDefs} = require('../src/schema/schema')
 
 const schema = makeExecutableSchema({ typeDefs });
 const app = express();
