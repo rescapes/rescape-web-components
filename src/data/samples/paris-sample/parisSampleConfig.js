@@ -6,5 +6,6 @@ const {applyRegionsToUsers} = require('data/configHelpers');
 
 module.exports.parisSampleConfig = mergeDeep(environmentConfig, {
   regions,
+  // Give each users all regions for simplicity
   users: applyRegionsToUsers(regions, users)
 });

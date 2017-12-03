@@ -17,5 +17,6 @@ const {applyRegionsToUsers} = require('data/configHelpers');
 
 module.exports.oaklandSampleConfig = R.merge(environmentConfig, {
   regions,
+  // Give each users all regions for simplicity
   users: applyRegionsToUsers(regions, users)
 });

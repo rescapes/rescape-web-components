@@ -1,0 +1,16 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`The current application Current can mount 1`] = `
+<div
+  className="current"
+>
+  <Connect(Region)
+    style={
+      Object {
+        "height": 360,
+        "width": 540,
+      }
+    }
+  />
+</div>
+`;

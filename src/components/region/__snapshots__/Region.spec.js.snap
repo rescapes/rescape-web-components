@@ -1,0 +1,42 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`Region Can mount 1`] = `
+<div
+  className="region-root"
+  style={
+    Object {
+      "height": 500,
+      "position": "absolute",
+      "width": 500,
+    }
+  }
+>
+  <div
+    className="region-mapbox-outer"
+    style={Object {}}
+  >
+    <Connect(Sankey)
+      style={
+        Object {
+          "height": 500,
+          "position": "absolute",
+          "width": 250,
+        }
+      }
+    />
+  </div>
+  <div
+    className="region-markers-outer"
+    style={
+      Object {
+        "left": 0.55,
+        "position": "absolute",
+        "right": 0.05,
+        "top": 0.02,
+      }
+    }
+  >
+    <Connect(MarkerList) />
+  </div>
+</div>
+`;

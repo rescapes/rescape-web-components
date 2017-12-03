@@ -1,0 +1,12 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`MarkerListContainer mapStateToProps flattens viewport props 1`] = `
+Object {
+  "geojson": Object {
+    "markers": Object {},
+    "osm": Object {},
+    "searches": Object {},
+  },
+  "id": "california",
+}
+`;

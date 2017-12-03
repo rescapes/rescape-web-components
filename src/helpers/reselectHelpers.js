@@ -15,8 +15,6 @@ const {mergeDeep} = require('rescape-ramda');
 const {findOne, reqPath} = require('rescape-ramda').throwing;
 const {geojsonByType} = require('helpers/geojsonHelpers');
 const {propLensEqual} = require('./componentHelpers');
-const PropTypes = require('prop-types');
-const {v} = require('rescape-validate');
 const {filterMergeByUserSettings} = require('data/userSettingsHelpers');
 const {mapped} = require('ramda-lens');
 
@@ -36,27 +34,48 @@ const createLengthEqualSelector = module.exports.createLengthEqualSelector =
  * Default settings selector, which passes all settings through
  * @param state
  */
-const settingsSelector = state => state.settings;
+const settingsSelector = module.exports.settingsSelector = state => state.settings;
 
 /**
- * Object states
+ * Object statuses
  * @type {{IS_SELECTED: string, IS_ACTIVE: string}}
  */
-const ESTADO = module.exports.ESTADO = {
+const STATUS = module.exports.STATUS = {
   IS_SELECTED: 'isSelected',
   IS_ACTIVE: 'isActive'
 };
 
 /**
- * Object to lookup the a particular estado
+ * Object to lookup the a particular status
  * @type {{}}
  */
-const esta = module.exports.esta = R.fromPairs(
+const status = module.exports.status = R.fromPairs(
   R.map(
-    estado => [estado, R.prop(estado)],
-    [ESTADO.IS_SELECTED, ESTADO.IS_ACTIVE]
+    status => [status, R.prop(status)],
+    [STATUS.IS_SELECTED, STATUS.IS_ACTIVE]
   )
 );
+
+/**
+ * Map the region ids of the user to full regions
+ * @param {Object} state The redux state
+ * @param {Object} user The User that has regions
+ */
+const userRegionsSelector = module.exports.userRegionsSelector = (state, {user}) => {
+ return R.map(userRegion => R.find(R.propEq('id', userRegion.id))(state.regions), user.regions)
+}
+
+/**
+ * Merges the state with the user given in props to resolve the regions of the user
+ * @type {function(): function(*): *}
+ */
+const userSelector = module.exports.userSelector = (state, {user}) => createSelector(
+  [userRegionsSelector],
+  regions =>
+    mergeDeep(user, {
+      regions
+    })
+)(state, {user});
 
 /**
  * Returns the active user by searching state.users for the one and only one isActive property
@@ -64,9 +83,15 @@ const esta = module.exports.esta = R.fromPairs(
  * @param state
  */
 const activeUserSelector = module.exports.activeUserSelector = state =>
-  findOne(
-    esta[ESTADO.IS_ACTIVE],
-    state.users
+  // Explicitly pass the user in the props
+  userSelector(
+    state,
+    {
+      user: findOne(
+        status[STATUS.IS_ACTIVE],
+        state.users
+      )
+    }
   );
 
 /**
@@ -115,26 +140,21 @@ const makeRegionSelector = module.exports.makeRegionSelector = () => region => c
 /**
  * Creates a selector that selects regions that are associated with this user and currently selected by this user.
  * @param {Object} state The redux state
- * @returns {Object} An object keyed by region id and valued by regions that have merged
- * in userSettings (e.g. isSelected) and derived data
+ * @returns {Object|Array} An object keyed by region id and valued by filtered regions or
+ * simply the filtered regions
  */
 const makeRegionsSelector = module.exports.makeRegionsSelector = () => state => createStructuredSelector(
-  R.map(
-    // Each region needs to make its own regionSelector.
-    // TODO This should only happen once per region, so we need a memoize algorithm that caches on region id
-    region => state => makeRegionSelector()(region),
-    filterMergeByUserSettings(
-      // Look for the regions container in the state and userSettings
-      R.lensPath(['regions']),
-      // Look for regions in userSettings with property isSelected
-      esta[ESTADO.IS_SELECTED],
-      // The state
-      state,
-      // Find the only active user.
-      R.head(R.values(
-        activeUserSelector(state)
-      ))
-    )
+  filterMergeByUserSettings(
+    // Look for the regions container in the state and userSettings
+    R.lensPath(['regions']),
+    // Look for regions in userSettings with property isSelected
+    status[STATUS.IS_SELECTED],
+    // The state
+    state,
+    // Find the only active user.
+    R.head(R.values(
+      activeUserSelector(state)
+    ))
   )
 )(state);
 
@@ -151,7 +171,7 @@ module.exports.makeActiveUserAndRegionStateSelector = () =>
   createStructuredSelector({
     settings: settingsSelector,
     regions: makeRegionsSelector(),
-    users: activeUserSelector,
+    users: activeUserSelector
   });
 
 /**
@@ -164,7 +184,9 @@ module.exports.makeActiveUserAndRegionStateSelector = () =>
 module.exports.makeViewportsSelector = () => {
   const regionsMapboxVieportLens = R.compose(mapped, R.lensPath(['mapbox', 'viewport']));
   return createSelector(
+    // Select the regions
     [makeRegionsSelector()],
+    // Use the lens to extract the viewport of each region
     R.view(regionsMapboxVieportLens)
   );
 };
@@ -204,35 +226,10 @@ module.exports.mapboxSettingsSelector = createSelector(
   R.identity
 );
 
-/**
- * Extracts the browser window dimensions from the state to pass to props
- * that resize based on the browser
+/** Selects the regions of the User
+ *
  */
-const browserDimensionsSelector = module.exports.browserDimensionsSelector = createSelector(
-  [
-    R.compose(
-      R.pick(['width', 'height']),
-      reqPath(['browser'])
-    )
-  ],
-  R.identity
-);
 
-/** *
- * Creates a selector that resolves the browser width and height from the state and multiplies each by the fraction
- * stored in the local props (which can either come from parent or from the component's style). If props
- * width or height is not defined they default to 1
- * @props {Object} state Expected to have a browser.[width and height]
- * @props {Object} props Expected to have a style.[width and height]
- * @returns {Object} a width and height relative to thte browser.
- */
-module.exports.makeBrowserProportionalDimensionsSelector = () => (state, props) => createSelector(
-  [browserDimensionsSelector],
-  dimensions => ({
-    width: R.multiply(R.pathOr(1, ['style', 'width'], props), R.prop('width', dimensions)),
-    height: R.multiply(R.pathOr(1, ['style', 'height'], props), R.prop('height', dimensions))
-  })
-)(state, props);
 
 /**
  * For selectors that expects the state and props pre-merged.
@@ -246,65 +243,3 @@ module.exports.makeBrowserProportionalDimensionsSelector = () => (state, props) 
  * @param props
  */
 module.exports.mergeStateAndProps = (state, props) => mergeDeep(state, props);
-
-const defaultStyleSelector = (state, props) => reqPath(['styles', 'default'], state);
-
-const mergeDeepWith = R.curry((fn, left, right) => R.mergeWith((l, r) => {
-  // If either (hopefully both) items are arrays or not both objects
-  // accept the right value
-  return ((l && l.concat && R.is(Array, l)) || (r && r.concat && R.is(Array, r))) || !(R.is(Object, l) && R.is(Object, r)) ?
-    fn(l, r) :
-    mergeDeepWith(fn, l, r); // tail recursive
-})(left, right));
-
-/**
- * Merges two style objects, where the second can have functions to apply the values of the first.
- * If matching key values are both primitives, the style value trumps
- * @param {Object} parentStyle Simple object of styles
- * @param {Object} style Styles including functions to transform the corresponding key of parentStyle
- */
-const mergeStyles = (parentStyle, style) => mergeDeepWith(
-  (stateStyleValue, propStyleValue) =>
-    // If keys match, the propStyleValue trumps unless it is a function, in which case the stateStyleValue
-    // is passed to the propStyleValue function
-    R.when(
-      R.is(Function),
-      x => R.compose(x)(stateStyleValue)
-    )(propStyleValue),
-  parentStyle,
-  style
-);
-
-/**
- * Returns a function that creates a selector to
- * merge the defaultStyles in the state with the style object of the given props
- * @param {Object} state The Redux state
- * @param {Object} state.styles.default The default styles. These should be simple values
- * @param {Object} [props] Optional The props
- * @param {Object} [props.style] Optional The style object with simple values or
- * unary functions to transform the values from the state (e.g. { margin: 2, color: 'red', border: scale(2) })
- * where scale(2) returns a function that transforms the border property from the state
- * @returns {Object} The merged object
- */
-module.exports.makeMergeDefaultStyleWithProps = () => (state, props) => createSelector(
-  [defaultStyleSelector],
-  defaultStyle => mergeStyles(defaultStyle, R.propOr({}, 'style', props))
-)(state, props);
-
-/**
- * Like makeMergeDefaultStyleWithProps but used to merge the container style props with the component style props
- * @param {Object} containerProps The props coming from the container, which themselves were merged with the
- * state styles and/or parent components
- * @param {Object} style The style object with simple values
- * @param {Object} [props] Optional The props The style object with simple values or
- * unary functions to transform the values from the containerProps (e.g. { margin: 2, color: 'red', border: scale(2) })
- * where scale(2) returns a function that transforms the border property from the containerProps
- * @returns {Object} The merged object
- */
-module.exports.makeMergeContainerStyleProps = () => (containerProps, style) => createSelector(
-  [
-    containerProps => reqPath(['style'], containerProps),
-    (_, props) => R.defaultTo({}, props)
-  ],
-   mergeStyles
-)(containerProps, style);

@@ -11,31 +11,31 @@
 
 const R = require('ramda');
 const {
-  ESTADO: {IS_ACTIVE, IS_SELECTED},
+  STATUS: {IS_ACTIVE, IS_SELECTED},
   makeActiveUserAndRegionStateSelector, createLengthEqualSelector, activeUserSelector, makeRegionSelector, makeFeaturesByTypeSelector,
   makeMarkersByTypeSelector, makeRegionsSelector, makeViewportsSelector, mapboxSettingsSelector, browserDimensionsSelector,
-  makeBrowserProportionalDimensionsSelector, mergeStateAndProps, makeMergeDefaultStyleWithProps, makeMergeContainerStyleProps,
-  makeGeojsonsSelector, makeGeojsonLocationsSelector
+  makeBrowserProportionalDimensionsSelector, mergeStateAndProps,
+  makeGeojsonsSelector, makeGeojsonLocationsSelector, userSelector, userRegionsSelector
 } = require('./reselectHelpers');
 
 describe('reselectHelpers', () => {
   const users = {
     blinky: {
       name: 'Blinky',
-        [IS_ACTIVE]: true,
-        regions: {
+      [IS_ACTIVE]: true,
+      regions: {
         pie: {
           id: 'pie',
-            [IS_SELECTED]: true
+          [IS_SELECTED]: true
         }
       }
     },
     pinky: {
       name: 'Pinky',
-        regions: {
+      regions: {
         pie: {
           id: 'pie',
-            [IS_SELECTED]: true
+          [IS_SELECTED]: true
         }
       }
     }
@@ -101,6 +101,47 @@ describe('reselectHelpers', () => {
       }
     };
     expect(activeUserSelector(state)).toEqual({dum: {name: 'Duk', [IS_ACTIVE]: true}});
+  });
+
+  test('userSelector', () => {
+    const user = {
+        dum: {
+          name: 'Duk',
+          [IS_ACTIVE]: true,
+          regions:
+            [{id: 'a'}, {id: 'b'}]
+        }
+      };
+    const state = {
+      regions: {
+        a: {
+          id: 'a',
+          name: 'A'
+        },
+        b: {
+          id: 'b',
+          name: 'B'
+        }
+      }
+    };
+    expect(userSelector(state, {user})).toEqual({
+      dum: {
+        name: 'Duk',
+        [IS_ACTIVE]: true,
+        // Should have full regions resolved
+        regions: state.regions
+      }
+    });
+  });
+
+  test('userRegionSelector', () => {
+    const state = {
+      users: {
+        yuk: {name: 'Yuk'},
+        dum: {name: 'Duk', [IS_ACTIVE]: true}
+      }
+    };
+    expect(userRegionsSelector(state)).toEqual({dum: {name: 'Duk', [IS_ACTIVE]: true}});
   });
 
   test('makeRegionSelector', () => {
@@ -260,8 +301,9 @@ describe('reselectHelpers', () => {
       perspectiveEnabled: true,
       preventStyleDiffing: false
     };
-    expect(mapboxSettingsSelector(state)).toEqual(expected);
+    expect(mapboxSettingsSelector(state.settings)).toEqual(expected);
   });
+
   test('browserDimensionSelector', () => {
     const state = {
       browser: {
@@ -321,50 +363,4 @@ describe('reselectHelpers', () => {
         }
       });
   });
-
-  test('makeMergeDefaultStyleWithProps', () => {
-    const state = {
-      styles: {
-        default: {
-          color: 'red',
-          margin: 2
-        }
-      }
-    };
-    const props = {
-      style: {
-        color: 'blue',
-        margin: R.multiply(2)
-      }
-    };
-    expect(makeMergeDefaultStyleWithProps()(state, props)).toEqual(
-      {
-        color: 'blue',
-        margin: 4
-      }
-    );
-  });
-
-  test('makeMergeContainerStyleProps', () => {
-    const containerProps = {
-      style: {
-        color: 'red',
-        margin: 2
-      }
-    };
-
-    const style = {
-      color: 'blue',
-      margin: R.multiply(2)
-    };
-
-    expect(makeMergeContainerStyleProps()(containerProps, style)).toEqual(
-      {
-        color: 'blue',
-        margin: 4
-      }
-    );
-  });
 });
-
-

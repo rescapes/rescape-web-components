@@ -23,6 +23,16 @@ const {compact} = require('rescape-ramda');
  */
 module.exports.classNamer = R.curry((root, suffix) => R.join('-', compact([root, suffix])));
 
+/**
+ * Given a name, generates a className
+ * @param name
+ * @param styles
+ */
+const getClassAndStyle = (root, name, styles) => ({
+  className: className(name),
+  style: reqPath(R.split('.', name), styles)
+})
+
 /** *
  * Creates a function that multiplies a numeric value of a style by a fraction
  * This is used to map a container style numeric value to a proportional numeric value in the child component
