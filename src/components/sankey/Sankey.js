@@ -10,7 +10,7 @@
  */
 
 const {renderSankeySvgPoints} = require('helpers/sankeyHelpers');
-const {makeMergeContainerStyleProps} = require('helpers/reselectHelpers');
+const {makeMergeContainerStyleProps} = require('selectors/selectorHelpers');
 const PropTypes = require('prop-types');
 const React = require('react');
 const createMapStops = require('components/mapStop/MapStops').default;
@@ -27,7 +27,7 @@ const [MapGL, DeckGL, Svg, G, Circle, Div] =
 const d3 = require('d3');
 const {resolveSvgPoints, resolveSvgReact} = require('helpers/svgHelpers');
 const {classNamer, styleMultiplier} = require('helpers/styleHelpers');
-const {makeMergeContainerStyleProps} = require('helpers/reselectHelpers');
+const {makeMergeContainerStyleProps} = require('selectors/selectorHelpers');
 
 const Sankey = ({...props}) => {
 

@@ -9,90 +9,14 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const {createSelector, createSelectorCreator, createStructuredSelector, defaultMemoize} = require('reselect');
+const {activeUserSelector} = require('selectors/userSelectors');
+const {createSelector, createStructuredSelector} = require('reselect');
 const R = require('ramda');
 const {mergeDeep} = require('rescape-ramda');
-const {findOne, reqPath} = require('rescape-ramda').throwing;
 const {geojsonByType} = require('helpers/geojsonHelpers');
-const {propLensEqual} = require('./componentHelpers');
-const {filterMergeByUserSettings} = require('data/userSettingsHelpers');
+const {filterMergeByLens} = require('data/userSettingsHelpers');
 const {mapped} = require('ramda-lens');
-
-/**
- * Creates a reselect selector creator that compares the length of values of the
- * selected object from one call to the next to determine equality instead of doing and equals check.
- * This is used for large datasets like geojson features where we assume no change unless the list size changes
- */
-const createLengthEqualSelector = module.exports.createLengthEqualSelector =
-  // Use propLensEqual as the equality check to defaultMemoize
-  createSelectorCreator(
-    defaultMemoize,
-    propLensEqual(R.lensProp('length'))
-  );
-
-/**
- * Default settings selector, which passes all settings through
- * @param state
- */
-const settingsSelector = module.exports.settingsSelector = state => state.settings;
-
-/**
- * Object statuses
- * @type {{IS_SELECTED: string, IS_ACTIVE: string}}
- */
-const STATUS = module.exports.STATUS = {
-  IS_SELECTED: 'isSelected',
-  IS_ACTIVE: 'isActive'
-};
-
-/**
- * Object to lookup the a particular status
- * @type {{}}
- */
-const status = module.exports.status = R.fromPairs(
-  R.map(
-    status => [status, R.prop(status)],
-    [STATUS.IS_SELECTED, STATUS.IS_ACTIVE]
-  )
-);
-
-/**
- * Map the region ids of the user to full regions
- * @param {Object} state The redux state
- * @param {Object} user The User that has regions
- */
-const userRegionsSelector = module.exports.userRegionsSelector = (state, {user}) => {
- return R.map(userRegion => R.find(R.propEq('id', userRegion.id))(state.regions), user.regions)
-}
-
-/**
- * Merges the state with the user given in props to resolve the regions of the user
- * @type {function(): function(*): *}
- */
-const userSelector = module.exports.userSelector = (state, {user}) => createSelector(
-  [userRegionsSelector],
-  regions =>
-    mergeDeep(user, {
-      regions
-    })
-)(state, {user});
-
-/**
- * Returns the active user by searching state.users for the one and only one isActive property
- * that is true
- * @param state
- */
-const activeUserSelector = module.exports.activeUserSelector = state =>
-  // Explicitly pass the user in the props
-  userSelector(
-    state,
-    {
-      user: findOne(
-        status[STATUS.IS_ACTIVE],
-        state.users
-      )
-    }
-  );
+const {STATUS, status, createLengthEqualSelector} = require('./selectorHelpers');
 
 /**
  * Resolves the openstreetmap features of a region and categorizes them by type (way, node, relation).
@@ -144,7 +68,7 @@ const makeRegionSelector = module.exports.makeRegionSelector = () => region => c
  * simply the filtered regions
  */
 const makeRegionsSelector = module.exports.makeRegionsSelector = () => state => createStructuredSelector(
-  filterMergeByUserSettings(
+  filterMergeByLens(
     // Look for the regions container in the state and userSettings
     R.lensPath(['regions']),
     // Look for regions in userSettings with property isSelected
@@ -157,22 +81,6 @@ const makeRegionsSelector = module.exports.makeRegionsSelector = () => state => 
     ))
   )
 )(state);
-
-/**
- * This selector creates a state that narrows down the state to the active user and region,
- * remove any users that are not active and any regions that are not selected.
- * Any ComponentContainer that must operate in the context of a single user and region can
- * use this selector, or more likely receive this state from their parent component.
- * @returns {Function} A reselect selector that is called with state and props and returns
- * an object containing settings, regions, and users, where regions and users must limited to
- * one each
- */
-module.exports.makeActiveUserAndRegionStateSelector = () =>
-  createStructuredSelector({
-    settings: settingsSelector,
-    regions: makeRegionsSelector(),
-    users: activeUserSelector
-  });
 
 /**
  * Makes a selector that expects a state containing regions, which each contain a Mapbox viewport
@@ -213,33 +121,3 @@ module.exports.makeGeojsonLocationsSelector = () => state => {
     R.view(geojsonLocationLens)
   )(state);
 };
-
-/**
- * Determines the mapbox settings from the general settings.
- * TODO we could merge user overrides here in the future
- * @returns {Object} The mapbox settings
- */
-module.exports.mapboxSettingsSelector = createSelector(
-  [
-    state => reqPath(['settings', 'mapbox'], state)
-  ],
-  R.identity
-);
-
-/** Selects the regions of the User
- *
- */
-
-
-/**
- * For selectors that expects the state and props pre-merged.
- * Usage: (state, props) => R.compose(selector, mergeStateAndProps)(state, props)
- * This will call mergeStateAndProps with state and props and then call selector with just the merged
- * value. selectors should only take state and props separately when there is something specifically
- * different about what is expected in the state versus the props, such as for
- * makeBrowserProportionalDimensionsSelector, where the state and only the state must contain browser
- * dimenions.
- * @param state
- * @param props
- */
-module.exports.mergeStateAndProps = (state, props) => mergeDeep(state, props);

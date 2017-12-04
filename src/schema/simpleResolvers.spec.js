@@ -14,7 +14,7 @@ const {sampleConfig} = require('data/samples/sampleConfig');
 const {default: makeSchema} = require('./schema');
 const {graphql} = require('graphql');
 const R = require('ramda');
-const {makeRegionsSelector} = require('helpers/reselectHelpers');
+const {makeRegionsSelector} = require('selectors/selectorHelpers');
 const {mapped} = require('ramda-lens')
 
 describe('mockExecutableSchema', () => {

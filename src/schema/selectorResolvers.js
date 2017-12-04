@@ -9,14 +9,14 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import {mapboxSettingsSelector} from 'helpers/reselectHelpers';
+import {mapboxSettingsSelector} from 'selectors/selectorHelpers';
 
 const {addResolveFunctionsToSchema} = require('graphql-tools');
 const R = require('ramda')
 const {throwing: {reqPath}} = require('rescape-ramda')
 const objectValues = field => (obj) => R.values(reqPath([field], obj))
 const selectorValues = selector => obj => R.values(selector(obj))
-const { settingsSelector, makeRegionsSelector, activeUserSelector} = require('helpers/reselectHelpers');
+const { settingsSelector, makeRegionsSelector, activeUserSelector} = require('selectors/selectorHelpers');
 
 // Original example from: https://github.com/apollographql/graphql-tools
 const makeSelectorResolvers = data => ({

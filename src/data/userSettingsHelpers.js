@@ -12,11 +12,12 @@
 const R = require('ramda');
 const {filterWithKeys, mapPropValueAsIndex, mergeDeep} = require('rescape-ramda');
 
-/** *
- * Given the state and userSettings which map the shape of state,
- * and a lens that winnows in on a certain property that is a container (i.e. list or keyed objects)
- * Merge matching values of the state and userSettings for each value of the container
- * and apply the given predicate on the result.
+/**
+ * Merges a a settings object with a state at a certain lens location, and then filters the
+ * result of the merge based on the given predicate. This is used for example:
+ * If there are Region objects in the state and User object as the settings that contains Regions,
+ * the lens is R.lensProp('regions') and checks to see which regions of the user are active and
+ * returns the regions of the state that match.
  *
  * The predicate checks properties appended to the userSettings version of the data, such as
  * checking for keys like 'isSelected' or 'willDelete' or 'willAdd'
@@ -26,7 +27,7 @@ const {filterWithKeys, mapPropValueAsIndex, mergeDeep} = require('rescape-ramda'
  * in the userSettings (and possibly visa-versa if the user is creating something new). These will
  * be included in the merge and run through the predicate
  * @param {Object} state The Redux state. Important: The target of the lens
- * @param {Object} userSettings The user settings that match the shape of the state
+ * @param {Object} settings The User that match the shape of the state
  * @returns {*} The filtered merged value pointed to by the lens
  *
  * Example:
@@ -36,7 +37,7 @@ const {filterWithKeys, mapPropValueAsIndex, mergeDeep} = require('rescape-ramda'
  * userSettings: {foos: {bars: {bar1: {id: 'bar1', isSelected: true}, bar2: {id: 'bar2'}}}}
  * returns: {bar1: {id: 'bar1', name: 'Bar 1' isSelected: true}}
  */
-module.exports.filterMergeByUserSettings = (lens, predicate, state, userSettings) =>
+module.exports.filterMergeByLens = (lens, predicate, state, settings) =>
   filterWithKeys(
     (value, key) => {
       return predicate(
@@ -46,6 +47,6 @@ module.exports.filterMergeByUserSettings = (lens, predicate, state, userSettings
     // Combine the lens focused userValue and state value
     // Make sure each is keyed by id before merging
     mergeDeep(
-      ...R.map(R.compose(mapPropValueAsIndex('id'), R.view(lens)), [state, userSettings])
+      ...R.map(R.compose(mapPropValueAsIndex('id'), R.view(lens)), [state, settings])
     )
   );

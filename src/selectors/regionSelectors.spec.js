@@ -12,11 +12,14 @@
 const R = require('ramda');
 const {
   STATUS: {IS_ACTIVE, IS_SELECTED},
-  makeActiveUserAndRegionStateSelector, createLengthEqualSelector, activeUserSelector, makeRegionSelector, makeFeaturesByTypeSelector,
-  makeMarkersByTypeSelector, makeRegionsSelector, makeViewportsSelector, mapboxSettingsSelector, browserDimensionsSelector,
-  makeBrowserProportionalDimensionsSelector, mergeStateAndProps,
-  makeGeojsonsSelector, makeGeojsonLocationsSelector, userSelector, userRegionsSelector
-} = require('./reselectHelpers');
+} = require('./selectorHelpers');
+const {
+  makeRegionSelector, makeFeaturesByTypeSelector, makeRegionsSelector,
+  makeGeojsonLocationsSelector, makeMarkersByTypeSelector
+} = require('./regionSelectors')
+const {
+  mapboxSettingsSelector
+} = require('./settingsSelectors')
 
 describe('reselectHelpers', () => {
   const users = {
@@ -40,109 +43,6 @@ describe('reselectHelpers', () => {
       }
     }
   };
-  test('makeActiveUserAndRegionStateSelector', () => {
-    expect(
-      makeActiveUserAndRegionStateSelector()({
-        settings: 'dessert',
-        regions: {
-          pie: {
-            id: 'pie'
-          }
-        },
-        users
-      })
-    ).toEqual(
-      {
-        settings: 'dessert',
-        regions: {
-          pie: {
-            id: 'pie',
-            geojson: {osm: {featuresByType: {}, locationsByType: {}}},
-            [IS_SELECTED]: true
-          }
-        },
-        users: {
-          blinky: users.blinky
-        }
-      }
-    );
-  });
-
-  // TODO createLengthEqualSelector is not memoizing as expected
-  test('createLengthEqualSelector', () => {
-    let state = {foo: [1, 2, 3]};
-    // Mock function that simply returns foo
-    const myMockFn = jest.fn()
-      .mockImplementation(state => {
-        return state.foo;
-      });
-    // createLengthEqualSelector should only track changes to foo's length, not its contents
-    const selector = createLengthEqualSelector(
-      [myMockFn],
-      R.identity
-    );
-    // Initial call to selector
-    selector(state);
-    // Subsequent call to selector with length of lens target changed
-    state = R.set(R.lensPath(['foo', 3]), 11, state);
-    selector(state);
-    expect(myMockFn.mock.calls.length).toEqual(2);
-    // Subsequent call to selector with lens target changed but not length
-    state = R.set(R.lensPath(['foo', 0]), 11, state);
-    selector(state);
-    expect(myMockFn.mock.calls.length).toEqual(3); // TODO Should equal 2
-  });
-
-  test('activeUserSelector', () => {
-    const state = {
-      users: {
-        yuk: {name: 'Yuk'},
-        dum: {name: 'Duk', [IS_ACTIVE]: true}
-      }
-    };
-    expect(activeUserSelector(state)).toEqual({dum: {name: 'Duk', [IS_ACTIVE]: true}});
-  });
-
-  test('userSelector', () => {
-    const user = {
-        dum: {
-          name: 'Duk',
-          [IS_ACTIVE]: true,
-          regions:
-            [{id: 'a'}, {id: 'b'}]
-        }
-      };
-    const state = {
-      regions: {
-        a: {
-          id: 'a',
-          name: 'A'
-        },
-        b: {
-          id: 'b',
-          name: 'B'
-        }
-      }
-    };
-    expect(userSelector(state, {user})).toEqual({
-      dum: {
-        name: 'Duk',
-        [IS_ACTIVE]: true,
-        // Should have full regions resolved
-        regions: state.regions
-      }
-    });
-  });
-
-  test('userRegionSelector', () => {
-    const state = {
-      users: {
-        yuk: {name: 'Yuk'},
-        dum: {name: 'Duk', [IS_ACTIVE]: true}
-      }
-    };
-    expect(userRegionsSelector(state)).toEqual({dum: {name: 'Duk', [IS_ACTIVE]: true}});
-  });
 
   test('makeRegionSelector', () => {
     const locations = {
@@ -255,23 +155,6 @@ describe('reselectHelpers', () => {
     expect(viewportSelector(regionsState)).toEqual(expected);
   });
 
-  test('makeGeojsonsSelector', () => {
-    const expected = {
-      boo: {
-        locations: {
-          someLocation: 'sure'
-        },
-        what: 'ever',
-        // These default derived properties are expected for each region
-        osm: {
-          featuresByType: {},
-          locationsByType: {}
-        }
-      }
-    };
-    const viewportSelector = makeGeojsonsSelector();
-    expect(viewportSelector(regionsState)).toEqual(expected);
-  });
 
   test('makeGeojsonLocationsSelector', () => {
     // Exepect the contents of the geojson.locations of the active region
@@ -304,63 +187,4 @@ describe('reselectHelpers', () => {
     expect(mapboxSettingsSelector(state.settings)).toEqual(expected);
   });
 
-  test('browserDimensionSelector', () => {
-    const state = {
-      browser: {
-        width: 640,
-        height: 480
-      }
-    };
-    const expected = {
-      width: 640,
-      height: 480
-    };
-    expect(browserDimensionsSelector(state)).toEqual(expected);
-  });
-
-  test('makeBrowserProportionalDimensionsSelector', () => {
-    const state = {
-      browser: {
-        width: 640,
-        height: 480
-      }
-    };
-    const props = {
-      style: {
-        width: 0.5,
-        height: 0.1
-      }
-    };
-    const expected = {
-      width: 320,
-      height: 48
-    };
-    expect(makeBrowserProportionalDimensionsSelector()(state, props)).toEqual(expected);
-  });
-
-  test('mergeStateAndProps', () => {
-    const state = {
-      buster: 1,
-      gob: 2,
-      lindsay: {
-        tobias: 1
-      },
-      michael: 4
-    };
-    const props = {
-      lindsay: {
-        maeby: 3
-      }
-    };
-    expect(R.compose((state, props) => state, mergeStateAndProps)(state, props))
-      .toEqual({
-        buster: 1,
-        gob: 2,
-        michael: 4,
-        lindsay: {
-          tobias: 1,
-          maeby: 3
-        }
-      });
-  });
 });

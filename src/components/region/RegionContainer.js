@@ -3,7 +3,7 @@ const {bindActionCreators} = require('redux');
 const {connect} = require('react-redux');
 const Region = require('./Region').default;
 const {actions} = require('redux/geojson/geojsonReducer');
-const {makeViewportsSelector, makeActiveUserAndRegionStateSelector, mapboxSettingsSelector, makeMergeDefaultStyleWithProps} = require('helpers/reselectHelpers');
+const {makeViewportsSelector, makeActiveUserAndRegionStateSelector, mapboxSettingsSelector, makeMergeDefaultStyleWithProps} = require('selectors/selectorHelpers');
 const {createSelector} = require('reselect');
 const R = require('ramda');
 

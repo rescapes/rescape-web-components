@@ -15,7 +15,7 @@ const {actionCreators} = require('src/redux/geojson/geojsonReducer');
 const {onChangeViewport} = require('redux-map-gl');
 const Sankey = require('./Sankey').default;
 const R = require('ramda');
-const {makeViewportsSelector, makeActiveUserAndRegionStateSelector, mapboxSettingsSelector} = require('helpers/reselectHelpers');
+const {makeViewportsSelector, makeActiveUserAndRegionStateSelector, mapboxSettingsSelector} = require('selectors/selectorHelpers');
 const {createSelector} = require('reselect');
 const {hoverMarker, selectMarker} = actionCreators;
 

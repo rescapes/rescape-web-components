@@ -20,7 +20,7 @@ const MapStops = createMapStops(React);
 const {eMap, liftAndExtractItems} = require('helpers/componentHelpers');
 const [Div, MapGl] = eMap(['div', mapGl]);
 const R = require('ramda');
-const {makeViewportsSelector, makeMergeContainerStyleProps} = require('helpers/reselectHelpers');
+const {makeViewportsSelector, makeMergeContainerStyleProps} = require('selectors/selectorHelpers');
 const {classNamer} = require('helpers/styleHelpers');
 
 const Mapbox = ({...props}) => {

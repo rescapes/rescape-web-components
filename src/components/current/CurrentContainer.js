@@ -3,7 +3,7 @@ const {connect} = require('react-redux');
 const Current = require('./Current').default;
 const R = require('ramda');
 const {createSelector} = require('reselect');
-const {makeActiveUserAndRegionStateSelector, makeBrowserProportionalDimensionsSelector} = require('helpers/reselectHelpers');
+const {makeActiveUserAndRegionStateSelector, makeBrowserProportionalDimensionsSelector} = require('selectors/selectorHelpers');
 const {mergeDeep} = require('rescape-ramda');
 
 

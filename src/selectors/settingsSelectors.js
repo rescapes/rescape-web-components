@@ -1,5 +1,5 @@
 /**
- * Created by Andy Likuski on 2017.12.02
+ * Created by Andy Likuski on 2017.10.17
  * Copyright (c) 2017 Andy Likuski
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
@@ -9,50 +9,23 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+const {createSelector} = require('reselect');
+const R = require('ramda');
 
-describe('reselectLayoutHelpers', () => {
-  test('makeMergeDefaultStyleWithProps', () => {
-    const state = {
-      styles: {
-        default: {
-          color: 'red',
-          margin: 2
-        }
-      }
-    };
-    const props = {
-      style: {
-        color: 'blue',
-        margin: R.multiply(2)
-      }
-    };
-    expect(makeMergeDefaultStyleWithProps()(state, props)).toEqual(
-      {
-        color: 'blue',
-        margin: 4
-      }
-    );
-  });
+/**
+ * Default settings selector, which passes all settings through
+ * @param state
+ */
+const settingsSelector = module.exports.settingsSelector = state => state.settings;
 
-  test('makeMergeContainerStyleProps', () => {
-    const containerProps = {
-      style: {
-        color: 'red',
-        margin: 2
-      }
-    };
-
-    const style = {
-      color: 'blue',
-      margin: R.multiply(2)
-    };
-
-    expect(makeMergeContainerStyleProps()(containerProps, style)).toEqual(
-      {
-        color: 'blue',
-        margin: 4
-      }
-    );
-  });
-});
-
+/**
+ * Determines the mapbox settings from the general settings.
+ * TODO we could merge user overrides here in the future
+ * @returns {Object} The mapbox settings
+ */
+module.exports.mapboxSettingsSelector = createSelector(
+  [
+    state => reqPath(['settings', 'mapbox'], state)
+  ],
+  R.identity
+);
