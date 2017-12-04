@@ -9,115 +9,53 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+const {throwing: {findOne, onlyOneValue, reqPath}} = require('rescape-ramda');
 const {activeUserSelector} = require('selectors/userSelectors');
-const {createSelector, createStructuredSelector} = require('reselect');
 const R = require('ramda');
-const {mergeDeep} = require('rescape-ramda');
-const {geojsonByType} = require('helpers/geojsonHelpers');
-const {filterMergeByLens} = require('data/userSettingsHelpers');
-const {mapped} = require('ramda-lens');
-const {STATUS, status, createLengthEqualSelector} = require('./selectorHelpers');
+const {STATUS: {IS_SELECTED}, status, makeMergeByLensThenFilterSelector} = require('./selectorHelpers');
 
 /**
- * Resolves the openstreetmap features of a region and categorizes them by type (way, node, relation).
- * Equality is currently based on the length of the features, but we should be able to do this
- * simply by reference equality (why would the features reference change?)
- * @param {Object} state Should be the region with the
+ * Select all regions from the state
+ * @type {function(*)}
  */
-const makeFeaturesByTypeSelector = module.exports.makeFeaturesByTypeSelector = () => createLengthEqualSelector(
-  [
-    R.view(R.lensPath(['geojson', 'osm']))
-  ],
-  geojsonByType
-);
+module.exports.regionsSelector = state => state.regions
 
 /**
- * Resolves the marker features of a region and categorizes them by type (way, node, relation)
+ * Find select the region by id
+ * @param state
+ * @param params
  */
-const makeMarkersByTypeSelector = module.exports.makeMarkersByTypeSelector = () => createLengthEqualSelector(
-  [
-    R.view(R.lensPath(['geojson', 'markers']))
-  ],
-  geojsonByType
-);
+module.exports.regionSelector = (state, {params}) => onlyOneValue(findOne(
+  region => R.propEq(reqPath(['id'], params)), state.regions)
+)
 
 /**
- * Selector for a particular region that merges in derived data structures
- * @param {Object} region A region with userSettings for that region merged in
+ * Makes a selector to select the regions of the active users
+ * @param predicate Predicate to apply to each region for filtering (e.g. filter for the active region)
+ * @type {function(*=): function(*=): *}
  */
-const makeRegionSelector = module.exports.makeRegionSelector = () => region => createSelector(
-  [
-    makeFeaturesByTypeSelector(),
-    makeMarkersByTypeSelector()
-  ],
-  (featuresByType, locationsByType) =>
-    mergeDeep(region, {
-      geojson: {
-        osm: {
-          featuresByType,
-          locationsByType
-        }
-      }
-    })
-)(region);
+const makeActiveUserRegionsSelector = (predicate) => state =>
+  R.compose(
+    R.values,
+    state => makeMergeByLensThenFilterSelector(
+      // Look for the regions container in the state and userSettings
+      R.lensProp('regions'),
+      R.lensPath(['user', 'regions']),
+      // Look for regions in userSettings with property isSelected
+      predicate
+    )(
+      // The state
+      state,
+      // Props are the active user
+      {user: activeUserSelector(state)}
+    )
+  )(state)
+
+module.exports.activeUserRegionsSelector = makeActiveUserRegionsSelector(R.T)
 
 /**
  * Creates a selector that selects regions that are associated with this user and currently selected by this user.
  * @param {Object} state The redux state
- * @returns {Object|Array} An object keyed by region id and valued by filtered regions or
- * simply the filtered regions
+ * @returns {Array} The selected regions
  */
-const makeRegionsSelector = module.exports.makeRegionsSelector = () => state => createStructuredSelector(
-  filterMergeByLens(
-    // Look for the regions container in the state and userSettings
-    R.lensPath(['regions']),
-    // Look for regions in userSettings with property isSelected
-    status[STATUS.IS_SELECTED],
-    // The state
-    state,
-    // Find the only active user.
-    R.head(R.values(
-      activeUserSelector(state)
-    ))
-  )
-)(state);
-
-/**
- * Makes a selector that expects a state containing regions, which each contain a Mapbox viewport
- * @param {Object} state The Redux state. This can be the full state or one modified for current selections
- * @param {Object} state.regions The regions object. Usually one region is expected
- * Each region contains a {mapbox: viewport: {...}}
- * @returns {Object} An object keyed by region and valued by viewport of that region's Mapbox
- */
-module.exports.makeViewportsSelector = () => {
-  const regionsMapboxVieportLens = R.compose(mapped, R.lensPath(['mapbox', 'viewport']));
-  return createSelector(
-    // Select the regions
-    [makeRegionsSelector()],
-    // Use the lens to extract the viewport of each region
-    R.view(regionsMapboxVieportLens)
-  );
-};
-
-/**
- * Makes a selector that expects a state containing regions, which each contain a geojson property
- * @param {Object} state The Redux state. This can be the full state or one modified for current selections
- * @param {Object} state.regions The regions object. Usually one region is expected
- * Each region contains a {geojson: ...}
- * @return {Object} An object keyed by region and valued by geojson
- */
-const makeGeojsonSelector = module.exports.makeGeojsonsSelector = () => state => {
-  const regionsGeojsonLens = R.compose(mapped, R.lensPath(['geojson']));
-  return createSelector(
-    [makeRegionsSelector()],
-    R.view(regionsGeojsonLens)
-  )(state);
-};
-
-module.exports.makeGeojsonLocationsSelector = () => state => {
-  const geojsonLocationLens = R.compose(mapped, R.lensPath(['locations']));
-  return createSelector(
-    [makeGeojsonSelector()],
-    R.view(geojsonLocationLens)
-  )(state);
-};
+module.exports.activeUserSelectedRegionsSelector = makeActiveUserRegionsSelector(status[IS_SELECTED])

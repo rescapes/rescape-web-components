@@ -16,7 +16,7 @@ const {
 const {makeMergeDefaultStyleWithProps} = require('selectors/styleSelectors');
 const R = require('ramda');
 
-describe('reselectLayoutHelpers', () => {
+describe('styleSelectors', () => {
   test('makeMergeDefaultStyleWithProps', () => {
     const state = {
       styles: {

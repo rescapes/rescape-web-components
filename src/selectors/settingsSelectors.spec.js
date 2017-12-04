@@ -13,7 +13,7 @@ const {
   mapboxSettingsSelector
 } = require('./selectorHelpers');
 
-describe('reselectHelpers', () => {
+describe('settingsSelectors', () => {
   test('mapboxSettingSelector', () => {
     const state = {
       settings: {

@@ -16,7 +16,7 @@ const {
   makeActiveUserAndRegionStateSelector
 } = require('./storeSelectors');
 
-describe('reselectHelpers', () => {
+describe('storeSelectors', () => {
   const users = {
     blinky: {
       name: 'Blinky',

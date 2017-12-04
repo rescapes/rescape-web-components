@@ -13,6 +13,7 @@ const R = require('ramda');
 const {
   createLengthEqualSelector,
   mergeStateAndProps,
+  makeMergeByLensThenFilterSelector
 } = require('./selectorHelpers');
 
 describe('reselectHelpers', () => {
@@ -66,5 +67,17 @@ describe('reselectHelpers', () => {
           maeby: 3
         }
       });
+  });
+
+  test('makeMergeByLensThenFilterSelector', () => {
+    const stateLens = R.lensPath(['foos', 'bars']);
+    const propsLens = R.lensPath(['bars']);
+    const predicate = value => value.isSelected;
+    const state = {foos: {bars: [{id: 'bar1', name: 'Bar 1'}, {id: 'bar2', name: 'Bar 2'}]}};
+    const props = {bars: {bar1: {id: 'bar1', isSelected: true}, bar2: {id: 'bar2'}}};
+    expect(makeMergeByLensThenFilterSelector(stateLens, propsLens, predicate)(state, props)).
+    toEqual(
+      {bar1: {id: 'bar1', name: 'Bar 1', isSelected: true}}
+    );
   });
 });

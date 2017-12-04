@@ -181,6 +181,8 @@ const StoreType = new GraphQLObjectType({
   name: 'Store',
   fields: {
     regions: {type: new GraphQLList(RegionType)},
+    region: {type: RegionType},
+
     users: {type: new GraphQLList(UserType)},
     settings: {type: new GraphQLList(SettingsType)},
   }

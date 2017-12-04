@@ -17,7 +17,7 @@ const {
   activeUserSelector, userRegionsSelector
 } = require('./userSelectors');
 
-describe('reselectHelpers', () => {
+describe('userSelectors', () => {
   const users = {
     blinky: {
       name: 'Blinky',

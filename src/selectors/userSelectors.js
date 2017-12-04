@@ -11,7 +11,7 @@
 
 const {createSelector} = require('reselect');
 const R = require('ramda');
-const {mergeDeep, throwing: {findOne, reqPath}} = require('rescape-ramda');
+const {mergeDeep, throwing: {findOne, reqPath, onlyOneValue}} = require('rescape-ramda');
 const {STATUS, status} = require('./selectorHelpers');
 
 /**
@@ -33,7 +33,7 @@ const userRegionsSelector = module.exports.userRegionsSelector = (state, {user})
  * @param state
  */
 const activeUserSelector = module.exports.activeUserSelector = state =>
-  findOne(
+  onlyOneValue(findOne(
     status[STATUS.IS_ACTIVE],
     reqPath(['users'], state)
-  );
+  ));

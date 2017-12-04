@@ -10,9 +10,10 @@
  */
 
 const {createSelectorCreator, defaultMemoize} = require('reselect');
-const R = require('ramda');
-const {mergeDeep} = require('rescape-ramda');
 const {propLensEqual} = require('helpers/componentHelpers');
+const R = require('ramda');
+const {filterWithKeys, mapPropValueAsIndex, mergeDeep} = require('rescape-ramda');
+
 
 /**
  * Creates a reselect selector creator that compares the length of values of the
@@ -36,8 +37,10 @@ const STATUS = module.exports.STATUS = {
 };
 
 /**
- * Object to lookup the a particular status
+ * Object to lookup a particular status
  * @type {{}}
+ * @returns {Object} Object keyed by status key and valued a function that resolves the value of that
+ * status property for whatever object is passed to it
  */
 const status = module.exports.status = R.fromPairs(
   R.map(
@@ -47,3 +50,41 @@ const status = module.exports.status = R.fromPairs(
 );
 
 module.exports.mergeStateAndProps = (state, props) => mergeDeep(state, props);
+
+/**
+ * Makes a selector that merges a props object with a state object at a certain matching lens location,
+ * and then filters the result of the merge based on the given predicate. This is used for example:
+ * If there are Region objects in the state and User object as the props that contains Regions,
+ * the lens is R.lensProp('regions') and checks to see which regions of the user are active and
+ * returns the regions of the state that match.
+ *
+ * The predicate checks properties appended to the userSettings version of the data, such as
+ * checking for keys like 'isSelected' or 'willDelete' or 'willAdd'
+ * @param {Function} stateLens Ramda lens to winnow in on the property of the state to be merged with props and then filtered
+ * @param {Function} propsLens Ramda lens to winnow in on the props to merge with the target of the state lens
+ * @param {Function} predicate Predicate that expects each merged value of the container of the lens
+ * for the state and userSettings. It's possible for a value to only exist in the state and not
+ * in the userSettings (and possibly visa-versa if the user is creating something new). These will
+ * be included in the merge and run through the predicate
+ * @returns {Function} A selector expecting a state and props that returns the filtered merged value pointed to by the lens
+ *
+ * Example:
+ * lens R.lensPath(['foos', 'bars'])
+ * predicate value => value.isSelected
+ * state: {foos: {bars: [{id: 'bar1', name: 'Bar 1'}, {id: 'bar2', name: 'Bar 2'}]}}
+ * props: {foos: {bars: {bar1: {id: 'bar1', isSelected: true}, bar2: {id: 'bar2'}}}}
+ * returns: {bar1: {id: 'bar1', name: 'Bar 1' isSelected: true}}
+ */
+module.exports.makeMergeByLensThenFilterSelector = (stateLens, propsLens, predicate) => (state, props) =>
+  filterWithKeys(
+    (value, key) => {
+      return predicate(
+        value
+      );
+    },
+    // Combine the lens focused userValue and state value
+    // Make sure each is keyed by id before merging
+    mergeDeep(
+      ...R.map(mapPropValueAsIndex('id'), [R.view(stateLens, state), R.view(propsLens, props)])
+    )
+  )

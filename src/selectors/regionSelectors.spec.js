@@ -11,82 +11,47 @@
 
 const R = require('ramda');
 const {
-  STATUS: {IS_ACTIVE, IS_SELECTED},
+  STATUS: {IS_ACTIVE, IS_SELECTED}
 } = require('./selectorHelpers');
 const {
-  makeRegionSelector, makeFeaturesByTypeSelector, makeRegionsSelector,
-  makeGeojsonLocationsSelector, makeMarkersByTypeSelector
-} = require('./regionSelectors')
-const {
-  mapboxSettingsSelector
-} = require('./settingsSelectors')
+  makeRegionSelector, makeFeaturesByTypeSelector, activeUserSelectedRegionsSelector, activeUserRegionsSelector, regionsSelector, makeMarkersByTypeSelector
+} = require('./regionSelectors');
+const {mergeDeep} = require('rescape-ramda');
 
-describe('reselectHelpers', () => {
-  const users = {
-    blinky: {
-      name: 'Blinky',
-      [IS_ACTIVE]: true,
-      regions: {
-        pie: {
-          id: 'pie',
-          [IS_SELECTED]: true
-        }
-      }
-    },
-    pinky: {
-      name: 'Pinky',
-      regions: {
-        pie: {
-          id: 'pie',
-          [IS_SELECTED]: true
-        }
-      }
-    }
-  };
+describe('regionSelectors', () => {
 
-  test('makeRegionSelector', () => {
-    const locations = {
-      features: [
-        {
-          id: 'node/3572156993',
-          properties: {
-            '@id': 'node/3572156993'
-          }
-        }
-      ]
+  test('regionsSelector', () => {
+    const state = {
+      regions: {
+        foo: {id: 'foo'},
+        boo: {id: 'boo'}
+      },
     };
-    const features = [
-      {
-        type: 'Feature',
-        id: 'way/29735335',
-        properties: {
-          '@id': 'way/29735335'
-        }
-      }
-    ];
-    const region = {
-      geojson: {
-        osm: {
-          features
-        },
-        locations
-      }
-    };
-    const expected =
-      R.merge(region, {
-        geojson: {
-          osm: {
-            features,
-            featuresByType: makeFeaturesByTypeSelector()(region),
-            locationsByType: makeMarkersByTypeSelector()(region)
-          },
-          locations
-        }
-      });
-    expect(makeRegionSelector()(region)).toEqual(expected);
+    const expected = state.regions
+    expect(regionsSelector(state)).toEqual(expected);
   });
 
-  test('makeRegionsSelector', () => {
+  test('activeUserRegionsSelector', () => {
+    const state = {
+      regions: {
+        foo: {id: 'foo', name: 'Foo'},
+        boo: {id: 'boo', name: 'Boo'}
+      },
+      users: {
+        blinky: {
+          [IS_ACTIVE]: true,
+          regions: {foo: {id: 'foo'}, boo: {id: 'boo', [IS_SELECTED]: true}}
+        },
+        pinky: {}
+      }
+    };
+    // only the selected region of the active user should be selected
+    const expected = R.values(mergeDeep(state.users.blinky.regions, state.regions))
+    expect(activeUserRegionsSelector(state)).toEqual(expected);
+  });
+
+
+  test('activeUserSelectedRegionsSelector', () => {
     const state = {
       regions: {
         foo: {},
@@ -101,90 +66,11 @@ describe('reselectHelpers', () => {
       }
     };
     // only the selected region of the active user should be selected
-    const expected = {
-      boo: {
-        id: 'boo',
-        [IS_SELECTED]: true,
-        // These are created by the derived data selectors
-        geojson: {osm: {featuresByType: {}, locationsByType: {}}}
-      }
-    };
-    expect(makeRegionsSelector()(state)).toEqual(expected);
-  });
-
-  const regionsState = {
-    regions: {
-      foo: {
-        mapbox: {
-          viewport: {some: 'thing'}
-        },
-        geojson: {
-          some: 'thing',
-          locations: {
-            someLocation: 'ok'
-          }
-        }
-      },
-      boo: {
-        mapbox: {
-          viewport: {what: 'ever'}
-        },
-        geojson: {
-          what: 'ever',
-          locations: {
-            someLocation: 'sure'
-          }
-        }
-      }
-    },
-    users: {
-      blinky: {
-        [IS_ACTIVE]: true,
-        regions: {foo: {id: 'foo'}, boo: {id: 'boo', [IS_SELECTED]: true}}
-      }
-    }
-  };
-
-  test('makeViewportsSelector', () => {
-    const expected = {
-      boo: {
-        what: 'ever'
-      }
-    };
-    const viewportSelector = makeViewportsSelector();
-    expect(viewportSelector(regionsState)).toEqual(expected);
-  });
-
-
-  test('makeGeojsonLocationsSelector', () => {
-    // Exepect the contents of the geojson.locations of the active region
-    const expected = {
-      boo: {
-        someLocation: 'sure'
-      }
-    };
-    const viewportSelector = makeGeojsonLocationsSelector();
-    expect(viewportSelector(regionsState)).toEqual(expected);
-  });
-
-  test('mapboxSettingSelector', () => {
-    const state = {
-      settings: {
-        mapbox: {
-          showCluster: true,
-          showZoomControls: true,
-          perspectiveEnabled: true,
-          preventStyleDiffing: false
-        }
-      }
-    };
-    const expected = {
-      showCluster: true,
-      showZoomControls: true,
-      perspectiveEnabled: true,
-      preventStyleDiffing: false
-    };
-    expect(mapboxSettingsSelector(state.settings)).toEqual(expected);
+    const expected = [{
+      id: 'boo',
+      [IS_SELECTED]: true
+    }];
+    expect(activeUserSelectedRegionsSelector(state)).toEqual(expected);
   });
 
 });

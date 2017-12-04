@@ -9,14 +9,20 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import {mapboxSettingsSelector} from 'selectors/selectorHelpers';
-
 const {addResolveFunctionsToSchema} = require('graphql-tools');
 const R = require('ramda')
 const {throwing: {reqPath}} = require('rescape-ramda')
-const objectValues = field => (obj) => R.values(reqPath([field], obj))
-const selectorValues = selector => obj => R.values(selector(obj))
-const { settingsSelector, makeRegionsSelector, activeUserSelector} = require('selectors/selectorHelpers');
+// Trivial resolver for our dataSource, just strips keys and return values
+const objectValues = field => (parent, props, {options: {state: dataSource}}) => R.values(reqPath([field], dataSource))
+// Calls the given selector, treating the dataSource as the state and passing props through
+const selectorValues = selector => (parent, props, {options: {state: dataSource}}) => selector(dataSource, props)
+// Calls the given selector with the parent merged into the props at the given parentKey
+const parantSelectorValues = (selector, parentKey) => (parent, props, {options: {state: dataSource}}) =>
+  selector(dataSource, R.merge(props, {[parentKey]: parent}))
+
+const { activeUserSelectedRegionsSelector, regionSelector} = require('selectors/regionSelectors');
+const { settingsSelector} = require('selectors/settingsSelectors');
+const { activeUserSelector} = require('selectors/userSelectors');
 
 // Original example from: https://github.com/apollographql/graphql-tools
 const makeSelectorResolvers = data => ({
@@ -28,7 +34,6 @@ const makeSelectorResolvers = data => ({
   },
   User: {
     permissions: objectValues('permissions'),
-    regions:
   },
   OpenStreetMap: {
     features: objectValues('features')
@@ -54,7 +59,6 @@ const makeSelectorResolvers = data => ({
   },
 
   Region: {
-    makeRegionSelector()
   },
 
   MapboxSettings: {
@@ -70,16 +74,17 @@ const makeSelectorResolvers = data => ({
   },
 
   Settings: {
-    // Resolves store.settings.mapbox
-    mapbox: selectorValues(mapboxSettingsSelector),
   },
 
+  // The resolvers here limit the user to the active user and regions to the active region(s)
+  // A different resolver setup could load all regions of a user (for user admin) or all regions for (overall admin)
   Store: {
     // Resolves store.settings
     settings: selectorValues(settingsSelector),
-    // Resolves store.regions
-    regions: selectorValues(makeRegionsSelector()),
-    // Resolves store.users
+    // Resolves the active region(s) of the active user
+    regions: selectorValues(activeUserSelectedRegionsSelector),
+    region: selectorValues(regionSelector),
+    // Resolves the active user
     users: selectorValues(activeUserSelector)
   },
 
