@@ -9,10 +9,10 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const {throwing: {findOne, onlyOneValue, reqPath}} = require('rescape-ramda');
 const {activeUserSelector} = require('selectors/userSelectors');
 const R = require('ramda');
-const {STATUS: {IS_SELECTED}, status, makeMergeByLensThenFilterSelector} = require('./selectorHelpers');
+const {STATUS: {IS_SELECTED}, status, makeMergeByLensThenFilterSelector, findByParams} = require('./selectorHelpers');
+const {throwing: {reqPath}} = require('rescape-ramda')
 
 /**
  * Select all regions from the state
@@ -20,14 +20,13 @@ const {STATUS: {IS_SELECTED}, status, makeMergeByLensThenFilterSelector} = requi
  */
 module.exports.regionsSelector = state => state.regions
 
+
 /**
- * Find select the region by id
+ * Select the region that matches the params
  * @param state
- * @param params
+ * @param params Must contain an id property to match on
  */
-module.exports.regionSelector = (state, {params}) => onlyOneValue(findOne(
-  region => R.propEq(reqPath(['id'], params)), state.regions)
-)
+module.exports.regionSelector = (state, {params}) => findByParams(params, reqPath(['regions'], state))
 
 /**
  * Makes a selector to select the regions of the active users

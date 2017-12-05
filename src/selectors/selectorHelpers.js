@@ -9,10 +9,10 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+const {filterWithKeys, mapPropValueAsIndex, mergeDeep, throwing: {findOne, onlyOneValue}} = require('rescape-ramda');
 const {createSelectorCreator, defaultMemoize} = require('reselect');
 const {propLensEqual} = require('helpers/componentHelpers');
 const R = require('ramda');
-const {filterWithKeys, mapPropValueAsIndex, mergeDeep} = require('rescape-ramda');
 
 
 /**
@@ -88,3 +88,19 @@ module.exports.makeMergeByLensThenFilterSelector = (stateLens, propsLens, predic
       ...R.map(mapPropValueAsIndex('id'), [R.view(stateLens, state), R.view(propsLens, props)])
     )
   )
+
+/**
+ * Finds an item that matches all the given props in params
+ * @param params
+ * @param items
+ */
+module.exports.findByParams = (params, items) => onlyOneValue(findOne(
+  // Compare all the eqProps against each item
+  R.allPass(
+    // Create a eqProps for each prop of params
+    R.map(prop => R.eqProps(prop, params),
+      R.keys(params)
+    )
+  ),
+  items
+))

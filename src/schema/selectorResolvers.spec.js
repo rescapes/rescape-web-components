@@ -16,8 +16,6 @@ const {graphql} = require('graphql');
 const R = require('ramda');
 const {mapped} = require('ramda-lens');
 const {activeUserSelectedRegionsSelector, regionSelector} = require('selectors/regionSelectors');
-const {settingsSelector} = require('selectors/settingsSelectors');
-const {activeUserSelector} = require('selectors/userSelectors');
 const resolvedSchema = createSelectorResolvedSchema(makeSchema(), sampleConfig);
 
 describe('mockExecutableSchema', () => {
@@ -59,9 +57,9 @@ describe('mockExecutableSchema', () => {
 
   test('query region', async () => {
     const query = `
-        query region {
+        query region($id: String) {
         store {
-          region {
+          region(id: $id) {
             id
             name
           },
@@ -70,24 +68,46 @@ describe('mockExecutableSchema', () => {
     `;
     // We expect the resolver to resolve the selected regions for the active user, not all regions
     const region = R.head(R.values(sampleConfig.regions));
-    const regionFromSelector = regionSelector(sampleConfig, {params: R.pick(['id'], region)});
+    //const regionFromSelector = regionSelector(sampleConfig, {params: R.pick(['id'], region)});
     const schemaRegionLens = R.lensPath(['data', 'store', 'region']);
     // Here's what we expect back
     const expected =
       ({
-        data: {
-          store: {
-            region: {
-              id: region.id,
-              name: region.name
-            }
-          }
-        }
+        id: region.id,
+        name: region.name
       });
     // graphql params are schema, query, rootValue, context, variables
-    const result = await graphql(resolvedSchema, query, {}, {options: {dataSource: sampleConfig}}).then(
+    const result = await graphql(resolvedSchema, query, {}, {options: {dataSource: sampleConfig}}, R.pick(['id'], region)).then(
       result => R.view(schemaRegionLens, result)
     );
     expect(result).toEqual(expected);
   });
+});
+
+test('query mapbox', async () => {
+  const query = `
+        query mapbox($region: Region) {
+        store {
+          mapbox(region: $region) {
+            id
+            viewport
+          },
+        }
+      }
+    `;
+  // We expect the resolver to resolve the selected regions for the active user, not all regions
+  const region = R.head(R.values(sampleConfig.regions));
+  //const regionFromSelector = regionSelector(sampleConfig, {params: R.pick(['id'], region)});
+  const schemaRegionLens = R.lensPath(['data', 'store', 'region']);
+  // Here's what we expect back
+  const expected =
+    ({
+      id: region.id,
+      name: region.name
+    });
+  // graphql params are schema, query, rootValue, context, variables
+  const result = await graphql(resolvedSchema, query, {}, {options: {dataSource: sampleConfig}}, R.pick(['id'], region)).then(
+    result => R.view(schemaRegionLens, result)
+  );
+  expect(result).toEqual(expected);
 });

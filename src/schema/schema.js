@@ -9,7 +9,9 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import {FeatureCollectionObject, PointObject} from 'graphql-geojson';
+const R = require('ramda');
+const {FeatureCollectionObject, PointObject} = require('graphql-geojson');
+
 const {
   GraphQLSchema,
   GraphQLObjectType,
@@ -17,14 +19,28 @@ const {
   GraphQLString,
   GraphQLList,
   GraphQLFloat,
-  GraphQLBoolean
+  GraphQLBoolean,
+  GraphQLNonNull
 } = require('graphql');
+
+const idFieldObj = {
+  id: {
+    type: new GraphQLNonNull(GraphQLString)
+  }
+}
+
+/**
+ * Standard args for identification of one object
+ * @type {{id: {type}}}
+ */
+const idArgs = ({
+  id: {type: GraphQLString}
+});
 
 /**
  * The TypeDefs that define the structure of our data store on the client
  * These are resolved using resolvers, either in a test data environment or against running database
  */
-;
 
 const OpenStreetMapType = new GraphQLObjectType({
   name: 'OpenStreetMap',
@@ -93,46 +109,42 @@ const MapboxType = new GraphQLObjectType({
 // A user defined geospatial region
 const RegionType = new GraphQLObjectType({
   name: 'Region',
-  fields: {
-    id: {type: GraphQLString},
+  fields: R.merge(idFieldObj, {
     name: {type: GraphQLString},
     description: {type: GraphQLString},
     geojson: {type: GeojsonType},
     geospatial: {type: GeospatialType},
     mapbox: {type: MapboxType}
-  }
+  })
 });
 
 
 // Permission operation
 const OperationType = new GraphQLObjectType({
   name: 'Operation',
-  fields: {
-    id: {type: GraphQLString},
+  fields: R.merge(idFieldObj, {
     name: {type: GraphQLString},
     description: {type: GraphQLString}
-  }
+  })
 });
 
 const PermissionType = new GraphQLObjectType({
   name: 'Permission',
-  fields: {
-    id: {type: GraphQLString},
+  fields: R.merge(idFieldObj, {
     name: {type: GraphQLString},
     operations: {type: new GraphQLList(OperationType)}
-  }
+  })
 });
 
 const UserType = new GraphQLObjectType({
   name: 'User',
-  fields: {
-    id: {type: GraphQLString},
+  fields: R.merge(idFieldObj, {
     name: {type: GraphQLString},
     email: {type: GraphQLString},
     password: {type: GraphQLString},
     permissions: {type: new GraphQLList(PermissionType)},
     region: {type: new GraphQLList(RegionType)}
-  }
+  })
 });
 
 // Settings for Mapbox
@@ -141,9 +153,9 @@ const MapboxSettingsType = new GraphQLObjectType({
   fields: {
     mapboxApiAccessToken: {type: GraphQLString},
     iconAtlas: {type: GraphQLString},
-    showCluster: {type: GraphQLBoolean},
+    showCluster: {type: GraphQLBoolean}
   }
-})
+});
 
 // Api settings
 const ApiSettingsType = new GraphQLObjectType({
@@ -152,49 +164,58 @@ const ApiSettingsType = new GraphQLObjectType({
     protocol: {type: GraphQLString},
     host: {type: GraphQLString},
     port: {type: GraphQLString},
-    root: {type: GraphQLString},
+    root: {type: GraphQLString}
   }
-})
+});
 
 // Overpass Api (OpenStreetMap) settings
 const OverpassSettingsType = new GraphQLObjectType({
   name: 'OverpassSettings',
   fields: {
     cellSize: {type: GraphQLInt},
-    sleepBetweenCalls: {type: GraphQLInt},
+    sleepBetweenCalls: {type: GraphQLInt}
   }
-})
+});
 
 // container for settings
 const SettingsType = new GraphQLObjectType({
   name: 'Settings',
-  fields: {
-    id: {type: GraphQLString},
+  fields: R.merge(idFieldObj, {
     mapbox: {type: MapboxSettingsType},
     api: {type: ApiSettingsType},
-    overpass: {type: OverpassSettingsType},
-  }
-})
+    overpass: {type: OverpassSettingsType}
+  })
+});
+
 
 // Store corresponding to what we store on the client
 const StoreType = new GraphQLObjectType({
   name: 'Store',
   fields: {
-    regions: {type: new GraphQLList(RegionType)},
-    region: {type: RegionType},
-
+    regions: {
+      type: new GraphQLList(RegionType)},
+    region: {
+      type: RegionType,
+      args: idArgs
+    },
+    mapbox: {
+      type: RegionType,
+      args: {
+        region: {type: RegionType}
+      }
+    },
     users: {type: new GraphQLList(UserType)},
-    settings: {type: new GraphQLList(SettingsType)},
-  }
+    settings: {type: new GraphQLList(SettingsType)}
+  },
 })
 
 // GraphQL query type
 const QueryType = new GraphQLObjectType({
   name: 'Query',
   fields: {
-    store: {type: StoreType},
+    store: {type: StoreType}
   }
-})
+});
 
 /*
 const MutationType = new GraphQLObjectType({
@@ -208,6 +229,6 @@ const MutationType = new GraphQLObjectType({
  * Returns a GraphQLSchema instance
  */
 export default () => new GraphQLSchema({
-  query: QueryType,
+  query: QueryType
   //mutation: MutationType
 });

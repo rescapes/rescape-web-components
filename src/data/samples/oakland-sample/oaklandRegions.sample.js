@@ -23,6 +23,8 @@ const {throwing: {reqPath}} = require('rescape-ramda');
 module.exports.default = applyDefaultRegion({
   oakland: {
     id: 'oakland',
+    name: 'Oakland',
+    description: 'Hella Oaklandish',
 
     geojson: {
       osm,

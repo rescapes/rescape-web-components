@@ -13,7 +13,9 @@ const R = require('ramda');
 const {
   createLengthEqualSelector,
   mergeStateAndProps,
-  makeMergeByLensThenFilterSelector
+  makeMergeByLensThenFilterSelector,
+  findById,
+  findByParams
 } = require('./selectorHelpers');
 
 describe('reselectHelpers', () => {
@@ -75,9 +77,21 @@ describe('reselectHelpers', () => {
     const predicate = value => value.isSelected;
     const state = {foos: {bars: [{id: 'bar1', name: 'Bar 1'}, {id: 'bar2', name: 'Bar 2'}]}};
     const props = {bars: {bar1: {id: 'bar1', isSelected: true}, bar2: {id: 'bar2'}}};
-    expect(makeMergeByLensThenFilterSelector(stateLens, propsLens, predicate)(state, props)).
-    toEqual(
+    expect(makeMergeByLensThenFilterSelector(stateLens, propsLens, predicate)(state, props)).toEqual(
       {bar1: {id: 'bar1', name: 'Bar 1', isSelected: true}}
     );
+  });
+
+  test('findByParams', () => {
+    const items = [
+      {brand: 'crush', flavor: 'grape'},
+      {brand: 'fanta', flavor: 'strawberry'},
+      {brand: 'crush', flavor: 'orange'}
+    ];
+    const params = {brand: 'crush', flavor: 'orange'};
+    expect(findByParams(params, items)).toEqual(
+      {brand: 'crush', flavor: 'orange'}
+    );
+
   });
 });

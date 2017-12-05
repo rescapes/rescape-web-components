@@ -25,6 +25,8 @@ const stops = require('./californiaStops').default;
 module.exports.default = applyDefaultRegion({
   california: {
     id: 'california',
+    name: 'California',
+    description: 'Poppy golden poppy',
 
     gtfs: {
       routes,

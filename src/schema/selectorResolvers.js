@@ -13,9 +13,11 @@ const {addResolveFunctionsToSchema} = require('graphql-tools');
 const R = require('ramda')
 const {throwing: {reqPath}} = require('rescape-ramda')
 // Trivial resolver for our dataSource, just strips keys and return values
-const objectValues = field => (parent, props, {options: {state: dataSource}}) => R.values(reqPath([field], dataSource))
-// Calls the given selector, treating the dataSource as the state and passing props through
-const selectorValues = selector => (parent, props, {options: {state: dataSource}}) => selector(dataSource, props)
+const objectValues = field => (parent, params, {options: {dataSource}}) => R.values(reqPath([field], dataSource))
+// Calls the given selector, treating the dataSource asethe state and passing props through
+const selectorValues = selector => (parent, params, {options: {dataSource}}) => {
+  return selector(dataSource, {params})
+}
 // Calls the given selector with the parent merged into the props at the given parentKey
 const parantSelectorValues = (selector, parentKey) => (parent, props, {options: {state: dataSource}}) =>
   selector(dataSource, R.merge(props, {[parentKey]: parent}))
