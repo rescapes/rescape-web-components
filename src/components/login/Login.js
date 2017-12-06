@@ -1,7 +1,8 @@
 import React, { Component } from 'react'
-import { GC_USER_ID, GC_AUTH_TOKEN } from '../constants'
 import { graphql, compose } from 'react-apollo'
 import gql from 'graphql-tag'
+import config from 'config';
+const {settings: {graphcool: {authTokenKey, serviceIdKey}}} = config;
 
 class Login extends Component {
 
@@ -82,8 +83,8 @@ class Login extends Component {
   }
 
   _saveUserData = (id, token) => {
-    localStorage.setItem(GC_USER_ID, id)
-    localStorage.setItem(GC_AUTH_TOKEN, token)
+    localStorage.setItem(serviceIdKey, id)
+    localStorage.setItem(authTokenKey, token)
   }
 
 }

@@ -14,8 +14,8 @@ const PropTypes = require('prop-types');
 const {makeMergeContainerStyleProps} = require('selectors/selectorHelpers');
 const React = require('react');
 const {eMap} = require('helpers/componentHelpers');
-const [Div, Current] =
-  eMap(['div', current]);
+const {default: current} = require('components/current')
+const [Div, Current] = eMap(['div', current]);
 const {classNamer} = require('helpers/styleHelpers');
 
 /**
@@ -51,7 +51,7 @@ const Main = ({...props}) => {
  * @type {{region: *}}
  */
 Main.propTypes = {
-  style: shape({
+  style: PropTypes.Shape({
   })
 };
 

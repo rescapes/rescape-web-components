@@ -1,8 +1,7 @@
 import React, { Component } from 'react'
-import LinkList from './LinkList'
-import Header from './Header'
-import Login from './Login'
-import Search from './Search'
+import Header from 'components/header/Header';
+import Login from 'components/login/Login';
+import Main from 'components/main/Main';
 import { Switch, Route, Redirect } from 'react-router-dom'
 
 class App extends Component {
@@ -19,7 +18,6 @@ class App extends Component {
       </div>
     )
   }
-
 }
 
 export default App

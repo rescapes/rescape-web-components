@@ -13,10 +13,9 @@ import {InMemoryCache} from 'apollo-cache-inmemory';
 import {getMainDefinition} from 'apollo-utilities';
 import {ApolloLink, split} from 'apollo-client-preset';
 import {WebSocketLink} from 'apollo-link-ws';
-import config from './config';
 import fetch from 'node-fetch';
 import {createHttpLink} from 'apollo-link-http';
-
+import config from './config';
 const {settings: {graphcool: {authTokenKey, serviceIdKey}}} = config;
 
 /**

@@ -12,10 +12,10 @@
 const {filterWithKeys} = require('rescape-ramda');
 const {connect} = require('react-redux');
 const {bindActionCreators} = require('redux');
-const {actionCreators} = require('redux/geojson/geojsonReducer');
+//const {actionCreators} = require('redux/geojson/geojsonReducer');
 const {onChangeViewport} = require('redux-map-gl');
 const Mapbox = require('./Mapbox').default;
-const {hoverMarker, selectMarker} = actionCreators;
+//const {hoverMarker, selectMarker} = actionCreators;
 const {makeMergeDefaultStyleWithProps, makeViewportsSelector, makeActiveUserAndRegionStateSelector, mapboxSettingsSelector} = require('selectors/selectorHelpers');
 const {createSelector} = require('reselect');
 const R = require('ramda');
