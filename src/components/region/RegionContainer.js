@@ -2,8 +2,10 @@ const {gql} = require('apollo-client-preset');
 const {bindActionCreators} = require('redux');
 const {connect} = require('react-redux');
 const Region = require('./Region').default;
-const {actions} = require('redux/geojson/geojsonReducer');
-const {makeViewportsSelector, makeActiveUserAndRegionStateSelector, mapboxSettingsSelector, makeMergeDefaultStyleWithProps} = require('selectors/selectorHelpers');
+//const {actions} = require('redux/geojson/geojsonReducer');
+const {mapboxSettingsSelector} = require('selectors/settingsSelectors');
+const {makeMergeDefaultStyleWithProps} = require('selectors/styleSelectors');
+const {makeActiveUserAndRegionStateSelector} = require('selectors/storeSelectors');
 const {createSelector} = require('reselect');
 const R = require('ramda');
 
@@ -36,12 +38,14 @@ const mapStateToProps = module.exports.mapStateToProps = module.exports.mapState
 
 const mapDispatchToProps = module.exports.mapDispatchToProps = (dispatch) => {
   return {
+    /*
     onRegionIsChanged: (options, bounds) => {
       dispatch({
         type: actions.FETCH_TRANSIT_DATA,
         args: [options, bounds]
       });
     }
+    */
   };
 };
 

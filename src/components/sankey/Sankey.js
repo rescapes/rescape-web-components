@@ -10,7 +10,6 @@
  */
 
 const {renderSankeySvgPoints} = require('helpers/sankeyHelpers');
-const {makeMergeContainerStyleProps} = require('selectors/selectorHelpers');
 const PropTypes = require('prop-types');
 const React = require('react');
 const createMapStops = require('components/mapStop/MapStops').default;
@@ -21,7 +20,7 @@ const {sankey, sankeyLinkHorizontal} = require('d3-sankey');
 const {mapDefault} = require('rescape-ramda');
 const {deckGL, ScatterplotLayer, OrthographicViewport, COORDINATE_SYSTEM} = mapDefault('deckGl', require('deck.gl'));
 const {eMap} = require('helpers/componentHelpers');
-const sample = require('src/data/sankey.sample');
+const sample = require('data/sankey.sample');
 const [MapGL, DeckGL, Svg, G, Circle, Div] =
   eMap([require('react-map-gl'), deckGL, 'svg', 'g', 'circle', 'div']);
 const d3 = require('d3');

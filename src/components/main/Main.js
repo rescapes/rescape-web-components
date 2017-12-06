@@ -51,7 +51,7 @@ const Main = ({...props}) => {
  * @type {{region: *}}
  */
 Main.propTypes = {
-  style: PropTypes.Shape({
+  style: PropTypes.shape({
   })
 };
 

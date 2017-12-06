@@ -1,9 +1,11 @@
+const {gql} = require('apollo-client-preset');
 const {graphql} = require('react-apollo');
 const {connect} = require('react-redux');
-const Current = require('./Current').default;
+const {default: Current} = require('components/current')
 const R = require('ramda');
 const {createSelector} = require('reselect');
-const {makeActiveUserAndRegionStateSelector, makeBrowserProportionalDimensionsSelector} = require('selectors/selectorHelpers');
+const {makeActiveUserAndRegionStateSelector, } = require('selectors/storeSelectors');
+const {makeBrowserProportionalDimensionsSelector} = require('selectors/styleSelectors');
 const {mergeDeep} = require('rescape-ramda');
 
 /**

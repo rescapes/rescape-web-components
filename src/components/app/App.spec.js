@@ -1,8 +1,9 @@
 const {shallow} = require('enzyme');
-const App = require('./App').default;
+const {default: app} = require('./App')
 const {sampleConfig} = require('data/samples/sampleConfig');
 const initialState = require('data/initialState').default;
 const {eMap} = require('helpers/componentHelpers');
+const [App] = eMap([app]);
 const {mapStateToProps} = require('./AppContainer');
 
 describe('The current application', () => {

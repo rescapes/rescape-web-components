@@ -9,17 +9,20 @@
  * THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const {filterWithKeys} = require('rescape-ramda');
-const {connect} = require('react-redux');
-const {bindActionCreators} = require('redux');
-//const {actionCreators} = require('redux/geojson/geojsonReducer');
-const {onChangeViewport} = require('redux-map-gl');
-const Mapbox = require('./Mapbox').default;
-//const {hoverMarker, selectMarker} = actionCreators;
-const {makeMergeDefaultStyleWithProps, makeViewportsSelector, makeActiveUserAndRegionStateSelector, mapboxSettingsSelector} = require('selectors/selectorHelpers');
-const {createSelector} = require('reselect');
-const R = require('ramda');
-const {mergePropsForViews, makeTestPropsFunction} = require('helpers/componentHelpers');
+const {filterWithKeys} = require('rescape-ramda')
+const {connect} = require('react-redux')
+const {bindActionCreators} = require('redux')
+//const {actionCreators} = require('redux/geojson/geojsonReducer')
+const {onChangeViewport} = require('redux-map-gl')
+const Mapbox = require('./Mapbox').default
+//const {hoverMarker, selectMarker} = actionCreators
+const {makeMergeDefaultStyleWithProps} = require('selectors/styleSelectors')
+const {makeViewportsSelector} = require('selectors/regionSelectors')
+const {makeActiveUserAndRegionStateSelector} = require('selectors/storeSelectors')
+const {mapboxSettingsSelector} = require('selectors/settingsSelectors')
+const {createSelector} = require('reselect')
+const R = require('ramda')
+const {mergePropsForViews, makeTestPropsFunction} = require('helpers/componentHelpers')
 
 /**
  * Limits the state to the current selections
@@ -36,7 +39,7 @@ const mapStateToProps = module.exports.mapStateToProps =
       mapboxSettingsSelector
     ],
     (selectedState, style, mapboxSettings) => {
-      const viewport = makeViewportsSelector()(selectedState);
+      const viewport = makeViewportsSelector()(selectedState)
       return R.mergeAll([
         selectedState,
         {style}, {
@@ -52,9 +55,9 @@ const mapStateToProps = module.exports.mapStateToProps =
               )
             }
           }
-        }]);
+        }])
     }
-  );
+  )
 /*
  region,
  viewport: R.merge(
@@ -66,7 +69,7 @@ const mapStateToProps = module.exports.mapStateToProps =
  showCluster: mapbox.showCluster === 'true',
  featuresByType: makeFeaturesByTypeSelector()(state),
  markersByType: makeMarkersByTypeSelector()(state)
- };
+ }
  */
 
 
@@ -75,17 +78,17 @@ const mapDispatchToProps = module.exports.mapDispatchToProps = (dispatch, ownPro
     onChangeViewport,
     hoverMarker,
     selectMarker
-  }, dispatch);
-};
+  }, dispatch)
+}
 
 
 const mergeProps = module.exports.mergeProps = mergePropsForViews({
   // MapGl child component needs the following actions
   mapGl: ['onChangeViewport', 'hoverMarker', 'selectMarker']
-});
+})
 
 // Returns a function that expects a sample state and ownProps for testing
-module.exports.testPropsMaker = makeTestPropsFunction(mapStateToProps, mapDispatchToProps, mergeProps);
+module.exports.testPropsMaker = makeTestPropsFunction(mapStateToProps, mapDispatchToProps, mergeProps)
 
-module.exports.default = connect(mapStateToProps, mapDispatchToProps, mergeProps);
+module.exports.default = connect(mapStateToProps, mapDispatchToProps, mergeProps)
 
