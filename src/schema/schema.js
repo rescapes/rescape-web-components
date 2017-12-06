@@ -10,9 +10,11 @@
  */
 
 const R = require('ramda');
-const {FeatureCollectionObject, PointObject} = require('graphql-geojson');
+const geojson = require('graphql-geojson');
+const {PointObject} = geojson;
 
 const {
+  GraphQLScalarType,
   GraphQLSchema,
   GraphQLObjectType,
   GraphQLInt,
@@ -23,18 +25,73 @@ const {
   GraphQLNonNull
 } = require('graphql');
 
+
+/**
+ * Requires an id field
+ * @type {{id: {type}}}
+ */
 const idFieldObj = {
   id: {
     type: new GraphQLNonNull(GraphQLString)
   }
-}
+};
+/**
+ * An optional list of ids as a query argument
+ * @type {{ids: {type}}}
+ */
+const idsFieldObj = {
+  ids: {
+    type: new GraphQLList(GraphQLInt)
+  }
+};
 
 /**
- * Standard args for identification of one object
- * @type {{id: {type}}}
+ * Required parentId of an object being queried
+ * This would only be needed for a child that is expensive to load and
+ * thus queried separately from the parent
+ * @type {{ids: {type}}}
  */
-const idArgs = ({
-  id: {type: GraphQLString}
+const parentIdFieldObj = {
+  parentId: {
+    type: new GraphQLNonNull(GraphQLString)
+  }
+};
+
+/**
+ * An optional userId to limit a query. There must
+ * be some way of resolving which queried objects are associated with the user
+ * @type {{userId: {type}}}
+ */
+const userIdFieldObj = {
+  userId: {
+    type: new GraphQLList(GraphQLInt)
+  }
+};
+
+const Json = new GraphQLScalarType({
+  name: 'JSON',
+  description: 'Arbitrary JSON value',
+  serialize: x => {
+    return R.ifElse(R.is(String), x => JSON.parse(x), R.identity)(x)
+  },
+  parseValue: R.ifElse(R.is(String), x => JSON.parse(x), R.identity),
+  parseLiteral: R.identity
+})
+
+// Copy of graphql-geojson FeatureObject but expects the propertis to be an object, not a json string
+const FeatureObjectWithPropertiesAsObject = new GraphQLObjectType({
+  name: 'geojsonFeature',
+  description: 'An object that links a geometry to properties in order to provide context.',
+  interfaces: () => [geojson.GeoJSONInterface],
+  fields: () => ({
+    type: { type: new GraphQLNonNull(geojson.TypeEnum) },
+    crs: { type: new GraphQLNonNull(geojson.CoordinateReferenceSystemObject) },
+    bbox: { type: new GraphQLList(GraphQLFloat) },
+    geometry: { type: geojson.GeometryInterface },
+    // Here is the only change
+    properties: { type: Json },
+    id: { type: GraphQLString },
+  })
 });
 
 /**
@@ -49,7 +106,7 @@ const OpenStreetMapType = new GraphQLObjectType({
     generator: {type: GraphQLString},
     copyright: {type: GraphQLString},
     timestamp: {type: GraphQLString},
-    features: {type: FeatureCollectionObject}
+    features: {type: new GraphQLList(FeatureObjectWithPropertiesAsObject)}
   }
 });
 
@@ -61,7 +118,7 @@ const LocationType = new GraphQLObjectType({
     generator: {type: GraphQLString},
     copyright: {type: GraphQLString},
     timestamp: {type: GraphQLString},
-    features: {type: FeatureCollectionObject}
+    features: {type: new GraphQLList(FeatureObjectWithPropertiesAsObject)}
   }
 });
 
@@ -191,23 +248,27 @@ const SettingsType = new GraphQLObjectType({
 // Store corresponding to what we store on the client
 const StoreType = new GraphQLObjectType({
   name: 'Store',
-  fields: {
-    regions: {
-      type: new GraphQLList(RegionType)},
-    region: {
-      type: RegionType,
-      args: idArgs
+  fields: R.merge({
+      regions: {
+        type: new GraphQLList(RegionType),
+        args: R.merge(idsFieldObj, userIdFieldObj)
+      },
+      region: {
+        type: RegionType,
+        args: idFieldObj
+      },
+      mapbox: {
+        type: RegionType,
+        args: parentIdFieldObj
+      },
+      users: {type: new GraphQLList(UserType)},
+      settings: {type: new GraphQLList(SettingsType)}
     },
-    mapbox: {
-      type: RegionType,
-      args: {
-        region: {type: RegionType}
-      }
-    },
-    users: {type: new GraphQLList(UserType)},
-    settings: {type: new GraphQLList(SettingsType)}
-  },
-})
+    // Worthless list all the geojson types here so the schema includes them. Feature type needs them as subclass
+    // but they aren't explicitly listed
+    R.mapObjIndexed(type => ({type}), geojson)
+  )
+});
 
 // GraphQL query type
 const QueryType = new GraphQLObjectType({
@@ -231,4 +292,4 @@ const MutationType = new GraphQLObjectType({
 export default () => new GraphQLSchema({
   query: QueryType
   //mutation: MutationType
-});
+})

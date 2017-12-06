@@ -9,6 +9,7 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+const {makeGeojsonSelector} = require('selectors/geojsonSelectors');
 const {createSelectorResolvedSchema} = require('./selectorResolvers');
 const {sampleConfig} = require('data/samples/sampleConfig');
 const {default: makeSchema} = require('./schema');
@@ -17,6 +18,7 @@ const R = require('ramda');
 const {mapped} = require('ramda-lens');
 const {activeUserSelectedRegionsSelector, regionSelector} = require('selectors/regionSelectors');
 const resolvedSchema = createSelectorResolvedSchema(makeSchema(), sampleConfig);
+const {mergeDeep} = require('rescape-ramda');
 
 describe('mockExecutableSchema', () => {
 
@@ -50,14 +52,20 @@ describe('mockExecutableSchema', () => {
     );
     // graphql params are schema, query, rootValue, context, variables
     const regions = await graphql(resolvedSchema, query, {}, {options: {dataSource: sampleConfig}}).then(
-      result => R.view(schemaRegionLens, result)
+      result => R.ifElse(
+        R.prop('data'),
+        R.view(schemaRegionLens),
+        (result) => {
+          throw new Error(`Query error ${result.errors}`);
+        }
+      )(result)
     );
     expect(regions).toEqual(expected);
   });
 
   test('query region', async () => {
     const query = `
-        query region($id: String) {
+        query region($id: String!) {
         store {
           region(id: $id) {
             id
@@ -78,36 +86,91 @@ describe('mockExecutableSchema', () => {
       });
     // graphql params are schema, query, rootValue, context, variables
     const result = await graphql(resolvedSchema, query, {}, {options: {dataSource: sampleConfig}}, R.pick(['id'], region)).then(
-      result => R.view(schemaRegionLens, result)
+      result => R.ifElse(
+        R.prop('data'),
+        R.view(schemaRegionLens),
+        (result) => {
+          throw new Error(`Query error ${result.errors}`);
+        }
+      )(result)
     );
     expect(result).toEqual(expected);
   });
-});
 
-test('query mapbox', async () => {
-  const query = `
-        query mapbox($region: Region) {
+
+  test('query region with children', async () => {
+    const query = `
+        query regionWithChildren($id: String!) {
         store {
-          mapbox(region: $region) {
+          region(id: $id) {
             id
-            viewport
+            name
+            mapbox {
+              viewport {
+                zoom
+              }
+            }
+            geojson {
+              osm {
+                features {
+                  id
+                  type
+                  geometry {
+                    type
+                    coordinates
+                  }
+                  properties
+                }
+              }
+            }
           },
         }
       }
     `;
-  // We expect the resolver to resolve the selected regions for the active user, not all regions
-  const region = R.head(R.values(sampleConfig.regions));
-  //const regionFromSelector = regionSelector(sampleConfig, {params: R.pick(['id'], region)});
-  const schemaRegionLens = R.lensPath(['data', 'store', 'region']);
-  // Here's what we expect back
-  const expected =
-    ({
-      id: region.id,
-      name: region.name
-    });
-  // graphql params are schema, query, rootValue, context, variables
-  const result = await graphql(resolvedSchema, query, {}, {options: {dataSource: sampleConfig}}, R.pick(['id'], region)).then(
-    result => R.view(schemaRegionLens, result)
-  );
-  expect(result).toEqual(expected);
+    // We expect the resolver to resolve the selected regions for the active user, not all regions
+    const region = R.head(R.values(sampleConfig.regions));
+    const schemaRegionLens = R.lensPath(['data', 'store', 'region']);
+
+    // graphql params are schema, query, rootValue, context, variables
+    const result = await graphql(resolvedSchema, query, {}, {options: {dataSource: sampleConfig}}, R.pick(['id'], region)).then(
+      result => R.ifElse(
+        R.prop('data'),
+        R.view(schemaRegionLens),
+        (result) => {
+          throw new Error(`Query error ${result.errors}`);
+        }
+      )(result)
+    );
+
+    // Here's what we expect back. This is a little messy to account for various resolvers that graphql calls
+    const expected = mergeDeep(
+      // I want just these properties from the Region
+      R.compose(
+        // I just want mapbox.viewport.zoom
+        R.over(
+          R.lensPath(['mapbox', 'viewport']),
+          R.pick(['zoom'])
+        ),
+        // I just want mapbox.viewport
+        R.over(
+          R.lensProp('mapbox'),
+          R.pick(['viewport'])
+        ),
+        // I just want these from the region.[id|name|mapbox|geojson] geojson is selected below
+        R.pick(['id', 'name', 'mapbox'])
+      )(regionSelector(sampleConfig, {params: R.pick(['id'], region)})),
+      {
+        geojson: R.over(
+          R.lensProp('osm'),
+          // I want just features from region.geojson.osm
+          R.pick(['features']),
+          // I want just osm from region.geojson
+          R.pick(['osm'], makeGeojsonSelector()(sampleConfig, {region}))
+        )
+      }
+    );
+
+    expect(result).toEqual(expected);
+  });
 });
+

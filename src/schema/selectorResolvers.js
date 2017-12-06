@@ -9,18 +9,20 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+const {makeGeojsonSelector} = require('selectors/geojsonSelectors');
 const {addResolveFunctionsToSchema} = require('graphql-tools');
 const R = require('ramda')
 const {throwing: {reqPath}} = require('rescape-ramda')
-// Trivial resolver for our dataSource, just strips keys and return values
-const objectValues = field => (parent, params, {options: {dataSource}}) => R.values(reqPath([field], dataSource))
+// Trivial resolver for our dataSource, just strips object keys and returns values
+const objectValues = field => parent => R.values(reqPath([field], parent))
 // Calls the given selector, treating the dataSource asethe state and passing props through
 const selectorValues = selector => (parent, params, {options: {dataSource}}) => {
   return selector(dataSource, {params})
 }
 // Calls the given selector with the parent merged into the props at the given parentKey
-const parantSelectorValues = (selector, parentKey) => (parent, props, {options: {state: dataSource}}) =>
-  selector(dataSource, R.merge(props, {[parentKey]: parent}))
+const parentSelectorValues = (parentKey, selector) => (parent, props, {options: {dataSource}}) => {
+  return selector(dataSource, R.merge(props, {[parentKey]: parent}))
+}
 
 const { activeUserSelectedRegionsSelector, regionSelector} = require('selectors/regionSelectors');
 const { settingsSelector} = require('selectors/settingsSelectors');
@@ -44,23 +46,23 @@ const makeSelectorResolvers = data => ({
     features: objectValues('features')
   },
   Geojson: {
-    locations: objectValues('locations')
+
   },
+
   Bounds: {
 
   },
   Geospatial: {
-
   },
   Viewport: {
 
   },
 
   Mapbox: {
-
   },
 
   Region: {
+    geojson: parentSelectorValues('region', makeGeojsonSelector()),
   },
 
   MapboxSettings: {

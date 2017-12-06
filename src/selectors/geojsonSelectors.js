@@ -13,7 +13,7 @@ const {createSelector} = require('reselect');
 const R = require('ramda');
 const {geojsonByType} = require('helpers/geojsonHelpers');
 const {createLengthEqualSelector} = require('./selectorHelpers');
-const {mergeDeep} = require('rescape-ramda');
+const {mergeDeep, throwing: {reqPath}} = require('rescape-ramda');
 
 /**
  * Resolves the openstreetmap features of a region and categorizes them by type (way, node, relation).
@@ -51,12 +51,14 @@ const makeGeojsonSelector = module.exports.makeGeojsonSelector = () => (state, {
     makeMarkersByTypeSelector()
   ],
   (featuresByType, locationsByType) =>
-    mergeDeep(region, {
-      geojson: {
-        osm: {
-          featuresByType,
-          locationsByType
+    mergeDeep(
+      reqPath(['geojson'], region),
+      {
+        geojson: {
+          osm: {
+            featuresByType,
+            locationsByType
+          }
         }
-      }
-    })
-)(state, {region})
+      })
+)(state, {region});
