@@ -8,12 +8,25 @@
  *
  * THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+
+
 const {taskToPromise, mergeDeep} = require('rescape-ramda');
 const {sampleConfig} = require('data/samples/sampleConfig');
 const {default: initialState} = require('data/initialState');
 const {default: configureStore} = require('redux-mock-store');
 const {default: thunk} = require('redux-thunk');
+const {mount} = require('enzyme');
 const middlewares = [thunk];
+const {mockNetworkInterfaceWithSchema} = require('apollo-test-utils');
+const {eMap} = require('helpers/componentHelpers');
+const {default: ApolloClient} = require('apollo-client');
+const {ApolloProvider} = require('react-apollo');
+const {default: makeSchema} = require('schema/schema');
+const {createSelectorResolvedSchema} = require('schema/selectorResolvers');
+const {InMemoryCache} = require('apollo-client-preset');
+const {SchemaLink} = require('apollo-link-schema');
+const {default: MockProvider} = require('redux-mock-provider');
+
 
 /**
  * Given a task, wraps it in promise and passes it to Jest's expect.
@@ -81,4 +94,36 @@ const makeMockStore = module.exports.makeMockStore = (state, sampleUserSettings 
       sampleUserSettings
     )
   );
+};
+
+export const mockApolloClient = schema => {
+  //addMockFunctionsToSchema({schema});
+  const mockNetworkInterface = mockNetworkInterfaceWithSchema({schema});
+  const apolloCache = new InMemoryCache();
+  return new ApolloClient({
+    cache: apolloCache,
+    link: new SchemaLink({schema}),
+    networkInterface: mockNetworkInterface
+  });
+};
+
+/**
+ * Wraps a component in as store context for Apollo/Redux testing
+ * @param component
+ * @return {*}
+ */
+module.exports.shallowWithMockStore = (component, mapStateToProps) => {
+  const resolvedSchema = createSelectorResolvedSchema(makeSchema(), makeSampleInitialState());
+  const [apolloProvider, mockProvider] = eMap([ApolloProvider, MockProvider]);
+  const store = makeSampleStore();
+  return mount(apolloProvider(
+    {
+      client: mockApolloClient(resolvedSchema),
+      store
+    },
+    mockProvider(
+      {store},
+      component
+    )
+  ));
 };

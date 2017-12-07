@@ -1,9 +1,11 @@
+const {gql} = require('apollo-client-preset');
 const {graphql} = require('react-apollo');
 const {connect} = require('react-redux');
 const Current = require('./Current').default;
 const R = require('ramda');
 const {createSelector} = require('reselect');
-const {makeActiveUserAndRegionStateSelector, makeBrowserProportionalDimensionsSelector} = require('selectors/selectorHelpers');
+const {makeActiveUserAndRegionStateSelector} = require('selectors/storeSelectors');
+const {makeBrowserProportionalDimensionsSelector} = require('selectors/styleSelectors');
 const {mergeDeep} = require('rescape-ramda');
 
 
@@ -17,8 +19,8 @@ const {mergeDeep} = require('rescape-ramda');
 *  Skip render
 */
 const query = gql`
-    query regions($userId: String!) {
-        users(id: $id) {
+    query regions($regionId: String!) {
+        users(id: $regionId) {
             id
             name
         }

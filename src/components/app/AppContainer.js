@@ -1,7 +1,7 @@
 const {gql} = require('apollo-client-preset');
 const {graphql} = require('react-apollo');
 const {connect} = require('react-redux');
-const {default: Current} = require('components/current')
+const {default: App} = require('components/app/App');
 const R = require('ramda');
 const {createSelector} = require('reselect');
 const {makeActiveUserAndRegionStateSelector, } = require('selectors/storeSelectors');
@@ -56,13 +56,15 @@ const mapStateToProps = module.exports.mapStateToProps = (state, props) =>
   )(state, props);
 
 
+// Apply query to component
 const ContainerWithData = graphql(query, {
   props: ({ data: { loading, store } }) => ({
     store,
     loading,
   }),
-})(Current);
+})(App);
 
+// Wrap queried component with react-redux
 const CurrentContainer = connect(
   mapStateToProps
 )(ContainerWithData);
