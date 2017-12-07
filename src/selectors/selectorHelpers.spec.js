@@ -13,7 +13,7 @@ const R = require('ramda');
 const {
   createLengthEqualSelector,
   mergeStateAndProps,
-  makeMergeByLensThenFilterSelector,
+  makeInnerJoinByLensThenFilterSelector,
   findById,
   findByParams
 } = require('./selectorHelpers');
@@ -71,13 +71,16 @@ describe('reselectHelpers', () => {
       });
   });
 
-  test('makeMergeByLensThenFilterSelector', () => {
+  test('makeInnerJoinByLensThenFilterSelector', () => {
     const stateLens = R.lensPath(['foos', 'bars']);
     const propsLens = R.lensPath(['bars']);
     const predicate = value => value.isSelected;
-    const state = {foos: {bars: [{id: 'bar1', name: 'Bar 1'}, {id: 'bar2', name: 'Bar 2'}]}};
+    const state = {foos: {bars: [{id: 'bar1', name: 'Bar 1'}, {id: 'bar2', name: 'Bar 2'}, {id: 'bar3', name: 'Bar 3'}]}};
     const props = {bars: {bar1: {id: 'bar1', isSelected: true}, bar2: {id: 'bar2'}}};
-    expect(makeMergeByLensThenFilterSelector(stateLens, propsLens, predicate)(state, props)).toEqual(
+    const p = (a, b) => {
+      return R.eqProps('id', a, b)
+    }
+    expect(makeInnerJoinByLensThenFilterSelector(p, predicate, stateLens, propsLens)(state, props)).toEqual(
       {bar1: {id: 'bar1', name: 'Bar 1', isSelected: true}}
     );
   });

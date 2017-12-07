@@ -10,7 +10,7 @@
  */
 
 const {settingsSelector} = require('selectors/settingsSelectors');
-const {regionsSelector} = require('selectors/regionSelectors');
+const {activeUserRegionsSelector, activeUserSelectedRegionsSelector} = require('selectors/regionSelectors');
 const {activeUserSelector} = require('selectors/userSelectors');
 const {createStructuredSelector} = require('reselect');
 
@@ -26,6 +26,22 @@ const {createStructuredSelector} = require('reselect');
 module.exports.makeActiveUserAndRegionStateSelector = () =>
   createStructuredSelector({
     settings: settingsSelector,
-    regions: regionsSelector,
+    regions: activeUserRegionsSelector,
+    users: activeUserSelector
+  });
+
+/**
+ * This selector creates a state that narrows down the state to the active user and region,
+ * remove any users that are not active and any regions that are not selected.
+ * Any ComponentContainer that must operate in the context of a single user and region can
+ * use this selector, or more likely receive this state = their parent component.
+ * @returns {Function} A reselect selector that is called with state and props and returns
+ * an object containing settings, regions, and users, where regions and users must limited to
+ * one each
+ */
+module.exports.makeActiveUserAndSelectedRegionStateSelector = () =>
+  createStructuredSelector({
+    settings: settingsSelector,
+    regions: activeUserSelectedRegionsSelector,
     users: activeUserSelector
   });

@@ -11,7 +11,7 @@
 
 const {activeUserSelector} = require('selectors/userSelectors');
 const R = require('ramda');
-const {STATUS: {IS_SELECTED}, status, makeMergeByLensThenFilterSelector, findByParams} = require('./selectorHelpers');
+const {STATUS: {IS_SELECTED}, status, makeInnerJoinByLensThenFilterSelector, findByParams} = require('./selectorHelpers');
 const {throwing: {reqPath}} = require('rescape-ramda')
 
 /**
@@ -29,19 +29,21 @@ module.exports.regionsSelector = state => state.regions
 module.exports.regionSelector = (state, {params}) => findByParams(params, reqPath(['regions'], state))
 
 /**
- * Makes a selector to select the regions of the active users
+ * Makes a selector to select the regions of the active users or whatever predicate is desired
  * @param predicate Predicate to apply to each region for filtering (e.g. filter for the active region)
  * @type {function(*=): function(*=): *}
  */
 const makeActiveUserRegionsSelector = (predicate) => state =>
   R.compose(
     R.values,
-    state => makeMergeByLensThenFilterSelector(
+    state => makeInnerJoinByLensThenFilterSelector(
+      // Our inner join predicate
+      R.eqProps('id'),
+      // Filtering predicate to Look for regions in userSettings that pass the predicate
+      predicate,
       // Look for the regions container in the state and userSettings
       R.lensProp('regions'),
       R.lensPath(['user', 'regions']),
-      // Look for regions in userSettings with property isSelected
-      predicate
     )(
       // The state
       state,

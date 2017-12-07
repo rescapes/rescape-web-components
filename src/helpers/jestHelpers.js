@@ -15,7 +15,7 @@ const {sampleConfig} = require('data/samples/sampleConfig');
 const {default: initialState} = require('data/initialState');
 const {default: configureStore} = require('redux-mock-store');
 const {default: thunk} = require('redux-thunk');
-const {mount} = require('enzyme');
+const {shallow, mount} = require('enzyme');
 const middlewares = [thunk];
 const {mockNetworkInterfaceWithSchema} = require('apollo-test-utils');
 const {eMap} = require('helpers/componentHelpers');
@@ -26,6 +26,7 @@ const {createSelectorResolvedSchema} = require('schema/selectorResolvers');
 const {InMemoryCache} = require('apollo-client-preset');
 const {SchemaLink} = require('apollo-link-schema');
 const {default: MockProvider} = require('redux-mock-provider');
+const PropTypes = require('prop-types');
 
 
 /**
@@ -116,7 +117,8 @@ module.exports.shallowWithMockStore = (component, mapStateToProps) => {
   const resolvedSchema = createSelectorResolvedSchema(makeSchema(), makeSampleInitialState());
   const [apolloProvider, mockProvider] = eMap([ApolloProvider, MockProvider]);
   const store = makeSampleStore();
-  return mount(apolloProvider(
+  /*
+  return shallow(apolloProvider(
     {
       client: mockApolloClient(resolvedSchema),
       store
@@ -125,5 +127,17 @@ module.exports.shallowWithMockStore = (component, mapStateToProps) => {
       {store},
       component
     )
-  ));
+    */
+  return shallow(
+    component,
+    {
+      context: {
+        client: mockApolloClient(resolvedSchema),
+        store
+      },
+      childContextTypes: {
+        client: PropTypes.object.isRequired,
+        store: PropTypes.object.isRequired
+      }
+    })
 };

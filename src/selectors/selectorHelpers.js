@@ -9,6 +9,9 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+import * as Maybe from 'data.maybe';
+import * as Either from 'data.either';
+
 const {filterWithKeys, mapPropValueAsIndex, mergeDeep, throwing: {findOne, onlyOneValue}} = require('rescape-ramda');
 const {createSelectorCreator, defaultMemoize} = require('reselect');
 const {propLensEqual} = require('helpers/componentHelpers');
@@ -60,9 +63,10 @@ module.exports.mergeStateAndProps = (state, props) => mergeDeep(state, props);
  *
  * The predicate checks properties appended to the userSettings version of the data, such as
  * checking for keys like 'isSelected' or 'willDelete' or 'willAdd'
+ * @param {Function} innerJoinPedicate Predicate to determine whether each item targeted by stateLens and propLens
+ * @param {Function} predicate Predicate that expects each merged value of the container of the lens
  * @param {Function} stateLens Ramda lens to winnow in on the property of the state to be merged with props and then filtered
  * @param {Function} propsLens Ramda lens to winnow in on the props to merge with the target of the state lens
- * @param {Function} predicate Predicate that expects each merged value of the container of the lens
  * for the state and userSettings. It's possible for a value to only exist in the state and not
  * in the userSettings (and possibly visa-versa if the user is creating something new). These will
  * be included in the merge and run through the predicate
@@ -75,19 +79,40 @@ module.exports.mergeStateAndProps = (state, props) => mergeDeep(state, props);
  * props: {foos: {bars: {bar1: {id: 'bar1', isSelected: true}, bar2: {id: 'bar2'}}}}
  * returns: {bar1: {id: 'bar1', name: 'Bar 1' isSelected: true}}
  */
-module.exports.makeMergeByLensThenFilterSelector = (stateLens, propsLens, predicate) => (state, props) =>
+module.exports.makeInnerJoinByLensThenFilterSelector = (innerJoinPredicate, predicate, stateLens, propsLens) => (state, props) =>
   filterWithKeys(
     (value, key) => {
       return predicate(
         value
       );
     },
-    // Combine the lens focused userValue and state value
-    // Make sure each is keyed by id before merging
-    mergeDeep(
-      ...R.map(mapPropValueAsIndex('id'), [R.view(stateLens, state), R.view(propsLens, props)])
+    // Combine the lens focused userValue and state value if they pass the innerJoinPredicate
+    R.map(
+      // Finally extract the either value
+      either => either.get(),
+      R.filter(
+        // Filter for Right
+        either => either.isRight,
+        R.mergeWith(
+          (l, r) => R.ifElse(
+            // Do they pass the inner predicate? (use .value since Left.get() isn't allowed)
+            ([l, r]) => R.apply(innerJoinPredicate, [l.value, r.value]),
+            // Yes pass, convert to Right
+            ([l, r]) => Either.Right(R.apply(mergeDeep, [l.value, r.value])),
+            // Fail, empty Left
+            ([l, r]) => Either.Left()
+          )([l, r]),
+          ...R.map(
+            // Make sure each is keyed by id before merging
+            // Mark everything as Either.Left initially. Only things that match and pass the innerJoin predicate
+            // will get converted to Rightk
+            items => R.map(Either.Left, mapPropValueAsIndex('id', items)),
+            [R.view(stateLens, state), R.view(propsLens, props)]
+          )
+        )
+      )
     )
-  )
+  );
 
 /**
  * Finds an item that matches all the given props in params
@@ -103,4 +128,4 @@ module.exports.findByParams = (params, items) => onlyOneValue(findOne(
     )
   ),
   items
-))
+));
