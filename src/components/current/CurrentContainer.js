@@ -4,28 +4,11 @@ const {connect} = require('react-redux');
 const Current = require('./Current').default;
 const R = require('ramda');
 const {createSelector} = require('reselect');
-const {makeActiveUserAndRegionStateSelector} = require('selectors/storeSelectors');
+const {makeActiveUserAndSelectedRegionStateSelector} = require('selectors/storeSelectors');
 const {makeBrowserProportionalDimensionsSelector} = require('selectors/styleSelectors');
-const {mergeDeep} = require('rescape-ramda');
+const {onlyOneRegionId} = require('selectors/regionSelectors');
+const {mergeDeep, throwing: {onlyOneValue}} = require('rescape-ramda');
 
-
-/**
-* Query
-* Prerequisites:
-*   A User in context
-* Resolves:
-*  The Regions of the User
-* Without prerequisites:
-*  Skip render
-*/
-const query = gql`
-    query regions($regionId: String!) {
-        users(id: $regionId) {
-            id
-            name
-        }
-    }
-`
 
 /**
  * Combined selector that:
@@ -41,7 +24,7 @@ const mapStateToProps = module.exports.mapStateToProps = (state, props) =>
   createSelector(
     [
       (state, props) => {
-        return makeActiveUserAndRegionStateSelector()(mergeDeep(state, R.defaultTo({}, props)));
+        return makeActiveUserAndSelectedRegionStateSelector()(mergeDeep(state, R.defaultTo({}, props)));
       },
       makeBrowserProportionalDimensionsSelector()
     ],
@@ -56,13 +39,40 @@ const mapStateToProps = module.exports.mapStateToProps = (state, props) =>
     )
   )(state, props);
 
+/**
+ * Query
+ * Prerequisites:
+ *   A User in context
+ * Resolves:
+ *  The Regions of the User
+ * Without prerequisites:
+ *  Skip render
+ */
+const query = gql`
+    query region($regionId: String!) {
+        store {
+            region(id: $id) {
+                id
+                name
+            },
+        }
+    }
+`;
 
 const ContainerWithData = graphql(query, {
-  props: ({ data: { loading, store } }) => ({
-    store,
-    loading,
+  options: (props) => ({
+    // Options are computed from `props` here.
+    variables: {
+      regionId: onlyOneRegionId(props)
+    }
   }),
-})(Current);
+  props: ({data}) => ({
+    store: data.store,
+    loading: data.loading,
+    data
+  })
+})
+(Current);
 
 const CurrentContainer = connect(
   mapStateToProps

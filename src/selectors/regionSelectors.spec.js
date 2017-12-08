@@ -14,7 +14,8 @@ const {
   STATUS: {IS_ACTIVE, IS_SELECTED}
 } = require('./selectorHelpers');
 const {
-  makeRegionSelector, makeFeaturesByTypeSelector, activeUserSelectedRegionsSelector, activeUserRegionsSelector, regionsSelector, makeMarkersByTypeSelector
+  activeUserSelectedRegionsSelector, activeUserRegionsSelector,
+  regionsSelector,  onlyOneRegionId
 } = require('./regionSelectors');
 const {mergeDeep} = require('rescape-ramda');
 
@@ -73,4 +74,12 @@ describe('regionSelectors', () => {
     expect(activeUserSelectedRegionsSelector(state)).toEqual(expected);
   });
 
+  test('onlyOneRegionId', () => {
+    const state = {
+      regions: {
+        'oakland': {id: 'oakland', name: 'Oakland'}
+      }
+    }
+    expect(onlyOneRegionId(state)).toEqual('oakland')
+  })
 });

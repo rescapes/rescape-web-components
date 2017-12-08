@@ -23,9 +23,11 @@ describe('CurrentContainer', () => {
     // For now let's assume this container gets its dimensions from the browser, not a parent
     expect(mapStateToProps(initialState)).toMatchSnapshot();
   });
-  test('render', () => {
+  test('render', async() => {
     const parentProps = {}
-    const wrapper = shallowWithMockStore(<CurrentContainer/>)
-    expect(wrapper.find(Current)).toMatchSnapshot()
-  })
+    const wrapper = shallowWithMockStore(currentContainer(parentProps))
+    expect(wrapper.props().loading).toEqual(true)
+    const result = await wrapper.props().data.refetch(wrapper.props().data.variables)
+    expect(result).toEqual({})
+  }, 112121211)
 });

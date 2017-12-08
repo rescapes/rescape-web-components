@@ -16,6 +16,7 @@ const React = require('react');
 const {eMap} = require('helpers/componentHelpers');
 const [Div, Region] =
   eMap(['div', region]);
+const R = require('ramda')
 
 /**
  * Displays the Region of the current state and eventually a Region selector.
@@ -24,9 +25,25 @@ const [Div, Region] =
 class Current extends React.Component {
   render() {
     // Pass the absolute width and height to give to the Mapbox viewport
+    return R.cond([
+      [R.propEq('loading'), () => this.renderLoading()],
+      [R.has('error'), error => this.renderError(error)],
+      [R.has('data'), data => this.renderData(data)],
+      [R.T, () => this.renderError(new Error("Expected loading, error, or data from Apollo wrapper, didn't get anything"))],
+    ])(this.props)
+  }
+
+  renderLoading() {
+    return Div()
+  }
+  renderError(error) {
+    return Div()
+  }
+  renderData({region}) {
     return Div(
       {className: 'current'},
       Region({
+          region,
           style: {
             width: this.props.style.width,
             height: this.props.style.height

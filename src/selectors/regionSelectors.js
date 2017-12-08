@@ -9,10 +9,11 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+const {mapped} = require('ramda-lens');
 const {activeUserSelector} = require('selectors/userSelectors');
 const R = require('ramda');
 const {STATUS: {IS_SELECTED}, status, makeInnerJoinByLensThenFilterSelector, findByParams} = require('./selectorHelpers');
-const {throwing: {reqPath}} = require('rescape-ramda')
+const {throwing: {reqPath, onlyOneValue}} = require('rescape-ramda')
 
 /**
  * Select all regions from the state
@@ -60,3 +61,16 @@ module.exports.activeUserRegionsSelector = makeActiveUserRegionsSelector(R.T)
  * @returns {Array} The selected regions
  */
 module.exports.activeUserSelectedRegionsSelector = makeActiveUserRegionsSelector(status[IS_SELECTED])
+
+
+/**
+ * Returns the single region id from a state that is limited to one Region
+ * @type {*|Object}
+ * @returns {String} The only region's id
+ */
+module.exports.onlyOneRegionId = state => onlyOneValue(
+  R.compose(
+    R.view(R.lensProp('regions')),
+    R.view(R.compose(R.lensProp('regions'), mapped, R.lensProp('id')))
+  )(state)
+)

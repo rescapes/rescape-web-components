@@ -115,19 +115,10 @@ export const mockApolloClient = schema => {
  */
 module.exports.shallowWithMockStore = (component, mapStateToProps) => {
   const resolvedSchema = createSelectorResolvedSchema(makeSchema(), makeSampleInitialState());
-  const [apolloProvider, mockProvider] = eMap([ApolloProvider, MockProvider]);
   const store = makeSampleStore();
-  /*
-  return shallow(apolloProvider(
-    {
-      client: mockApolloClient(resolvedSchema),
-      store
-    },
-    mockProvider(
-      {store},
-      component
-    )
-    */
+
+  // shallow wrap the component, passing the Apollo client and redux store to the component and children
+  // Also dive once to get passed the Apollo wrapper
   return shallow(
     component,
     {
@@ -139,5 +130,6 @@ module.exports.shallowWithMockStore = (component, mapStateToProps) => {
         client: PropTypes.object.isRequired,
         store: PropTypes.object.isRequired
       }
-    })
+    }
+  ).dive()
 };

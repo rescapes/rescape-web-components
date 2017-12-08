@@ -11,6 +11,7 @@
 
 const {createSelector} = require('reselect');
 const R = require('ramda');
+const {throwing: {reqPath}} = require('rescape-ramda')
 
 /**
  * Default settings selector, which passes all settings through

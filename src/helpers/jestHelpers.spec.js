@@ -9,11 +9,17 @@
  * THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const {expectTask, testState, makeSampleInitialState, propsFromSampleStateAndContainer} = require('./jestHelpers');
+const {gql} = require('apollo-client-preset');
+const {graphql} = require('react-apollo');
+const {connect} = require('react-redux');
+const {expectTask, testState, makeSampleInitialState, propsFromSampleStateAndContainer, shallowWithMockStore} = require('./jestHelpers');
 const Task = require('data.task');
 const R = require('ramda');
 const {makeMockStore} = require('./jestHelpers');
 const {sampleConfig} = require('data/samples/sampleConfig');
+const {eMap} = require('helpers/componentHelpers');
+const [div] = eMap(['div']);
+const React = require('react');
 
 describe('jestHelpers', () => {
   test('expectTask', () => {
@@ -51,6 +57,39 @@ describe('jestHelpers', () => {
 
   test('makeMockStore', () => {
     expect(makeMockStore(sampleConfig).getState()).toEqual(sampleConfig);
+  });
+
+  test('shallowWithMockStore', () => {
+    const parentProps = {};
+    const query = gql`
+        query region {
+            store {
+                regions {
+                    id
+                    name
+                }
+            }
+        }
+    `;
+
+    class Component extends React.Component {
+      render() {
+        return div();
+      }
+    }
+
+    // Wrap the component in apollo
+    const ContainerWithData = graphql(query)(Component);
+    // Wrap the component in redux
+    const Container = connect(
+      (state, props) => ({someProp: 1})
+    )(ContainerWithData);
+    // Create a factory for container
+    const [container] = eMap([Container]);
+    // Instantiate
+    const wrapper = shallowWithMockStore(container(parentProps));
+    // Expect the apollo data prop, the redux dispatch, and the someProp we added
+    expect(R.keys(wrapper.props()).sort()).toEqual(['data', 'dispatch', 'someProp'])
   });
 });
 

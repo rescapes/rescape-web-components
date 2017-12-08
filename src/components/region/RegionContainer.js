@@ -1,3 +1,4 @@
+
 const {gql} = require('apollo-client-preset');
 const {bindActionCreators} = require('redux');
 const {connect} = require('react-redux');
@@ -6,18 +7,19 @@ const Region = require('./Region').default;
 const {mapboxSettingsSelector} = require('selectors/settingsSelectors');
 const {makeMergeDefaultStyleWithProps} = require('selectors/styleSelectors');
 const {makeActiveUserAndRegionStateSelector} = require('selectors/storeSelectors');
+const {viewportSelector} = require('selectors/mapboxSelectors');
 const {createSelector} = require('reselect');
 const R = require('ramda');
 
 const mapStateToProps = module.exports.mapStateToProps = module.exports.mapStateToProps =
-  createSelector(
+  (state, {region}) => createSelector(
     [
       makeActiveUserAndRegionStateSelector(),
       makeMergeDefaultStyleWithProps(),
       mapboxSettingsSelector,
     ],
     (selectedState, style, mapboxSettings) => {
-      const viewport = makeViewportsSelector()(selectedState);
+      const viewport = viewportSelector(state, {region});
       return R.mergeAll([
         selectedState,
         {style},
@@ -34,7 +36,7 @@ const mapStateToProps = module.exports.mapStateToProps = module.exports.mapState
         }
       ]);
     }
-  );
+  )(state, {region});
 
 const mapDispatchToProps = module.exports.mapDispatchToProps = (dispatch) => {
   return {
