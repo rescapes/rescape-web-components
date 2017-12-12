@@ -59,7 +59,7 @@ const Sankey = ({...props}) => {
           viewBox: `0 0 ${width} ${height}`
         },
         // TODO first argument needs to be opt from the SVGOverlay layer. See MapMarkers
-        renderSankeySvgPoints(null, props, sample, node)
+        renderSankeySvgPoints(null, props, sample, this.refs.node)
       )
     ]);
 

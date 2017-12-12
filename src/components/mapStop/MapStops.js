@@ -11,7 +11,7 @@
 
 const React = require('react');
 const e = React.createElement;
-module.exports.default = ReAct => {
+export default React => {
     const mapStops = () => {
         return e('div', {
             className: 'map-stops'

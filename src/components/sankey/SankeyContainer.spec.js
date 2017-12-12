@@ -10,7 +10,7 @@
  */
 
 const {mapStateToProps} = require('./SankeyContainer');
-const {makeSampleInitialState} = require('helpers/jestHelpers');
+const {makeSampleInitialState} = require('helpers/testHelpers');
 
 describe('SankeyContainer', () => {
   test('mapStateToProps', () => {

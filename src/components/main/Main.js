@@ -17,6 +17,7 @@ const {eMap} = require('helpers/componentHelpers');
 const {default: current} = require('components/current')
 const [Div, Current] = eMap(['div', current]);
 const {classNamer} = require('helpers/styleHelpers');
+const {throwing: {reqPath}} = require('rescape-ramda');
 
 /**
  * The View for Main.

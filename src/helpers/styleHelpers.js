@@ -13,6 +13,7 @@ const R = require('ramda');
 const PropTypes = require('prop-types');
 const {v} = require('rescape-validate');
 const {compact} = require('rescape-ramda');
+const {throwing: {reqPath}} = require('rescape-ramda');
 
 /**
  * Creates a class name from a root name and a suffix
@@ -21,7 +22,7 @@ const {compact} = require('rescape-ramda');
  * If null then the className will simply be the root
  * @returns {String} root-suffix or root if suffix is not specified
  */
-module.exports.classNamer = R.curry((root, suffix) => R.join('-', compact([root, suffix])));
+const classNamer = module.exports.classNamer = R.curry((root, suffix) => R.join('-', compact([root, suffix])));
 
 /**
  * Given a name, generates a className
@@ -29,7 +30,7 @@ module.exports.classNamer = R.curry((root, suffix) => R.join('-', compact([root,
  * @param styles
  */
 const getClassAndStyle = (root, name, styles) => ({
-  className: className(name),
+  className: classNamer(name),
   style: reqPath(R.split('.', name), styles)
 })
 

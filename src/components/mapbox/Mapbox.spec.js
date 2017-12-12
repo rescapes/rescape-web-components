@@ -2,7 +2,7 @@ const mapGL = require('react-map-gl').default;
 const mapbox = require('./Mapbox').default;
 const {shallow} = require('enzyme');
 const {testPropsMaker} = require('./MapboxContainer');
-const {propsFromSampleStateAndContainer} = require('helpers/jestHelpers');
+const {propsFromSampleStateAndContainer} = require('helpers/testHelpers');
 
 const {eMap} = require('helpers/componentHelpers');
 const [MapGL, Mapbox] = eMap([mapGL, mapbox]);

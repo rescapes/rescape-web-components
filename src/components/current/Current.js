@@ -17,6 +17,7 @@ const {eMap} = require('helpers/componentHelpers');
 const [Div, Region] =
   eMap(['div', region]);
 const R = require('ramda')
+const prettyFormat = require('pretty-format');
 
 /**
  * Displays the Region of the current state and eventually a Region selector.
@@ -24,6 +25,9 @@ const R = require('ramda')
  */
 class Current extends React.Component {
   render() {
+    console.warn(`loading: ${this.props.loading}`)
+    console.warn(`error: ${this.props.error}`)
+    console.warn(`data: ${prettyFormat(this.props.data)}`)
     // Pass the absolute width and height to give to the Mapbox viewport
     return R.cond([
       [R.propEq('loading'), () => this.renderLoading()],

@@ -1,16 +1,16 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import './styles/index.css'
-import App from './components/examples/App'
+import App from 'components/app'
 import registerServiceWorker from './registerServiceWorker'
 import { BrowserRouter } from 'react-router-dom'
 import { ApolloProvider } from 'react-apollo'
 import createClient from './apolloClient'
 import storeCreator from './store'
-import {currentConfig} from 'data/current/currentConfig';
+import {getCurrentConfig} from 'data/current/currentConfig';
 
 // Create a store based on the configured environent (development, production, test)
-const store = storeCreator(currentConfig)
+const store = storeCreator(getCurrentConfig())
 
 // Render the React components
 // BrowserRouter routes anything defined in a child component Switch

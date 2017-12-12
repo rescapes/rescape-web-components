@@ -1,7 +1,7 @@
 const React = require('react');
 const {shallow} = require('enzyme');
 
-const {propsFromSampleStateAndContainer} = require('helpers/jestHelpers');
+const {propsFromSampleStateAndContainer} = require('helpers/testHelpers');
 const region = require('./Region').default;
 const {eMap} = require('helpers/componentHelpers');
 const {mapStateToProps, mapDispatchToProps} = require('./RegionContainer');

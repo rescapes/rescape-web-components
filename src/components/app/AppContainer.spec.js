@@ -10,7 +10,7 @@
  */
 const {mapStateToProps} = require('./AppContainer');
 const {sampleConfig} = require('data/samples/sampleConfig');
-const {makeSampleInitialState} = require('helpers/jestHelpers');
+const {makeSampleInitialState} = require('helpers/testHelpers');
 const initialState = makeSampleInitialState();
 
 describe('CurrentContainer', () => {

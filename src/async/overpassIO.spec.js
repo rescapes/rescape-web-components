@@ -11,7 +11,7 @@
 
 const {fetchTransit} = require('./overpassIO');
 const {removeDuplicateObjectsByProp} = require('rescape-ramda');
-const {expectTask} = require('helpers/jestHelpers');
+const {expectTask} = require('helpers/testHelpers');
 const fs = require('fs');
 const {LA_SAMPLE, LA_BOUNDS} = require('async/queryOverpass.sample');
 

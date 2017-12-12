@@ -19,7 +19,7 @@ const environment = process.env.NODE_ENV;
  * Overrideable for testing
  * @type {any|*}
  */
-const currentConfig = module.exports.currentConfig = (env = environment) => R.cond(
+const currentConfig = module.exports.getCurrentConfig = (env = environment) => R.cond(
   [
     [R.equals('test'), () => require('data/samples/sampleConfig').sampleConfig],
     [R.equals('development'), () => require('data/california/californiaConfig').californiaConfig],

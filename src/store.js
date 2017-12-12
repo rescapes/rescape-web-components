@@ -23,7 +23,7 @@ const loggerMiddleware = createLogger();
  * @param {Object} [enhancers] Optional enhancers to override default enhancers for testing
  * @returns {Object} The redux store
  */
-export default storeCreator = (config, enhancers) => {
+export default (config, enhancers = []) => {
   const devToolsExtension = window.devToolsExtension;
   if (typeof devToolsExtension === 'function') {
     enhancers.push(devToolsExtension());

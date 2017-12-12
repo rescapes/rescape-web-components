@@ -10,7 +10,7 @@
  */
 
 const {testPropsMaker} = require('./MapboxContainer');
-const {makeSampleInitialState} = require('helpers/jestHelpers');
+const {makeSampleInitialState} = require('helpers/testHelpers');
 
 describe('MapboxContainer', () => {
     test('mapStateToProps', () => {

@@ -12,9 +12,9 @@
 const PropTypes = require('prop-types');
 const mapGl = require('react-map-gl').default;
 const React = require('react');
-const createMapStops = require('components/mapStop/mapStops').default;
-const MapMarkers = require('components/mapMarker/MapMarkers').default;
-const {reqPath} = require('rescape-ramda').throwing;
+const {default: createMapStops} = require('components/mapStop');
+const {default: MapMarkers} = require('components/mapMarker');
+const {throwing: {reqPath}} = require('rescape-ramda');
 const Deck = require('../deck/Deck').default;
 const MapStops = createMapStops(React);
 const {eMap, liftAndExtractItems} = require('helpers/componentHelpers');

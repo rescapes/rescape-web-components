@@ -9,7 +9,7 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 const {mapStateToProps} = require('./CurrentContainer');
-const {makeSampleInitialState, shallowWithMockStore} = require('helpers/jestHelpers');
+const {makeSampleInitialState, shallowWithMockStore} = require('helpers/testHelpers');
 const initialState = makeSampleInitialState();
 const {default: CurrentContainer} = require('./CurrentContainer')
 const {default: Current} = require('./Current')
@@ -23,11 +23,11 @@ describe('CurrentContainer', () => {
     // For now let's assume this container gets its dimensions from the browser, not a parent
     expect(mapStateToProps(initialState)).toMatchSnapshot();
   });
+
   test('render', async() => {
     const parentProps = {}
     const wrapper = shallowWithMockStore(currentContainer(parentProps))
-    expect(wrapper.props().loading).toEqual(true)
-    const result = await wrapper.props().data.refetch(wrapper.props().data.variables)
-    expect(result).toEqual({})
+    const current = wrapper.find('Current');
+    expect(current.props().loading).toEqual(true)
   }, 112121211)
 });

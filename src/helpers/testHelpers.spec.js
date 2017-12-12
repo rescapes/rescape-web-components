@@ -12,10 +12,10 @@
 const {gql} = require('apollo-client-preset');
 const {graphql} = require('react-apollo');
 const {connect} = require('react-redux');
-const {expectTask, testState, makeSampleInitialState, propsFromSampleStateAndContainer, shallowWithMockStore} = require('./jestHelpers');
+const {expectTask, testState, makeSampleInitialState, propsFromSampleStateAndContainer, shallowWithMockStore} = require('./testHelpers');
 const Task = require('data.task');
 const R = require('ramda');
-const {makeMockStore} = require('./jestHelpers');
+const {makeMockStore} = require('./testHelpers');
 const {sampleConfig} = require('data/samples/sampleConfig');
 const {eMap} = require('helpers/componentHelpers');
 const [div] = eMap(['div']);

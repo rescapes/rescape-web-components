@@ -119,7 +119,7 @@ module.exports.shallowWithMockStore = (component, mapStateToProps) => {
 
   // shallow wrap the component, passing the Apollo client and redux store to the component and children
   // Also dive once to get passed the Apollo wrapper
-  return shallow(
+  return mount(
     component,
     {
       context: {
@@ -131,5 +131,5 @@ module.exports.shallowWithMockStore = (component, mapStateToProps) => {
         store: PropTypes.object.isRequired
       }
     }
-  ).dive()
+  )
 };

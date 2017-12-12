@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { graphql, compose } from 'react-apollo'
 import gql from 'graphql-tag'
-import config from 'config';
+import config from  'config.js';
 const {settings: {graphcool: {authTokenKey, serviceIdKey}}} = config;
 
 class Login extends Component {
