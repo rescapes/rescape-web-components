@@ -1,4 +1,4 @@
-module.exports.default = {
+export default {
     container: {
         position: 'relative',
         width: '100%',

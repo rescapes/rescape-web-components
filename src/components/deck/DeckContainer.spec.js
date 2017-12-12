@@ -8,10 +8,10 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-const {mapStateToProps} = require('./DeckContainer');
-const {sampleConfig} = require('src/data/samples/sampleConfig');
-const initialState = require('src/data/initialState').default;
-const makeStore = require('src/redux/store').default;
+import {mapStateToProps} from './DeckContainer';
+import {sampleConfig} from 'src/data/samples/sampleConfig';
+import initialState from 'src/data/initialState'
+import makeStore from 'src/redux/store'
 
 describe('CurrentContainer', () => {
   test('mapStateToProps', () => {

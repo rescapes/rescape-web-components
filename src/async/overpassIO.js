@@ -9,14 +9,14 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const queryOverpass = require('query-overpass');
-const Task = require('data.task');
-const R = require('ramda');
-const {mergeAllWithKey, removeDuplicateObjectsByProp} = require('rescape-ramda');
-const os = require('os');
-const squareGrid = require('@turf/square-grid');
-const bbox = require('@turf/bbox');
-const {concatFeatures} = require('helpers/geojsonHelpers');
+import queryOverpass from 'query-overpass';
+import Task from 'data.task';
+import * as R from 'ramda';
+import {mergeAllWithKey, removeDuplicateObjectsByProp} from 'rescape-ramda';
+import os from 'os';
+import squareGrid from '@turf/square-grid';
+import bbox from '@turf/bbox';
+import {concatFeatures} from 'helpers/geojsonHelpers';
 
 /**
  * fetches transit data from OpenStreetMap using the Overpass API.
@@ -26,7 +26,7 @@ const {concatFeatures} = require('helpers/geojsonHelpers');
  * @param {Array} bounds [lat_min, lon_min, lat_max, lon_max]
  * @returns {Object} Task to fetch the data
  */
-const fetchTransit = module.exports.fetchTransit = R.curry((options, bounds) => {
+export const fetchTransit = R.curry((options, bounds) => {
     if (options.cellSize) {
         return fetchTransitCelled(options, bounds);
     }

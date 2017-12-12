@@ -9,12 +9,12 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const R = require('ramda');
+import * as R from 'ramda';
 const reduceFeaturesBy = R.reduceBy((acc, feature) => acc.concat(feature), []);
 const regex = /(.+)\/\d+/;
 // Get the feature by type based on its id
 // featuresByType:: Feature f = [f] -> <String, [f]>
-const featureByType = module.exports.featureByType = reduceFeaturesBy(feature => R.match(regex, feature.id)[1]);
+export const featureByType = reduceFeaturesBy(feature => R.match(regex, feature.id)[1]);
 
 /**
  * Split geojson by feature type
@@ -23,7 +23,7 @@ const featureByType = module.exports.featureByType = reduceFeaturesBy(feature =>
  * @returns {Object} Copies of the gtfs with a single type of Feature
  * geojsonByType:: geojson g = g -> <String, g>
  */
-module.exports.geojsonByType = osm => {
+export const geojsonByType = osm => {
   return R.map(
     // Make a copy of the geojson with the typed features
     featureOfType => R.set(R.lensProp('features'), featureOfType, osm),
@@ -39,4 +39,4 @@ module.exports.geojsonByType = osm => {
  * @param {[Feature]} r The right side Features
  * @returns {Object} The concatted features
  */
-module.exports.concatFeatures = (k, l, r) => k === 'features' ? R.concat(l, r) : r;
+export const concatFeatures = (k, l, r) => k === 'features' ? R.concat(l, r) : r;

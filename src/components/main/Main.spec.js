@@ -1,11 +1,11 @@
-const {shallow} = require('enzyme');
-const current = require('./Main').default;
-const {sampleConfig} = require('data/samples/sampleConfig');
-const initialState = require('data/initialState').default;
-const R = require('ramda');
-const {reqPath} = require('rescape-ramda').throwing;
-const {eMap} = require('helpers/componentHelpers');
-const {mapStateToProps} = require('./MainContainer');
+import {shallow} from 'enzyme';
+import current from './Main'
+import {sampleConfig} from 'data/samples/sampleConfig';
+import initialState from 'data/initialState'
+import * as R from 'ramda';
+import {reqPath} from 'rescape-ramda'.throwing;
+import {eMap} from 'helpers/componentHelpers';
+import {mapStateToProps} from './MainContainer';
 const [Current] = eMap([current]);
 
 describe('The current application', () => {

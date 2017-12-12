@@ -13,8 +13,8 @@
  * Types of stops or stations
  * @type {string}
  */
-module.exports.STATION = 'Station';
-module.exports.DEPOT = 'Depot';
-module.exports.TERMINAL = 'Terminal';
-module.exports.STOP = 'Stop';
-module.exports.LANDING = 'Landing';
+export const STATION = 'Station';
+export const DEPOT = 'Depot';
+export const TERMINAL = 'Terminal';
+export const STOP = 'Stop';
+export const LANDING = 'Landing';

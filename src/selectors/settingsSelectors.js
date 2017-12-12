@@ -9,22 +9,23 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const {createSelector} = require('reselect');
-const R = require('ramda');
-const {throwing: {reqPath}} = require('rescape-ramda')
+import {createSelector} from 'reselect';
+import * as R from 'ramda';
+import {throwing} from 'rescape-ramda'
+const {reqPath} = throwing
 
 /**
  * Default settings selector, which passes all settings through
  * @param state
  */
-const settingsSelector = module.exports.settingsSelector = state => state.settings;
+export const settingsSelector = state => state.settings;
 
 /**
  * Determines the mapbox settings from the general settings.
  * TODO we could merge user overrides here in the future
  * @returns {Object} The mapbox settings
  */
-module.exports.mapboxSettingsSelector = createSelector(
+export const mapboxSettingsSelector = createSelector(
   [
     state => reqPath(['settings', 'mapbox'], state)
   ],

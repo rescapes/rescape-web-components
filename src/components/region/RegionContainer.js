@@ -1,17 +1,14 @@
 
-const {gql} = require('apollo-client-preset');
-const {bindActionCreators} = require('redux');
-const {connect} = require('react-redux');
-const Region = require('./Region').default;
-//const {actions} = require('redux/geojson/geojsonReducer');
-const {mapboxSettingsSelector} = require('selectors/settingsSelectors');
-const {makeMergeDefaultStyleWithProps} = require('selectors/styleSelectors');
-const {makeActiveUserAndRegionStateSelector} = require('selectors/storeSelectors');
-const {viewportSelector} = require('selectors/mapboxSelectors');
-const {createSelector} = require('reselect');
-const R = require('ramda');
+import {connect} from 'react-redux';
+import Region from './Region'
+import {mapboxSettingsSelector} from 'selectors/settingsSelectors';
+import {makeMergeDefaultStyleWithProps} from 'selectors/styleSelectors';
+import {makeActiveUserAndRegionStateSelector} from 'selectors/storeSelectors';
+import {viewportSelector} from 'selectors/mapboxSelectors';
+import {createSelector} from 'reselect';
+import * as R from 'ramda';
 
-const mapStateToProps = module.exports.mapStateToProps = module.exports.mapStateToProps =
+export const mapStateToProps =
   (state, {region}) => createSelector(
     [
       makeActiveUserAndRegionStateSelector(),
@@ -25,20 +22,19 @@ const mapStateToProps = module.exports.mapStateToProps = module.exports.mapState
         {style},
         {
           views: {
-            // Since viewport it a Functor we map it and then merge it
-            // TODO find a cleaner way to represent this
-            mapbox: R.map(
-              viewport => R.merge(
-                mapboxSettings, {viewport}
-              ),
-              viewport)
+            mapbox: {
+              viewport: R.merge(
+                mapboxSettings,
+                {viewport}
+              )
+            }
           }
         }
       ]);
     }
   )(state, {region});
 
-const mapDispatchToProps = module.exports.mapDispatchToProps = (dispatch) => {
+export const mapDispatchToProps = (dispatch) => {
   return {
     /*
     onRegionIsChanged: (options, bounds) => {
@@ -60,5 +56,5 @@ const RegionContainer = connect(
   mapStateToProps, mapDispatchToProps
 )(Region);
 
-module.exports.default = RegionContainer;
+export default RegionContainer;
 

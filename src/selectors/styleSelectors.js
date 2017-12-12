@@ -9,15 +9,16 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const {createSelector} = require('reselect');
-const {throwing: {reqPath}} = require('rescape-ramda');
-const R = require('ramda');
+import {createSelector} from 'reselect';
+import {throwing} from 'rescape-ramda'
+import * as R from 'ramda';
+const {reqPath} = throwing;
 
 /**
  * Extracts the browser window dimensions from the state to pass to props
  * that resize based on the browser
  */
-const browserDimensionsSelector = module.exports.browserDimensionsSelector = createSelector(
+export const browserDimensionsSelector = createSelector(
   [
     R.compose(
       R.pick(['width', 'height']),
@@ -35,7 +36,7 @@ const browserDimensionsSelector = module.exports.browserDimensionsSelector = cre
  * @props {Object} props Expected to have a style.[width and height]
  * @returns {Object} a width and height relative to thte browser.
  */
-module.exports.makeBrowserProportionalDimensionsSelector = () => (state, props) => createSelector(
+export const makeBrowserProportionalDimensionsSelector = () => (state, props) => createSelector(
   [browserDimensionsSelector],
   dimensions => ({
     width: R.multiply(R.pathOr(1, ['style', 'width'], props), R.prop('width', dimensions)),
@@ -82,7 +83,7 @@ const mergeStyles = (parentStyle, style) => mergeDeepWith(
  * where scale(2) returns a function that transforms the border property from the state
  * @returns {Object} The merged object
  */
-module.exports.makeMergeDefaultStyleWithProps = () => (state, props) => createSelector(
+export const makeMergeDefaultStyleWithProps = () => (state, props) => createSelector(
   [defaultStyleSelector],
   defaultStyle => mergeStyles(defaultStyle, R.propOr({}, 'style', props))
 )(state, props);
@@ -97,7 +98,7 @@ module.exports.makeMergeDefaultStyleWithProps = () => (state, props) => createSe
  * where scale(2) returns a function that transforms the border property from the containerProps
  * @returns {Object} The merged object
  */
-module.exports.makeMergeContainerStyleProps = () => (containerProps, style) => createSelector(
+export const makeMergeContainerStyleProps = () => (containerProps, style) => createSelector(
   [
     containerProps => reqPath(['style'], containerProps),
     (_, props) => R.defaultTo({}, props)

@@ -9,7 +9,8 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const {throwing: {reqPath}} = require('rescape-ramda');
+import {throwing} from 'rescape-ramda'
+const {reqPath} = throwing;
 
 /**
  * Selects the viewport from the given Region's mapbox
@@ -17,5 +18,5 @@ const {throwing: {reqPath}} = require('rescape-ramda');
  * @param region The Region
  * @returns A selector which extracts the viewport from the region's mapbox
  */
-module.exports.viewportSelector = (state, {region}) => reqPath(['mapbox', 'viewport'], region)
+export const viewportSelector = (state, {region}) => reqPath(['mapbox', 'viewport'], region)
 

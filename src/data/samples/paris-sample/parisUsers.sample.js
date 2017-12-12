@@ -20,14 +20,16 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { defaultConfig, userTemplateKeys: { REGION_MANAGER, REGION_USER, REGION_VISITOR } } = require('data/default');
-const {mapDefaultUsers} = require('data/configHelpers');
-const R = require('ramda');
+import {userTemplateKeys} from 'data/default';
+import {mapDefaultUsers} from 'data/configHelpers';
+import * as R from 'ramda';
+
+const {REGION_MANAGER, REGION_USER, REGION_VISITOR} = userTemplateKeys;
 
 // Create three users
 // rename the user templates to match our users
 // Once merged with the defaults remove the user template keys to make a flat object of users
-module.exports.default = R.mergeAll(R.values(mapDefaultUsers(
+export default R.mergeAll(R.values(mapDefaultUsers(
   {
     [REGION_MANAGER]: {
       parisManager: {

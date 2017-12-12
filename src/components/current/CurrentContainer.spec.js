@@ -8,14 +8,14 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-const {mapStateToProps} = require('./CurrentContainer');
-const {makeSampleInitialState, shallowWithMockStore} = require('helpers/testHelpers');
+import {mapStateToProps} from './CurrentContainer';
+import {makeSampleInitialState, shallowWithMockStore} from 'helpers/testHelpers';
 const initialState = makeSampleInitialState();
-const {default: CurrentContainer} = require('./CurrentContainer')
-const {default: Current} = require('./Current')
-const {eMap} = require('helpers/componentHelpers');
+import CurrentContainer from './CurrentContainer'
+import Current from './Current'
+import {eMap} from 'helpers/componentHelpers';
 const [currentContainer] = eMap([CurrentContainer]);
-const React = require('react')
+import React from 'react'
 
 
 describe('CurrentContainer', () => {

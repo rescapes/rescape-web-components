@@ -9,12 +9,12 @@
  * THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const R = require('ramda');
-const {globalSampleConfig} = require('./global-sample/globalSampleConfig');
-const {oaklandSampleConfig} = require('./oakland-sample/oaklandSampleConfig');
-const {parisSampleConfig} = require('./paris-sample/parisSampleConfig');
-const {mergeDeepAll} = require('rescape-ramda');
-const {defaultConfig} = require('data/default/defaultConfig');
+import * as R from 'ramda';
+import {globalSampleConfig} from './global-sample/globalSampleConfig';
+import {oaklandSampleConfig} from './oakland-sample/oaklandSampleConfig';
+import {parisSampleConfig} from './paris-sample/parisSampleConfig';
+import {mergeDeepAll} from 'rescape-ramda';
+import {defaultConfig} from 'data/default/defaultConfig';
 
 // Get the first user so we can make it the active user for testing
 const firstUserLens = obj => R.lensPath(
@@ -31,7 +31,7 @@ const firstUserLens = obj => R.lensPath(
 );
 
 // Merge the global and regional sampleConfigs
-module.exports.sampleConfig = mergeDeepAll([
+export const sampleConfig = mergeDeepAll([
   {
     // Any settings that aren't Region specific.
     styles: defaultConfig.styles,

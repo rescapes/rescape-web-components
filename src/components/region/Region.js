@@ -8,17 +8,18 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-const {styleMultiplier} = require('helpers/styleHelpers');
-const mapbox = require('components/mapbox/MapboxContainer').default;
-const sankey = require('components/sankey/SankeyContainer').default;
-const markerList = require('components/marker/MarkerListContainer').default;
-const PropTypes = require('prop-types');
-const {makeMergeContainerStyleProps} = require('selectors/selectorHelpers');
-const {eMap} = require('helpers/componentHelpers');
+import {styleMultiplier} from 'helpers/styleHelpers';
+import mapbox from 'components/mapbox/MapboxContainer'
+import sankey from 'components/sankey/SankeyContainer'
+import markerList from 'components/marker/MarkerListContainer'
+import PropTypes from 'prop-types';
+import {makeMergeContainerStyleProps} from 'selectors/selectorHelpers';
+import {eMap} from 'helpers/componentHelpers';
+import {throwing} from 'rescape-ramda'
+import * as R from 'ramda';
+import {classNamer} from 'helpers/styleHelpers';
 const [Mapbox, Sankey, MarkerList, Div] = eMap([mapbox, sankey, markerList, 'div']);
-const {reqPath} = require('rescape-ramda').throwing;
-const R = require('ramda');
-const {classNamer} = require('helpers/styleHelpers');
+const {reqPath} = throwing
 
 /**
  * The View for a Region, such as California. Theoretically we could display multiple regions at once
@@ -70,10 +71,12 @@ const Region = ({...props}) => {
         className: nameClass('mapbox-outer'),
         style: styles.mapboxOuter
       },
-      Mapbox({
+      Mapbox(R.merge(props.views.mapbox, {
+        region: props.region,
         style: styles.mapbox
-      })
-      //Sankey({
+      }),
+      //Sankey(R.merge(props.views.mapbox, {
+      //  region: props.region,
       //  style: styles.mapbox
       //})
     ),
@@ -106,4 +109,4 @@ Region.propTypes = {
   fetchMarkersData: func.isRequired
 };
 
-module.exports.default = Region;
+export default Region;

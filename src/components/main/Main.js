@@ -9,15 +9,16 @@
  * THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const {styleMultiplier} = require('helpers/styleHelpers');
-const PropTypes = require('prop-types');
-const {makeMergeContainerStyleProps} = require('selectors/selectorHelpers');
-const React = require('react');
-const {eMap} = require('helpers/componentHelpers');
-const {default: current} = require('components/current')
+import {styleMultiplier} from 'helpers/styleHelpers';
+import PropTypes from 'prop-types';
+import {makeMergeContainerStyleProps} from 'selectors/selectorHelpers';
+import React from 'react';
+import {eMap} from 'helpers/componentHelpers';
+import current from 'components/current'
+import {classNamer} from 'helpers/styleHelpers';
+import {throwing} from 'rescape-ramda'
+const {reqPath} = throwing;
 const [Div, Current] = eMap(['div', current]);
-const {classNamer} = require('helpers/styleHelpers');
-const {throwing: {reqPath}} = require('rescape-ramda');
 
 /**
  * The View for Main.
@@ -56,4 +57,4 @@ Main.propTypes = {
   })
 };
 
-module.exports.default = Main;
+export default Main;

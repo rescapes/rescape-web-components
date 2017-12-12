@@ -1,4 +1,3 @@
-
 /**
  * @typedef {Object} Place
  * @property {string} id primary station code for the Place. This is used to id stops uniquely in conjunction
@@ -13,13 +12,15 @@
 // is. So a Stop id at LA Union station would be LAX-Union and at the airport would be LAX-Airport. In the case
 // that AMTRAK has ids for secondary stops (e.g. Oakland Coliseum is OAC, we can either disregard that id or do an
 // override on the Stop to make OAC-Coliseum instead of the default OAK-Coliseum, but the latter is probably better)
-module.exports.LOS_ANGELES = {id: 'LAX', label: 'Los Angeles'};
-module.exports.OAKLAND = {id: 'OAK', label: 'Oakland'};
-module.exports.PLEASANTON = {id: 'PLS', label: 'Pleasanton'};
-module.exports.RENO = {id: 'REN', label: 'Reno'};
-module.exports.SACRAMENTO = {id: 'SAC', label: 'Sacramento'};
-module.exports.SAN_FRANCISCO = {id: 'SFC', label: 'San Francisco'};
-module.exports.SUISON_FAIRFIELD = {id: 'SUI', label: 'Suison-Fairfield'};
-module.exports.STOCKTON = {id: 'SKN', label: 'Stockton'};
-module.exports.TRUCKEE = {id: 'TRU', label: 'Truckee'};
+export default {
+  LOS_ANGELES: {id: 'LAX', label: 'Los Angeles'},
+  OAKLAND: {id: 'OAK', label: 'Oakland'},
+  PLEASANTON: {id: 'PLS', label: 'Pleasanton'},
+  RENO: {id: 'REN', label: 'Reno'},
+  SACRAMENTO: {id: 'SAC', label: 'Sacramento'},
+  SAN_FRANCISCO: {id: 'SFC', label: 'San Francisco'},
+  SUISON_FAIRFIELD: {id: 'SUI', label: 'Suison-Fairfield'},
+  STOCKTON: {id: 'SKN', label: 'Stockton'},
+  TRUCKEE: {id: 'TRU', label: 'Truckee'}
+};
 

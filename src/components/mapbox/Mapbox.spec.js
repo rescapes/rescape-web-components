@@ -1,10 +1,10 @@
-const mapGL = require('react-map-gl').default;
-const mapbox = require('./Mapbox').default;
-const {shallow} = require('enzyme');
-const {testPropsMaker} = require('./MapboxContainer');
-const {propsFromSampleStateAndContainer} = require('helpers/testHelpers');
+import mapGL from 'react-map-gl'
+import mapbox from './Mapbox'
+import {shallow} from 'enzyme';
+import {testPropsMaker} from './MapboxContainer';
+import {propsFromSampleStateAndContainer} from 'helpers/testHelpers';
 
-const {eMap} = require('helpers/componentHelpers');
+import {eMap} from 'helpers/componentHelpers';
 const [MapGL, Mapbox] = eMap([mapGL, mapbox]);
 
 describe('Mapbox', () => {

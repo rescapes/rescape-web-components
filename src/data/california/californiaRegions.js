@@ -9,20 +9,20 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-module.exports.NORTH_BAY = 'North-Bay';
-module.exports.ALTAMONT = 'Altamont';
-module.exports.EAST_BAY = 'East-Bay';
-const {mergeDeep} = require('rescape-ramda');
-const journeys = require('./californiaJourneys.json');
-const locations = require('./californiaUserLocations.json');
-const routes = require('./californiaRoutes').default;
-const routeTypes = require('data/default/routeTypes');
-const {applyDefaultRegion} = require('data/configHelpers');
-const trips = require('./californiaTrips').default;
-const stops = require('./californiaStops').default;
+import journeys from './californiaJourneys.json';
+import locations from './californiaUserLocations.json';
+import routes from './californiaRoutes'
+import * as routeTypes from 'data/default/routeTypes';
+import {applyDefaultRegion} from 'data/configHelpers';
+import trips from './californiaTrips'
+import stops from './californiaStops'
+
+export const NORTH_BAY = 'North-Bay';
+export const ALTAMONT = 'Altamont';
+export const EAST_BAY = 'East-Bay';
 
 // merge the default region template with our region(s)
-module.exports.default = applyDefaultRegion({
+export default applyDefaultRegion({
   california: {
     id: 'california',
     name: 'California',

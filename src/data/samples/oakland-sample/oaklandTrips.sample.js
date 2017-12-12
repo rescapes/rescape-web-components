@@ -13,14 +13,14 @@
  * Creates default TripPair objects
  */
 
-const stops = require('./oaklandStops.sample').default;
-const w = require('./oaklandStops.sample').default;
-const routes = require('./oaklandRoutes.sample').default;
-const {createTripWithStopTimesPair, orderStops, stopTimeGenerator} = require('data/dataCreationHelpers');
-const {stopResolver, routeResolver} = require('data/dataQueryHelpers');
-const places = require('./oaklandPlaces.sample');
-const regions = require('./oaklandRegions.sample');
-const {DEFAULT_SERVICE} = require('data/default/services');
+import stops from './oaklandStops.sample'
+import w from './oaklandStops.sample'
+import routes from './oaklandRoutes.sample'
+import {createTripWithStopTimesPair, orderStops, stopTimeGenerator} from 'data/dataCreationHelpers';
+import {stopResolver, routeResolver} from 'data/dataQueryHelpers';
+import places from './oaklandPlaces.sample';
+import * as regions from './oaklandRegions.sample';
+import {DEFAULT_SERVICE} from 'data/default/services';
 
 const resolveStop = stopResolver(stops);
 const resolveRoute = routeResolver(routes);
@@ -29,7 +29,7 @@ const resolveRoute = routeResolver(routes);
 /**
  * Creates a TripPair and then augments each trip with the StopTimes
  */
-module.exports.default = [
+export default [
     ...createTripWithStopTimesPair(
         resolveRoute(places.SAN_FRANCISCO, places.RENO, regions.NORTH_BAY),
         DEFAULT_SERVICE,

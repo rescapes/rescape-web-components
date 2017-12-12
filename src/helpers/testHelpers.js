@@ -10,23 +10,23 @@
  */
 
 
-const {taskToPromise, mergeDeep} = require('rescape-ramda');
-const {sampleConfig} = require('data/samples/sampleConfig');
-const {default: initialState} = require('data/initialState');
-const {default: configureStore} = require('redux-mock-store');
-const {default: thunk} = require('redux-thunk');
-const {shallow, mount} = require('enzyme');
+import {taskToPromise, mergeDeep} from 'rescape-ramda';
+import {sampleConfig} from 'data/samples/sampleConfig';
+import initialState from 'data/initialState';
+import configureStore from 'redux-mock-store';
+import thunk from 'redux-thunk';
+import {shallow, mount} from 'enzyme';
 const middlewares = [thunk];
-const {mockNetworkInterfaceWithSchema} = require('apollo-test-utils');
-const {eMap} = require('helpers/componentHelpers');
-const {default: ApolloClient} = require('apollo-client');
-const {ApolloProvider} = require('react-apollo');
-const {default: makeSchema} = require('schema/schema');
-const {createSelectorResolvedSchema} = require('schema/selectorResolvers');
-const {InMemoryCache} = require('apollo-client-preset');
-const {SchemaLink} = require('apollo-link-schema');
-const {default: MockProvider} = require('redux-mock-provider');
-const PropTypes = require('prop-types');
+import {mockNetworkInterfaceWithSchema} from 'apollo-test-utils';
+import {eMap} from 'helpers/componentHelpers';
+import ApolloClient from 'apollo-client';
+import {ApolloProvider} from 'react-apollo';
+import makeSchema from 'schema/schema';
+import {createSelectorResolvedSchema} from 'schema/selectorResolvers';
+import {InMemoryCache} from 'apollo-client-preset';
+import {SchemaLink} from 'apollo-link-schema';
+import MockProvider from 'redux-mock-provider';
+import PropTypes from 'prop-types';
 
 
 /**
@@ -36,27 +36,27 @@ const PropTypes = require('prop-types');
  * @param {Task} task Task wrapped in a Promise and forked
  * @returns {undefined}
  */
-module.exports.expectTask = task => expect(taskToPromise(task));
+export const expectTask = task => expect(taskToPromise(task));
 /**
  * Same as expectTask but expects a rejects so diables debugging
  * @param {Task} task The Task
  * @returns {undefined}
  */
-module.exports.expectTaskRejected = task => expect(taskToPromise(task, true));
+export const expectTaskRejected = task => expect(taskToPromise(task, true));
 
 /**
  * Create an initial test state based on the sampleConfig for tests to use.
  * This should only be used for sample configuration, unless store functionality is being tested
  * @returns {Object} The initial state
  */
-module.exports.testState = () => initialState(sampleConfig);
+export const testState = () => initialState(sampleConfig);
 
 /**
  * Creates a mock store from our sample data an our initialState function
  * @param {Object} sampleUserSettings Merges in sample local settings, like those from a browser cache
  * @type {function(*, *=)}
  */
-const makeSampleStore = module.exports.makeSampleStore = (sampleUserSettings = {}) =>
+export const makeSampleStore = (sampleUserSettings = {}) =>
   makeMockStore(initialState(sampleConfig), sampleUserSettings);
 
 /**
@@ -64,7 +64,7 @@ const makeSampleStore = module.exports.makeSampleStore = (sampleUserSettings = {
  * unless the middleware is needed, such as cycle.js
  * @param {Object} sampleUserSettings Merges in sample local settings, like those from a browser cache
  */
-const makeSampleInitialState = module.exports.makeSampleInitialState = (sampleUserSettings = {}) => {
+export const makeSampleInitialState = (sampleUserSettings = {}) => {
   return makeSampleStore(sampleUserSettings).getState();
 };
 
@@ -76,7 +76,7 @@ const makeSampleInitialState = module.exports.makeSampleInitialState = (sampleUs
  * @param sampleOwnProps Sample props that would normally come from the parent container
  * @returns {Object} complete test props
  */
-module.exports.propsFromSampleStateAndContainer = (containerPropMaker, sampleOwnProps = {}) =>
+export const propsFromSampleStateAndContainer = (containerPropMaker, sampleOwnProps = {}) =>
   containerPropMaker(makeSampleInitialState(), sampleOwnProps);
 
 /**
@@ -86,7 +86,7 @@ module.exports.propsFromSampleStateAndContainer = (containerPropMaker, sampleOwn
  * @param {Object} sampleUserSettings Merges in sample local settings, like those from a browser cache
  * @returns {Object} A mock redux store
  */
-const makeMockStore = module.exports.makeMockStore = (state, sampleUserSettings = {}) => {
+export const makeMockStore = (state, sampleUserSettings = {}) => {
   const mockStore = configureStore(middlewares);
   // Creates a mock store that merges the initial state with local user settings.
   return mockStore(
@@ -113,7 +113,7 @@ export const mockApolloClient = schema => {
  * @param component
  * @return {*}
  */
-module.exports.shallowWithMockStore = (component, mapStateToProps) => {
+export const shallowWithMockStore = (component) => {
   const resolvedSchema = createSelectorResolvedSchema(makeSchema(), makeSampleInitialState());
   const store = makeSampleStore();
 

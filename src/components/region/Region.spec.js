@@ -1,10 +1,10 @@
-const React = require('react');
-const {shallow} = require('enzyme');
+import React from 'react';
+import {shallow} from 'enzyme';
 
-const {propsFromSampleStateAndContainer} = require('helpers/testHelpers');
-const region = require('./Region').default;
-const {eMap} = require('helpers/componentHelpers');
-const {mapStateToProps, mapDispatchToProps} = require('./RegionContainer');
+import {propsFromSampleStateAndContainer} from 'helpers/testHelpers';
+import region from './Region'
+import {eMap} from 'helpers/componentHelpers';
+import {mapStateToProps, mapDispatchToProps} from './RegionContainer';
 const [Region] = eMap([region]);
 
 describe('Region', () => {

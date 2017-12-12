@@ -9,14 +9,14 @@
  * THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const React = require('react');
-const PropTypes = require('prop-types');
-const styles = require('./MarkerItem.style').default;
-const moment = require('moment');
-const R = require('ramda');
+import React from 'react';
+import PropTypes from 'prop-types';
+import styles from './MarkerItem.style'
+import moment from 'moment';
+import * as R from 'ramda';
 const e = React.createElement;
 
-class MarkerItem extends React.Component {
+export class MarkerItem extends React.Component {
     _handleRemove() {
         this.props.removeMarkers({}, this.props.regionId, [this.props.locationFeature]).fork(
             () => {
@@ -55,7 +55,7 @@ class MarkerItem extends React.Component {
     }
 }
 
-class AddMarkerItem extends React.Component {
+export class AddMarkerItem extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -123,7 +123,6 @@ const {
     number,
     string,
     object,
-    bool,
     arrayOf,
     func
 } = PropTypes;
@@ -140,5 +139,3 @@ AddMarkerItem.propTypes = {
     regionId: string.isRequired,
     updateMarkers: func.isRequired
 };
-
-module.exports = {MarkerItem, AddMarkerItem};

@@ -9,16 +9,17 @@
  * THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const R = require('ramda');
+import * as R from 'ramda';
+import * as routeTypes from './routeTypes';
+import {DEFAULT_SERVICE, WEEKEND_SERVICE} from './services';
+import {mergeDeep} from 'rescape-ramda';
+import {users} from './defaultUsers';
+import {defaultStyles} from 'styles/styles';
+
 const environment = R.propOr('development', 'NODE_ENV', process.env);
 const {environmentConfig} = require(`environments/${environment}Config`);
-const routeTypes = require('./routeTypes');
-const {DEFAULT_SERVICE, WEEKEND_SERVICE} = require('./services');
-const {mergeDeep} = require('rescape-ramda');
-const {users} = require('./defaultUsers');
-const {defaultStyles} = require('styles/styles');
 
-module.exports.defaultConfig = mergeDeep(environmentConfig, {
+export const defaultConfig = mergeDeep(environmentConfig, {
   regions: {
     default: {
       gtfs: {

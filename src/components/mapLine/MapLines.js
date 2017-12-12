@@ -9,12 +9,12 @@
  * THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const React = require('react');
-const {DraggablePointsOverlay, SVGOverlay} = require('react-map-gl');
-const {resolveSvgReact} = require('helpers/svgHelpers');
-const {LineLayer} = require('deck.gl');
-const PropTypes = require('prop-types');
-const R = require('ramda');
+import React from 'react';
+import {DraggablePointsOverlay, SVGOverlay} from 'react-map-gl';
+import {resolveSvgReact} from 'helpers/svgHelpers';
+import {LineLayer} from 'deck.gl';
+import PropTypes from 'prop-types';
+import * as R from 'ramda';
 const e = React.createElement;
 
 class MapLines extends React.Component {
@@ -54,4 +54,4 @@ MapLines.propTypes = {
     viewport: object.isRequired,
     geojson: object.isRequired
 };
-module.exports.default = MapLines;
+export default MapLines;

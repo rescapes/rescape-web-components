@@ -9,8 +9,8 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const {createRouteId, createStopId} = require('./dataCreationHelpers');
-const {mapPropValueAsIndex} = require('rescape-ramda');
+import {createRouteId, createStopId} from './dataCreationHelpers';
+import {mapPropValueAsIndex} from 'rescape-ramda';
 
 
 /**
@@ -25,7 +25,7 @@ const {mapPropValueAsIndex} = require('rescape-ramda');
  * @param {[Stop]} stops list of Stops
  * @returns {stopResolverCallback} - A function that takes a place.id and which
  */
-module.exports.stopResolver = stops => {
+export const stopResolver = stops => {
     const stopLookup = mapPropValueAsIndex('id')(stops);
     return (place, which) => stopLookup[createStopId(place.id, which)];
 };
@@ -42,7 +42,7 @@ module.exports.stopResolver = stops => {
  * @param {[Route]} routes list of Routes
  * @returns {routeResolverCallback} - See callback
  */
-module.exports.routeResolver = routes => {
+export const routeResolver = routes => {
     const routeLookup = mapPropValueAsIndex('id')(routes);
     return (from, to, via = null) =>
         routeLookup[createRouteId(from, to, via)];
@@ -63,7 +63,7 @@ module.exports.routeResolver = routes => {
  * @param {[Trip]} trips list of Trips
  * @returns {tripResolverCallback} - See callback
  */
-module.exports.tripResolver = trips => {
+export const tripResolver = trips => {
     return (route, options = null) => {
         // Return trips matching the route and the options
         return trips.filter(trip =>

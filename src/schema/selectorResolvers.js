@@ -9,10 +9,11 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const {makeGeojsonSelector} = require('selectors/geojsonSelectors');
-const {addResolveFunctionsToSchema} = require('graphql-tools');
-const R = require('ramda')
-const {throwing: {reqPath}} = require('rescape-ramda')
+import {makeGeojsonSelector} from 'selectors/geojsonSelectors';
+import {addResolveFunctionsToSchema} from 'graphql-tools';
+import R from 'ramda'
+import {throwing} from 'rescape-ramda'
+const {reqPath} = throwing
 // Trivial resolver for our dataSource, just strips object keys and returns values
 const objectValues = field => parent => R.values(reqPath([field], parent))
 // Calls the given selector, treating the dataSource asethe state and passing props through
@@ -24,9 +25,9 @@ const parentSelectorValues = (parentKey, selector) => (parent, props, {options: 
   return selector(dataSource, R.merge(props, {[parentKey]: parent}))
 }
 
-const { activeUserSelectedRegionsSelector, regionSelector} = require('selectors/regionSelectors');
-const { settingsSelector} = require('selectors/settingsSelectors');
-const { activeUserSelector} = require('selectors/userSelectors');
+import { activeUserSelectedRegionsSelector, regionSelector} from 'selectors/regionSelectors';
+import { settingsSelector} from 'selectors/settingsSelectors';
+import { activeUserSelector} from 'selectors/userSelectors';
 
 // Original example from: https://github.com/apollographql/graphql-tools
 const makeSelectorResolvers = data => ({
@@ -121,7 +122,7 @@ const makeSelectorResolvers = data => ({
  * the structure the schema
  * @returns {Object} The given GraphQLSchema with resolvers added
  */
-module.exports.createSelectorResolvedSchema = (schema, data) => {
+export const createSelectorResolvedSchema = (schema, data) => {
   addResolveFunctionsToSchema(schema, makeSelectorResolvers(data))
   return schema;
 }

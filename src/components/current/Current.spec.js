@@ -1,9 +1,9 @@
-const {shallow} = require('enzyme');
-const current = require('./Current').default;
-const {sampleConfig} = require('data/samples/sampleConfig');
-const initialState = require('data/initialState').default;
-const {mapStateToProps} = require('./CurrentContainer');
-const {eMap} = require('helpers/componentHelpers');
+import {shallow} from 'enzyme';
+import current from './Current'
+import {sampleConfig} from 'data/samples/sampleConfig';
+import initialState from 'data/initialState'
+import {mapStateToProps} from './CurrentContainer';
+import {eMap} from 'helpers/componentHelpers';
 const [Current] = eMap([current]);
 
 describe('The current application', () => {

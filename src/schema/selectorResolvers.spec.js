@@ -9,16 +9,16 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const {makeGeojsonSelector} = require('selectors/geojsonSelectors');
-const {createSelectorResolvedSchema} = require('./selectorResolvers');
-const {sampleConfig} = require('data/samples/sampleConfig');
-const {default: makeSchema} = require('./schema');
-const {graphql} = require('graphql');
-const R = require('ramda');
-const {mapped} = require('ramda-lens');
-const {activeUserSelectedRegionsSelector, regionSelector} = require('selectors/regionSelectors');
+import {makeGeojsonSelector} from 'selectors/geojsonSelectors';
+import {createSelectorResolvedSchema} from './selectorResolvers';
+import {sampleConfig} from 'data/samples/sampleConfig';
+import makeSchema from './schema';
+import {graphql} from 'graphql';
+import * as R from 'ramda';
+import {mapped} from 'ramda-lens';
+import {activeUserSelectedRegionsSelector, regionSelector} from 'selectors/regionSelectors';
 const resolvedSchema = createSelectorResolvedSchema(makeSchema(), sampleConfig);
-const {mergeDeep} = require('rescape-ramda');
+import {mergeDeep} from 'rescape-ramda';
 
 describe('mockExecutableSchema', () => {
 

@@ -1,4 +1,4 @@
-module.exports.default = {
+export default {
   'marker-1': {
     x: 0,
     y: 0,

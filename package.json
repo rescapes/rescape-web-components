@@ -1,5 +1,5 @@
 {
-  "name": "hackernews-react-apollo",
+  "name": "Urbinsight",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
@@ -54,6 +54,7 @@
     "postcss-loader": "2.0.8",
     "pretty-format": "^21.2.1",
     "promise": "8.0.1",
+    "prop-types": "^15.6.0",
     "query-overpass": "^1.5.3",
     "raf": "3.4.0",
     "ramda": "^0.25.0",

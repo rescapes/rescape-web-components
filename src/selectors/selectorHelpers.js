@@ -9,19 +9,20 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const {Either} = require('data.either');
-const {filterWithKeys, mapPropValueAsIndex, mergeDeep, throwing: {findOne, onlyOneValue}} = require('rescape-ramda');
-const {createSelectorCreator, defaultMemoize} = require('reselect');
-const {propLensEqual} = require('helpers/componentHelpers');
-const R = require('ramda');
+import Either from 'data.either';
+import {filterWithKeys, mapPropValueAsIndex, mergeDeep, throwing} from 'rescape-ramda';
+import {createSelectorCreator, defaultMemoize} from 'reselect';
+import {propLensEqual} from 'helpers/componentHelpers';
+import * as R from 'ramda';
 
+const {findOne, onlyOneValue} = throwing;
 
 /**
  * Creates a reselect selector creator that compares the length of values of the
  * selected object from one call to the next to determine equality instead of doing and equals check.
  * This is used for large datasets like geojson features where we assume no change unless the list size changes
  */
-const createLengthEqualSelector = module.exports.createLengthEqualSelector =
+export const createLengthEqualSelector =
   // Use propLensEqual as the equality check to defaultMemoize
   createSelectorCreator(
     defaultMemoize,
@@ -32,7 +33,7 @@ const createLengthEqualSelector = module.exports.createLengthEqualSelector =
  * Object statuses
  * @type {{IS_SELECTED: string, IS_ACTIVE: string}}
  */
-const STATUS = module.exports.STATUS = {
+export const STATUS = {
   IS_SELECTED: 'isSelected',
   IS_ACTIVE: 'isActive'
 };
@@ -43,14 +44,14 @@ const STATUS = module.exports.STATUS = {
  * @returns {Object} Object keyed by status key and valued a function that resolves the value of that
  * status property for whatever object is passed to it
  */
-const status = module.exports.status = R.fromPairs(
+export const status = R.fromPairs(
   R.map(
     status => [status, R.prop(status)],
     [STATUS.IS_SELECTED, STATUS.IS_ACTIVE]
   )
 );
 
-module.exports.mergeStateAndProps = (state, props) => mergeDeep(state, props);
+export const mergeStateAndProps = (state, props) => mergeDeep(state, props);
 
 /**
  * Makes a selector that merges a props object with a state object at a certain matching lens location,
@@ -77,7 +78,7 @@ module.exports.mergeStateAndProps = (state, props) => mergeDeep(state, props);
  * props: {foos: {bars: {bar1: {id: 'bar1', isSelected: true}, bar2: {id: 'bar2'}}}}
  * returns: {bar1: {id: 'bar1', name: 'Bar 1' isSelected: true}}
  */
-module.exports.makeInnerJoinByLensThenFilterSelector = (innerJoinPredicate, predicate, stateLens, propsLens) => (state, props) =>
+export const makeInnerJoinByLensThenFilterSelector = (innerJoinPredicate, predicate, stateLens, propsLens) => (state, props) =>
   filterWithKeys(
     (value, key) => {
       return predicate(
@@ -103,7 +104,7 @@ module.exports.makeInnerJoinByLensThenFilterSelector = (innerJoinPredicate, pred
           ...R.map(
             // Make sure each is keyed by id before merging
             // Mark everything as Either.Left initially. Only things that match and pass the innerJoin predicate
-            // will get converted to Rightk
+            // will get converted to Right
             items => R.map(Either.Left, mapPropValueAsIndex('id', items)),
             [R.view(stateLens, state), R.view(propsLens, props)]
           )
@@ -117,7 +118,7 @@ module.exports.makeInnerJoinByLensThenFilterSelector = (innerJoinPredicate, pred
  * @param params
  * @param items
  */
-module.exports.findByParams = (params, items) => onlyOneValue(findOne(
+export const findByParams = (params, items) => onlyOneValue(findOne(
   // Compare all the eqProps against each item
   R.allPass(
     // Create a eqProps for each prop of params

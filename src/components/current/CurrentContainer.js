@@ -1,13 +1,14 @@
-const {gql} = require('apollo-client-preset');
-const {graphql} = require('react-apollo');
-const {connect} = require('react-redux');
-const Current = require('./Current').default;
-const R = require('ramda');
-const {createSelector} = require('reselect');
-const {makeActiveUserAndSelectedRegionStateSelector} = require('selectors/storeSelectors');
-const {makeBrowserProportionalDimensionsSelector} = require('selectors/styleSelectors');
-const {onlyOneRegionId} = require('selectors/regionSelectors');
-const {mergeDeep, throwing: {onlyOneValue}} = require('rescape-ramda');
+import {gql} from 'apollo-client-preset';
+import {graphql} from 'react-apollo';
+import {connect} from 'react-redux';
+import Current from './Current'
+import * as R from 'ramda';
+import {createSelector} from 'reselect';
+import {makeActiveUserAndSelectedRegionStateSelector} from 'selectors/storeSelectors';
+import {makeBrowserProportionalDimensionsSelector} from 'selectors/styleSelectors';
+import {onlyOneRegionId} from 'selectors/regionSelectors';
+import {mergeDeep, throwing} from 'rescape-ramda'
+const {onlyOneValue} = throwing
 
 
 /**
@@ -20,7 +21,7 @@ const {mergeDeep, throwing: {onlyOneValue}} = require('rescape-ramda');
  * @param {Object} [props] The optional props to override the state.
  * @returns {Object} The state and own props mapped to props for the component
  */
-const mapStateToProps = module.exports.mapStateToProps = (state, props) =>
+export const mapStateToProps = (state, props) =>
   createSelector(
     [
       (state, props) => {
@@ -78,4 +79,4 @@ const CurrentContainer = connect(
   mapStateToProps
 )(ContainerWithData);
 
-module.exports.default = CurrentContainer;
+export default CurrentContainer;

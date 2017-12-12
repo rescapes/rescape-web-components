@@ -9,13 +9,13 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const {environmentConfig} = require('environments/testConfig');
-const regions = require('./oaklandRegions.sample').default;
-const users = require('./oaklandUsers.sample').default;
-const R = require('ramda');
-const {applyRegionsToUsers} = require('data/configHelpers');
+import {environmentConfig} from 'environments/testConfig';
+import regions from './oaklandRegions.sample'
+import users from './oaklandUsers.sample'
+import * as R from 'ramda';
+import {applyRegionsToUsers} from 'data/configHelpers';
 
-module.exports.oaklandSampleConfig = R.merge(environmentConfig, {
+export const oaklandSampleConfig = R.merge(environmentConfig, {
   regions,
   // Give each users all regions for simplicity
   users: applyRegionsToUsers(regions, users)

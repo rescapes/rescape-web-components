@@ -1,5 +1,5 @@
 
-const {styleMultiplier, createScaledPropertyGetter} = require('./styleHelpers');
+import {styleMultiplier, createScaledPropertyGetter} from './styleHelpers';
 
 describe('styles', () => {
   test('styleMultiplier', () => {

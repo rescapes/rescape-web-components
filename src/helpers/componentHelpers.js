@@ -9,11 +9,12 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const React = require('react');
-const R = require('ramda');
-const {v} = require('rescape-validate');
-const PropTypes = require('prop-types');
-const {filterWithKeys, throwing: {reqPath}} = require('rescape-ramda');
+import React from 'react';
+import * as R from 'ramda';
+import {v} from 'rescape-validate';
+import PropTypes from 'prop-types';
+import {filterWithKeys, throwing} from 'rescape-ramda'
+const {reqPath} = throwing
 
 /**
  * Returns true if the lens applied to props equals the lens applied to nextProps
@@ -22,7 +23,7 @@ const {filterWithKeys, throwing: {reqPath}} = require('rescape-ramda');
  * @param {Object|Array} nextProps Reach nextProps
  * @returns {Boolean} True if equal, else false
  */
-module.exports.propLensEqual = v(R.curry((lens, props, nextProps) =>
+export const propLensEqual = v(R.curry((lens, props, nextProps) =>
     R.equals(
       R.view(lens, props),
       R.view(lens, nextProps)
@@ -39,7 +40,7 @@ module.exports.propLensEqual = v(R.curry((lens, props, nextProps) =>
  * @param {[String|Element]} types React element types (e.g. ['div', 'svg', React])
  * @returns {Function} A list of functions that need just the config and children specified, not the type
  */
-module.exports.eMap = types => R.map(component => React.createFactory(component), types);
+export const eMap = types => R.map(component => React.createFactory(component), types);
 
 
 /**
@@ -50,7 +51,7 @@ module.exports.eMap = types => R.map(component => React.createFactory(component)
  * @returns {Function} A mergeProps function that expects stateProps and dispatchProps (The standard
  * third argument ownProps is never used, since it is assumed to have been merged into stateProps)
  */
-module.exports.mergePropsForViews = (viewToActions) => (stateProps, dispatchProps) => {
+export const mergePropsForViews = (viewToActions) => (stateProps, dispatchProps) => {
   return R.over(
     R.lensProp('views'),
     R.mergeWith(
@@ -78,7 +79,7 @@ module.exports.mergePropsForViews = (viewToActions) => (stateProps, dispatchProp
  * @returns {Function} A function that expects a sample state and sample ownProps and returns a complete
  * sample props according to the functions of the container
  */
-module.exports.makeTestPropsFunction = (mapStateToProps, mapDispatchToProps, mergeProps = R.merge) =>
+export const makeTestPropsFunction = (mapStateToProps, mapDispatchToProps, mergeProps = R.merge) =>
   (sampleState, sampleOwnProps) =>
     mergeProps(
       mapStateToProps(sampleState, sampleOwnProps),
@@ -94,7 +95,7 @@ module.exports.makeTestPropsFunction = (mapStateToProps, mapDispatchToProps, mer
  * returned as an array of components
  * @return {[Object]} A list of React components
  */
-const liftAndExtract = module.exports.liftAndExtract = (component, props) => {
+export const liftAndExtract = (component, props) => {
   return R.values(
     // Note that R.map(component, props) would work here too,
     // but this might refactor better if we support passing child components
@@ -111,6 +112,6 @@ const liftAndExtract = module.exports.liftAndExtract = (component, props) => {
  * (or any other functor for which we can extract the values
  * @return {[Object]} A list of React components
  */
-module.exports.liftAndExtractItems = (component, propsWithItems) => {
+export const liftAndExtractItems = (component, propsWithItems) => {
   return liftAndExtract(component, reqPath(['items'], propsWithItems))
 };

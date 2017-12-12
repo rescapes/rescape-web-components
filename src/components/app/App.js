@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import Header from 'components/header/Header';
 import Login from 'components/login/Login';
 import Main from 'components/main/Main';
-import { Switch, Route, Redirect } from 'react-router-dom'
+import { Switch, Route } from 'react-router-dom'
 
 class App extends Component {
   render() {

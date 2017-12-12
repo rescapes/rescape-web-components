@@ -9,22 +9,22 @@
  * THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const {connect} = require('react-redux');
-const {bindActionCreators} = require('redux');
-const {actionCreators} = require('src/redux/geojson/geojsonReducer');
-const {onChangeViewport} = require('redux-map-gl');
-const Mapbox = require('./Mapbox').default;
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import {actionCreators} from 'src/redux/geojson/geojsonReducer';
+import {onChangeViewport} from 'redux-map-gl';
+import Mapbox from './Mapbox'
 const {hoverMarker, selectMarker} = actionCreators;
-const {makeViewportsSelector, makeActiveUserAndRegionStateSelector} = require('selectors/selectorHelpers');
-const {v} = require('rescape-validate');
-const PropTypes = require('prop-types');
-const {createSelector} = require('reselect');
-const R = require('ramda');
+import {makeViewportsSelector, makeActiveUserAndRegionStateSelector} from 'selectors/selectorHelpers';
+import {v} from 'rescape-validate';
+import PropTypes from 'prop-types';
+import {createSelector} from 'reselect';
+import * as R from 'ramda';
 
 /**
  * Uses props as state and makes convenience views
  */
-const mapStateToProps = module.exports.mapStateToProps = createSelector(
+export const mapStateToProps = createSelector(
   [
     (state, props) => props,
     (state, props) => makeViewportsSelector()(props)
@@ -40,7 +40,7 @@ const mapStateToProps = module.exports.mapStateToProps = createSelector(
   )
 );
 
-const mapDispatchToProps = module.exports.mapDispatchToProps = (dispatch, ownProps) => {
+export const mapDispatchToProps = (dispatch, ownProps) => {
   return bindActionCreators({
     onChangeViewport,
     hoverMarker,
@@ -48,4 +48,4 @@ const mapDispatchToProps = module.exports.mapDispatchToProps = (dispatch, ownPro
   }, dispatch);
 };
 
-module.exports.default = connect(mapStateToProps, mapDispatchToProps)(Deck);
+export default connect(mapStateToProps, mapDispatchToProps)(Deck);

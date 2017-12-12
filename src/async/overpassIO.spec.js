@@ -9,11 +9,11 @@
  * THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const {fetchTransit} = require('./overpassIO');
-const {removeDuplicateObjectsByProp} = require('rescape-ramda');
-const {expectTask} = require('helpers/testHelpers');
-const fs = require('fs');
-const {LA_SAMPLE, LA_BOUNDS} = require('async/queryOverpass.sample');
+import {fetchTransit} from './overpassIO';
+import {removeDuplicateObjectsByProp} from 'rescape-ramda';
+import {expectTask} from 'helpers/testHelpers';
+import fs from 'fs';
+import {LA_SAMPLE, LA_BOUNDS} from 'async/queryOverpass.sample';
 
 let mock = true;
 //mock = false;

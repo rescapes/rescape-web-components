@@ -9,10 +9,10 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const {settingsSelector} = require('selectors/settingsSelectors');
-const {activeUserRegionsSelector, activeUserSelectedRegionsSelector} = require('selectors/regionSelectors');
-const {activeUserSelector} = require('selectors/userSelectors');
-const {createStructuredSelector} = require('reselect');
+import {settingsSelector} from 'selectors/settingsSelectors';
+import {activeUserRegionsSelector, activeUserSelectedRegionsSelector} from 'selectors/regionSelectors';
+import {activeUserSelector} from 'selectors/userSelectors';
+import {createStructuredSelector} from 'reselect';
 
 /**
  * This selector creates a state that narrows down the state to the active user and region,
@@ -23,7 +23,7 @@ const {createStructuredSelector} = require('reselect');
  * an object containing settings, regions, and users, where regions and users must limited to
  * one each
  */
-module.exports.makeActiveUserAndRegionStateSelector = () =>
+export const makeActiveUserAndRegionStateSelector = () =>
   createStructuredSelector({
     settings: settingsSelector,
     regions: activeUserRegionsSelector,
@@ -39,7 +39,7 @@ module.exports.makeActiveUserAndRegionStateSelector = () =>
  * an object containing settings, regions, and users, where regions and users must limited to
  * one each
  */
-module.exports.makeActiveUserAndSelectedRegionStateSelector = () =>
+export const makeActiveUserAndSelectedRegionStateSelector = () =>
   createStructuredSelector({
     settings: settingsSelector,
     regions: activeUserSelectedRegionsSelector,

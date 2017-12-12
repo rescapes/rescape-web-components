@@ -9,13 +9,13 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const thunk = require('redux-thunk').default;
-const {mapStateToProps} = require('components/marker/MarkerListContainer');
-const configureStore = require('redux-mock-store');
+import thunk from 'redux-thunk'
+import {mapStateToProps} from 'components/marker/MarkerListContainer';
+import configureStore from 'redux-mock-store';
 
-const {sampleConfig} = require('data/samples/sampleConfig');
-const initialState = require('data/initialState').default;
-const {reqPath} = require('rescape-ramda').throwing;
+import {sampleConfig} from 'data/samples/sampleConfig';
+import initialState from 'data/initialState'
+import {reqPath} from 'rescape-ramda'.throwing;
 
 const middlewares = [thunk];
 const mockStore = configureStore(middlewares);

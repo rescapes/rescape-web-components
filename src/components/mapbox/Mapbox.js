@@ -9,19 +9,21 @@
  * THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const PropTypes = require('prop-types');
-const mapGl = require('react-map-gl').default;
-const React = require('react');
-const {default: createMapStops} = require('components/mapStop');
-const {default: MapMarkers} = require('components/mapMarker');
-const {throwing: {reqPath}} = require('rescape-ramda');
-const Deck = require('../deck/Deck').default;
-const MapStops = createMapStops(React);
-const {eMap, liftAndExtractItems} = require('helpers/componentHelpers');
+import PropTypes from 'prop-types';
+import mapGl from 'react-map-gl';
+import React from 'react';
+import createMapStops from 'components/mapStop';
+import MapMarkers from 'components/mapMarker';
+import {throwing} from 'rescape-ramda';
+import Deck from '../deck/Deck';
+import {eMap, liftAndExtractItems} from 'helpers/componentHelpers';
+import * as R from 'ramda';
+import {makeViewportsSelector, makeMergeContainerStyleProps} from 'selectors/selectorHelpers';
+import {classNamer} from 'helpers/styleHelpers';
+
 const [Div, MapGl] = eMap(['div', mapGl]);
-const R = require('ramda');
-const {makeViewportsSelector, makeMergeContainerStyleProps} = require('selectors/selectorHelpers');
-const {classNamer} = require('helpers/styleHelpers');
+const MapStops = createMapStops(React);
+const {reqPath} = throwing;
 
 const Mapbox = ({...props}) => {
 
@@ -121,6 +123,6 @@ Mapbox.propTypes = {
   }).isRequired
 };
 
-module.exports.default = Mapbox;
+export default Mapbox;
 
 

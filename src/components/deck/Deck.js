@@ -8,15 +8,17 @@
  *
  * THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-const React = require('react');
-const {geojsonByType} = require('helpers/geojsonHelpers');
-const {IconLayer, WebMercatorViewport} = require('deck.gl');
-const DeckGL = require('deck.gl').default;
-const rbush = require('rbush');
-const R = require('ramda');
-const locationIconMapping = require('./locationIconMapping').default;
-const PropTypes = require('prop-types');
+import React from 'react';
+import {IconLayer, WebMercatorViewport} from 'deck.gl';
+import deckGL from 'deck.gl'
+import rbush from 'rbush';
+import * as R from 'ramda';
+import locationIconMapping from './locationIconMapping'
+import PropTypes from 'prop-types';
+import {eMap} from 'helpers/componentHelpers';
 const e = React.createElement;
+const [DeckGL] =
+  eMap([deckGL]);
 
 const ICON_SIZE = 60;
 
@@ -154,7 +156,7 @@ class Deck extends React.Component {
             }
         })] : [];
 
-        return e(DeckGL, R.merge(viewport, {
+        return DeckGL(R.merge(viewport, {
             layers,
             iconAtlas,
             showCluster,
@@ -165,11 +167,8 @@ class Deck extends React.Component {
 }
 
 const {
-    number,
     string,
     object,
-    bool,
-    array,
     func
 } = PropTypes;
 
@@ -181,4 +180,3 @@ Deck.propTypes = {
     onClick: func.isRequired,
     iconAtlas: string.isRequired
 };
-module.exports.default = Deck;

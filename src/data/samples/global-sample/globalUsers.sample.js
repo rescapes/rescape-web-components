@@ -9,13 +9,14 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { defaultConfig, userTemplateKeys: { APP_ADMIN } } = require('data/default');
-const {mapDefaultUsers} = require('data/configHelpers');
-const R = require('ramda');
+import {userTemplateKeys} from 'data/default';
+import {mapDefaultUsers} from 'data/configHelpers';
+
+const {APP_ADMIN} = userTemplateKeys;
 
 // Create an admin user
 // rename the user templates to match our users
-module.exports.default = mapDefaultUsers(
+export default mapDefaultUsers(
   {
     [APP_ADMIN]: {
       sampleAdmin: {

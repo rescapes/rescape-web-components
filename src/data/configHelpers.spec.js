@@ -17,10 +17,12 @@
  * @param {[String]} regionKeys The region keys to target.
  * @returns {Object} The "modified" defaultConfig
  */
-const {applyDefaultRegion, mapDefaultUsers, keysAsIdObj, applyRegionsToUsers} = require('./configHelpers');
-const {defaultConfig, userTemplateKeys: {REGION_MANAGER, REGION_USER}} = require('data/default');
-const R = require('ramda');
-const {reqPath} = require('rescape-ramda').throwing;
+import {applyDefaultRegion, mapDefaultUsers, keysAsIdObj, applyRegionsToUsers} from './configHelpers';
+import {defaultConfig, userTemplateKeys} from 'data/default';
+import * as R from 'ramda';
+import {throwing} from 'rescape-ramda';
+const {reqPath} = throwing
+const {REGION_MANAGER, REGION_USER, REGION_VISITOR} = userTemplateKeys;
 
 describe('configHelpers', () => {
   test('applyDefaultRegion', () => {

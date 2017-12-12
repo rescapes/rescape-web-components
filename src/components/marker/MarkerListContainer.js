@@ -9,10 +9,10 @@
  * THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const {connect} = require('react-redux');
-const MarkerList = require('./MarkerList').default;
-const R = require('ramda');
-//const {actionCreators} = require('redux/geojson/geojsonReducer');
+import {connect} from 'react-redux';
+import MarkerList from './MarkerList'
+import * as R from 'ramda';
+//import {actionCreators} from 'redux/geojson/geojsonReducer';
 
 /**
  * Merges state.mapbox with ownProps, but raises level of state
@@ -20,7 +20,7 @@ const R = require('ramda');
  * @param {Object} ownProps The props of the parent
  * @returns {Object} The props
  */
-const mapStateToProps = module.exports.mapStateToProps = (state, ownProps) => {
+export const mapStateToProps = (state, ownProps) => {
     // include geojson data of the region
     return R.merge(
         R.pick(['geojson', 'id'], ownProps.region),
@@ -30,5 +30,5 @@ const mapStateToProps = module.exports.mapStateToProps = (state, ownProps) => {
     );
 };
 
-//module.exports.default = connect(mapStateToProps, actionCreators)(MarkerList);
-module.exports.default = connect(mapStateToProps)(MarkerList);
+//export default connect(mapStateToProps, actionCreators)(MarkerList);
+export default connect(mapStateToProps)(MarkerList);

@@ -8,8 +8,8 @@
  *
  * THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-const R = require('ramda');
-const {eMap} = require('helpers/componentHelpers');
+import * as R from 'ramda';
+import {eMap} from 'helpers/componentHelpers';
 const {circle, polygon, polyline, g} = eMap(['circle', 'polygon', 'polyline', 'g']);
 
 /**
@@ -18,7 +18,7 @@ const {circle, polygon, polyline, g} = eMap(['circle', 'polygon', 'polyline', 'g
  * @param {Object} feature The geojson object from which to resolve points
  * @return {Object} An object with the geometry type and points
  */
-const resolveSvgPoints = module.exports.resolveSvgPoints = (opt, feature) => {
+export const resolveSvgPoints = (opt, feature) => {
     switch (feature.geometry.type) {
         case 'Point':
             return {
@@ -46,7 +46,7 @@ const resolveSvgPoints = module.exports.resolveSvgPoints = (opt, feature) => {
  * @param {[Object]} features geojson features for which to resolve SVG shapes
  * @returns {ReactElement<P>|CElement<P, T>|ReactSVGElement|DOMElement<P, T>|CElement<P, ClassicComponent<P, ComponentState>>|DetailedReactHTMLElement<P, T>|any} React SVG elements
  */
-module.exports.resolveSvgReact = (opt, features) => {
+export const resolveSvgReact = (opt, features) => {
     const pointData = R.map(
         feature => {
             return {

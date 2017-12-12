@@ -9,11 +9,11 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const R = require('ramda');
-const {moveToKeys, mergeDeep} = require('rescape-ramda');
-const PropTypes = require('prop-types');
-const {v} = require('rescape-validate');
-const {reqPath} = require('rescape-ramda').throwing;
+import * as R from 'ramda';
+import {moveToKeys, mergeDeep, throwing} from 'rescape-ramda';
+import PropTypes from 'prop-types';
+import {v} from 'rescape-validate';
+const {reqPath} = throwing
 
 /**
  * Copies the 'default' region to the keys of the specified regions, removing the default key,
@@ -21,7 +21,7 @@ const {reqPath} = require('rescape-ramda').throwing;
  * @param {Object} regions keyed by key if an object and valued by region.
  * @returns {Object} The "modified" defaultConfig.regions
  */
-module.exports.applyDefaultRegion = v(regions =>
+export const applyDefaultRegion = v(regions =>
     mergeDeep(
       moveToKeys(
         R.lensPath([]),
@@ -55,7 +55,7 @@ module.exports.applyDefaultRegion = v(regions =>
  * }
  * @returns {Object} The "modified" defaultConfig.users merged into the defaultUserKeyToUserObjs
  */
-module.exports.mapDefaultUsers = v(defaultUserKeyToUserObjs => {
+export const mapDefaultUsers = v(defaultUserKeyToUserObjs => {
     const defaultUsers = reqPath(['users'], require('data/default').defaultConfig);
     return R.mapObjIndexed(
       (users, defaultUserKey) => R.map(
@@ -76,7 +76,7 @@ module.exports.mapDefaultUsers = v(defaultUserKeyToUserObjs => {
  * @param {Array} args The keys to transform
  * @returns {Object} The object keyed by ids
  */
-module.exports.keysAsIdObj = (...args) => R.fromPairs(R.map(key => [key, {id: key}], args));
+export const keysAsIdObj = (...args) => R.fromPairs(R.map(key => [key, {id: key}], args));
 
 
 /**
@@ -86,7 +86,7 @@ module.exports.keysAsIdObj = (...args) => R.fromPairs(R.map(key => [key, {id: ke
  * @param {Object} users An object keyed by user id and valued by user
  * @returns {Object} users with regions key set to a list of id objects (e.g. [{id: 1}, {id: 2}, ...]
  */
-module.exports.applyRegionsToUsers = (regions, users) =>
+export const applyRegionsToUsers = (regions, users) =>
   R.map(
     user => R.set(
       R.lensPath(['regions']),
@@ -100,9 +100,9 @@ module.exports.applyRegionsToUsers = (regions, users) =>
     users);
 
 
-// module.exports.applyUserSettings = (lens, settings)
+// export applyUserSettings = (lens, settings)
 
-module.exports.wrapLocationsWithFeatures = (locations, locationFeatures) =>
+export const wrapLocationsWithFeatures = (locations, locationFeatures) =>
   R.mapObjIndexed((locationsByType, locationType) =>
       R.set(R.lensProp('geojson'), reqPath(), locationType),
     locations

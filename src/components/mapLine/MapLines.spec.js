@@ -9,12 +9,12 @@
  * THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const React = require('react');
-const {shallow} = require('enzyme');
-const MapLines = require('./MapLines').default;
+import React from 'react';
+import {shallow} from 'enzyme';
+import MapLines from './MapLines'
 
 jest.mock('query-overpass');
-const geojson = require('queryOverpassResponse').LA_SAMPLE;
+import geojson from 'queryOverpassResponse'.LA_SAMPLE;
 const e = React.createElement;
 
 describe('MapLines', () => {

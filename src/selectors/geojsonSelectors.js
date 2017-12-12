@@ -9,11 +9,12 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const {createSelector} = require('reselect');
-const R = require('ramda');
-const {geojsonByType} = require('helpers/geojsonHelpers');
-const {createLengthEqualSelector} = require('./selectorHelpers');
-const {mergeDeep, throwing: {reqPath}} = require('rescape-ramda');
+import {createSelector} from 'reselect';
+import * as R from 'ramda';
+import {geojsonByType} from 'helpers/geojsonHelpers';
+import {createLengthEqualSelector} from './selectorHelpers';
+import {mergeDeep, throwing} from 'rescape-ramda'
+const {reqPath} = throwing
 
 /**
  * Resolves the openstreetmap features of a region and categorizes them by type (way, node, relation).
@@ -21,7 +22,7 @@ const {mergeDeep, throwing: {reqPath}} = require('rescape-ramda');
  * simply by reference equality (why would the features reference change?)
  * @param {Object} state Should be the region with the
  */
-const makeFeaturesByTypeSelector = module.exports.makeFeaturesByTypeSelector = () => (state, {region}) => createLengthEqualSelector(
+export const makeFeaturesByTypeSelector = () => (state, {region}) => createLengthEqualSelector(
   [
     (state, {region}) => R.view(R.lensPath(['geojson', 'osm']), region)
   ],
@@ -32,7 +33,7 @@ const makeFeaturesByTypeSelector = module.exports.makeFeaturesByTypeSelector = (
  * Resolves the marker features of a region and categorizes them by type (way, node, relation)
  * @returns {Function} Selector that expects a state and props containing region
  */
-const makeMarkersByTypeSelector = module.exports.makeMarkersByTypeSelector = () => (state, {region}) => createLengthEqualSelector(
+export const makeMarkersByTypeSelector = () => (state, {region}) => createLengthEqualSelector(
   [
     (state, {region}) => R.view(R.lensPath(['geojson', 'markers']), region)
   ],
@@ -45,7 +46,7 @@ const makeMarkersByTypeSelector = module.exports.makeMarkersByTypeSelector = () 
  * @param {Object} Region The Region that is the parent of the geojson
  * @returns {Function} Selector that expects a state and props containing region
  */
-const makeGeojsonSelector = module.exports.makeGeojsonSelector = () => (state, {region}) => createSelector(
+export const makeGeojsonSelector = () => (state, {region}) => createSelector(
   [
     makeFeaturesByTypeSelector(),
     makeMarkersByTypeSelector()

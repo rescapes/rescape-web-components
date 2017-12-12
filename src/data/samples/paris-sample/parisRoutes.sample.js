@@ -9,14 +9,14 @@
  * THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const {createRoute} = require('data/dataCreationHelpers');
-const places = require('./parisPlaces.sample');
-const regions = require('./parisRegions.sample');
-const routeTypes = require('data/default/routeTypes');
+import {createRoute} from 'data/dataCreationHelpers';
+import places from './parisPlaces.sample';
+import * as regions from './parisRegions.sample';
+import * as routeTypes from 'data/default/routeTypes';
 
 const defaultRouteType = routeTypes.INTER_REGIONAL_RAIL_SERVICE.id;
 
-module.exports.default = [
+export default [
     createRoute(
         places.SAN_FRANCISCO,
         places.RENO,

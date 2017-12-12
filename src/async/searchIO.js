@@ -9,8 +9,8 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const xhr = require('xhr');
-const Task = require('data.task');
+import xhr from 'xhr';
+import Task from 'data.task';
 
 /**
  * Uses Mapbox to resolve locations based on a search string
@@ -21,7 +21,7 @@ const Task = require('data.task');
  * @param {String} query The query
  * @returns {Object} A Task to query for the search results
  */
-module.exports.searchLocation = (endpoint, source, accessToken, proximity, query) => dispatch => {
+export const searchLocation = (endpoint, source, accessToken, proximity, query) => dispatch => {
     return new Task((reject, response) => {
         const uri = `${endpoint}/geocoding/v5/${source}/${encodeURIComponent(query)}.json?access_token=${accessToken}${(proximity ? '&proximity=' + proximity : '')}`;
         xhr({

@@ -1,6 +1,6 @@
-const React = require('react');
-const styles = require('./Geocode.style').default;
-const PropTypes = require('prop-types');
+import React from 'react';
+import styles from './Geocode.style'
+import PropTypes from 'prop-types';
 const e = React.createElement;
 
 /**
@@ -178,4 +178,4 @@ Geocode.propTypes = {
     search: PropTypes.func.isRequired,
     searchFailure: PropTypes.func.isRequired
 };
-module.exports.default = Geocode;
+export default Geocode;

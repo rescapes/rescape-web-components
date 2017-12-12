@@ -9,15 +9,16 @@
  * THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const React = require('react');
-const {reqPath} = require('rescape-ramda').throwing;
-const {AddMarkerItem, MarkerItem} = require('./MarkerItem');
-const R = require('ramda');
-const styles = require('./MarkerList.style').default;
-const Geocode = require('components/geocode/Geocode').default;
-const ScrollArea = require('react-scrollbar');
-const PropTypes = require('prop-types');
+import React from 'react';
+import {throwing} from 'rescape-ramda'
+import {AddMarkerItem, MarkerItem} from './MarkerItem';
+import * as R from 'ramda';
+import styles from './MarkerList.style'
+import Geocode from 'components/geocode/Geocode'
+import ScrollArea from 'react-scrollbar';
+import PropTypes from 'prop-types';
 const e = React.createElement;
+const {reqPath} = throwing
 
 class MarkerList extends React.Component {
     constructor(props) {
@@ -117,10 +118,8 @@ class MarkerList extends React.Component {
 }
 
 const {
-    number,
     string,
     object,
-    bool,
     func
 } = PropTypes;
 
@@ -136,6 +135,6 @@ MarkerList.propTypes = {
     searchLocationFailure: func.isRequired
 };
 
-module.exports.default = MarkerList;
+export default MarkerList;
 
 

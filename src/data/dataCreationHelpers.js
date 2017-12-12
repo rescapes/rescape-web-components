@@ -9,27 +9,21 @@
  * THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const R = require('ramda');
-const moment = require('moment');
-const {
-    capitalize,
-    compact,
-    compactJoin,
-    emptyToNull,
-    idOrIdFromObj,
-    reduceWithNext
-} = require('rescape-ramda');
-const {fromImmutable} = require('helpers/immutableHelpers');
-const {toTimeString} = require('helpers/timeHelpers');
-const {calculateDistance} = require('helpers/geospatialHelpers');
+import * as R from 'ramda';
+import moment from 'moment';
+
+import {fromImmutable} from 'helpers/immutableHelpers';
+import {toTimeString} from 'helpers/timeHelpers';
+import {calculateDistance} from 'helpers/geospatialHelpers';
+const { capitalize, compact, compactJoin, emptyToNull, idOrIdFromObj, reduceWithNext } = require('rescape-ramda');
 
 // Direction ids for typical Trip pairs
-const FROM_TO_DIRECTION = module.exports.FROM_TO_DIRECTION = {
+export const FROM_TO_DIRECTION = {
     id: '0',
     resolveToStop: route => route.places.to,
     resolveTripSymbol: route => `${route.places.from.id}->${route.via ? `(${route.via})->` : ''}${route.places.to.id}`
 };
-const TO_FROM_DIRECTION = module.exports.TO_FROM_DIRECTION = {
+export const TO_FROM_DIRECTION = {
     id: '1',
     resolveToStop: route => route.places.from,
     resolveTripSymbol: route => `${route.places.to.id}->${route.via ? `(${route.via})->` : ''}${route.places.from.id}`
@@ -45,7 +39,7 @@ const tripHeadSign = (to, via) =>
  * @param {string|null} [which] Which station/stop (e.g. Union, Airport)
  * @returns {string} A stop id
  */
-const createStopId = module.exports.createStopId = (place, which = null) => compact([idOrIdFromObj(place), which]).join('-');
+export const createStopId = (place, which = null) => compact([idOrIdFromObj(place), which]).join('-');
 
 /**
  * @typedef {Object} Location
@@ -77,7 +71,7 @@ const createStopId = module.exports.createStopId = (place, which = null) => comp
  * @param {string|null} [options.stopType] label describing the stop type if stopName is not used, defaults to 'Station'
  * @returns {Map} A Stop object
  */
-const createStop = module.exports.createStop = (place, which, location, options = {}) => {
+export const createStop = (place, which, location, options = {}) => {
     const id = createStopId(place, which);
     return {
         id: id,
@@ -105,7 +99,7 @@ const createStop = module.exports.createStop = (place, which, location, options 
  * @param {string} [via] Optional pass through Region to distinguish the route
  * @returns {string} A Route id
  */
-const createRouteId = module.exports.createRouteId = (from, to, via) => {
+export const createRouteId = (from, to, via) => {
     const fromId = idOrIdFromObj(from);
     const toId = idOrIdFromObj(to);
     return via ?
@@ -127,7 +121,7 @@ const createRouteId = module.exports.createRouteId = (from, to, via) => {
  * @param {string} specs.routeType - GTFS extended RouteType (see routes.json)
  * @returns {Route} An object representing the Route
  */
-const createRoute = module.exports.createRoute = (from, to, specs = {}) => {
+export const createRoute = (from, to, specs = {}) => {
     // The id is from the place ids with an optional via
     // (e.g. 'SFC-REN via Altamont')
     const id = createRouteId(from, to, specs.via);
@@ -168,7 +162,7 @@ const createRoute = module.exports.createRoute = (from, to, specs = {}) => {
  * @param {[string]} [seasons] Default ['yearlong'] Seasons of the year: 'Winter', 'School Year', 'Tourist Season'
  * @returns {Service} A Service object with an id based on days and seasons
  */
-const createService = module.exports.createService = (startDate, endDate, days = ['everyday'], seasons = ['yearlong']) => {
+export const createService = (startDate, endDate, days = ['everyday'], seasons = ['yearlong']) => {
     return {
         id: [...seasons, ...days].join('_'),
         days,
@@ -199,7 +193,7 @@ const createService = module.exports.createService = (startDate, endDate, days =
  * @param {Service|String} service The Service or Service id of the Trip
  * @returns {String} The trip id
  */
-const createTripId = module.exports.createTripId = (route, direction, service) => {
+export const createTripId = (route, direction, service) => {
     return [
         direction.resolveTripSymbol(route),
         service.label
@@ -248,7 +242,7 @@ const createTripId = module.exports.createTripId = (route, direction, service) =
  * @param {Service} service The Service of the Trip
  * @returns {Object} The Trip
  */
-const createTrip = module.exports.createTrip = (route, direction, service) => {
+export const createTrip = (route, direction, service) => {
     const id = createTripId(route, direction, service);
 
     return {
@@ -281,7 +275,7 @@ const createTrip = module.exports.createTrip = (route, direction, service) => {
  * This is
  * @returns {[TripWithStopTimes]} A two-item array containing with each result of stopTimeCallback.
  */
-const createTripWithStopTimesPair = module.exports.createTripWithStopTimesPair = (route, service, stopTimeCallback) =>
+export const createTripWithStopTimesPair = (route, service, stopTimeCallback) =>
     [
         createTrip(route, FROM_TO_DIRECTION, service),
         createTrip(route, TO_FROM_DIRECTION, service)
@@ -305,7 +299,7 @@ const createTripWithStopTimesPair = module.exports.createTripWithStopTimesPair =
  * @param {string|null} [departureTime] The optional departure time in format 23:59:59
  * @returns {StopTime} The StopTime
  */
-const createStopTime = module.exports.createStopTime = (trip, stopSequence, stop, arrivalTime = null, departureTime = null) => {
+export const createStopTime = (trip, stopSequence, stop, arrivalTime = null, departureTime = null) => {
     return R.mergeAll([
         {
             trip,
@@ -324,7 +318,7 @@ const createStopTime = module.exports.createStopTime = (trip, stopSequence, stop
  * @param {[Stop]} stops The Stops
  * @returns {[Stop]} The ordered Stops
  */
-const orderStops = module.exports.orderStops = (trip, stops) => {
+export const orderStops = (trip, stops) => {
     switch (trip.direction) {
         case FROM_TO_DIRECTION:
             return stops;
@@ -352,7 +346,7 @@ const orderStops = module.exports.orderStops = (trip, stops) => {
  * @yields {StopTime} each Stop Time
  * @returns {StopTime} WTF eslint
  */
-const stopTimeGenerator = module.exports.stopTimeGenerator = function *(trip, stops, startTime, endTime, dwellTime) {
+export const stopTimeGenerator = function *(trip, stops, startTime, endTime, dwellTime) {
     const imStops = fromImmutable(stops);
     // The duration of the endTime
     const endDuration = moment.duration(endTime);
@@ -443,4 +437,4 @@ const stopTimeGenerator = module.exports.stopTimeGenerator = function *(trip, st
  * @param {Array} args See stopTimeGenerator
  * @returns {[Stop]} All of the Stops
  */
-const createStopsTimes = module.exports.createStopTimes = (...args) => Array.from(stopTimeGenerator(...args));
+export const createStopTimes = (...args) => Array.from(stopTimeGenerator(...args));

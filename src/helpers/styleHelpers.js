@@ -9,11 +9,11 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const R = require('ramda');
-const PropTypes = require('prop-types');
-const {v} = require('rescape-validate');
-const {compact} = require('rescape-ramda');
-const {throwing: {reqPath}} = require('rescape-ramda');
+import * as R from 'ramda';
+import PropTypes from 'prop-types';
+import {v} from 'rescape-validate';
+import {compact, throwing} from 'rescape-ramda'
+const {reqPath} = throwing
 
 /**
  * Creates a class name from a root name and a suffix
@@ -22,14 +22,14 @@ const {throwing: {reqPath}} = require('rescape-ramda');
  * If null then the className will simply be the root
  * @returns {String} root-suffix or root if suffix is not specified
  */
-const classNamer = module.exports.classNamer = R.curry((root, suffix) => R.join('-', compact([root, suffix])));
+export const classNamer = R.curry((root, suffix) => R.join('-', compact([root, suffix])));
 
 /**
  * Given a name, generates a className
  * @param name
  * @param styles
  */
-const getClassAndStyle = (root, name, styles) => ({
+export const getClassAndStyle = (root, name, styles) => ({
   className: classNamer(name),
   style: reqPath(R.split('.', name), styles)
 })
@@ -45,7 +45,7 @@ const getClassAndStyle = (root, name, styles) => ({
  * @return {Function} A function that accepts two objects. The first object must have a
  * fraction value for the given prop. The second object must have a numeric value
  */
-module.exports.styleMultiplier = v(R.curry((containerStyleValue, styleValue) =>
+export const styleMultiplier = v(R.curry((containerStyleValue, styleValue) =>
   containerStyleValue * styleValue
 ), [
   ['containerStyleValue', PropTypes.number.isRequired],
@@ -61,7 +61,7 @@ module.exports.styleMultiplier = v(R.curry((containerStyleValue, styleValue) =>
  * @returns {Object} A single keyed object keyed by prop and valued by scale[x].
  * If index or scale[index] is not a Number an Error is thrown, as this is always a coding error
  */
-module.exports.createScaledPropertyGetter = R.curry((scale, prop, index) => {
+export const createScaledPropertyGetter = R.curry((scale, prop, index) => {
   const getScale = R.prop(R.__, scale);
   return R.ifElse(
     R.both(
@@ -75,6 +75,6 @@ module.exports.createScaledPropertyGetter = R.curry((scale, prop, index) => {
   )(index);
 });
 
-module.exports.applyStyles = R.curry((styles, component) => {
+export const applyStyles = R.curry((styles, component) => {
 
 });

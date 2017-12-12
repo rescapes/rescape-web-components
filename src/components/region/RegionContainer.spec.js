@@ -1,5 +1,5 @@
-const {mapStateToProps} = require('./RegionContainer');
-const {makeSampleInitialState} = require('helpers/testHelpers');
+import {mapStateToProps} from './RegionContainer';
+import {makeSampleInitialState} from 'helpers/testHelpers';
 
 describe('RegionContainer', () => {
   test('mapStateToProps', () => {

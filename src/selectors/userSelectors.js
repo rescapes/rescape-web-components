@@ -9,18 +9,18 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const {createSelector} = require('reselect');
-const R = require('ramda');
-const {mergeDeep, throwing: {findOne, reqPath, onlyOneValue}} = require('rescape-ramda');
-const {STATUS, status} = require('./selectorHelpers');
+import * as R from 'ramda';
+import {throwing} from 'rescape-ramda';
+import {STATUS, status} from './selectorHelpers';
+
+const {findOne, reqPath, onlyOneValue} = throwing;
 
 /**
  * Map the region ids of the user to full regions
  * @param {Object} state The redux state
  * @param {Object} user The User that has regions
  */
-const userRegionsSelector = module.exports.userRegionsSelector = (state, {user}) =>
-{
+export const userRegionsSelector = (state, {user}) => {
   return R.map(
     userRegion => R.find(R.propEq('id', userRegion.id))(R.values(state.regions)),
     R.values(user.regions)
@@ -32,7 +32,7 @@ const userRegionsSelector = module.exports.userRegionsSelector = (state, {user})
  * that is true
  * @param state
  */
-const activeUserSelector = module.exports.activeUserSelector = state =>
+export const activeUserSelector = state =>
   onlyOneValue(findOne(
     status[STATUS.IS_ACTIVE],
     reqPath(['users'], state)

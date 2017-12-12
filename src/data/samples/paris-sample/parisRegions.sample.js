@@ -9,18 +9,23 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const journeys = require('./parisJourneys.sample.json');
-const locations = require('./parisUserLocations.sample.json');
-const routes = require('./parisRoutes.sample').default;
-const routeTypes = require('data/default/routeTypes');
-const {applyDefaultRegion} = require('data/configHelpers');
-const trips = require('./parisTrips.sample').default;
-const stops = require('./parisStops.sample').default;
-const osm = require('./parisOsm.sample').default;
-const {throwing: {reqPath}} = require('rescape-ramda');
+import journeys from './parisJourneys.sample.json';
+import locations from './parisUserLocations.sample.json';
+import routes from './parisRoutes.sample'
+import * as routeTypes from 'data/default/routeTypes';
+import {applyDefaultRegion} from 'data/configHelpers';
+import trips from './parisTrips.sample'
+import stops from './parisStops.sample'
+import osm from './parisOsm.sample'
+import {throwing} from 'rescape-ramda'
+const {reqPath} = throwing;
+
+export const NORTH_BAY = 'North-Bay';
+export const ALTAMONT = 'Altamont';
+export const EAST_BAY = 'East-Bay';
 
 // merge the default region template with our region(s)
-module.exports.default = applyDefaultRegion({
+export default applyDefaultRegion({
   paris: {
     id: 'paris',
     name: 'Paris',

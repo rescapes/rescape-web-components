@@ -9,8 +9,8 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const R = require('ramda');
-const {mergeDeep, throwing: {reqPath}} = require('rescape-ramda');
+import * as R from 'ramda';
+import {mergeDeep} from 'rescape-ramda';
 const environment = process.env.NODE_ENV;
 
 /**
@@ -19,7 +19,7 @@ const environment = process.env.NODE_ENV;
  * Overrideable for testing
  * @type {any|*}
  */
-const currentConfig = module.exports.getCurrentConfig = (env = environment) => R.cond(
+export const getCurrentConfig = (env = environment) => R.cond(
   [
     [R.equals('test'), () => require('data/samples/sampleConfig').sampleConfig],
     [R.equals('development'), () => require('data/california/californiaConfig').californiaConfig],
@@ -38,4 +38,4 @@ const currentConfig = module.exports.getCurrentConfig = (env = environment) => R
  * @param {Object} localSettings Default {}. Any localSettings that need to be deep merged into the conifg
  * @returns {Object} The resolved config
  */
-module.exports.currentConfigResolver = (localSettings = {}) => mergeDeep(currentConfig(), localSettings);
+export const currentConfigResolver = (localSettings = {}) => mergeDeep(getCurrentConfig(), localSettings);

@@ -1,10 +1,10 @@
-const {environmentConfig} = require('environments/testConfig');
-const regions = require('./parisRegions.sample').default;
-const users = require('./parisUsers.sample').default;
-const {mergeDeep} = require('rescape-ramda');
-const {applyRegionsToUsers} = require('data/configHelpers');
+import {environmentConfig} from 'environments/testConfig';
+import regions from './parisRegions.sample'
+import users from './parisUsers.sample'
+import {mergeDeep} from 'rescape-ramda';
+import {applyRegionsToUsers} from 'data/configHelpers';
 
-module.exports.parisSampleConfig = mergeDeep(environmentConfig, {
+export const parisSampleConfig = mergeDeep(environmentConfig, {
   regions,
   // Give each users all regions for simplicity
   users: applyRegionsToUsers(regions, users)

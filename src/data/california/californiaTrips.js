@@ -13,14 +13,14 @@
  * Creates default TripPair objects
  */
 
-const stops = require('./californiaStops').default;
-const w = require('./californiaStops').default;
-const routes = require('./californiaRoutes').default;
-const {createTripWithStopTimesPair, orderStops, stopTimeGenerator} = require('data/dataCreationHelpers');
-const {stopResolver, routeResolver} = require('data/dataQueryHelpers');
-const places = require('./californiaPlaces');
-const regions = require('./californiaRegions');
-const {DEFAULT_SERVICE} = require('data/default/services');
+import stops from './californiaStops'
+import w from './californiaStops'
+import routes from './californiaRoutes'
+import {createTripWithStopTimesPair, orderStops, stopTimeGenerator} from 'data/dataCreationHelpers';
+import {stopResolver, routeResolver} from 'data/dataQueryHelpers';
+import places from './californiaPlaces';
+import regions from './californiaRegions';
+import {DEFAULT_SERVICE} from 'data/default/services';
 
 const resolveStop = stopResolver(stops);
 const resolveRoute = routeResolver(routes);
@@ -29,7 +29,7 @@ const resolveRoute = routeResolver(routes);
 /**
  * Creates a TripPair and then augments each trip with the StopTimes
  */
-module.exports.default = [
+export default [
     ...createTripWithStopTimesPair(
         resolveRoute(places.SAN_FRANCISCO, places.RENO, regions.NORTH_BAY),
         DEFAULT_SERVICE,

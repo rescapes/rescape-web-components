@@ -9,9 +9,9 @@
 * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 */
 
-const R = require('ramda');
-const {mapPropValueAsIndex} = require('rescape-ramda');
-const {fromJS, Iterable} = require('immutable');
+import * as R from 'ramda';
+import {mapPropValueAsIndex} from 'rescape-ramda';
+import {fromJS, Iterable} from 'immutable';
 
 /**
 * Convert the obj to an Immutable if it is not.
@@ -20,7 +20,7 @@ const {fromJS, Iterable} = require('immutable');
 * toImmutable:: Immutable b = a -> b
 *            :: Immutable b = b -> b
 */
-const toImmutable = module.exports.toImmutable = obj => Iterable.isIterable(obj) ? obj : fromJS(obj);
+export const toImmutable = obj => Iterable.isIterable(obj) ? obj : fromJS(obj);
 
 /**
 * Converts an Immutable to javascript if it's an Immutable
@@ -28,7 +28,7 @@ const toImmutable = module.exports.toImmutable = obj => Iterable.isIterable(obj)
 * @returns {Object} The object as plain javascript.
 * toJS:: Immutable a = a -> b
 */
-const toJS = module.exports.toJS = obj => obj.toJS ? obj.toJS() : obj;
+export const toJS = obj => obj.toJS ? obj.toJS() : obj;
 
 /**
 * Convert the Immutable to plain JS if it is not
@@ -37,7 +37,7 @@ const toJS = module.exports.toJS = obj => obj.toJS ? obj.toJS() : obj;
 * fromImmutable:: Immutable b = b -> a
 *              :: a-> a
 */
-const fromImmutable = module.exports.fromImmutable = obj =>
+export const fromImmutable = obj =>
   R.ifElse(
     Iterable.isIterable,
     toJS,
@@ -54,7 +54,7 @@ const fromImmutable = module.exports.fromImmutable = obj =>
 * mapPropValueAsIndex:: Immutable m = {j, {k, v}} -> m {j, {k, v}}
 *                    :: Immutable m = [{k, v}] -> m {j, {k, v}}
 */
-const toImmutableKeyedByProp = module.exports.toImmutableKeyedByProp = R.curry((prop, objs) =>
+export const toImmutableKeyedByProp = R.curry((prop, objs) =>
   R.pipe(
     R.when(Array.isArray, mapPropValueAsIndex(prop)),
     toImmutable
@@ -65,4 +65,4 @@ const toImmutableKeyedByProp = module.exports.toImmutableKeyedByProp = R.curry((
 * Use immutable to make a deep copy of an object
 * copy:: a -> a
 */
-const copy = module.exports.copy = R.compose(toJS, toImmutable);
+export const copy = R.compose(toJS, toImmutable);

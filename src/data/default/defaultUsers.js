@@ -9,7 +9,7 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const {APP_ADMIN, REGION_MANAGER, REGION_USER, REGION_VISITOR} = module.exports.userTemplateKeys = {
+export const userTemplateKeys = {
   // Superuser (e.g. SoP staff)
   APP_ADMIN: 'app_admin',
   // Client with full control over their region(s)
@@ -22,7 +22,7 @@ const {APP_ADMIN, REGION_MANAGER, REGION_USER, REGION_VISITOR} = module.exports.
   REGION_VISITOR: 'region_visitor'
 };
 
-const {ADMINISTRATE, MANAGE, USE, VISIT} = module.exports.permissions = {
+export const permissions = {
   ADMINISTRATE: 'administrate',
   MANAGE: 'manage',
   USE: 'use',
@@ -32,29 +32,29 @@ const {ADMINISTRATE, MANAGE, USE, VISIT} = module.exports.permissions = {
 /*
   User template. Merge one of these into a user configuration
 */
-module.exports.users = {
-  [APP_ADMIN]: {
+export const users = {
+  [userTemplateKeys.APP_ADMIN]: {
     // Admin access to application
-    permissions: [ADMINISTRATE],
+    permissions: [permissions.ADMINISTRATE],
     regions: {
       ids: {}
     }
   },
-  [REGION_MANAGER]: {
+  [userTemplateKeys.REGION_MANAGER]: {
     // Can manage regions listed in ids
-    permissions: [MANAGE],
+    permissions: [permissions.MANAGE],
     regions: {
     }
   },
-  [REGION_USER]: {
+  [userTemplateKeys.REGION_USER]: {
     // Can use regions listed in ids, creating projects, etc
-    permissions: [USE],
+    permissions: [permissions.USE],
     regions: {
     }
   },
-  [REGION_VISITOR]: {
+  [userTemplateKeys.REGION_VISITOR]: {
     // Can use regions listed in ids, creating projects, etc
-    permissions: [VISIT],
+    permissions: [permissions.VISIT],
     regions: {
     }
   }

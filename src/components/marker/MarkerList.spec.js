@@ -1,17 +1,17 @@
-const React = require('react');
-const {shallow} = require('enzyme');
-const {reqPath} = require('rescape-ramda').throwing;
-const {mapStateToProps} = require('./MarkerListContainer');
-const {geojsonByType} = require('helpers/geojsonHelpers');
+import React from 'react';
+import {shallow} from 'enzyme';
+import {reqPath} from 'rescape-ramda'.throwing;
+import {mapStateToProps} from './MarkerListContainer';
+import {geojsonByType} from 'helpers/geojsonHelpers';
 
-const {sampleConfig} = require('data/samples/sampleConfig');
-const initialState = require('data/initialState').default;
-const R = require('ramda');
-const MarkerList = require('./MarkerList').default;
+import {sampleConfig} from 'data/samples/sampleConfig';
+import initialState from 'data/initialState'
+import * as R from 'ramda';
+import MarkerList from './MarkerList'
 jest.mock('query-overpass');
 const state = initialState(config);
 const currentKey = reqPath(['regions', 'currentKey'], state);
-const geojson = require('queryOverpassResponse').LA_SAMPLE;
+import geojson from 'queryOverpassResponse'.LA_SAMPLE;
 const e = React.createElement;
 
 const props = mapStateToProps(state, {

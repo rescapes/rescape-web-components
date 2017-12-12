@@ -9,24 +9,25 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const R = require('ramda');
-const {sankey} = require('d3-sankey');
-const {resolveSvgPoints} = require('helpers/svgHelpers');
-const {resolveSvgReact} = require('helpers/svgHelpers');
+import * as R from 'ramda';
+import {sankey} from 'd3-sankey';
+import d3 from 'd3';
+import {resolveSvgPoints} from 'helpers/svgHelpers';
+import {resolveSvgReact} from 'helpers/svgHelpers';
 
 const DEGREE_TO_RADIAN = Math.PI / 180;
 const NUM_POINTS = 2000;
 
 const round = x => Math.round(x * 10) / 10;
 
-const nodePosition = module.exports.nodePosition = (node, point) => ({
+export const nodePosition = (node, point) => ({
   x: round(point.x),
   dx: round(node.x1 - node.x0),
   y: round(point.y),
   dy: round(node.y1 - node.y0)
 });
 
-const linkPosition = module.exports.linkPosition = link => ({
+export const linkPosition = link => ({
   source: nodePosition(link.source),
   target: nodePosition(link.target),
   dy: round(link.width),
@@ -42,7 +43,7 @@ const linkPosition = module.exports.linkPosition = link => ({
  * @param elem
  * @returns {null}
  */
-module.exports.renderSankeySvgPoints = (opt, props, sankeyData, elem) => {
+export const renderSankeySvgPoints = (opt, props, sankeyData, elem) => {
   const theSankey = sankey().nodeWidth(15).nodePadding(10).extent([[1, 1], [props.style.width, props.style.height]]);
   // Map sample nodes to sample features
   const features = R.map(node =>

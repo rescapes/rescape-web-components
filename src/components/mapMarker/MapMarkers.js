@@ -9,11 +9,11 @@
  * THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const {DraggablePointsOverlay, SVGOverlay} = require('react-map-gl');
-const PropTypes = require('prop-types');
-const React = require('react');
-const R = require('ramda');
-const {resolveSvgReact} = require('helpers/svgHelpers');
+import {DraggablePointsOverlay, SVGOverlay} from 'react-map-gl';
+import PropTypes from 'prop-types';
+import React from 'react';
+import * as R from 'ramda';
+import {resolveSvgReact} from 'helpers/svgHelpers';
 const e = React.createElement;
 const ENTER_KEY = 13;
 const LIGHT_SETTINGS = {
@@ -154,11 +154,7 @@ class MapMarkers extends React.Component {
 }
 
 const {
-    number,
-    string,
     object,
-    bool,
-    array,
     func
 } = PropTypes;
 
@@ -168,5 +164,5 @@ MapMarkers.propTypes = {
     updateMarkers: func.isRequired,
     fetchMarkers: func.isRequired
 };
-module.exports.default = MapMarkers;
+export default MapMarkers;
 

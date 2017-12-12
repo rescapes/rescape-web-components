@@ -9,31 +9,36 @@
  * THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const {connect} = require('react-redux');
-const {bindActionCreators} = require('redux');
-//const {actionCreators} = require('src/redux/geojson/geojsonReducer');
-const {onChangeViewport} = require('redux-map-gl');
-const Sankey = require('./Sankey').default;
-const R = require('ramda');
-const {viewportsSelector} = require('selectors/mapboxSelectors')
-const {makeActiveUserAndRegionStateSelector} = require('selectors/storeSelectors');
-const {mapboxSettingsSelector} = require('selectors/settingsSelectors');
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+//import {actionCreators} from 'src/redux/geojson/geojsonReducer';
+import {onChangeViewport} from 'redux-map-gl';
+import Sankey from './Sankey'
+import * as R from 'ramda';
+import {viewportSelector} from 'selectors/mapboxSelectors'
+import {
+  makeActiveUserAndSelectedRegionStateSelector
+} from 'selectors/storeSelectors';
+import {mapboxSettingsSelector} from 'selectors/settingsSelectors';
 
-const {createSelector} = require('reselect');
+import {createSelector} from 'reselect';
+import {throwing} from 'rescape-ramda';
+import {makeTestPropsFunction, mergePropsForViews} from 'helpers/componentHelpers';
+const {findOne, onlyOneValue} = throwing
 //const {hoverMarker, selectMarker} = actionCreators;
 
 /**
  * Limits the state to the current selections
  * @returns {Object} The props
  */
-const mapStateToProps = module.exports.mapStateToProps =
+export const mapStateToProps =
   createSelector(
     [
-      makeActiveUserAndRegionStateSelector(),
+      makeActiveUserAndSelectedRegionStateSelector(),
       mapboxSettingsSelector
     ],
     (activeState, mapboxSettings) => {
-      const viewport = viewportsSelector()(activeState);
+      const viewport = viewportSelector({region: onlyOneValue()})(activeState);
       return R.merge(activeState, {
         views: {
           // The MapGl sub-component needs the viewport and mapboxSettings
@@ -48,7 +53,7 @@ const mapStateToProps = module.exports.mapStateToProps =
     }
   );
 
-const mapDispatchToProps = module.exports.mapDispatchToProps = (dispatch, ownProps) => {
+export const mapDispatchToProps = (dispatch, ownProps) => {
   return bindActionCreators({
     onChangeViewport,
     //hoverMarker,
@@ -56,4 +61,16 @@ const mapDispatchToProps = module.exports.mapDispatchToProps = (dispatch, ownPro
   }, dispatch);
 };
 
-module.exports.default = connect(mapStateToProps, mapDispatchToProps)(Sankey);
+/**
+ * Combines mapStateToProps, mapDispatchToProps with the given viewToActions mapping
+ * @type {Function}
+ */
+export const mergeProps = mergePropsForViews({
+  // MapGl child component needs the following actions
+  mapGl: ['onChangeViewport', 'hoverMarker', 'selectMarker']
+})
+
+// Returns a function that expects a sample state and ownProps for testing
+export const testPropsMaker = makeTestPropsFunction(mapStateToProps, mapDispatchToProps, mergeProps)
+
+export default connect(mapStateToProps, mapDispatchToProps, mergeProps)(Sankey)

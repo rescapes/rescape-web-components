@@ -9,21 +9,20 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-// const chroma = require('chroma-js');
-const R = require('ramda');
-const {createScaledPropertyGetter} = require('helpers/styleHelpers');
+// import chroma from 'chroma-js';
+import {createScaledPropertyGetter} from 'helpers/styleHelpers';
 
 const white = '#fff';
 const black = '#111';
 const blue = '#07c';
 
-module.exports.colors = {
+export const colors = {
   white,
   black,
   blue
 };
 
-module.exports.space = [
+export const space = [
   0,
   8,
   16,
@@ -34,7 +33,7 @@ module.exports.space = [
 const alpha = (color) => (a) => 0; // chroma(color).alpha(a).css();
 const darken = alpha('#000');
 
-module.exports.shade = [
+export const shade = [
   darken(0),
   darken(1 / 8),
   darken(1 / 4),
@@ -51,14 +50,14 @@ const scale = [
 ];
 
 const getScaledProperty = createScaledPropertyGetter(scale);
-module.exports.getMargin = getScaledProperty('margin');
-module.exports.getPadding = getScaledProperty('padding');
+export const getMargin = getScaledProperty('margin');
+export const getPadding = getScaledProperty('padding');
 
 /**
  * The default styles for all components
  * @type {*}
  */
-module.exports.defaultStyles = {
+export const defaultStyles = {
   fontFamily: 'inherit',
   fontSize: 'inherit',
   fontWeight: 'bold',

@@ -9,18 +9,23 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const journeys = require('./oaklandJourneys.sample.json');
-const locations = require('./oaklandUserLocations.sample.json');
-const routes = require('./oaklandRoutes.sample').default;
-const routeTypes = require('data/default/routeTypes');
-const {applyDefaultRegion} = require('data/configHelpers');
-const trips = require('./oaklandTrips.sample').default;
-const stops = require('./oaklandStops.sample').default;
-const osm = require('./oaklandOsm.sample').default;
-const {throwing: {reqPath}} = require('rescape-ramda');
+import journeys from './oaklandJourneys.sample.json';
+import locations from './oaklandUserLocations.sample.json';
+import routes from './oaklandRoutes.sample'
+import * as routeTypes from 'data/default/routeTypes';
+import {applyDefaultRegion} from 'data/configHelpers';
+import trips from './oaklandTrips.sample'
+import stops from './oaklandStops.sample'
+import osm from './oaklandOsm.sample'
+import {throwing} from 'rescape-ramda'
+const {reqPath} = throwing;
+
+export const NORTH_BAY = 'North-Bay';
+export const ALTAMONT = 'Altamont';
+export const EAST_BAY = 'East-Bay';
 
 // merge the default region template with our region(s)
-module.exports.default = applyDefaultRegion({
+export default applyDefaultRegion({
   oakland: {
     id: 'oakland',
     name: 'Oakland',

@@ -9,15 +9,16 @@
  * THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const PropTypes = require('prop-types');
-const region = require('components/region/RegionContainer').default;
-const styles = require('./Current.style').default;
-const React = require('react');
-const {eMap} = require('helpers/componentHelpers');
+import PropTypes from 'prop-types';
+import region from 'components/region/RegionContainer';
+import styles from './Current.style';
+import React from 'react';
+import {eMap} from 'helpers/componentHelpers';
+import * as R from 'ramda';
+import prettyFormat from 'pretty-format';
+
 const [Div, Region] =
   eMap(['div', region]);
-const R = require('ramda')
-const prettyFormat = require('pretty-format');
 
 /**
  * Displays the Region of the current state and eventually a Region selector.
@@ -25,24 +26,26 @@ const prettyFormat = require('pretty-format');
  */
 class Current extends React.Component {
   render() {
-    console.warn(`loading: ${this.props.loading}`)
-    console.warn(`error: ${this.props.error}`)
-    console.warn(`data: ${prettyFormat(this.props.data)}`)
+    console.warn(`loading: ${this.props.loading}`);
+    console.warn(`error: ${this.props.error}`);
+    console.warn(`data: ${prettyFormat(this.props.data)}`);
     // Pass the absolute width and height to give to the Mapbox viewport
     return R.cond([
       [R.propEq('loading'), () => this.renderLoading()],
       [R.has('error'), error => this.renderError(error)],
       [R.has('data'), data => this.renderData(data)],
-      [R.T, () => this.renderError(new Error("Expected loading, error, or data from Apollo wrapper, didn't get anything"))],
-    ])(this.props)
+      [R.T, () => this.renderError(new Error("Expected loading, error, or data from Apollo wrapper, didn't get anything"))]
+    ])(this.props);
   }
 
   renderLoading() {
-    return Div()
+    return Div();
   }
+
   renderError(error) {
-    return Div()
+    return Div();
   }
+
   renderData({region}) {
     return Div(
       {className: 'current'},
@@ -60,7 +63,8 @@ class Current extends React.Component {
 }
 
 const {
-  string, object, number, func, shape
+  number,
+  shape
 } = PropTypes;
 
 /**
@@ -74,4 +78,4 @@ Current.propTypes = {
   })
 };
 
-module.exports.default = Current;
+export default Current;

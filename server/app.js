@@ -1,8 +1,8 @@
 // in src/index.js
-const express = require('express');
-const graphqlHTTP = require('express-graphql');
-const { makeExecutableSchema } = require('graphql-tools');
-const {default: typeDefs} = require('../src/schema/schema')
+import express from 'express';
+import graphqlHTTP from 'express-graphql';
+import { makeExecutableSchema } from 'graphql-tools';
+import typeDefs from 'schema/schema'
 
 const schema = makeExecutableSchema({ typeDefs });
 const app = express();

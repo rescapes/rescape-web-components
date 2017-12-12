@@ -9,17 +9,17 @@
  * THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const {gql} = require('apollo-client-preset');
-const {graphql} = require('react-apollo');
-const {connect} = require('react-redux');
-const {expectTask, testState, makeSampleInitialState, propsFromSampleStateAndContainer, shallowWithMockStore} = require('./testHelpers');
-const Task = require('data.task');
-const R = require('ramda');
-const {makeMockStore} = require('./testHelpers');
-const {sampleConfig} = require('data/samples/sampleConfig');
-const {eMap} = require('helpers/componentHelpers');
+import {gql} from 'apollo-client-preset';
+import {graphql} from 'react-apollo';
+import {connect} from 'react-redux';
+import {expectTask, testState, makeSampleInitialState, propsFromSampleStateAndContainer, shallowWithMockStore} from './testHelpers';
+import Task from 'data.task';
+import * as R from 'ramda';
+import {makeMockStore} from './testHelpers';
+import {sampleConfig} from 'data/samples/sampleConfig';
+import {eMap} from 'helpers/componentHelpers';
 const [div] = eMap(['div']);
-const React = require('react');
+import React from 'react';
 
 describe('jestHelpers', () => {
   test('expectTask', () => {

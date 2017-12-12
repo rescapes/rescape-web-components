@@ -1,12 +1,12 @@
 
-const places = require('./california/californiaPlaces');
-const helper = require('./dataCreationHelpers');
-const w = require('./california/californiaStops');
-const regions = require('./california/californiaRegions');
-const routeTypes = require('./default/routeTypes');
-const {DEFAULT_SERVICE} = require('./default/services');
-const query = require('./dataQueryHelpers');
-const stopTypes = require('./default/stopTypes');
+import places from './california/californiaPlaces';
+import helper from './dataCreationHelpers';
+import w from './california/californiaStops';
+import regions from './california/californiaRegions';
+import * as routeTypes from './default/routeTypes';
+import {DEFAULT_SERVICE} from './default/services';
+import query from './dataQueryHelpers';
+import * as stopTypes from 'data/default/stopTypes';
 
 describe('Data Creation Helpers', () => {
     test('Creates a Stop id from a Place and Stop location', () => {

@@ -8,14 +8,14 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-const sankey = require('d3-sankey');
-const R = require('ramda');
-const sample = require('src/data/sankey.sample');
-const {mapStateToProps, mapDispatchToProps} = require('./SankeyContainer');
-const {propsFromSampleStateAndContainer} = require('helpers/testHelpers');
-const mapGL = require('react-map-gl').default;
-const mapbox = require('components/mapbox/Mapbox').default;
-const {eMap} = require('helpers/componentHelpers');
+import sankey from 'd3-sankey';
+import * as R from 'ramda';
+import sample from 'src/data/sankey.sample';
+import {mapStateToProps, mapDispatchToProps} from './SankeyContainer';
+import {propsFromSampleStateAndContainer} from 'helpers/testHelpers';
+import mapGL from 'react-map-gl'
+import mapbox from 'components/mapbox/Mapbox'
+import {eMap} from 'helpers/componentHelpers';
 const [MapGL, Mapbox] = eMap([mapGL, mapbox]);
 
 describe('Sankey', () => {

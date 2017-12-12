@@ -9,24 +9,27 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const {renderSankeySvgPoints} = require('helpers/sankeyHelpers');
-const PropTypes = require('prop-types');
-const React = require('react');
-const createMapStops = require('components/mapStop/MapStops').default;
-const {reqPath} = require('rescape-ramda').throwing;
-const {geojsonByType} = require('helpers/geojsonHelpers');
-const R = require('ramda');
-const {sankey, sankeyLinkHorizontal} = require('d3-sankey');
-const {mapDefault} = require('rescape-ramda');
-const {deckGL, ScatterplotLayer, OrthographicViewport, COORDINATE_SYSTEM} = mapDefault('deckGl', require('deck.gl'));
-const {eMap} = require('helpers/componentHelpers');
-const sample = require('data/sankey.sample');
+import {renderSankeySvgPoints} from 'helpers/sankeyHelpers';
+import PropTypes from 'prop-types';
+import React from 'react';
+import createMapStops from 'components/mapStop/MapStops';
+import {throwing} from 'rescape-ramda';
+import {geojsonByType} from 'helpers/geojsonHelpers';
+import * as R from 'ramda';
+import {sankey, sankeyLinkHorizontal} from 'd3-sankey';
+import {mapDefault} from 'rescape-ramda';
+import deckGL, {ScatterplotLayer, OrthographicViewport, COORDINATE_SYSTEM} from 'deck.gl';
+import {eMap} from 'helpers/componentHelpers';
+import sample from 'data/sankey.sample';
+import d3 from 'd3';
+import {resolveSvgPoints, resolveSvgReact} from 'helpers/svgHelpers';
+import {classNamer, styleMultiplier} from 'helpers/styleHelpers';
+import {makeMergeContainerStyleProps} from 'selectors/selectorHelpers';
+import mapGl from 'react-map-gl'
+
 const [MapGL, DeckGL, Svg, G, Circle, Div] =
-  eMap([require('react-map-gl'), deckGL, 'svg', 'g', 'circle', 'div']);
-const d3 = require('d3');
-const {resolveSvgPoints, resolveSvgReact} = require('helpers/svgHelpers');
-const {classNamer, styleMultiplier} = require('helpers/styleHelpers');
-const {makeMergeContainerStyleProps} = require('selectors/selectorHelpers');
+  eMap([mapGl, deckGL, 'svg', 'g', 'circle', 'div']);
+const {reqPath} = throwing;
 
 const Sankey = ({...props}) => {
 
@@ -34,14 +37,14 @@ const Sankey = ({...props}) => {
   const styles = makeMergeContainerStyleProps()(
     {
       style: {
-        root: reqPath(['style'], props),
+        root: reqPath(['style'], props)
       }
     },
     {
       root: {
         position: 'absolute',
         width: '100%',
-        height: '100%',
+        height: '100%'
       }
     });
   const {viewport, mapboxApiAccessToken} = props;
@@ -57,9 +60,9 @@ const Sankey = ({...props}) => {
     }, [
       Svg({
           viewBox: `0 0 ${width} ${height}`
-        },
+        }
         // TODO first argument needs to be opt from the SVGOverlay layer. See MapMarkers
-        renderSankeySvgPoints(null, props, sample, this.refs.node)
+        //renderSankeySvgPoints(null, props, sample, this.refs.node)
       )
     ]);
 
@@ -110,4 +113,4 @@ Sankey.propTypes = {
   geojson: object.isRequired
 };
 
-module.exports.default = Sankey;
+export default Sankey;

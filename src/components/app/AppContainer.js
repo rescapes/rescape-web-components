@@ -1,12 +1,12 @@
-const {gql} = require('apollo-client-preset');
-const {graphql} = require('react-apollo');
-const {connect} = require('react-redux');
-const {default: App} = require('components/app/App');
-const R = require('ramda');
-const {createSelector} = require('reselect');
-const {makeActiveUserAndRegionStateSelector, } = require('selectors/storeSelectors');
-const {makeBrowserProportionalDimensionsSelector} = require('selectors/styleSelectors');
-const {mergeDeep} = require('rescape-ramda');
+import {gql} from 'apollo-client-preset';
+import {graphql} from 'react-apollo';
+import {connect} from 'react-redux';
+import App from 'components/app/App';
+import * as R from 'ramda';
+import {createSelector} from 'reselect';
+import {makeActiveUserAndRegionStateSelector, } from 'selectors/storeSelectors';
+import {makeBrowserProportionalDimensionsSelector} from 'selectors/styleSelectors';
+import {mergeDeep} from 'rescape-ramda';
 
 /**
 * Query
@@ -36,7 +36,7 @@ const query = gql`
  * @param {Object} [props] The optional props to override the state.
  * @returns {Object} The state and own props mapped to props for the component
  */
-const mapStateToProps = module.exports.mapStateToProps = (state, props) =>
+export const mapStateToProps = (state, props) =>
   createSelector(
     [
       (state, props) => {
@@ -69,4 +69,4 @@ const CurrentContainer = connect(
   mapStateToProps
 )(ContainerWithData);
 
-module.exports.default = CurrentContainer;
+export default CurrentContainer;

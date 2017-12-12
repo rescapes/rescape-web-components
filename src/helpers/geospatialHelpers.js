@@ -16,7 +16,7 @@
  * @param {Location} toLocation the destination Location
  * @returns {number} The distance between the Locations
  */
-module.exports.calculateDistance = function calculateDistance(fromLocation, toLocation) {
+export const calculateDistance = function calculateDistance(fromLocation, toLocation) {
     const pi = Math.PI / 180,
         cos = Math.cos,
         a = 0.5 - cos((toLocation.lat - fromLocation.lat) * pi) / 2 +
