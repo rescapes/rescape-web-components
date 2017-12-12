@@ -15,11 +15,11 @@ import {actionCreators} from 'src/redux/geojson/geojsonReducer';
 import {onChangeViewport} from 'redux-map-gl';
 import Mapbox from './Mapbox'
 const {hoverMarker, selectMarker} = actionCreators;
-import {makeViewportsSelector, makeActiveUserAndRegionStateSelector} from 'selectors/selectorHelpers';
 import {v} from 'rescape-validate';
 import PropTypes from 'prop-types';
 import {createSelector} from 'reselect';
 import * as R from 'ramda';
+import {viewportSelector} from 'selectors/mapboxSelectors';
 
 /**
  * Uses props as state and makes convenience views
@@ -27,14 +27,14 @@ import * as R from 'ramda';
 export const mapStateToProps = createSelector(
   [
     (state, props) => props,
-    (state, props) => makeViewportsSelector()(props)
+    (state, props) => viewportSelector(props)
   ],
   (propsAsState, viewports) => R.merge(
     propsAsState,
     {
       views: {
         // Containers needed by multiple children
-        viewports: makeViewportsSelector()(state)
+        viewports: viewportSelector(state)
       }
     }
   )

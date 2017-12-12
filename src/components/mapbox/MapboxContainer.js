@@ -16,12 +16,16 @@ import {onChangeViewport} from 'redux-map-gl'
 import Mapbox from './Mapbox'
 //const {hoverMarker, selectMarker} = actionCreators
 import {makeMergeDefaultStyleWithProps} from 'selectors/styleSelectors'
-import {makeViewportsSelector} from 'selectors/regionSelectors'
-import {makeActiveUserAndRegionStateSelector} from 'selectors/storeSelectors'
+import {viewportSelector} from 'selectors/mapboxSelectors';
+import {
+  makeActiveUserAndSelectedRegionStateSelector, makeActiveUserAndSettingsStateSelector
+} from 'selectors/storeSelectors';
 import {mapboxSettingsSelector} from 'selectors/settingsSelectors'
 import {createSelector} from 'reselect'
 import R from 'ramda'
 import {mergePropsForViews, makeTestPropsFunction} from 'helpers/componentHelpers'
+import {throwing} from 'rescape-ramda';
+const {onlyOneValue, reqPath} = throwing
 
 /**
  * Limits the state to the current selections
@@ -29,18 +33,18 @@ import {mergePropsForViews, makeTestPropsFunction} from 'helpers/componentHelper
  * TODO should this be moved up to a parent and just take incoming props as state
  * @returns {Object} The props
  */
-export const mapStateToProps =
-
+export const mapStateToProps = (state, props) =>
   createSelector(
     [
-      makeActiveUserAndRegionStateSelector(),
+      makeActiveUserAndSettingsStateSelector(),
       makeMergeDefaultStyleWithProps(),
       mapboxSettingsSelector
     ],
     (selectedState, style, mapboxSettings) => {
-      const viewport = makeViewportsSelector()(selectedState)
+      const region = reqPath(['region'], props)
+      const viewport = viewportSelector(state, {region})
       return R.mergeAll([
-        selectedState,
+        props,
         {style}, {
           views: {
             // Child component mapGl needs the following props
@@ -56,7 +60,7 @@ export const mapStateToProps =
           }
         }])
     }
-  )
+  )(state, props)
 /*
  region,
  viewport: R.merge(

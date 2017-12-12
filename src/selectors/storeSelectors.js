@@ -45,3 +45,14 @@ export const makeActiveUserAndSelectedRegionStateSelector = () =>
     regions: activeUserSelectedRegionsSelector,
     users: activeUserSelector
   });
+
+/**
+ * Returns the active user and global settings. Used when regions are not a concern
+ * @returns {Function} A reselect selector that is called with state and props and returns
+ * an object containing settings and users
+ */
+export const makeActiveUserAndSettingsStateSelector = () =>
+  createStructuredSelector({
+    settings: settingsSelector,
+    users: activeUserSelector
+  });

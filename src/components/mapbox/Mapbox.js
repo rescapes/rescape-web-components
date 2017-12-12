@@ -18,8 +18,8 @@ import {throwing} from 'rescape-ramda';
 import Deck from '../deck/Deck';
 import {eMap, liftAndExtractItems} from 'helpers/componentHelpers';
 import * as R from 'ramda';
-import {makeViewportsSelector, makeMergeContainerStyleProps} from 'selectors/selectorHelpers';
 import {classNamer} from 'helpers/styleHelpers';
+import {makeMergeContainerStyleProps} from 'selectors/styleSelectors';
 
 const [Div, MapGl] = eMap(['div', mapGl]);
 const MapStops = createMapStops(React);

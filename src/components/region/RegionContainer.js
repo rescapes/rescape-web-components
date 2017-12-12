@@ -8,31 +8,26 @@ import {viewportSelector} from 'selectors/mapboxSelectors';
 import {createSelector} from 'reselect';
 import * as R from 'ramda';
 
+/**
+ * RegionContainer expects the state to contain the active user and that user's Regions
+ * It is given one of those regions as props
+ * It calculates the values needed by Region's child components
+ * @param {Object} state The redux state
+ * @param {Object} props The parent props
+ * @param {Object} props.Region The region
+ */
 export const mapStateToProps =
-  (state, {region}) => createSelector(
+  (state, props) => createSelector(
     [
-      makeActiveUserAndRegionStateSelector(),
       makeMergeDefaultStyleWithProps(),
-      mapboxSettingsSelector,
     ],
-    (selectedState, style, mapboxSettings) => {
-      const viewport = viewportSelector(state, {region});
+    style => {
       return R.mergeAll([
-        selectedState,
+        props,
         {style},
-        {
-          views: {
-            mapbox: {
-              viewport: R.merge(
-                mapboxSettings,
-                {viewport}
-              )
-            }
-          }
-        }
       ]);
     }
-  )(state, {region});
+  )(state, props);
 
 export const mapDispatchToProps = (dispatch) => {
   return {

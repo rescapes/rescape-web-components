@@ -6,7 +6,7 @@ import * as R from 'ramda';
 import {createSelector} from 'reselect';
 import {makeActiveUserAndSelectedRegionStateSelector} from 'selectors/storeSelectors';
 import {makeBrowserProportionalDimensionsSelector} from 'selectors/styleSelectors';
-import {onlyOneRegionId} from 'selectors/regionSelectors';
+import {onlyOneRegion, onlyOneRegionId} from 'selectors/regionSelectors';
 import {mergeDeep, throwing} from 'rescape-ramda'
 const {onlyOneValue} = throwing
 
@@ -29,15 +29,16 @@ export const mapStateToProps = (state, props) =>
       },
       makeBrowserProportionalDimensionsSelector()
     ],
-    (activeUserAndRegion, dimensions) => R.merge(
-      activeUserAndRegion,
-      {
+    (activeUserAndRegion, dimensions) =>
+      ({
         // Merge the browser dimensions with the props
         // props from the parent contain style instructions
         // TODO we need to set width and height proportional to the browser dimensions, not equal to
-        style: dimensions
-      }
-    )
+        style: dimensions,
+        views: {
+          region: onlyOneRegion(activeUserAndRegion)
+        }
+      })
   )(state, props);
 
 /**

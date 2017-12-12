@@ -24,7 +24,8 @@ import {mapboxSettingsSelector} from 'selectors/settingsSelectors';
 import {createSelector} from 'reselect';
 import {throwing} from 'rescape-ramda';
 import {makeTestPropsFunction, mergePropsForViews} from 'helpers/componentHelpers';
-const {findOne, onlyOneValue} = throwing
+import {makeMergeDefaultStyleWithProps} from 'selectors/styleSelectors';
+const {onlyOneValue, reqPath} = throwing
 //const {hoverMarker, selectMarker} = actionCreators;
 
 /**
@@ -35,11 +36,12 @@ export const mapStateToProps =
   createSelector(
     [
       makeActiveUserAndSelectedRegionStateSelector(),
+      makeMergeDefaultStyleWithProps(),
       mapboxSettingsSelector
     ],
-    (activeState, mapboxSettings) => {
-      const viewport = viewportSelector({region: onlyOneValue()})(activeState);
-      return R.merge(activeState, {
+    (selectedState, style, mapboxSettings) => {
+      const viewport = viewportSelector(state, {region: onlyOneValue(reqPath(['regions'], selectedState))})
+      return R.merge(selectedState, {
         views: {
           // The MapGl sub-component needs the viewport and mapboxSettings
           // viewport is a functor so map it

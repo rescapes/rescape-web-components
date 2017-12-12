@@ -16,6 +16,7 @@ import {
   regionsSelector,  onlyOneRegionId
 } from './regionSelectors';
 import {mergeDeep} from 'rescape-ramda';
+import {onlyOneRegion} from 'selectors/regionSelectors';
 const  {IS_ACTIVE, IS_SELECTED} = STATUS
 
 describe('regionSelectors', () => {
@@ -80,5 +81,14 @@ describe('regionSelectors', () => {
       }
     }
     expect(onlyOneRegionId(state)).toEqual('oakland')
+  })
+
+  test('onlyOneRegionId', () => {
+    const state = {
+      regions: {
+        'oakland': {id: 'oakland', name: 'Oakland'}
+      }
+    }
+    expect(onlyOneRegion(state)).toEqual(state.regions.oakland)
   })
 });

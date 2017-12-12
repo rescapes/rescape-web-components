@@ -72,7 +72,23 @@ export const activeUserSelectedRegionsSelector = makeActiveUserRegionsSelector(s
  */
 export const onlyOneRegionId = state => onlyOneValue(
   R.compose(
+    // Extract the single id
     R.view(R.lensProp('regions')),
+    // Get a view of just the one expected regions with its id as a value
     R.view(R.compose(R.lensProp('regions'), mapped, R.lensProp('id')))
+  )(state)
+)
+
+/**
+ * Returns the single region from a state that is limited to one Region
+ * @type {*|Object}
+ * @returns {String} The only region
+ */
+export const onlyOneRegion = state => onlyOneValue(
+  R.compose(
+    // Extract the single region
+    R.view(R.lensProp('regions')),
+    // Get a view of just the one expected region
+    R.view(R.compose(R.lensProp('regions'), mapped))
   )(state)
 )

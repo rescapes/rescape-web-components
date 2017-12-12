@@ -13,14 +13,17 @@ import {testPropsMaker} from './MapboxContainer';
 import {makeSampleInitialState} from 'helpers/testHelpers';
 
 describe('MapboxContainer', () => {
+    const state = makeSampleInitialState();
     test('mapStateToProps', () => {
         const ownProps = {
             style: {
                 width: 500,
                 height: 500
-            }
-        };
+            },
+            region: findOneValue(active)
 
-        expect(testPropsMaker(makeSampleInitialState(), ownProps)).toMatchSnapshot();
+        };
+        const actual = testPropsMaker(, ownProps)
+        expect(actual).toMatchSnapshot();
     });
 });
