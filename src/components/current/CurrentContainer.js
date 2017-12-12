@@ -36,7 +36,11 @@ export const mapStateToProps = (state, props) =>
         // TODO we need to set width and height proportional to the browser dimensions, not equal to
         style: dimensions,
         views: {
-          region: onlyOneRegion(activeUserAndRegion)
+          // child component
+          region: {
+            // region prop
+            region: onlyOneRegion(activeUserAndRegion)
+          }
         }
       })
   )(state, props);

@@ -71,14 +71,18 @@ const Region = ({...props}) => {
         className: nameClass('mapbox-outer'),
         style: styles.mapboxOuter
       },
-      Mapbox(R.merge(props.views.mapbox, {
-        region: props.region,
-        style: styles.mapbox
-      }),
-      //Sankey(R.merge(props.views.mapbox, {
-      //  region: props.region,
-      //  style: styles.mapbox
-      //})
+      Mapbox(
+        R.merge(
+          props.views.mapbox,
+          { style: styles.mapbox }
+        )
+      ),
+      Sankey(
+        R.merge(
+          props.views.mapbox,
+          { style: styles.mapbox }
+        )
+      )
     ),
     Div({
         className: nameClass('markers-outer'),
