@@ -1,12 +1,11 @@
 
 import {connect} from 'react-redux';
 import Region from './Region'
-import {mapboxSettingsSelector} from 'selectors/settingsSelectors';
 import {makeMergeDefaultStyleWithProps} from 'selectors/styleSelectors';
-import {makeActiveUserAndRegionStateSelector} from 'selectors/storeSelectors';
-import {viewportSelector} from 'selectors/mapboxSelectors';
 import {createSelector} from 'reselect';
 import * as R from 'ramda';
+import {gql} from 'apollo-client-preset';
+import {graphql} from 'react-apollo';
 
 /**
  * RegionContainer expects the state to contain the active user and that user's Regions
@@ -42,6 +41,41 @@ export const mapDispatchToProps = (dispatch) => {
   };
 };
 
+
+/**
+ * Query
+ * Prerequisites:
+ *   A User in context
+ * Resolves:
+ *  The Regions of the User
+ * Without prerequisites:
+ *  Skip render
+ */
+const query = gql`
+    query region($regionId: String!) {
+        store {
+            region(id: $id) {
+                id
+                name
+            },
+        }
+    }
+`;
+
+const ContainerWithData = graphql(query, {
+  options: ({region}) => ({
+    variables: {
+      regionId: region.id
+    }
+  }),
+  props: ({data}) => ({
+    store: data.store,
+    loading: data.loading,
+    data
+  })
+})
+(Region);
+
 const RegionContainer = connect(
   /**
    * The wrapped component needs access to the settings and a r
@@ -49,7 +83,7 @@ const RegionContainer = connect(
    * @returns {{}}
    */
   mapStateToProps, mapDispatchToProps
-)(Region);
+)(ContainerWithData);
 
 export default RegionContainer;
 

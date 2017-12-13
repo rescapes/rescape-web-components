@@ -11,7 +11,7 @@
 
 import {settingsSelector} from 'selectors/settingsSelectors';
 import {activeUserRegionsSelector, activeUserSelectedRegionsSelector} from 'selectors/regionSelectors';
-import {activeUserSelector} from 'selectors/userSelectors';
+import {activeUsersSelector} from 'selectors/userSelectors';
 import {createStructuredSelector} from 'reselect';
 
 /**
@@ -27,7 +27,7 @@ export const makeActiveUserAndRegionStateSelector = () =>
   createStructuredSelector({
     settings: settingsSelector,
     regions: activeUserRegionsSelector,
-    users: activeUserSelector
+    users: activeUsersSelector
   });
 
 /**
@@ -43,7 +43,7 @@ export const makeActiveUserAndSelectedRegionStateSelector = () =>
   createStructuredSelector({
     settings: settingsSelector,
     regions: activeUserSelectedRegionsSelector,
-    users: activeUserSelector
+    users: activeUsersSelector
   });
 
 /**
@@ -54,5 +54,5 @@ export const makeActiveUserAndSelectedRegionStateSelector = () =>
 export const makeActiveUserAndSettingsStateSelector = () =>
   createStructuredSelector({
     settings: settingsSelector,
-    users: activeUserSelector
+    users: activeUsersSelector
   });

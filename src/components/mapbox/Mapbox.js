@@ -18,20 +18,20 @@ import {throwing} from 'rescape-ramda';
 import Deck from '../deck/Deck';
 import {eMap, liftAndExtractItems} from 'helpers/componentHelpers';
 import * as R from 'ramda';
-import {classNamer} from 'helpers/styleHelpers';
+import {classNamer, getClassAndStyle} from 'helpers/styleHelpers';
 import {makeMergeContainerStyleProps} from 'selectors/styleSelectors';
 
 const [Div, MapGl] = eMap(['div', mapGl]);
 const MapStops = createMapStops(React);
 const {reqPath} = throwing;
 
-const Mapbox = ({...props}) => {
+const Mapbox = ({style, views: {mapGl: mapGlProps}}) => {
 
   const nameClass = classNamer('mapbox');
   const styles = makeMergeContainerStyleProps()(
     {
       style: {
-        root: reqPath(['style'], props)
+        root: style
       }
     },
     {
@@ -56,7 +56,7 @@ const Mapbox = ({...props}) => {
   });
   */
   /*
-  const deck = e(Deck, this.props.views.deck);
+  const deck = e(Deck, reqPath(['deck'], views));
     viewport,
     geojson: markers,
     iconAtlas,
@@ -65,10 +65,8 @@ const Mapbox = ({...props}) => {
     onClick: selectMarker
   */
 
-  return Div({className: nameClass('root')},
-    // Lift to operate on a functor and then extract the values
-    // Since mapGl is a functor we can support multiple instances of MapGl or possibly streams
-    liftAndExtractItems(MapGl, props.views.mapGl)
+  return Div(getClassAndStyle('root', styles),
+    MapGl(mapGlProps)
   );
 
   /*

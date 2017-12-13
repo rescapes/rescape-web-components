@@ -27,7 +27,7 @@ const parentSelectorValues = (parentKey, selector) => (parent, props, {options: 
 
 import { activeUserSelectedRegionsSelector, regionSelector} from 'selectors/regionSelectors';
 import { settingsSelector} from 'selectors/settingsSelectors';
-import { activeUserSelector} from 'selectors/userSelectors';
+import { activeUsersSelector} from 'selectors/userSelectors';
 
 // Original example from: https://github.com/apollographql/graphql-tools
 const makeSelectorResolvers = data => ({
@@ -90,7 +90,7 @@ const makeSelectorResolvers = data => ({
     regions: selectorValues(activeUserSelectedRegionsSelector),
     region: selectorValues(regionSelector),
     // Resolves the active user
-    users: selectorValues(activeUserSelector)
+    users: selectorValues(activeUsersSelector)
   },
 
   Query: {

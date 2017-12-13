@@ -9,13 +9,14 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import {mapStateToProps} from './CurrentContainer';
-import {makeSampleInitialState, shallowWithMockStore} from 'helpers/testHelpers';
+import {makeSampleInitialState, wrapWithMockStore} from 'helpers/testHelpers';
 const initialState = makeSampleInitialState();
 import CurrentContainer from './CurrentContainer'
 import Current from './Current'
 import {eMap} from 'helpers/componentHelpers';
-const [currentContainer] = eMap([CurrentContainer]);
+import * as R from 'ramda'
 import React from 'react'
+const [currentContainer] = eMap([CurrentContainer]);
 
 
 describe('CurrentContainer', () => {
@@ -24,10 +25,10 @@ describe('CurrentContainer', () => {
     expect(mapStateToProps(initialState)).toMatchSnapshot();
   });
 
-  test('render', async() => {
+  test('render', () => {
     const parentProps = {}
-    const wrapper = shallowWithMockStore(currentContainer(parentProps))
+    const wrapper = wrapWithMockStore(currentContainer(parentProps))
     const current = wrapper.find('Current');
-    expect(current.props().loading).toEqual(true)
-  }, 112121211)
+    expect(R.keys(current.props())).toEqual(['data', 'style', 'views'])
+  })
 });

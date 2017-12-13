@@ -4,10 +4,16 @@ import {connect} from 'react-redux';
 import Current from './Current'
 import * as R from 'ramda';
 import {createSelector} from 'reselect';
-import {makeActiveUserAndSelectedRegionStateSelector} from 'selectors/storeSelectors';
+import {
+  makeActiveUserAndSelectedRegionStateSelector,
+  makeActiveUserAndSettingsStateSelector
+} from 'selectors/storeSelectors';
 import {makeBrowserProportionalDimensionsSelector} from 'selectors/styleSelectors';
 import {onlyOneRegion, onlyOneRegionId} from 'selectors/regionSelectors';
 import {mergeDeep, throwing} from 'rescape-ramda'
+import {makeTestPropsFunction, mergePropsForViews} from 'helpers/componentHelpers';
+import {bindActionCreators} from 'redux';
+import {activeUserRegionSelector} from 'selectors/userSelectors';
 const {onlyOneValue} = throwing
 
 
@@ -25,12 +31,15 @@ export const mapStateToProps = (state, props) =>
   createSelector(
     [
       (state, props) => {
-        return makeActiveUserAndSelectedRegionStateSelector()(mergeDeep(state, R.defaultTo({}, props)));
+        return makeActiveUserAndSettingsStateSelector()(mergeDeep(state, R.defaultTo({}, props)));
       },
       makeBrowserProportionalDimensionsSelector()
     ],
-    (activeUserAndRegion, dimensions) =>
+    (activeUserAndSettings, dimensions) =>
       ({
+        // No current graphql queries, pass the winnowed state
+        // It might turn out that Current doesn't need anything because it simply renders child containers
+        data: activeUserAndSettings,
         // Merge the browser dimensions with the props
         // props from the parent contain style instructions
         // TODO we need to set width and height proportional to the browser dimensions, not equal to
@@ -39,49 +48,27 @@ export const mapStateToProps = (state, props) =>
           // child component
           region: {
             // region prop
-            region: onlyOneRegion(activeUserAndRegion)
+            region: activeUserRegionSelector(activeUserAndSettings)
           }
         }
       })
   )(state, props);
 
+export const mapDispatchToProps = (dispatch, ownProps) => {
+  return bindActionCreators({
+  }, dispatch)
+}
+
 /**
- * Query
- * Prerequisites:
- *   A User in context
- * Resolves:
- *  The Regions of the User
- * Without prerequisites:
- *  Skip render
+ * Combines mapStateToProps, mapDispatchToProps with the given viewToActions mapping
+ * @type {Function}
  */
-const query = gql`
-    query region($regionId: String!) {
-        store {
-            region(id: $id) {
-                id
-                name
-            },
-        }
-    }
-`;
-
-const ContainerWithData = graphql(query, {
-  options: (props) => ({
-    // Options are computed from `props` here.
-    variables: {
-      regionId: onlyOneRegionId(props)
-    }
-  }),
-  props: ({data}) => ({
-    store: data.store,
-    loading: data.loading,
-    data
-  })
+export const mergeProps = mergePropsForViews({
+  // Region child component needs the following actions
+  region: []
 })
-(Current);
 
-const CurrentContainer = connect(
-  mapStateToProps
-)(ContainerWithData);
+// Returns a function that expects a sample state and ownProps for testing
+export const testPropsMaker = makeTestPropsFunction(mapStateToProps, mapDispatchToProps, mergeProps)
 
-export default CurrentContainer;
+export default connect(mapStateToProps, mapDispatchToProps, mergeProps)(Current)

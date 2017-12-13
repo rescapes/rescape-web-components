@@ -12,28 +12,71 @@
 import * as R from 'ramda';
 import {throwing} from 'rescape-ramda';
 import {STATUS, status} from './selectorHelpers';
+import {findByParams} from 'selectors/selectorHelpers';
+import {createSelector} from 'reselect';
 
 const {findOne, reqPath, onlyOneValue} = throwing;
 
 /**
- * Map the region ids of the user to full regions
- * @param {Object} state The redux state
- * @param {Object} user The User that has regions
+ * Simply resolves the user's regions, which are just ids and status flags, not full regions
+ * @param state
+ * @param user
+ * @returns {Array} The list of region identifier objects
  */
 export const userRegionsSelector = (state, {user}) => {
+  return R.values(reqPath(['regions'], user));
+};
+
+/**
+ * Map the region ids of the user to full regions when the latter are loaded in the state
+ * @param {Object} state The redux state
+ * @param {Object} user The User that has regions
+ * @returns {Array} The list of full regions
+ */
+export const userResolvedRegionsSelector = (state, {user}) => {
   return R.map(
     userRegion => R.find(R.propEq('id', userRegion.id))(R.values(state.regions)),
-    R.values(user.regions)
+    userRegionsSelector(state, {user})
   );
 };
 
 /**
- * Returns the active user by searching state.users for the one and only one isActive property
- * that is true
+ * Returns the active users in a container by searching state.users for the one and only one isActive property
+ * that is true. This only expects one and only one active user
  * @param state
+ * @returns {Object|Array} The active user as one key object or single item array
  */
-export const activeUserSelector = state =>
-  onlyOneValue(findOne(
+export const activeUsersSelector = state =>
+  findOne(
     status[STATUS.IS_ACTIVE],
     reqPath(['users'], state)
-  ));
+  )
+
+/**
+ * Returns the value of the only active user
+ * @param state
+ */
+export const activeUserValueSelector = createSelector(
+  [activeUsersSelector],
+  onlyOneValue
+)
+
+/**
+ * Selects the selected region of the active user. This is not the resolved region, rather the identifier object
+ * @param state
+ */
+export const activeUserRegionSelector = state => createSelector(
+  [activeUserValueSelector],
+  user => userSelectedRegionSelector(state, {user})
+)(state)
+
+/**
+ * Returns the selected region of the given user
+ * @param state
+ * @param user
+ */
+export const userSelectedRegionSelector = (state, {user}) =>
+  findByParams(
+    {[STATUS.IS_SELECTED]: true},
+    userRegionsSelector(state, {user})
+  )

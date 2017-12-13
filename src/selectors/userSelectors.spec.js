@@ -12,7 +12,12 @@
 import * as R from 'ramda';
 
 import {STATUS} from './selectorHelpers';
-import { activeUserSelector, userRegionsSelector } from './userSelectors';
+import {activeUsersSelector, userResolvedRegionsSelector} from './userSelectors';
+import {
+  activeUserRegionSelector, activeUserValueSelector, userRegionsSelector,
+  userSelectedRegionSelector
+} from 'selectors/userSelectors';
+
 const {IS_ACTIVE, IS_SELECTED} = STATUS;
 
 describe('userSelectors', () => {
@@ -38,17 +43,56 @@ describe('userSelectors', () => {
     }
   };
 
-  test('activeUserSelector', () => {
+  test('activeUsersSelector', () => {
+    const state = {
+      users: {
+        yuk: {name: 'Yuk'},
+        duk: {name: 'Duk', [IS_ACTIVE]: true}
+      }
+    };
+    expect(activeUsersSelector(state)).toEqual({duk: {name: 'Duk', [IS_ACTIVE]: true}});
+  });
+
+  test('activeUsersSelector', () => {
     const state = {
       users: {
         yuk: {name: 'Yuk'},
         dum: {name: 'Duk', [IS_ACTIVE]: true}
       }
     };
-    expect(activeUserSelector(state)).toEqual({dum: {name: 'Duk', [IS_ACTIVE]: true}});
+    expect(activeUserValueSelector(state)).toEqual({name: 'Duk', [IS_ACTIVE]: true});
+  });
+
+  test('activeUserRegionSelector', () => {
+    const state = {
+      users
+    };
+    expect(activeUserRegionSelector(state)).toEqual({
+      id: 'pie',
+      [IS_SELECTED]: true
+    });
   });
 
   test('userRegionsSelector', () => {
+    const state = {users};
+    expect(userRegionsSelector(state, {user: users.blinky})).toEqual([{
+      id: 'pie',
+      [IS_SELECTED]: true
+    }]);
+  });
+
+  test('userSelectedRegionSelector', () => {
+    const state = {users}
+    const user = users.blinky
+    expect(userSelectedRegionSelector(state, {user})).toEqual(
+      {
+        id: 'pie',
+        [IS_SELECTED]: true
+      }
+    )
+  })
+
+  test('userResolvedRegionsSelector', () => {
     const user = {
       id: 'dum,',
       name: 'Duk',
@@ -68,6 +112,6 @@ describe('userSelectors', () => {
         }
       }
     };
-    expect(userRegionsSelector(state, {user})).toEqual(R.values(state.regions));
+    expect(userResolvedRegionsSelector(state, {user})).toEqual(R.values(state.regions));
   });
 });

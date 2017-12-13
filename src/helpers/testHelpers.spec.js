@@ -12,7 +12,7 @@
 import {gql} from 'apollo-client-preset';
 import {graphql} from 'react-apollo';
 import {connect} from 'react-redux';
-import {expectTask, testState, makeSampleInitialState, propsFromSampleStateAndContainer, shallowWithMockStore} from './testHelpers';
+import {expectTask, testState, makeSampleInitialState, propsFromSampleStateAndContainer, wrapWithMockGraphqlAndStore} from './testHelpers';
 import Task from 'data.task';
 import * as R from 'ramda';
 import {makeMockStore} from './testHelpers';
@@ -59,7 +59,7 @@ describe('jestHelpers', () => {
     expect(makeMockStore(sampleConfig).getState()).toEqual(sampleConfig);
   });
 
-  test('shallowWithMockStore', () => {
+  test('wrapWithMockGraphqlAndStore', () => {
     const parentProps = {};
     const query = gql`
         query region {
@@ -87,7 +87,7 @@ describe('jestHelpers', () => {
     // Create a factory for container
     const [container] = eMap([Container]);
     // Instantiate
-    const wrapper = shallowWithMockStore(container(parentProps));
+    const wrapper = wrapWithMockGraphqlAndStore(container(parentProps));
     // Expect the apollo data prop, the redux dispatch, and the someProp we added
     expect(R.keys(wrapper.props()).sort()).toEqual(['data', 'dispatch', 'someProp'])
   });

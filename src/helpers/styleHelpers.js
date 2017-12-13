@@ -29,7 +29,7 @@ export const classNamer = R.curry((root, suffix) => R.join('-', compact([root, s
  * @param name
  * @param styles
  */
-export const getClassAndStyle = (root, name, styles) => ({
+export const getClassAndStyle = (name, styles) => ({
   className: classNamer(name),
   style: reqPath(R.split('.', name), styles)
 })

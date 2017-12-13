@@ -26,10 +26,6 @@ const [Div, Region] =
  */
 class Current extends React.Component {
   render() {
-    console.warn(`loading: ${this.props.loading}`);
-    console.warn(`error: ${this.props.error}`);
-    console.warn(`data: ${prettyFormat(this.props.data)}`);
-    // Pass the absolute width and height to give to the Mapbox viewport
     return R.cond([
       [R.propEq('loading'), () => this.renderLoading()],
       [R.has('error'), error => this.renderError(error)],

@@ -109,11 +109,11 @@ export const mockApolloClient = schema => {
 };
 
 /**
- * Wraps a component in as store context for Apollo/Redux testing
+ * Wraps a component in a graphql client and store context for Apollo/Redux testing
  * @param component
  * @return {*}
  */
-export const shallowWithMockStore = (component) => {
+export const wrapWithMockGraphqlAndStore = (component) => {
   const resolvedSchema = createSelectorResolvedSchema(makeSchema(), makeSampleInitialState());
   const store = makeSampleStore();
 
@@ -128,6 +128,29 @@ export const shallowWithMockStore = (component) => {
       },
       childContextTypes: {
         client: PropTypes.object.isRequired,
+        store: PropTypes.object.isRequired
+      }
+    }
+  )
+};
+
+/**
+ * Wraps a component in a store context for Redux testing
+ * @param component
+ * @return {*}
+ */
+export const wrapWithMockStore = (component) => {
+  const store = makeSampleStore();
+
+  // shallow wrap the component, passing the Apollo client and redux store to the component and children
+  // Also dive once to get passed the Apollo wrapper
+  return mount(
+    component,
+    {
+      context: {
+        store
+      },
+      childContextTypes: {
         store: PropTypes.object.isRequired
       }
     }

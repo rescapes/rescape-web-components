@@ -10,7 +10,7 @@
  */
 
 import {mapped} from 'ramda-lens';
-import {activeUserSelector} from 'selectors/userSelectors';
+import {activeUsersSelector, activeUserValueSelector} from 'selectors/userSelectors';
 import * as R from 'ramda';
 import {STATUS, status, makeInnerJoinByLensThenFilterSelector, findByParams} from './selectorHelpers';
 import {throwing} from 'rescape-ramda'
@@ -51,7 +51,7 @@ const makeActiveUserRegionsSelector = (predicate) => state =>
       // The state
       state,
       // Props are the active user
-      {user: activeUserSelector(state)}
+      {user: activeUserValueSelector(state)}
     )
   )(state)
 
