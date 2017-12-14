@@ -1,12 +1,13 @@
 import {mapStateToProps} from './RegionContainer';
 import {
-  propsFromSampleStateAndContainer, wrapWithMockGraphqlAndStore
+  propsFromSampleStateAndContainer, propsWithGraphQlFromSampleStateAndContainer, wrapWithMockGraphqlAndStore
 } from 'helpers/testHelpers';
 import {testPropsMaker} from 'components/region/RegionContainer';
 import {testPropsMaker as currentPropsMaker} from 'components/current/CurrentContainer'
 import {eMap} from 'helpers/componentHelpers';
 import RegionContainer from 'components/region/RegionContainer';
 import * as R from 'ramda'
+import {queries} from 'components/region/RegionContainer';
 
 describe('RegionContainer', () => {
   // Get the parent Region from the CurrentContainer's testPropMaker

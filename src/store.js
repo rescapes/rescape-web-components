@@ -10,30 +10,34 @@
  */
 import client from './apolloClient';
 import thunk from 'redux-thunk';
-import { createLogger } from 'redux-logger'
+import {createLogger} from 'redux-logger';
 import {applyMiddleware, compose, createStore} from 'redux';
-import rootReducer from 'reducers'
-import initialStateCreator from 'data/initialState'
+import rootReducer from 'reducers';
+import initialStateCreator from 'data/initialState';
+
 const loggerMiddleware = createLogger();
 
 
 /**
  * Creates a store
  * @param {Object} config The config object to use for the initialState
- * @param {Object} [enhancers] Optional enhancers to override default enhancers for testing
+ * @param {Object} [testEnhancers] Optional enhancers to override default enhancers for testing
  * @returns {Object} The redux store
  */
-export default (config, enhancers = []) => {
+export default (config, testEnhancers = []) => {
   const devToolsExtension = window.devToolsExtension;
+  const enhancers = [];
   if (typeof devToolsExtension === 'function') {
     enhancers.push(devToolsExtension());
   }
   // compose enhancers unless supplied.
   // this prevents running Apollo's client.middleware() in node tests
-  const composedEnhancers = enhancers || compose(
-    applyMiddleware(thunk, loggerMiddleware, client.middleware()),
-    ...enhancers
-  );
+  const composedEnhancers = testEnhancers ?
+    compose(...testEnhancers) :
+    compose(
+      applyMiddleware(thunk, loggerMiddleware, client.middleware()),
+      ...enhancers
+    );
 
   return createStore(
     rootReducer,

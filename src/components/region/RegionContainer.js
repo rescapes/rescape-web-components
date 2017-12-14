@@ -5,9 +5,10 @@ import {makeMergeDefaultStyleWithProps} from 'selectors/styleSelectors';
 import {createSelector} from 'reselect';
 import {gql} from 'apollo-client-preset';
 import {graphql} from 'react-apollo';
-import {makeTestPropsFunction, mergePropsForViews} from 'helpers/componentHelpers';
+import {makeGraphQlTestPropsFunction, makeTestPropsFunction, mergePropsForViews} from 'helpers/componentHelpers';
 import {mergeDeep, throwing} from 'rescape-ramda';
 import React from 'react'
+import * as R from 'ramda';
 const {reqPath} = throwing
 
 /**
@@ -58,7 +59,7 @@ export const mapDispatchToProps = (dispatch) => {
  * Without prerequisites:
  *  Skip render
  */
-const query = gql`
+const regionQuery = gql`
     query region($regionId: String!) {
         store {
             region(id: $id) {
@@ -69,15 +70,25 @@ const query = gql`
     }
 `;
 
-const ContainerWithData = graphql(query, {
-  options: ({data: {region}}) => ({
-    variables: {
-      regionId: region.id
+/**
+ * All queries used by the container
+ * @type {{region: {query: *, args: {options: (function({data: *}): {variables: {regionId}}), props: (function({data: *, ownProps?: *}): *)}}}}
+ */
+export const queries = {
+  region: {
+    query: regionQuery,
+    args: {
+      options: ({data: {region}}) => ({
+        variables: {
+          regionId: region.id
+        }
+      }),
+      props: ({data, ownProps}) => mergeDeep(ownProps, {data})
     }
-  }),
-  props: ({data, ownProps}) => mergeDeep(ownProps, {data})
-})
-(Region);
+  }
+}
+
+const ContainerWithData = graphql(queries.region.query, queries.region.args)(Region);
 
 /**
  * Combines mapStateToProps, mapDispatchToProps with the given viewToActions mapping

@@ -9,14 +9,24 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import {throwing} from 'rescape-ramda'
+import {throwing} from 'rescape-ramda';
+import {createSelector} from 'reselect';
+import * as R from 'ramda';
+import {mapboxSettingsSelector} from 'selectors/settingsSelectors';
 const {reqPath} = throwing;
 
 /**
- * Selects the viewport from the given Region's mapbox
+ * Selects the viewport from the given Region's mapbox and merges it with the state's mapbox settings
  * @param state The redux State
  * @param region The Region
- * @returns A selector which extracts the viewport from the region's mapbox
+ * @returns A selector which extracts the viewport from the region's mapbox and merges it with the state's mapbox settings
  */
-export const viewportSelector = (state, {region}) => reqPath(['mapbox', 'viewport'], region)
+export const viewportSelector = (state, {region}) => createSelector(
+  [mapboxSettingsSelector],
+  mapboxSettings => R.merge(
+    // Merge
+    R.defaultTo({}, mapboxSettings.viewport),
+    reqPath(['mapbox', 'viewport'], region)
+  )
+)(state, {region});
 

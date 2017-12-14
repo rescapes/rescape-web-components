@@ -15,7 +15,8 @@ import styles from './Current.style';
 import React from 'react';
 import {eMap} from 'helpers/componentHelpers';
 import * as R from 'ramda';
-import prettyFormat from 'pretty-format';
+import {throwing} from 'rescape-ramda'
+const {reqPath} = throwing
 
 const [Div, Region] =
   eMap(['div', region]);

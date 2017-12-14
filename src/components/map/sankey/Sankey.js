@@ -12,7 +12,7 @@
 import {renderSankeySvgPoints} from 'helpers/sankeyHelpers';
 import PropTypes from 'prop-types';
 import React from 'react';
-import createMapStops from 'components/mapStop/MapStops';
+import createMapStops from 'components/map/mapStop/MapStops';
 import {throwing} from 'rescape-ramda';
 import {geojsonByType} from 'helpers/geojsonHelpers';
 import * as R from 'ramda';
@@ -21,17 +21,17 @@ import {mapDefault} from 'rescape-ramda';
 import deckGL, {ScatterplotLayer, OrthographicViewport, COORDINATE_SYSTEM} from 'deck.gl';
 import {eMap} from 'helpers/componentHelpers';
 import sample from 'data/sankey.sample';
-import d3 from 'd3';
+import * as d3 from 'd3';
 import {resolveSvgPoints, resolveSvgReact} from 'helpers/svgHelpers';
 import {classNamer, styleMultiplier} from 'helpers/styleHelpers';
-import {makeMergeContainerStyleProps} from 'selectors/selectorHelpers';
+import {makeMergeContainerStyleProps} from 'selectors/styleSelectors'
 import mapGl from 'react-map-gl'
 
 const [MapGL, DeckGL, Svg, G, Circle, Div] =
   eMap([mapGl, deckGL, 'svg', 'g', 'circle', 'div']);
 const {reqPath} = throwing;
 
-const Sankey = ({...props}) => {
+const Sankey = (props) => {
 
   const nameClass = classNamer('sankey');
   const styles = makeMergeContainerStyleProps()(

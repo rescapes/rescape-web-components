@@ -12,22 +12,20 @@
 import PropTypes from 'prop-types';
 import mapGl from 'react-map-gl';
 import React from 'react';
-import createMapStops from 'components/mapStop';
-import MapMarkers from 'components/mapMarker';
+//import createMapStops from 'components/mapStop/index';
+//import MapMarkers from 'components/mapMarker/index';
 import {throwing} from 'rescape-ramda';
-import Deck from '../deck/Deck';
-import {eMap, liftAndExtractItems} from 'helpers/componentHelpers';
+//import Deck from '../deck/Deck';
+import {eMap} from 'helpers/componentHelpers';
 import * as R from 'ramda';
 import {classNamer, getClassAndStyle} from 'helpers/styleHelpers';
 import {makeMergeContainerStyleProps} from 'selectors/styleSelectors';
 
 const [Div, MapGl] = eMap(['div', mapGl]);
-const MapStops = createMapStops(React);
-const {reqPath} = throwing;
+//const MapStops = createMapStops(React);
 
 const Mapbox = ({style, views: {mapGl: mapGlProps}}) => {
 
-  const nameClass = classNamer('mapbox');
   const styles = makeMergeContainerStyleProps()(
     {
       style: {

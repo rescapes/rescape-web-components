@@ -11,7 +11,7 @@
 
 import * as R from 'ramda';
 import {sankey} from 'd3-sankey';
-import d3 from 'd3';
+import * as d3 from 'd3';
 import {resolveSvgPoints} from 'helpers/svgHelpers';
 import {resolveSvgReact} from 'helpers/svgHelpers';
 
@@ -88,7 +88,7 @@ export const renderSankeySvgPoints = (opt, props, sankeyData, elem) => {
     .selectAll('path')
     .data(graph.links)
     .enter().append('path')
-    .attr('d', d3.sankeyLinkHorizontal())
+    .attr('d', sankey.sankeyLinkHorizontal())
     .attr('stroke-width', function (d) {
       return d.width;
     });

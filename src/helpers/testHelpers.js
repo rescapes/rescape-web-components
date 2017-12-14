@@ -24,6 +24,8 @@ import {createSelectorResolvedSchema} from 'schema/selectorResolvers';
 import {InMemoryCache} from 'apollo-client-preset';
 import {SchemaLink} from 'apollo-link-schema';
 import PropTypes from 'prop-types';
+import {makeGraphQlTestPropsFunction} from 'helpers/componentHelpers';
+import * as R from 'ramda';
 
 
 /**
@@ -75,6 +77,13 @@ export const makeSampleInitialState = (sampleUserSettings = {}) => {
  */
 export const propsFromSampleStateAndContainer = (containerPropMaker, sampleOwnProps = {}) =>
   containerPropMaker(makeSampleInitialState(), sampleOwnProps);
+
+export const propsWithGraphQlFromSampleStateAndContainer = (queryArgs, containerPropMaker, sampleOwnProps = {}) =>
+  R.compose(
+    makeGraphQlTestPropsFunction(resolvedSchema, dataSource, queryArgs),
+    containerPropMaker(makeSampleInitialState(), sampleOwnProps)
+  )
+
 
 /**
  * Makes a mock store with the given state and optional sampleUserSettings. If the sampleUserSettings

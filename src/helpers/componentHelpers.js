@@ -14,6 +14,7 @@ import * as R from 'ramda';
 import {v} from 'rescape-validate';
 import PropTypes from 'prop-types';
 import {filterWithKeys, throwing} from 'rescape-ramda'
+import graphql from 'graphql';
 const {reqPath} = throwing
 
 /**
@@ -85,6 +86,26 @@ export const makeTestPropsFunction = (mapStateToProps, mapDispatchToProps, merge
       mapStateToProps(sampleState, sampleOwnProps),
       mapDispatchToProps(R.identity), sampleOwnProps
     );
+
+/**
+ * Wraps a function that expects states and props and returns sample props with a function that
+ * runs a graphql query
+ * @param resolvedSchema
+ * @param dataSource
+ * @param queryArgs
+ */
+/*
+export const makeGraphQlTestPropsFunction = (resolvedSchema, dataSource, queryArgs) => async (state, props) => {
+  const result = await graphql(resolvedSchema, queryArgs.query, {}, {options: {dataSource}}).then(result =>
+    queryArgs.args.props
+
+  (sampleState, sampleOwnProps) =>
+    mergeProps(
+      mapStateToProps(sampleState, sampleOwnProps),
+      mapDispatchToProps(R.identity), sampleOwnProps
+    );
+}
+*/
 
 /**
  * Given a React component function that expects props and given props that are a functor (Array or Object),

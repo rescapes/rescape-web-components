@@ -164,7 +164,7 @@ export const createRoute = (from, to, specs = {}) => {
  */
 export const createService = (startDate, endDate, days = ['everyday'], seasons = ['yearlong']) => {
     return {
-        id: [...seasons, ...days].join('_'),
+        id: R.join('_', R.concat(seasons, days)),
         days,
         seasons,
         startDate,

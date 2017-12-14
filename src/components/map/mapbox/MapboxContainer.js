@@ -9,59 +9,73 @@
  * THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import {connect} from 'react-redux';
-import {bindActionCreators} from 'redux';
-//import {actionCreators} from 'src/redux/geojson/geojsonReducer';
-import {onChangeViewport} from 'redux-map-gl';
-import Sankey from './Sankey'
-import * as R from 'ramda';
-import {viewportSelector} from 'selectors/mapboxSelectors'
+import {connect} from 'react-redux'
+import {bindActionCreators} from 'redux'
+//import {actionCreators} from 'redux/geojson/geojsonReducer'
+import {onChangeViewport} from 'redux-map-gl'
+import Mapbox from './Mapbox'
+//const {hoverMarker, selectMarker} = actionCreators
+import {makeMergeDefaultStyleWithProps} from 'selectors/styleSelectors'
+import {viewportSelector} from 'selectors/mapboxSelectors';
 import {
-  makeActiveUserAndSelectedRegionStateSelector
+  makeActiveUserAndSelectedRegionStateSelector, makeActiveUserAndSettingsStateSelector
 } from 'selectors/storeSelectors';
-import {mapboxSettingsSelector} from 'selectors/settingsSelectors';
-
-import {createSelector} from 'reselect';
-import {throwing} from 'rescape-ramda';
-import {makeTestPropsFunction, mergePropsForViews} from 'helpers/componentHelpers';
-import {makeMergeDefaultStyleWithProps} from 'selectors/styleSelectors';
+import {mapboxSettingsSelector} from 'selectors/settingsSelectors'
+import {createSelector} from 'reselect'
+import R from 'ramda'
+import {mergePropsForViews, makeTestPropsFunction} from 'helpers/componentHelpers'
+import {mergeDeep, throwing} from 'rescape-ramda';
 const {onlyOneValue, reqPath} = throwing
-//const {hoverMarker, selectMarker} = actionCreators;
 
 /**
  * Limits the state to the current selections
+ * TODO does this need to be a Creator.
+ * TODO should this be moved up to a parent and just take incoming props as state
  * @returns {Object} The props
  */
-export const mapStateToProps =
+export const mapStateToProps = (state, props) =>
   createSelector(
     [
-      makeActiveUserAndSelectedRegionStateSelector(),
+      makeActiveUserAndSettingsStateSelector(),
       makeMergeDefaultStyleWithProps(),
-      mapboxSettingsSelector
+      viewportSelector,
     ],
-    (selectedState, style, mapboxSettings) => {
-      const viewport = viewportSelector(state, {region: onlyOneValue(reqPath(['regions'], selectedState))})
-      return R.merge(selectedState, {
+    (selectedState, style, mapboxSettings, viewport) => {
+      return {
+        data: mergeDeep({style}, props),
         views: {
-          // The MapGl sub-component needs the viewport and mapboxSettings
-          // viewport is a functor so map it
-          mapGl: R.map(
-            viewport => R.merge(
-              mapboxSettings, {viewport}
-            ),
-            viewport)
+          // MapGl needs these props
+          mapGlProps: {
+            region: reqPath(['region'], props),
+            viewport
+          }
         }
-      });
+      }
     }
-  );
+  )(state, props)
+/*
+ region,
+ viewport: R.merge(
+ toJS(mapbox.viewport),
+ // viewport needs absolute width and height from parent
+ R.pick(['width', 'height'], style)),
+ iconAtlas: mapbox.iconAtlas,
+ // TODO showCluster should come in as bool
+ showCluster: mapbox.showCluster === 'true',
+ featuresByType: makeFeaturesByTypeSelector()(state),
+ markersByType: makeMarkersByTypeSelector()(state)
+ }
+ */
+
 
 export const mapDispatchToProps = (dispatch, ownProps) => {
   return bindActionCreators({
     onChangeViewport,
     //hoverMarker,
     //selectMarker
-  }, dispatch);
-};
+  }, dispatch)
+}
+
 
 /**
  * Combines mapStateToProps, mapDispatchToProps with the given viewToActions mapping
@@ -75,4 +89,5 @@ export const mergeProps = mergePropsForViews({
 // Returns a function that expects a sample state and ownProps for testing
 export const testPropsMaker = makeTestPropsFunction(mapStateToProps, mapDispatchToProps, mergeProps)
 
-export default connect(mapStateToProps, mapDispatchToProps, mergeProps)(Sankey)
+export default connect(mapStateToProps, mapDispatchToProps, mergeProps)(Mapbox)
+

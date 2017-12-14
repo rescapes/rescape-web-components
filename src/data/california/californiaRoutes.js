@@ -11,7 +11,7 @@
 
 import {createRoute} from 'data/dataCreationHelpers';
 import places from './californiaPlaces';
-import regions from './californiaRegions';
+import * as regions from './californiaRegions';
 import * as routeTypes from '../default/routeTypes';
 
 const defaultRouteType = routeTypes.INTER_REGIONAL_RAIL_SERVICE.id;

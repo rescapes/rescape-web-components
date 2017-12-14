@@ -11,7 +11,7 @@
 
 import {styleMultiplier} from 'helpers/styleHelpers';
 import PropTypes from 'prop-types';
-import {makeMergeContainerStyleProps} from 'selectors/selectorHelpers';
+import {makeMergeContainerStyleProps} from 'selectors/styleSelectors'
 import React from 'react';
 import {eMap} from 'helpers/componentHelpers';
 import current from 'components/current'
@@ -24,7 +24,7 @@ const [Div, Current] = eMap(['div', current]);
  * The View for Main.
  *
  */
-const Main = ({...props}) => {
+const Main = (props) => {
 
   const nameClass = classNamer('main');
   const styles = makeMergeContainerStyleProps()(

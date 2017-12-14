@@ -9,15 +9,14 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import {getClassAndStyle, styleMultiplier} from 'helpers/styleHelpers';
-import mapbox from 'components/mapbox/MapboxContainer';
-import sankey from 'components/sankey/SankeyContainer';
-import markerList from 'components/marker/MarkerListContainer';
+import mapbox from 'components/map/mapbox/MapboxContainer';
+import sankey from 'components/map/sankey/SankeyContainer';
+import markerList from 'components/map/marker/MarkerListContainer';
 import PropTypes from 'prop-types';
 import {makeMergeContainerStyleProps} from 'selectors/styleSelectors';
 import {eMap} from 'helpers/componentHelpers';
 import {mergeDeep, throwing} from 'rescape-ramda';
 import * as R from 'ramda';
-import {classNamer} from 'helpers/styleHelpers';
 import {Component} from 'react/cjs/react.production.min';
 
 const [Mapbox, Sankey, MarkerList, Div] = eMap([mapbox, sankey, markerList, 'div']);
@@ -93,7 +92,7 @@ export default class Region extends Component {
         Sankey(
           mergeDeep(
             mapboxProps,
-            {style: styles['region-mapbox']}
+            {style: style['region-mapbox']}
           )
         )
       ),

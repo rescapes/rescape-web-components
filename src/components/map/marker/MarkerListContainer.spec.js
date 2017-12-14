@@ -10,7 +10,7 @@
  */
 
 import thunk from 'redux-thunk'
-import {mapStateToProps} from 'components/marker/MarkerListContainer';
+import {mapStateToProps} from 'components/map/marker/MarkerListContainer';
 import configureStore from 'redux-mock-store';
 
 import {sampleConfig} from 'data/samples/sampleConfig';

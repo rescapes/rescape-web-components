@@ -21,6 +21,7 @@ import {stopResolver, routeResolver} from 'data/dataQueryHelpers';
 import places from './oaklandPlaces.sample';
 import * as regions from './oaklandRegions.sample';
 import {DEFAULT_SERVICE} from 'data/default/services';
+import * as R from 'ramda';
 
 const resolveStop = stopResolver(stops);
 const resolveRoute = routeResolver(routes);
@@ -29,8 +30,8 @@ const resolveRoute = routeResolver(routes);
 /**
  * Creates a TripPair and then augments each trip with the StopTimes
  */
-export default [
-    ...createTripWithStopTimesPair(
+export default R.concat(
+    createTripWithStopTimesPair(
         resolveRoute(places.SAN_FRANCISCO, places.RENO, regions.NORTH_BAY),
         DEFAULT_SERVICE,
         trip => {
@@ -47,7 +48,7 @@ export default [
                 '09:00', '12:00', 60);
         }
     ),
-    ...createTripWithStopTimesPair(
+    createTripWithStopTimesPair(
         resolveRoute(places.SAN_FRANCISCO, places.RENO, regions.ALTAMONT),
         DEFAULT_SERVICE,
         trip => {
@@ -64,4 +65,4 @@ export default [
                 '09:10', '12:20', 60);
         }
     )
-];
+);

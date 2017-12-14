@@ -12,6 +12,7 @@
 import {viewportSelector} from 'selectors/mapboxSelectors';
 import {throwing} from 'rescape-ramda'
 const {reqPath} = throwing
+import * as R from 'ramda'
 
 describe('mapboxSelectors', () => {
   test('viewportSelector', () => {
@@ -30,8 +31,19 @@ describe('mapboxSelectors', () => {
       }
     }
     const state = {
-      regions: {oakland, paris}
+      regions: {oakland, paris},
+      settings: {
+        mapbox: {
+          viewport: {
+            foo: 1
+          }
+        }
+      }
     }
-    expect(viewportSelector(state, {region: oakland})).toEqual(reqPath(['mapbox', 'viewport'], oakland))
+    expect(viewportSelector(state, {region: oakland})).toEqual(
+      R.merge(
+        {foo: 1},
+        reqPath(['mapbox', 'viewport'], oakland))
+      )
   })
 })

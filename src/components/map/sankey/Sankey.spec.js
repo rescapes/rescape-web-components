@@ -14,7 +14,7 @@ import sample from 'src/data/sankey.sample';
 import {mapStateToProps, mapDispatchToProps} from './SankeyContainer';
 import {propsFromSampleStateAndContainer} from 'helpers/testHelpers';
 import mapGL from 'react-map-gl'
-import mapbox from 'components/mapbox/Mapbox'
+import mapbox from 'components/map/mapbox/Mapbox'
 import {eMap} from 'helpers/componentHelpers';
 const [MapGL, Mapbox] = eMap([mapGL, mapbox]);
 

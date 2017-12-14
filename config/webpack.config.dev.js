@@ -28,7 +28,7 @@ const env = getClientEnvironment(publicUrl);
 module.exports = {
   // You may want 'eval' instead if you prefer to see the compiled output in DevTools.
   // See the discussion in https://github.com/facebookincubator/create-react-app/issues/343.
-  devtool: 'cheap-module-eval-source-map', // 'cheap-module-source-map',
+  devtool: 'source-map',
   // These are the "entry points" to our application.
   // This means they will be the "root" imports that are included in JS bundle.
   // The first two entry points enable "hot" CSS and auto-refreshes for JS.
@@ -140,6 +140,7 @@ module.exports = {
             },
           },
           // Process JS with Babel.
+          /*
           {
             test: /\.(js|jsx|mjs)$/,
             include: paths.appSrc,
@@ -152,6 +153,7 @@ module.exports = {
               cacheDirectory: true,
             },
           },
+            */
           // "postcss" loader applies autoprefixer to our CSS.
           // "css" loader resolves paths in CSS and adds assets as dependencies.
           // "style" loader turns CSS into JS modules that inject <style> tags.
