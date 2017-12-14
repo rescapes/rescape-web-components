@@ -10,7 +10,7 @@
  */
 
 import {mapped} from 'ramda-lens';
-import {activeUsersSelector, activeUserValueSelector} from 'selectors/userSelectors';
+import {activeUsersSelector} from 'selectors/userSelectors';
 import * as R from 'ramda';
 import {STATUS, status, makeInnerJoinByLensThenFilterSelector, findByParams} from './selectorHelpers';
 import {throwing} from 'rescape-ramda'
@@ -23,11 +23,10 @@ const {IS_SELECTED} = STATUS
  */
 export const regionsSelector = state => state.regions
 
-
 /**
  * Select the region that matches the params
  * @param state
- * @param params Must contain an id property to match on
+ * @param {Object} params Object of properties and value to match on
  */
 export const regionSelector = (state, {params}) => findByParams(params, reqPath(['regions'], state))
 
@@ -51,7 +50,7 @@ const makeActiveUserRegionsSelector = (predicate) => state =>
       // The state
       state,
       // Props are the active user
-      {user: activeUserValueSelector(state)}
+      {user: onlyOneValue(activeUsersSelector(state))}
     )
   )(state)
 
@@ -66,29 +65,14 @@ export const activeUserSelectedRegionsSelector = makeActiveUserRegionsSelector(s
 
 
 /**
- * Returns the single region id from a state that is limited to one Region
+ * Returns the region ids from a state
  * @type {*|Object}
- * @returns {String} The only region's id
+ * @returns {Array|Object} A container of region id values
  */
-export const onlyOneRegionId = state => onlyOneValue(
+export const regionIdsSelector = state =>
   R.compose(
-    // Extract the single id
+    // Extract the id-only region objects
     R.view(R.lensProp('regions')),
     // Get a view of just the one expected regions with its id as a value
     R.view(R.compose(R.lensProp('regions'), mapped, R.lensProp('id')))
   )(state)
-)
-
-/**
- * Returns the single region from a state that is limited to one Region
- * @type {*|Object}
- * @returns {String} The only region
- */
-export const onlyOneRegion = state => onlyOneValue(
-  R.compose(
-    // Extract the single region
-    R.view(R.lensProp('regions')),
-    // Get a view of just the one expected region
-    R.view(R.compose(R.lensProp('regions'), mapped))
-  )(state)
-)

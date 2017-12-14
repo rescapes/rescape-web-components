@@ -66,7 +66,7 @@ export const activeUserValueSelector = createSelector(
  * @param state
  */
 export const activeUserRegionSelector = state => createSelector(
-  [activeUserValueSelector],
+  [R.compose(onlyOneValue, activeUsersSelector)],
   user => userSelectedRegionSelector(state, {user})
 )(state)
 

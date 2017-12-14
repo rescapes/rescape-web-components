@@ -1,21 +1,13 @@
-import {gql} from 'apollo-client-preset';
-import {graphql} from 'react-apollo';
 import {connect} from 'react-redux';
 import Current from './Current'
 import * as R from 'ramda';
 import {createSelector} from 'reselect';
-import {
-  makeActiveUserAndSelectedRegionStateSelector,
-  makeActiveUserAndSettingsStateSelector
-} from 'selectors/storeSelectors';
+import { makeActiveUserAndSettingsStateSelector } from 'selectors/storeSelectors';
 import {makeBrowserProportionalDimensionsSelector} from 'selectors/styleSelectors';
-import {onlyOneRegion, onlyOneRegionId} from 'selectors/regionSelectors';
 import {mergeDeep, throwing} from 'rescape-ramda'
 import {makeTestPropsFunction, mergePropsForViews} from 'helpers/componentHelpers';
 import {bindActionCreators} from 'redux';
 import {activeUserRegionSelector} from 'selectors/userSelectors';
-const {onlyOneValue} = throwing
-
 
 /**
  * Combined selector that:
@@ -35,20 +27,21 @@ export const mapStateToProps = (state, props) =>
       },
       makeBrowserProportionalDimensionsSelector()
     ],
-    (activeUserAndSettings, dimensions) =>
+    (activeUserAndSettings, style) =>
       ({
         // No current graphql queries, pass the winnowed state
         // It might turn out that Current doesn't need anything because it simply renders child containers
-        data: activeUserAndSettings,
         // Merge the browser dimensions with the props
         // props from the parent contain style instructions
         // TODO we need to set width and height proportional to the browser dimensions, not equal to
-        style: dimensions,
+        data: mergeDeep(activeUserAndSettings, {style}),
         views: {
-          // child component
-          region: {
-            // region prop
-            region: activeUserRegionSelector(activeUserAndSettings)
+          regionProps: {
+            region: activeUserRegionSelector(activeUserAndSettings),
+            style: {
+              width: style.width,
+              height: style.height
+            }
           }
         }
       })
@@ -68,7 +61,7 @@ export const mergeProps = mergePropsForViews({
   region: []
 })
 
-// Returns a function that expects a sample state and ownProps for testing
+// Returns a function that expects ownProps for testing
 export const testPropsMaker = makeTestPropsFunction(mapStateToProps, mapDispatchToProps, mergeProps)
 
 export default connect(mapStateToProps, mapDispatchToProps, mergeProps)(Current)

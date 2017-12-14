@@ -40,3 +40,53 @@ exports[`Region Can mount 1`] = `
   </div>
 </div>
 `;
+
+exports[`Region Current can mount 1`] = `
+<div
+  className={[Function]}
+  style={
+    Object {
+      "height": [Function],
+      "position": "absolute",
+      "width": [Function],
+    }
+  }
+>
+  <div
+    className={[Function]}
+    style={Object {}}
+  >
+    <Connect(Mapbox)
+      style={
+        Object {
+          "height": [Function],
+          "position": "absolute",
+          "width": [Function],
+        }
+      }
+    />
+    <Connect(Sankey)
+      style={
+        Object {
+          "height": [Function],
+          "position": "absolute",
+          "width": [Function],
+        }
+      }
+    />
+  </div>
+  <div
+    className={[Function]}
+    style={
+      Object {
+        "left": 0.55,
+        "position": "absolute",
+        "right": 0.05,
+        "top": 0.02,
+      }
+    }
+  >
+    <Connect(MarkerList) />
+  </div>
+</div>
+`;

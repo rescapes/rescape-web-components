@@ -13,11 +13,11 @@ import * as R from 'ramda';
 import {STATUS} from './selectorHelpers'
 import {
   activeUserSelectedRegionsSelector, activeUserRegionsSelector,
-  regionsSelector,  onlyOneRegionId
+  regionsSelector,  regionIdsSelector
 } from './regionSelectors';
-import {mergeDeep} from 'rescape-ramda';
-import {onlyOneRegion} from 'selectors/regionSelectors';
+import {mergeDeep, throwing} from 'rescape-ramda';
 const  {IS_ACTIVE, IS_SELECTED} = STATUS
+const {onlyOneValue} = throwing
 
 describe('regionSelectors', () => {
 
@@ -74,21 +74,12 @@ describe('regionSelectors', () => {
     expect(activeUserSelectedRegionsSelector(state)).toEqual(expected);
   });
 
-  test('onlyOneRegionId', () => {
+  test('regionIdsSelector', () => {
     const state = {
       regions: {
         'oakland': {id: 'oakland', name: 'Oakland'}
       }
     }
-    expect(onlyOneRegionId(state)).toEqual('oakland')
-  })
-
-  test('onlyOneRegionId', () => {
-    const state = {
-      regions: {
-        'oakland': {id: 'oakland', name: 'Oakland'}
-      }
-    }
-    expect(onlyOneRegion(state)).toEqual(state.regions.oakland)
+    expect(onlyOneValue(regionIdsSelector(state))).toEqual('oakland')
   })
 });

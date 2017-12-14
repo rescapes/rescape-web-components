@@ -28,10 +28,9 @@ class Current extends React.Component {
   render() {
     return R.cond([
       [R.propEq('loading'), () => this.renderLoading()],
-      [R.has('error'), error => this.renderError(error)],
-      [R.has('data'), data => this.renderData(data)],
-      [R.T, () => this.renderError(new Error("Expected loading, error, or data from Apollo wrapper, didn't get anything"))]
-    ])(this.props);
+      [R.has('error'), ({error}) => this.renderError(error)],
+      [R.T, data => this.renderData(data)],
+    ])(reqPath(['data'], this.props));
   }
 
   renderLoading() {
@@ -42,18 +41,10 @@ class Current extends React.Component {
     return Div();
   }
 
-  renderData({region}) {
+  renderData({data, views: {regionProps}}) {
     return Div(
       {className: 'current'},
-      Region({
-          region,
-          style: {
-            width: this.props.style.width,
-            height: this.props.style.height
-          }
-        },
-        null
-      )
+      Region(regionProps)
     );
   }
 }

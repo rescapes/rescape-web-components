@@ -1,16 +1,13 @@
 import React from 'react';
-import {shallow} from 'enzyme';
 
-import {propsFromSampleStateAndContainer} from 'helpers/testHelpers';
+import {propsFromSampleStateAndContainer, shallowWrap} from 'helpers/testHelpers';
 import region from './Region'
 import {eMap} from 'helpers/componentHelpers';
-import {mapStateToProps, mapDispatchToProps} from './RegionContainer';
+import {testPropsMaker} from 'components/current/CurrentContainer';
 const [Region] = eMap([region]);
 
 describe('Region', () => {
-  const props = propsFromSampleStateAndContainer(
-    mapStateToProps,
-    mapDispatchToProps,
+  const props = propsFromSampleStateAndContainer(testPropsMaker,
     {
       // style dimensions are normally from the parent
       style: {
@@ -20,10 +17,7 @@ describe('Region', () => {
     }
   );
 
-  test('Can mount', () => {
-    const wrapper = shallow(
-      Region(props)
-    );
-    expect(wrapper).toMatchSnapshot();
+  test('Current can mount', () => {
+    expect(shallowWrap(Region, props)).toMatchSnapshot();
   });
 });

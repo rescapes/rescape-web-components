@@ -49,7 +49,7 @@ export const mapStateToProps = (state, props) =>
           views: {
             // Child component mapGl needs the following props
             // Note that viewport is a functor, hence the mapping
-            mapGl: {
+            mapGlProps: {
               items: R.map(
                 viewport => R.merge(
                   mapboxSettings, {viewport}

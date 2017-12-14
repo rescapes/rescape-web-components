@@ -18,14 +18,11 @@ import thunk from 'redux-thunk';
 import {shallow, mount} from 'enzyme';
 const middlewares = [thunk];
 import {mockNetworkInterfaceWithSchema} from 'apollo-test-utils';
-import {eMap} from 'helpers/componentHelpers';
 import ApolloClient from 'apollo-client';
-import {ApolloProvider} from 'react-apollo';
 import makeSchema from 'schema/schema';
 import {createSelectorResolvedSchema} from 'schema/selectorResolvers';
 import {InMemoryCache} from 'apollo-client-preset';
 import {SchemaLink} from 'apollo-link-schema';
-import MockProvider from 'redux-mock-provider';
 import PropTypes from 'prop-types';
 
 
@@ -139,7 +136,7 @@ export const wrapWithMockGraphqlAndStore = (component) => {
  * @param component
  * @return {*}
  */
-export const wrapWithMockStore = (component) => {
+export const wrapWithMockStore = component => {
   const store = makeSampleStore();
 
   // shallow wrap the component, passing the Apollo client and redux store to the component and children
@@ -156,3 +153,14 @@ export const wrapWithMockStore = (component) => {
     }
   )
 };
+
+/**
+ * Wrap a component factory with the given props in a shallow enzyme wrapper
+ * @param componentFactory
+ * @param props
+ */
+export const shallowWrap = (componentFactory, props) => {
+  return shallow(
+    componentFactory(props)
+  )
+}

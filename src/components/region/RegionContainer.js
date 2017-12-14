@@ -3,9 +3,12 @@ import {connect} from 'react-redux';
 import Region from './Region'
 import {makeMergeDefaultStyleWithProps} from 'selectors/styleSelectors';
 import {createSelector} from 'reselect';
-import * as R from 'ramda';
 import {gql} from 'apollo-client-preset';
 import {graphql} from 'react-apollo';
+import {makeTestPropsFunction, mergePropsForViews} from 'helpers/componentHelpers';
+import {mergeDeep, throwing} from 'rescape-ramda';
+import React from 'react'
+const {reqPath} = throwing
 
 /**
  * RegionContainer expects the state to contain the active user and that user's Regions
@@ -21,10 +24,14 @@ export const mapStateToProps =
       makeMergeDefaultStyleWithProps(),
     ],
     style => {
-      return R.mergeAll([
-        props,
-        {style},
-      ]);
+      return {
+        data: mergeDeep({style}, props),
+        views: {
+          mapboxProps: {
+            region: reqPath(['region'], props)
+          }
+        }
+      }
     }
   )(state, props);
 
@@ -63,27 +70,26 @@ const query = gql`
 `;
 
 const ContainerWithData = graphql(query, {
-  options: ({region}) => ({
+  options: ({data: {region}}) => ({
     variables: {
       regionId: region.id
     }
   }),
-  props: ({data}) => ({
-    store: data.store,
-    loading: data.loading,
-    data
-  })
+  props: ({data, ownProps}) => mergeDeep(ownProps, {data})
 })
 (Region);
 
-const RegionContainer = connect(
-  /**
-   * The wrapped component needs access to the settings and a r
-   * @param state
-   * @returns {{}}
-   */
-  mapStateToProps, mapDispatchToProps
-)(ContainerWithData);
+/**
+ * Combines mapStateToProps, mapDispatchToProps with the given viewToActions mapping
+ * @type {Function}
+ */
+export const mergeProps = mergePropsForViews({
+  // Region child component needs the following actions
+  region: []
+})
 
-export default RegionContainer;
+// Returns a function that expects state and ownProps for testing
+export const testPropsMaker = makeTestPropsFunction(mapStateToProps, mapDispatchToProps, mergeProps)
+
+export default connect(mapStateToProps, mapDispatchToProps, mergeProps)(ContainerWithData)
 

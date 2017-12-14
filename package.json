@@ -95,6 +95,7 @@
     "apollo-test-utils": "^0.3.2",
     "enzyme": "^3.2.0",
     "enzyme-adapter-react-16": "^1.1.0",
+    "enzyme-to-json": "^3.2.2",
     "jsdom": "^11.5.1",
     "longjohn": "^0.2.12"
   },
@@ -138,6 +139,9 @@
       "web.jsx",
       "jsx",
       "node"
+    ],
+    "snapshotSerializers": [
+      "enzyme-to-json/serializer"
     ]
   },
   "babel": {
