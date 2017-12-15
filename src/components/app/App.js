@@ -1,10 +1,10 @@
 import React, { Component } from 'react'
-import Header from 'components/header/Header';
-import Login from 'components/login/Login';
+import Login from 'components/login/LoginContainer';
 import Main from 'components/main/Main';
 import { Switch, Route } from 'react-router-dom'
 import {eMap} from 'helpers/componentHelpers';
-const [div, header, switcher, route] = eMap(['div', Header, Switch, Route])
+import HeaderContainer from 'components/header/HeaderContainer';
+const [div, header, switcher, route] = eMap(['div', HeaderContainer, Switch, Route])
 
 class App extends Component {
   render() {

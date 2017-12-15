@@ -1,20 +1,31 @@
+/**
+ * Created by Andy Likuski on 2017.12.14
+ * Copyright (c) 2017 Andy Likuski
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
 import React, {Component} from 'react';
-import {graphql, compose} from 'react-apollo';
-import gql from 'graphql-tag';
-import config from 'config.js';
 import {eMap} from 'helpers/componentHelpers';
+import config from 'config.js';
 
 const {settings: {graphcool: {authTokenKey, serviceIdKey}}} = config;
 const [div, h4, input] = eMap(['div', 'h4', 'input']);
 
-class Login extends Component {
+export default class Login extends Component {
 
-  state = {
-    login: true, // switch between Login and SignUp
-    email: '',
-    password: '',
-    name: ''
-  };
+  constructor(props) {
+    super(props);
+    this.state = {
+      login: true, // switch between Login and SignUp
+      email: '',
+      password: '',
+      name: ''
+    };
+  }
 
   render() {
 
@@ -63,65 +74,35 @@ class Login extends Component {
     );
   }
 
-  _confirm = async () => {
+  _confirm() {
     const {name, email, password} = this.state;
     if (this.state.login) {
-      const result = await this.props.authenticateUserMutation({
+      this.props.authenticateUserMutation({
         variables: {
           email,
           password
         }
+      }).then(result => {
+        const {id, token} = result.data.authenticateUser;
+        this._saveUserData(id, token);
       });
-      const {id, token} = result.data.authenticateUser;
-      this._saveUserData(id, token);
     } else {
-      const result = await this.props.signupUserMutation({
+      this.props.signupUserMutation({
         variables: {
           name,
           email,
           password
         }
+      }).then(result => {
+        const {id, token} = result.data.signupUser;
+        this._saveUserData(id, token);
       });
-      const {id, token} = result.data.signupUser;
-      this._saveUserData(id, token);
     }
     this.props.history.push(`/`);
-  };
+  }
 
-  _saveUserData = (id, token) => {
+  _saveUserData(id, token) {
     localStorage.setItem(serviceIdKey, id);
     localStorage.setItem(authTokenKey, token);
-  };
-
+  }
 }
-
-
-const SIGNUP_USER_MUTATION = gql`
-    mutation SignupUserMutation($email: String!, $password: String!, $name: String!) {
-        signupUser(
-            email: $email,
-            password: $password,
-            name: $name
-        ) {
-            id
-            token
-        }
-    }
-`;
-
-const AUTHENTICATE_USER_MUTATION = gql`
-    mutation AuthenticateUserMutation($email: String!, $password: String!) {
-        authenticateUser(email: {
-            email: $email,
-            password: $password
-        }) {
-            id
-            token
-        }
-    }
-`;
-
-export default compose(
-  graphql(SIGNUP_USER_MUTATION, {name: 'signupUserMutation'}),
-  graphql(AUTHENTICATE_USER_MUTATION, {name: 'authenticateUserMutation'})
-)(Login);

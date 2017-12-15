@@ -6,10 +6,11 @@ import registerServiceWorker from './registerServiceWorker'
 import { BrowserRouter } from 'react-router-dom'
 import { ApolloProvider } from 'react-apollo'
 import createClient from './apolloClient'
+import { Provider } from 'react-redux';
 import storeCreator from './store'
 import {getCurrentConfig} from 'data/current/currentConfig';
 import {eMap} from 'helpers/componentHelpers';
-const [browserRouter, apolloProvider, app] = eMap([BrowserRouter, ApolloProvider, App])
+const [browserRouter, apolloProvider, provider, app] = eMap([BrowserRouter, ApolloProvider, Provider, App])
 
 // Create a store based on the configured environent (development, production, test)
 const store = storeCreator(getCurrentConfig())
@@ -20,9 +21,12 @@ const client = createClient()
 // ApolloProvider wraps our components with the ApolloClient so we can access GraphQL data from anywhere
 // 'root' is the id of the <div> defined in index.html
 ReactDOM.render(
-  browserRouter({},
-    apolloProvider({store, client},
+  //browserRouter({},
+  provider({store},
+    apolloProvider({client},
       app()
     )
-  ), document.getElementById('root'))
+  ),
+  //),
+  document.getElementById('root'))
 registerServiceWorker()

@@ -8,7 +8,6 @@ import {graphql} from 'react-apollo';
 import {makeGraphQlTestPropsFunction, makeTestPropsFunction, mergePropsForViews} from 'helpers/componentHelpers';
 import {mergeDeep, throwing} from 'rescape-ramda';
 import React from 'react'
-import * as R from 'ramda';
 const {reqPath} = throwing
 
 /**
