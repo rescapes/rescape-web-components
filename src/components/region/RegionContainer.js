@@ -61,7 +61,7 @@ export const mapDispatchToProps = (dispatch) => {
 const regionQuery = gql`
     query region($regionId: String!) {
         store {
-            region(id: $id) {
+            region(id: $regionId) {
                 id
                 name
             },

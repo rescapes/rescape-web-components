@@ -11,12 +11,16 @@
 
 import {makeGeojsonSelector} from 'selectors/geojsonSelectors';
 import {addResolveFunctionsToSchema} from 'graphql-tools';
-import R from 'ramda'
+import * as R from 'ramda'
 import {throwing} from 'rescape-ramda'
+import { activeUserSelectedRegionsSelector, regionSelector} from 'selectors/regionSelectors';
+import { settingsSelector} from 'selectors/settingsSelectors';
+import { activeUsersSelector} from 'selectors/userSelectors';
+
 const {reqPath} = throwing
 // Trivial resolver for our dataSource, just strips object keys and returns values
 const objectValues = field => parent => R.values(reqPath([field], parent))
-// Calls the given selector, treating the dataSource asethe state and passing props through
+// Calls the given selector, treating the dataSource state and passing props through
 const selectorValues = selector => (parent, params, {options: {dataSource}}) => {
   return selector(dataSource, {params})
 }
@@ -24,10 +28,6 @@ const selectorValues = selector => (parent, params, {options: {dataSource}}) => 
 const parentSelectorValues = (parentKey, selector) => (parent, props, {options: {dataSource}}) => {
   return selector(dataSource, R.merge(props, {[parentKey]: parent}))
 }
-
-import { activeUserSelectedRegionsSelector, regionSelector} from 'selectors/regionSelectors';
-import { settingsSelector} from 'selectors/settingsSelectors';
-import { activeUsersSelector} from 'selectors/userSelectors';
 
 // Original example from: https://github.com/apollographql/graphql-tools
 const makeSelectorResolvers = data => ({

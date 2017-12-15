@@ -30,12 +30,18 @@ export default class Region extends Component {
   render() {
     const style = this.getStyles(reqPath(['data', 'style'], this.props));
     // Replace props.data.style with computed styles
-    const props = R.merge(this.props, {data: {style}})
+    const props = R.over(R.lensProp('data'), propsData => R.merge(propsData, {style}), this.props)
 
     const renderChoicePoint = R.cond([
-      [R.propEq('loading'), () => this.renderLoading(props)],
-      [R.has('error'), () => this.renderError(props)],
-      [R.T, () => this.renderData(props)]
+      [R.prop('loading'), (d) =>
+        this.renderLoading(props)
+      ],
+      [R.prop('error'), () =>
+        this.renderError(props)
+      ],
+      [R.T, () =>
+        this.renderData(props)
+      ]
     ]);
 
     return Div(getClassAndStyle('region', props.data.style),

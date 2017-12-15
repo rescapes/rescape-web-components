@@ -16,6 +16,7 @@ import initialState from 'data/initialState';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import {shallow, mount} from 'enzyme';
+
 const middlewares = [thunk];
 import {mockNetworkInterfaceWithSchema} from 'apollo-test-utils';
 import ApolloClient from 'apollo-client';
@@ -82,7 +83,7 @@ export const propsWithGraphQlFromSampleStateAndContainer = (queryArgs, container
   R.compose(
     makeGraphQlTestPropsFunction(resolvedSchema, dataSource, queryArgs),
     containerPropMaker(makeSampleInitialState(), sampleOwnProps)
-  )
+  );
 
 
 /**
@@ -103,15 +104,25 @@ export const makeMockStore = (state, sampleUserSettings = {}) => {
   );
 };
 
-export const mockApolloClient = schema => {
+export const mockApolloClient = (schema, context) => {
   //addMockFunctionsToSchema({schema});
   const mockNetworkInterface = mockNetworkInterfaceWithSchema({schema});
   const apolloCache = new InMemoryCache();
   return new ApolloClient({
     cache: apolloCache,
-    link: new SchemaLink({schema}),
+    link: new SchemaLink({schema, context}),
     networkInterface: mockNetworkInterface
   });
+};
+
+/**
+ * Creates a mockApolloClient using makeSchema and makeSampleInitialState
+ */
+export const mockApolloClientWithSamples = () => {
+  const state = makeSampleInitialState()
+  const context = {options: {dataSource: state}}
+  const resolvedSchema = createSelectorResolvedSchema(makeSchema(), state);
+  return mockApolloClient(resolvedSchema, context);
 };
 
 /**
@@ -120,7 +131,9 @@ export const mockApolloClient = schema => {
  * @return {*}
  */
 export const wrapWithMockGraphqlAndStore = (component) => {
-  const resolvedSchema = createSelectorResolvedSchema(makeSchema(), makeSampleInitialState());
+  const state = makeSampleInitialState()
+  const context = {options: {dataSource: state}}
+  const resolvedSchema = createSelectorResolvedSchema(makeSchema(), state);
   const store = makeSampleStore();
 
   // shallow wrap the component, passing the Apollo client and redux store to the component and children
@@ -129,7 +142,8 @@ export const wrapWithMockGraphqlAndStore = (component) => {
     component,
     {
       context: {
-        client: mockApolloClient(resolvedSchema),
+        // Create a mock client that uses a SchemaLink. Schema and context are passed to the SchemaLink
+        client: mockApolloClient(resolvedSchema, context),
         store
       },
       childContextTypes: {
@@ -137,7 +151,7 @@ export const wrapWithMockGraphqlAndStore = (component) => {
         store: PropTypes.object.isRequired
       }
     }
-  )
+  );
 };
 
 /**
@@ -160,7 +174,7 @@ export const wrapWithMockStore = component => {
         store: PropTypes.object.isRequired
       }
     }
-  )
+  );
 };
 
 /**
@@ -171,5 +185,5 @@ export const wrapWithMockStore = component => {
 export const shallowWrap = (componentFactory, props) => {
   return shallow(
     componentFactory(props)
-  )
-}
+  );
+};

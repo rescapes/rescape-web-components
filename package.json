@@ -96,6 +96,7 @@
     "enzyme": "^3.2.0",
     "enzyme-adapter-react-16": "^1.1.0",
     "enzyme-to-json": "^3.2.2",
+    "enzyme-wait": "^1.0.9",
     "jsdom": "^11.5.1",
     "longjohn": "^0.2.12"
   },

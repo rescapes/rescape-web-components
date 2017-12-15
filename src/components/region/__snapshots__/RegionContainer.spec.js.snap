@@ -38,3 +38,24 @@ Object {
   },
 }
 `;
+
+exports[`RegionContainer query 1`] = `
+Object {
+  "data": Object {
+    "store": Object {
+      "__typename": "Store",
+      "region": Object {
+        "__typename": "Region",
+        "id": "oakland",
+        "name": "Oakland",
+        Symbol(id): "Region:oakland",
+      },
+      Symbol(id): "$ROOT_QUERY.store",
+    },
+    Symbol(id): "ROOT_QUERY",
+  },
+  "loading": false,
+  "networkStatus": 7,
+  "stale": false,
+}
+`;

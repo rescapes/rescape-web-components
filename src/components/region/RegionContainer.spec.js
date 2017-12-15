@@ -1,13 +1,14 @@
 import {mapStateToProps} from './RegionContainer';
 import {
-  propsFromSampleStateAndContainer, propsWithGraphQlFromSampleStateAndContainer, wrapWithMockGraphqlAndStore
+  makeSampleInitialState,
+  mockApolloClientWithSamples,
+  propsFromSampleStateAndContainer, wrapWithMockGraphqlAndStore
 } from 'helpers/testHelpers';
-import {testPropsMaker} from 'components/region/RegionContainer';
+import RegionContainer, {testPropsMaker, queries} from 'components/region/RegionContainer';
 import {testPropsMaker as currentPropsMaker} from 'components/current/CurrentContainer'
 import {eMap} from 'helpers/componentHelpers';
-import RegionContainer from 'components/region/RegionContainer';
 import * as R from 'ramda'
-import {queries} from 'components/region/RegionContainer';
+import { createWaitForElement } from 'enzyme-wait';
 
 describe('RegionContainer', () => {
   // Get the parent Region from the CurrentContainer's testPropMaker
@@ -25,10 +26,29 @@ describe('RegionContainer', () => {
     expect(props).toMatchSnapshot()
   })
 
-  test('render', () => {
+  test('query', async () => {
+    const data = await mockApolloClientWithSamples().query({
+      query: queries.region.query,
+      variables: {
+        regionId: props.data.region.id
+      },
+      context: {
+        dataSource: makeSampleInitialState()
+      }
+    })
+    expect(data).toMatchSnapshot()
+  })
+
+  test('render', (done) => {
     const [regionContainer] = eMap([RegionContainer]);
     const wrapper = wrapWithMockGraphqlAndStore(regionContainer(parentProps))
-    const current = wrapper.find('Region');
-    expect(R.keys(current.props())).toEqual(['data', 'views'])
+    const component = wrapper.find('Region');
+    expect(R.keys(component.props())).toEqual(['data', 'views'])
+    /*
+    const waitForSample = createWaitForElement('.region-mapbox-outer');
+    waitForSample(component).then(
+      component => expect(component.text()).to.include('ready')
+    );
+    */
   })
 });

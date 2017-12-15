@@ -44,6 +44,10 @@ global.navigator = {
 copyProps(window, global);
 
 Error.stackTraceLimit = Infinity;
+// Have exceptions traces traverse async processes
+if (process.env.NODE_ENV !== 'production'){
+  require('longjohn');
+}
 
 class LocalStorageMock {
   constructor() {

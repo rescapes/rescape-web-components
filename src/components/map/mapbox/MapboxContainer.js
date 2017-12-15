@@ -22,7 +22,6 @@ import {
 } from 'selectors/storeSelectors';
 import {mapboxSettingsSelector} from 'selectors/settingsSelectors'
 import {createSelector} from 'reselect'
-import R from 'ramda'
 import {mergePropsForViews, makeTestPropsFunction} from 'helpers/componentHelpers'
 import {mergeDeep, throwing} from 'rescape-ramda';
 const {onlyOneValue, reqPath} = throwing
