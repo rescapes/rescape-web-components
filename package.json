@@ -24,6 +24,7 @@
     "d3-sankey": "^0.7.1",
     "data.either": "^1.5.1",
     "data.maybe": "^1.2.2",
+    "decamelize": "^1.2.0",
     "deck.gl": "^4.1.6",
     "dotenv": "4.0.0",
     "eslint": "^4.12.0",
@@ -97,6 +98,8 @@
     "enzyme-adapter-react-16": "^1.1.0",
     "enzyme-to-json": "^3.2.2",
     "enzyme-wait": "^1.0.9",
+    "install": "^0.10.2",
+    "jest-sourcemaps": "^1.0.1",
     "jsdom": "^11.5.1",
     "longjohn": "^0.2.12"
   },
@@ -148,7 +151,8 @@
   "babel": {
     "presets": [
       "react-app"
-    ]
+    ],
+    "sourceMaps": "both"
   },
   "eslintConfig": {
     "extends": "react-app"

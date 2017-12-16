@@ -11,20 +11,18 @@
 
 import {connect} from 'react-redux'
 import {bindActionCreators} from 'redux'
-//import {actionCreators} from 'redux/geojson/geojsonReducer'
 import {onChangeViewport} from 'redux-map-gl'
 import Mapbox from './Mapbox'
-//const {hoverMarker, selectMarker} = actionCreators
 import {makeMergeDefaultStyleWithProps} from 'selectors/styleSelectors'
 import {viewportSelector} from 'selectors/mapboxSelectors';
 import {
-  makeActiveUserAndSelectedRegionStateSelector, makeActiveUserAndSettingsStateSelector
+  makeActiveUserAndSettingsStateSelector
 } from 'selectors/storeSelectors';
-import {mapboxSettingsSelector} from 'selectors/settingsSelectors'
 import {createSelector} from 'reselect'
 import {mergePropsForViews, makeTestPropsFunction} from 'helpers/componentHelpers'
 import {mergeDeep, throwing} from 'rescape-ramda';
-const {onlyOneValue, reqPath} = throwing
+
+const {reqPath} = throwing
 
 /**
  * Limits the state to the current selections
@@ -32,8 +30,8 @@ const {onlyOneValue, reqPath} = throwing
  * TODO should this be moved up to a parent and just take incoming props as state
  * @returns {Object} The props
  */
-export const mapStateToProps = (state, props) =>
-  createSelector(
+export const mapStateToProps = (state, props) => {
+  return createSelector(
     [
       makeActiveUserAndSettingsStateSelector(),
       makeMergeDefaultStyleWithProps(),
@@ -52,6 +50,7 @@ export const mapStateToProps = (state, props) =>
       }
     }
   )(state, props)
+}
 /*
  region,
  viewport: R.merge(

@@ -12,8 +12,9 @@
 import * as R from 'ramda';
 import PropTypes from 'prop-types';
 import {v} from 'rescape-validate';
-import {compact, throwing} from 'rescape-ramda'
-const {reqPath} = throwing
+import {compact, throwing} from 'rescape-ramda';
+
+const {reqPath} = throwing;
 
 /**
  * Creates a class name from a root name and a suffix
@@ -25,14 +26,29 @@ const {reqPath} = throwing
 export const classNamer = R.curry((root, suffix) => R.join('-', compact([root, suffix])));
 
 /**
- * Given a name, generates a className
- * @param name
- * @param styles
+ * Given a name, generates a className and style
+ * @param {String} name Name to use for the className
+ * @param {Object} styles Contains a key matching name containing the styles
+ * @returns {Object} An object with a style and className key and corresponding values
  */
-export const getClassAndStyle = (name, styles) => ({
-  className: classNamer(name),
+export const getClassAndStyle = (name, styles) =>
+  R.merge({
+    className: classNamer(name)
+  },
+  getStyleObj(name, styles)
+);
+
+/**
+ * Given a name, generates a style object
+ * @param {String} name Name to use for the to resolve the style
+ * @param {Object} styles Contains a key matching name containing the styles
+ * @returns {Object} An object with a style key and corresponding style values
+ *
+ */
+export const getStyleObj = (name, styles) => ({
   style: reqPath(R.split('.', name), styles)
-})
+});
+
 
 /** *
  * Creates a function that multiplies a numeric value of a style by a fraction

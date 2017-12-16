@@ -1,14 +1,15 @@
-
 import {connect} from 'react-redux';
-import Region from './Region'
+import Region from './Region';
 import {makeMergeDefaultStyleWithProps} from 'selectors/styleSelectors';
 import {createSelector} from 'reselect';
 import {gql} from 'apollo-client-preset';
 import {graphql} from 'react-apollo';
 import {makeGraphQlTestPropsFunction, makeTestPropsFunction, mergePropsForViews} from 'helpers/componentHelpers';
 import {mergeDeep, throwing} from 'rescape-ramda';
-import React from 'react'
-const {reqPath} = throwing
+import React from 'react';
+import * as R from 'ramda';
+
+const {reqPath} = throwing;
 
 /**
  * RegionContainer expects the state to contain the active user and that user's Regions
@@ -21,7 +22,7 @@ const {reqPath} = throwing
 export const mapStateToProps =
   (state, props) => createSelector(
     [
-      makeMergeDefaultStyleWithProps(),
+      makeMergeDefaultStyleWithProps()
     ],
     style => {
       return {
@@ -31,7 +32,7 @@ export const mapStateToProps =
             region: reqPath(['region'], props)
           }
         }
-      }
+      };
     }
   )(state, props);
 
@@ -82,10 +83,17 @@ export const queries = {
           regionId: region.id
         }
       }),
-      props: ({data, ownProps}) => mergeDeep(ownProps, {data})
+      props: ({data, ownProps}) => mergeDeep(
+        {data},
+        // Update the store
+        R.over(
+          R.lensPath(['views', 'regionMapbox']),
+          view => mergeDeep(view, R.defaultTo({}, R.pick(['region'], R.defaultTo({}, R.view(R.lensProp('store'), data)))))
+        )(ownProps)
+      )
     }
   }
-}
+};
 
 const ContainerWithData = graphql(queries.region.query, queries.region.args)(Region);
 
@@ -96,10 +104,10 @@ const ContainerWithData = graphql(queries.region.query, queries.region.args)(Reg
 export const mergeProps = mergePropsForViews({
   // Region child component needs the following actions
   region: []
-})
+});
 
 // Returns a function that expects state and ownProps for testing
-export const testPropsMaker = makeTestPropsFunction(mapStateToProps, mapDispatchToProps, mergeProps)
+export const testPropsMaker = makeTestPropsFunction(mapStateToProps, mapDispatchToProps, mergeProps);
 
-export default connect(mapStateToProps, mapDispatchToProps, mergeProps)(ContainerWithData)
+export default connect(mapStateToProps, mapDispatchToProps, mergeProps)(ContainerWithData);
 

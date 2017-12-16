@@ -8,7 +8,7 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import {getClassAndStyle, styleMultiplier} from 'helpers/styleHelpers';
+import {getClassAndStyle, getStyleObj, styleMultiplier} from 'helpers/styleHelpers';
 import mapbox from 'components/map/mapbox/MapboxContainer';
 import sankey from 'components/map/sankey/SankeyContainer';
 import markerList from 'components/map/marker/MarkerListContainer';
@@ -18,6 +18,7 @@ import {eMap} from 'helpers/componentHelpers';
 import {mergeDeep, throwing} from 'rescape-ramda';
 import * as R from 'ramda';
 import {Component} from 'react/cjs/react.production.min';
+import * as decamelize from 'decamelize';
 
 const [Mapbox, Sankey, MarkerList, Div] = eMap([mapbox, sankey, markerList, 'div']);
 const {reqPath} = throwing;
@@ -28,9 +29,12 @@ const {reqPath} = throwing;
  */
 export default class Region extends Component {
   render() {
-    const style = this.getStyles(reqPath(['data', 'style'], this.props));
+    const style = R.map(
+      style => ({style}),
+      this.getStyles(reqPath(['data', 'style'], this.props))
+    );
     // Replace props.data.style with computed styles
-    const props = R.over(R.lensProp('data'), propsData => R.merge(propsData, {style}), this.props)
+    const props = R.over(R.lensProp('data'), data => mergeDeep(data, style), this.props);
 
     const renderChoicePoint = R.cond([
       [R.prop('loading'), (d) =>
@@ -66,15 +70,13 @@ export default class Region extends Component {
           height: styleMultiplier(1)
         },
 
-        'region-mapbox-outer': {},
-
-        'region-mapbox': {
+        regionMapboxOuter: {
           position: 'absolute',
           width: styleMultiplier(.5),
           height: styleMultiplier(1)
         },
 
-        'region-locations': {
+        regionLocationsOuter: {
           position: 'absolute',
           top: .02,
           left: .55,
@@ -83,37 +85,41 @@ export default class Region extends Component {
       });
   }
 
-  renderData({data: {style}, views: {mapboxProps}}) {
+  renderData({views}) {
     /* We additionally give Mapbox the container width and height so the map can track changes to these
      We have to apply the width and height fractions of this container to them.
      */
+    const propsClassAndStyle = (name, viewProps) => R.merge(
+      getClassAndStyle(decamelize(name, '-'), R.propOr({}, name, viewProps)),
+      R.omit(['style'], viewProps)
+    );
+    const propsAndStyle = (name, viewProps) => R.merge(
+      getStyleObj(decamelize(name, '-'), R.propOr({}, name, viewProps)),
+      R.omit(['style'], viewProps)
+    );
     return [
-      Div(getClassAndStyle('region-mapbox-outer', style),
-        Mapbox(
-          mergeDeep(
-            mapboxProps,
-            {style: style['region-mapbox']}
+      Div(propsClassAndStyle('region', views),
+        Div(propsClassAndStyle('regionMapboxOuter', views),
+          Mapbox(
+            propsAndStyle('regionMapbox', views)
+          ),
+          Sankey(
+            propsAndStyle('regionSankey', views)
           )
         ),
-        Sankey(
-          mergeDeep(
-            mapboxProps,
-            {style: style['region-mapbox']}
-          )
+        Div(propsClassAndStyle('regionLocationsOuter', views),
+          MarkerList(propsAndStyle('regionLocations', views))
         )
-      ),
-      Div(getClassAndStyle('region-locations', style),
-        MarkerList({})
       )
     ];
   }
 
   renderLoading({data}) {
-    return []
+    return [];
   };
 
   renderError({data}) {
-    return []
+    return [];
   }
 }
 
