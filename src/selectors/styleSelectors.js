@@ -100,7 +100,7 @@ export const makeMergeDefaultStyleWithProps = () => (state, props) => createSele
  */
 export const makeMergeContainerStyleProps = () => (containerProps, style) => createSelector(
   [
-    containerProps => reqPath(['style'], containerProps),
+    containerProps => reqPath(['views'], containerProps),
     (_, props) => R.defaultTo({}, props)
   ],
   mergeStyles

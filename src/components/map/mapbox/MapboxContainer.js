@@ -19,7 +19,7 @@ import {
   makeActiveUserAndSettingsStateSelector
 } from 'selectors/storeSelectors';
 import {createSelector} from 'reselect'
-import {mergePropsForViews, makeTestPropsFunction} from 'helpers/componentHelpers'
+import {mergeActionsForViews, makeTestPropsFunction} from 'helpers/componentHelpers'
 import {mergeDeep, throwing} from 'rescape-ramda';
 
 const {reqPath} = throwing
@@ -79,7 +79,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
  * Combines mapStateToProps, mapDispatchToProps with the given viewToActions mapping
  * @type {Function}
  */
-export const mergeProps = mergePropsForViews({
+export const mergeProps = mergeActionsForViews({
   // MapGl child component needs the following actions
   mapGl: ['onChangeViewport', 'hoverMarker', 'selectMarker']
 })

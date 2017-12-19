@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {Link} from 'react-router-dom';
 import {withRouter} from 'react-router';
 import {mergeDeep, throwing} from 'rescape-ramda';
-import {eMap, makeTestPropsFunction, mergePropsForViews} from 'helpers/componentHelpers';
+import {eMap, makeTestPropsFunction, mergeActionsForViews} from 'helpers/componentHelpers';
 import {makeMergeDefaultStyleWithProps} from 'selectors/styleSelectors';
 import {createSelector} from 'reselect';
 import {connect} from 'react-redux';
@@ -33,7 +33,7 @@ export const mapDispatchToProps = (dispatch) => {
  * Combines mapStateToProps, mapDispatchToProps with the given viewToActions mapping
  * @type {Function}
  */
-export const mergeProps = mergePropsForViews({
+export const mergeProps = mergeActionsForViews({
   // Region child component needs the following actions
   region: []
 })

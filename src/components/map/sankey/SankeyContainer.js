@@ -20,7 +20,7 @@ import {
 
 import {createSelector} from 'reselect';
 import {mergeDeep, throwing} from 'rescape-ramda';
-import {makeTestPropsFunction, mergePropsForViews} from 'helpers/componentHelpers';
+import {makeTestPropsFunction, mergeActionsForViews} from 'helpers/componentHelpers';
 import {makeMergeDefaultStyleWithProps} from 'selectors/styleSelectors';
 const {reqPath} = throwing
 //const {hoverMarker, selectMarker} = actionCreators;
@@ -62,7 +62,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
  * Combines mapStateToProps, mapDispatchToProps with the given viewToActions mapping
  * @type {Function}
  */
-export const mergeProps = mergePropsForViews({
+export const mergeProps = mergeActionsForViews({
   // MapGl child component needs the following actions
   mapGl: ['onChangeViewport', 'hoverMarker', 'selectMarker']
 })

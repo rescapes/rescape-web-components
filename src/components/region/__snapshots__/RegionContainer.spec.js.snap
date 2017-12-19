@@ -28,13 +28,7 @@ Object {
     },
   },
   "views": Object {
-    "mapboxProps": Object {
-      "region": Object {
-        "id": "oakland",
-        "isSelected": true,
-      },
-    },
-    "region": Array [],
+    "mapboxProps": Array [],
   },
 }
 `;

@@ -9,7 +9,9 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import * as R from 'ramda';
-import {propLensEqual, mergePropsForViews, makeTestPropsFunction, liftAndExtract} from './componentHelpers';
+import {propLensEqual, mergeActionsForViews, makeTestPropsFunction, liftAndExtract} from './componentHelpers';
+import {mergePropsForViews, mergeStylesIntoViews, resolveApolloProps} from 'helpers/componentHelpers';
+import * as Either from 'data.either';
 
 describe('componentHelpers', () => {
   test('propLensEqual', () => {
@@ -29,30 +31,131 @@ describe('componentHelpers', () => {
     )).toEqual(false);
   });
 
-  test('mergePropsForViews', () => {
-    const mergeProps = mergePropsForViews({aView: ['action1', 'action2'], bView: ['action2', 'action3']});
-    const stateProps = {a: 1, views: {aView: {stuff: 1}, bView: {moreStuff: 2}}};
+  test('mergeActionsForViews', () => {
+    const mergeProps = mergeActionsForViews({aComponent: ['action1', 'action2'], bComponent: ['action2', 'action3']});
+    const stateProps = {a: 1, views: {aComponent: {stuff: 1}, bComponent: {moreStuff: 2}}};
     const dispatchProps = {
       action1: R.identity,
       action2: R.identity,
       action3: R.identity
     };
     // mergeProps should merge stateProps and dispatchProps but copy the actions to stateProps.views according
-    // to the mapping given to mergePropsForViews
+    // to the mapping given to mergeActionsForViews
     expect(mergeProps(stateProps, dispatchProps)).toEqual(
       R.merge({
         a: 1,
         views: {
-          aView: {stuff: 1, action1: R.identity, action2: R.identity},
-          bView: {moreStuff: 2, action2: R.identity, action3: R.identity}
+          aComponent: {stuff: 1, action1: R.identity, action2: R.identity},
+          bComponent: {moreStuff: 2, action2: R.identity, action3: R.identity}
         }
       }, dispatchProps)
     );
   });
 
+  test('mergePropsForViews', () => {
+    const mergeProps = mergePropsForViews({aComponent: ['foo', 'bar'], bComponent: ['bar', 'zwar']});
+    const props = {
+      a: 1,
+      views: {aComponent: {stuff: 1}, bComponent: {moreStuff: 2}},
+      foo: 1,
+      bar: 2,
+      zwar: 3
+    };
+
+    // mergeProps should merge stateProps and dispatchProps but copy the actions to stateProps.views according
+    // to the mapping given to mergeActionsForViews
+    expect(mergeProps(props)).toEqual(
+      {
+        a: 1,
+        views: {
+          aComponent: {stuff: 1, foo: 1, bar: 2},
+          bComponent: {moreStuff: 2, bar: 2, zwar: 3}
+        },
+        foo: 1,
+        bar: 2,
+        zwar: 3
+      }
+    );
+  });
+
+  test('resolveApolloProps', () => {
+    const viewToPropNames = {aComponent: ['foo', 'bar'], bComponent: ['bar', 'zwar']};
+    const complete = {
+      store: {
+        foo: 1,
+        bar: 2,
+        zwar: 3
+      }
+    };
+    const loading = {
+      loading: true
+    };
+    const error = {
+      error: true
+    };
+    const ownProps = {
+      a: 1,
+      views: {
+        aComponent: {stuff: 1},
+        bComponent: {moreStuff: 2}
+      }
+    };
+
+    // Query complete
+    expect(resolveApolloProps(
+      viewToPropNames,
+      R.merge({data: complete}, {ownProps})
+    )).toEqual(
+      // Query complete case
+      {
+        a: 1,
+        views: {
+          aComponent: {stuff: 1, foo: 1, bar: 2},
+          bComponent: {moreStuff: 2, bar: 2, zwar: 3}
+        },
+        foo: 1,
+        bar: 2,
+        zwar: 3
+      }
+    );
+
+    // Query loading
+    expect(resolveApolloProps(
+      viewToPropNames,
+      R.merge({data: loading}, {ownProps})
+    )).toEqual(
+      // Query complete case
+      {
+        a: 1,
+        views: {
+          aComponent: {stuff: 1},
+          bComponent: {moreStuff: 2}
+        },
+        loading: true
+      }
+    );
+
+    // Query error
+    expect(resolveApolloProps(
+      viewToPropNames,
+      R.merge({data: error}, {ownProps})
+    )).toEqual(
+      // Query complete case
+      {
+        a: 1,
+        views: {
+          aComponent: {stuff: 1},
+          bComponent: {moreStuff: 2}
+        },
+        error: true
+      }
+    );
+
+  });
+
   test('makeTestPropsFunction', () => {
-    const mergeProps = mergePropsForViews({aView: ['action1', 'action2'], bView: ['action2', 'action3']});
-    const sampleState = ({a: 1, views: {aView: {stuff: 1}, bView: {moreStuff: 2}}});
+    const mergeProps = mergeActionsForViews({aComponent: ['action1', 'action2'], bComponent: ['action2', 'action3']});
+    const sampleState = ({a: 1, views: {aComponent: {stuff: 1}, bComponent: {moreStuff: 2}}});
     const sampleOwnProps = {style: {width: 100}};
     const mapStateToProps = (state, ownProps) => R.merge(state, ownProps);
     const dispatchResults = {
@@ -70,8 +173,8 @@ describe('componentHelpers', () => {
           a: 1,
           style: {width: 100},
           views: {
-            aView: {stuff: 1, action1: R.identity, action2: R.identity},
-            bView: {moreStuff: 2, action2: R.identity, action3: R.identity}
+            aComponent: {stuff: 1, action1: R.identity, action2: R.identity},
+            bComponent: {moreStuff: 2, action2: R.identity, action3: R.identity}
           }
         }, dispatchResults)
       );
@@ -83,6 +186,44 @@ describe('componentHelpers', () => {
       liftAndExtract(R.identity, {a: {my: 'props'}, b: {your: 'props'}})
     ).toEqual(
       [{my: 'props'}, {your: 'props'}]
-    )
-  })
+    );
+  });
+
+  test('mergeStylesIntoViews', () => {
+    expect(
+      mergeStylesIntoViews(
+        props => (
+            {someProp: {color: 'red'}},
+        ),
+        {
+          data: {
+            style: {
+              styleFromProps: 'blue'
+            }
+          },
+          views: {
+            someProp: {foo: 1}
+          }
+        }
+      )
+    ).toEqual(
+      {
+        data: {
+          style: {
+            styleFromProps: 'blue'
+          }
+        },
+        views: {
+          someProp: {
+            style: {
+              styleFromProps: 'blue',
+              color: 'red'
+            },
+            foo: 1
+          }
+        }
+      }
+    );
+
+  });
 });

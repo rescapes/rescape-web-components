@@ -4,10 +4,14 @@ import {makeMergeDefaultStyleWithProps} from 'selectors/styleSelectors';
 import {createSelector} from 'reselect';
 import {gql} from 'apollo-client-preset';
 import {graphql} from 'react-apollo';
-import {makeGraphQlTestPropsFunction, makeTestPropsFunction, mergePropsForViews} from 'helpers/componentHelpers';
+import {
+  errorOrLoadingOrData, makeGraphQlTestPropsFunction, makeTestPropsFunction,
+  mergeActionsForViews, resolveApolloProps, mergePropsForViews
+} from 'helpers/componentHelpers';
 import {mergeDeep, throwing} from 'rescape-ramda';
 import React from 'react';
 import * as R from 'ramda';
+import Either from 'data.either';
 
 const {reqPath} = throwing;
 
@@ -26,12 +30,8 @@ export const mapStateToProps =
     ],
     style => {
       return {
-        data: mergeDeep({style}, props),
-        views: {
-          mapboxProps: {
-            region: reqPath(['region'], props)
-          }
-        }
+        // Initiate data from props and default style
+        data: mergeDeep({style}, props)
       };
     }
   )(state, props);
@@ -70,6 +70,7 @@ const regionQuery = gql`
     }
 `;
 
+
 /**
  * All queries used by the container
  * @type {{region: {query: *, args: {options: (function({data: *}): {variables: {regionId}}), props: (function({data: *, ownProps?: *}): *)}}}}
@@ -83,14 +84,9 @@ export const queries = {
           regionId: region.id
         }
       }),
-      props: ({data, ownProps}) => mergeDeep(
-        {data},
-        // Update the store
-        R.over(
-          R.lensPath(['views', 'regionMapbox']),
-          view => mergeDeep(view, R.defaultTo({}, R.pick(['region'], R.defaultTo({}, R.view(R.lensProp('store'), data)))))
-        )(ownProps)
-      )
+      props: props => resolveApolloProps({
+        mapboxProps: ['region']
+      }, props)
     }
   }
 };
@@ -101,9 +97,9 @@ const ContainerWithData = graphql(queries.region.query, queries.region.args)(Reg
  * Combines mapStateToProps, mapDispatchToProps with the given viewToActions mapping
  * @type {Function}
  */
-export const mergeProps = mergePropsForViews({
+export const mergeProps = mergeActionsForViews({
   // Region child component needs the following actions
-  region: []
+  mapboxProps: []
 });
 
 // Returns a function that expects state and ownProps for testing

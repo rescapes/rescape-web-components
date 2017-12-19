@@ -5,7 +5,7 @@ import {createSelector} from 'reselect';
 import { makeActiveUserAndSettingsStateSelector } from 'selectors/storeSelectors';
 import {makeBrowserProportionalDimensionsSelector} from 'selectors/styleSelectors';
 import {mergeDeep, throwing} from 'rescape-ramda'
-import {makeTestPropsFunction, mergePropsForViews} from 'helpers/componentHelpers';
+import {makeTestPropsFunction, mergeActionsForViews} from 'helpers/componentHelpers';
 import {bindActionCreators} from 'redux';
 import {activeUserRegionSelector} from 'selectors/userSelectors';
 
@@ -56,7 +56,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
  * Combines mapStateToProps, mapDispatchToProps with the given viewToActions mapping
  * @type {Function}
  */
-export const mergeProps = mergePropsForViews({
+export const mergeProps = mergeActionsForViews({
   // Region child component needs the following actions
   region: []
 })

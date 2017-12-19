@@ -19,6 +19,7 @@ import {mergeDeep, throwing} from 'rescape-ramda';
 import * as R from 'ramda';
 import {Component} from 'react/cjs/react.production.min';
 import * as decamelize from 'decamelize';
+import {mergeStylesIntoViews} from 'helpers/componentHelpers'
 
 const [Mapbox, Sankey, MarkerList, Div] = eMap([mapbox, sankey, markerList, 'div']);
 const {reqPath} = throwing;
@@ -29,12 +30,7 @@ const {reqPath} = throwing;
  */
 export default class Region extends Component {
   render() {
-    const style = R.map(
-      style => ({style}),
-      this.getStyles(reqPath(['data', 'style'], this.props))
-    );
-    // Replace props.data.style with computed styles
-    const props = R.over(R.lensProp('data'), data => mergeDeep(data, style), this.props);
+    const props = mergeStylesIntoViews(this.getStyles, this.props)
 
     const renderChoicePoint = R.cond([
       [R.prop('loading'), (d) =>
@@ -56,27 +52,27 @@ export default class Region extends Component {
   getStyles(style) {
     return makeMergeContainerStyleProps()(
       {
-        style: {
+        views: {
           // Map props.styles to the root element
-          region: style,
+          regionProps: style,
           // Just map width/height to mapbox. TODO this probably won't stand, but it's more of a proof of concept now
-          mapbox: R.pick(['width', 'height'], style)
+          mapboxProps: R.pick(['width', 'height'], style)
         }
       },
       {
-        region: {
+        regionProps: {
           position: 'absolute',
           width: styleMultiplier(1),
           height: styleMultiplier(1)
         },
 
-        regionMapboxOuter: {
+        regionMapboxOuterProps: {
           position: 'absolute',
           width: styleMultiplier(.5),
           height: styleMultiplier(1)
         },
 
-        regionLocationsOuter: {
+        regionLocationsOuterProps: {
           position: 'absolute',
           top: .02,
           left: .55,

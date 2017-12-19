@@ -13,9 +13,11 @@ import React from 'react';
 import * as R from 'ramda';
 import {v} from 'rescape-validate';
 import PropTypes from 'prop-types';
-import {filterWithKeys, throwing} from 'rescape-ramda'
+import {filterWithKeys, mergeDeep, throwing} from 'rescape-ramda';
 import graphql from 'graphql';
-const {reqPath} = throwing
+import * as Either from 'data.either';
+
+const {reqPath} = throwing;
 
 /**
  * Returns true if the lens applied to props equals the lens applied to nextProps
@@ -43,6 +45,21 @@ export const propLensEqual = v(R.curry((lens, props, nextProps) =>
  */
 export const eMap = types => R.map(component => React.createFactory(component), types);
 
+/**
+ * Returns a function that expects a data structure containing a loading true/false flag and an optional error flag
+ * If error is defined it calls onError. If loading is true it calls onLoading. Otherwise it calls
+ * onData, assuming that the result data is somewhere in the given data
+ * @param onError. Function expecting data and called if data.error is not null
+ * @param onLoading Function expecting data and called if data.loading is true
+ * @param onData Function expecting data and called if onError and onLoading are not called
+ * @return {*} A function expecting a data structure
+ */
+export const errorOrLoadingOrData = (onError, onLoading, onData) =>
+  R.cond([
+    [R.prop('error'), onError],
+    [R.prop('loading'), onLoading],
+    [R.T, onData]
+  ]);
 
 /**
  * Copies any needed actions to view containers
@@ -52,21 +69,96 @@ export const eMap = types => R.map(component => React.createFactory(component), 
  * @returns {Function} A mergeProps function that expects stateProps and dispatchProps (The standard
  * third argument ownProps is never used, since it is assumed to have been merged into stateProps)
  */
-export const mergePropsForViews = (viewToActions) => (stateProps, dispatchProps) => {
+export const mergeActionsForViews = (viewToActionNames) => (stateProps, dispatchProps) => {
+  const props = R.merge(stateProps, dispatchProps);
   return R.over(
     R.lensProp('views'),
-    R.mergeWith(
-      (actions, view) => {
-        // Merge each view configuration with the actions it needs according to viewToActions
-        return R.merge(
-          view,
-          filterWithKeys((_, prop) => R.contains(prop, actions), dispatchProps)
-        );
-      },
-      viewToActions),
-    R.merge(stateProps, dispatchProps)
+    views =>
+      R.mapObjIndexed(
+        // For each view in props.views
+        (viewActions, viewName) => R.compose(
+          // Then merge with the existing props in the view
+          R.merge(viewActions),
+          // Map the values of the props listed in the corresponding viewToPropNames
+          R.pick(R.propOr([], viewName, viewToActionNames))
+        )(props),
+        (R.defaultTo({}, views))
+      ),
+    props
   );
 };
+
+/**
+ * Given a mapping from view names to an array of prop names and actual prop values,
+ * Adds or merges a views property into the props, where views is an object keyed by
+ * the same keys as viewToProps and valued by the resolution of the viewToProps props strings.
+ * This allows a Container or Component to efficiently specify which props to give the view
+ * used by each sub component
+ * Example, if aComponent and bComponents are two child components that need the following props:
+ * const viewToProps = {aComponent: ['foo', 'bar'], bComponent: ['bar', 'zwar']}
+ * and props are
+ * const props = {
+      a: 1,
+      views: {aComponent: {stuff: 1}, bComponent: {moreStuff: 2}},
+      foo: 1,
+      bar: 2,
+      zwar: 3
+    };
+ * The function returns
+ * {
+    a: 1,
+    views: {
+      aComponent: {stuff: 1, foo: 1, bar: 2},
+      bComponent: {moreStuff: 2, bar: 2, zwar: 3}
+    },
+    foo: 1,
+    bar: 2,
+    zwar: 3
+  }
+ *
+ */
+export const mergePropsForViews = R.curry((viewToPropNames, props) => {
+  return R.over(
+    R.lensProp('views'),
+    views =>
+      R.mapObjIndexed(
+        // For each view in props.views
+        (viewProps, viewName) => R.compose(
+          // Then merge with the existing props in the view
+          R.merge(viewProps),
+          // Map the values of the props listed in the corresponding viewToPropNames
+          R.pick(R.propOr([], viewName, viewToPropNames))
+        )(props),
+        (R.defaultTo({}, views))
+      ),
+    props
+  );
+});
+
+/**
+ * Merges the results of an Apollo query (or the loading or error state) with ownProps, and then
+ * returns an Either.Left if an error is detected or and Either.Right if loading is detected.
+ * Both of these are called with the Apollo data object. If neither loading, nor error, meaning
+ * the data is ready, and Either.Right is called with mergePropsForViews(viewsToProps, data)
+ * @props {Object} viewToProps See mergePropsForViews
+ * @props {Object} data The Apollo data object that results from a query
+ * @props {Object} ownProps Props that Apollo passes through from wrapping container
+ * (in our case this is the result of mapStateToProps)
+ * @returns {Either} An Either as described above
+ */
+export const resolveApolloProps = R.curry((viewsToPropNames, {data, ownProps}) =>
+  errorOrLoadingOrData(
+    R.identity,
+    R.identity,
+    mergePropsForViews(viewsToPropNames)
+  )(
+    mergeDeep(
+      ownProps,
+      // Merge data.store with data if store is defined
+      R.merge(R.omit(['store'], data), R.view(R.lensProp(['store']), data))
+    )
+  )
+);
 
 /**
  * Given a container's mapStateToProps and mapDispatchToProps, returns a function that accepts a sample state
@@ -121,7 +213,7 @@ export const liftAndExtract = (component, props) => {
     // Note that R.map(component, props) would work here too,
     // but this might refactor better if we support passing child components
     R.liftN(1, component)(props)
-  )
+  );
 };
 
 /**
@@ -134,5 +226,25 @@ export const liftAndExtract = (component, props) => {
  * @return {[Object]} A list of React components
  */
 export const liftAndExtractItems = (component, propsWithItems) => {
-  return liftAndExtract(component, reqPath(['items'], propsWithItems))
+  return liftAndExtract(component, reqPath(['items'], propsWithItems));
 };
+
+/**
+ * Given a getStyles function that expects props and returns styles keyed by view, merges those
+ * view values into the views of the props
+ * @param getStyles
+ * @param props
+ * @return {*}
+ */
+export const mergeStylesIntoViews = (getStyles, props) => {
+  const viewStyles = R.map(
+    style => ({style}),
+    getStyles(reqPath(['data', 'style'], props))
+  );
+  // Replace props.data.style with computed styles
+  return R.over(
+    R.lensProp('views'),
+    views => mergeDeep(views, viewStyles),
+    props
+  );
+}
