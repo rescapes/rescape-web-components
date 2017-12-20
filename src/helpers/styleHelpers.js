@@ -43,7 +43,7 @@ export const classNamer = (root, suffix = null) => R.join(
  * @param {String} name Name to use for the className. You can pass a camelized name and it will decamelize
  * (e.g. outerRegionDiv is converted to outer-region-div) for the actual className
  * @param {Object} views Contains a key matching name containing a style object.
- * e.g. if name is 'regionProps' views must have {regionProps: {style: {border: 'red', ...}}}
+ * e.g. if name is 'region' views must have {region: {style: {border: 'red', ...}}}
  * @returns {Object} An object with a style and className key and corresponding values
  */
 export const getClassAndStyle = (name, views) =>
@@ -54,15 +54,16 @@ export const getClassAndStyle = (name, views) =>
   );
 
 /**
- * Given a name, generates a style object
+ * Given a name, generates a style object with the matching object in views, i.e. views[name].style
+ * If views[name] or views[name].style is undefined, an empty object is returned
  * @param {String} name Name to use for the to resolve the style
  * @param {Object} views Contains a key matching name containing a style object.
- * e.g. if name is 'regionProps' views must have {regionProps: {style: {border: 'red', ...}}}
- * @returns {Object} An object with a style key and corresponding style values
+ * e.g. if name is 'region' views must have {region: {style: {border: 'red', ...}}}
+ * @returns {Object} An object with a style key and corresponding style values, or and empty object
  *
  */
-export const getStyleObj = (name, views) => ({
-  style: reqPath(R.concat([name], ['style']), views)
+export const getStyleObj = (name, views) => compact({
+  style: R.view(R.lensPath(R.concat([name], ['style'])), views)
 });
 
 

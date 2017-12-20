@@ -10,11 +10,13 @@
  */
 
 import {
+  applyMatchingStyles,
   browserDimensionsSelector, makeBrowserProportionalDimensionsSelector,
-  makeMergeContainerStyleProps
+  makeMergeContainerStyleProps, mergeAndApplyMatchingStyles
 } from 'selectors/styleSelectors';
 import {makeMergeDefaultStyleWithProps} from 'selectors/styleSelectors';
 import * as R from 'ramda';
+import {styleMultiplier} from 'helpers/styleHelpers';
 
 describe('styleSelectors', () => {
   test('makeMergeDefaultStyleWithProps', () => {
@@ -94,5 +96,43 @@ describe('styleSelectors', () => {
       }
     );
   });
+
+  test('mergeAndApplyMatchingStyles', () => {
+    expect(mergeAndApplyMatchingStyles({
+      cow: 1,
+      bird: 2,
+      width: 2,
+      height: 2
+    }, {
+      bird: 3,
+      position: 'absolute',
+      width: styleMultiplier(2),
+      height: styleMultiplier(3)
+    })).toEqual({
+      cow: 1,
+      bird: 3,
+      position: 'absolute',
+      width: 4,
+      height: 6
+    })
+  })
+
+  test('applyMatchingStyles', () => {
+    expect(applyMatchingStyles({
+      cow: 1,
+      width: 2,
+      height: 2
+    }, {
+      position: 'absolute',
+      cow: 2,
+      width: styleMultiplier(2),
+      height: styleMultiplier(3)
+    })).toEqual({
+      position: 'absolute',
+      cow: 2,
+      width: 4,
+      height: 6
+    })
+  })
 });
 

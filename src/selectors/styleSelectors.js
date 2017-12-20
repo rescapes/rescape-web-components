@@ -60,7 +60,7 @@ const mergeDeepWith = R.curry((fn, left, right) => R.mergeWith((l, r) => {
  * @param {Object} parentStyle Simple object of styles
  * @param {Object} style Styles including functions to transform the corresponding key of parentStyle
  */
-const mergeStyles = (parentStyle, style) => mergeDeepWith(
+export const mergeAndApplyMatchingStyles = (parentStyle, style) => mergeDeepWith(
   (stateStyleValue, propStyleValue) =>
     // If keys match, the propStyleValue trumps unless it is a function, in which case the stateStyleValue
     // is passed to the propStyleValue function
@@ -69,6 +69,29 @@ const mergeStyles = (parentStyle, style) => mergeDeepWith(
       x => R.compose(x)(stateStyleValue)
     )(propStyleValue),
   parentStyle,
+  style
+);
+
+/**
+ * Like MergeAndApplyStyles but doesn't merge the parentStyles. It simply applies the ones where
+ * there are child styles with the same name that are a function. If the child has a matching style
+ * that isn't a function then the parent's value is ignored
+ * @param parentStyle
+ * @param style
+ * @return {*}
+ */
+export const applyMatchingStyles = (parentStyle, style) => mergeDeepWith(
+  (stateStyleValue, propStyleValue) =>
+    // If keys match, the propStyleValue trumps unless it is a function, in which case the stateStyleValue
+    // is passed to the propStyleValue function
+    R.when(
+      R.is(Function),
+      x => R.compose(x)(stateStyleValue)
+    )(propStyleValue),
+  R.fromPairs(R.innerJoin(
+    ([parentStyleKey], [styleKey]) => R.equals(parentStyleKey, styleKey),
+    R.toPairs(parentStyle), R.toPairs(style)
+  )),
   style
 );
 
@@ -85,7 +108,7 @@ const mergeStyles = (parentStyle, style) => mergeDeepWith(
  */
 export const makeMergeDefaultStyleWithProps = () => (state, props) => createSelector(
   [defaultStyleSelector],
-  defaultStyle => mergeStyles(defaultStyle, R.propOr({}, 'style', props))
+  defaultStyle => mergeAndApplyMatchingStyles(defaultStyle, R.propOr({}, 'style', props))
 )(state, props);
 
 /**
@@ -103,5 +126,5 @@ export const makeMergeContainerStyleProps = () => (containerProps, style) => cre
     containerProps => reqPath(['views'], containerProps),
     (_, props) => R.defaultTo({}, props)
   ],
-  mergeStyles
+  mergeAndApplyMatchingStyles
 )(containerProps, style);

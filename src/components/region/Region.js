@@ -13,8 +13,8 @@ import mapbox from 'components/map/mapbox/MapboxContainer';
 import sankey from 'components/map/sankey/SankeyContainer';
 import markerList from 'components/map/marker/MarkerListContainer';
 import PropTypes from 'prop-types';
-import {makeMergeContainerStyleProps} from 'selectors/styleSelectors';
-import {nameLookup, eMap, propsFor, propsAndStyle} from 'helpers/componentHelpers';
+import {applyMatchingStyles, makeMergeContainerStyleProps, mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
+import {nameLookup, eMap, propsFor, propsAndStyle, errorOrLoadingOrData} from 'helpers/componentHelpers';
 import {mergeDeep, throwing} from 'rescape-ramda';
 import * as R from 'ramda';
 import {Component} from 'react/cjs/react.production.min';
@@ -23,12 +23,12 @@ import {mergeStylesIntoViews} from 'helpers/componentHelpers';
 const [Mapbox, Sankey, MarkerList, Div] = eMap([mapbox, sankey, markerList, 'div']);
 const {reqPath} = throwing;
 export const c = nameLookup({
-  regionProps: true,
-  regionMapboxOuterProps: true,
-  regionMapboxProps: true,
-  regionSankeyProps: true,
-  regionLocationsOuterProps: true,
-  regionLocationsProps: true
+  region: true,
+  regionMapboxOuter: true,
+  regionMapbox: true,
+  regionSankey: true,
+  regionLocationsOuter: true,
+  regionLocations: true
 });
 
 /**
@@ -37,49 +37,41 @@ export const c = nameLookup({
  */
 export default class Region extends Component {
   render() {
-    const props = mergeStylesIntoViews(this.getStyles, this.props);
+    const props = mergeStylesIntoViews(
+      this.getStyles,
+      this.props
+    );
 
-    const renderChoicePoint = R.cond([
-      [R.prop('loading'), (d) =>
-        this.renderLoading(props)
-      ],
-      [R.prop('error'), () =>
-        this.renderError(props)
-      ],
-      [R.prop('store'), () =>
-        this.renderData(props)
-      ],
-      [R.T, () => {
-        throw new Error("Expected loading, error, or store prop")
-      }]
-    ]);
-
-    return Div(getClassAndStyle('regionProps', props.views),
-      renderChoicePoint(reqPath(['data'], props))
+    return Div(getClassAndStyle('region', props.views),
+      errorOrLoadingOrData(
+        this.renderLoading,
+        this.renderError,
+        this.renderData
+      )(props)
     );
   }
 
   getStyles({style}) {
     return {
-      [c.regionProps]: R.merge(style, {
+      [c.region]: mergeAndApplyMatchingStyles(style, {
         position: 'absolute',
         width: styleMultiplier(1),
         height: styleMultiplier(1)
       }),
 
-      [c.regionMapboxProps]: R.merge(
+      [c.regionMapbox]: R.merge(
         // Just map width/height to mapbox.
         // TODO this probably won't stand, but it's more of a proof of concept now
         R.pick(['width', 'height'], style),
         {}),
 
-      [c.regionMapboxOuterProps]: {
+      [c.regionMapboxOuter]: applyMatchingStyles(style, {
         position: 'absolute',
         width: styleMultiplier(.5),
         height: styleMultiplier(1)
-      },
+      }),
 
-      [c.regionLocationsOuterProps]: {
+      [c.regionLocationsOuter]: {
         position: 'absolute',
         top: .02,
         left: .55,
@@ -92,21 +84,19 @@ export default class Region extends Component {
     /* We additionally give Mapbox the container width and height so the map can track changes to these
      We have to apply the width and height fractions of this container to them.
      */
-    const props = R.flip(propsFor)(views)
+    const props = R.flip(propsFor)(views);
 
     return [
-      Div(props(c.regionProps),
-        Div(props(c.regionMapboxOuterProps),
-          Mapbox(
-            props(c.regionMapboxProps)
-          ),
-          Sankey(
-            props(c.regionSankeyProps)
-          )
+      Div(props(c.regionMapboxOuter),
+        Mapbox(
+          props(c.regionMapbox)
         ),
-        Div(props(c.regionLocationsOuterProps),
-          MarkerList(props(c.regionLocationsProps))
+        Sankey(
+          props(c.regionSankey)
         )
+      ),
+      Div(props(c.regionLocationsOuter),
+        MarkerList(props(c.regionLocations))
       )
     ];
   }

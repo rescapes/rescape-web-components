@@ -10,7 +10,10 @@
  */
 import * as R from 'ramda';
 import {propLensEqual, mergeActionsForViews, makeTestPropsFunction, liftAndExtract} from './componentHelpers';
-import {mergePropsForViews, mergeStylesIntoViews, nameLookup, resolveApolloProps} from 'helpers/componentHelpers';
+import {
+  errorOrLoadingOrData, mergePropsForViews, mergeStylesIntoViews, nameLookup, propsFor,
+  resolveApolloProps
+} from 'helpers/componentHelpers';
 import * as Either from 'data.either';
 
 describe('componentHelpers', () => {
@@ -228,6 +231,40 @@ describe('componentHelpers', () => {
   test('nameLookup', () => {
     expect(nameLookup({toast: true, is: true, good: true})).toEqual(
       {toast: 'toast', is: 'is', good: 'good'}
+    )
+  })
+
+  test('errorOrLoadingOrData', () => {
+    const func = errorOrLoadingOrData(
+      p => p.bad,
+      p => p.okay,
+      p => p.good,
+    )
+    expect(func({data: {error: true}, bad: 'bad'})).toEqual('bad')
+    expect(func({data: {loading: true}, okay: 'okay'})).toEqual('okay')
+    expect(func({data: {store: true}, good: 'good'})).toEqual('good')
+  })
+
+  test('propsFor', () => {
+    const viewProps = {
+      fooProps: {
+        style: {
+          color: 'red'
+        },
+        bar: 1
+      }
+    }
+    expect(propsFor('fooProps', viewProps)).toEqual(
+      {
+        className: 'foo-props',
+        style: {
+          color: 'red'
+        },
+        bar: 1
+      }
+    )
+    expect(propsFor('bermudaProps', viewProps)).toEqual(
+      {className: 'bermuda-props'}
     )
   })
 });

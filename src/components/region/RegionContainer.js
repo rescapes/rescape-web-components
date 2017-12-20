@@ -85,7 +85,7 @@ export const queries = {
       }),
       props: props => resolveApolloProps({
         // region is expected from the query result
-        [c.regionMapboxProps]: ['store.region']
+        [c.regionMapbox]: {region: 'store.region'}
       }, props)
     }
   }
@@ -99,7 +99,7 @@ const ContainerWithData = graphql(queries.region.query, queries.region.args)(Reg
  */
 export const mergeProps = mergeActionsForViews({
   // Region child component needs the following actions
-  [c.regionMapboxProps]: []
+  [c.regionMapbox]: []
 });
 
 // Returns a function that expects state and ownProps for testing

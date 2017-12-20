@@ -38,7 +38,7 @@ export const mapStateToProps = (state, props) =>
         data: mergeDeep(activeUserAndSettings, {style}),
         style,
         views: {
-          regionProps: {
+          region: {
             region: activeUserRegionSelector(activeUserAndSettings),
             style: {
               width: browserProportionalStyle.width,

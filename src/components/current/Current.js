@@ -13,13 +13,17 @@ import PropTypes from 'prop-types';
 import region from 'components/region/RegionContainer';
 import styles from './Current.style';
 import React from 'react';
-import {eMap} from 'helpers/componentHelpers';
+import {eMap, nameLookup} from 'helpers/componentHelpers';
 import * as R from 'ramda';
 import {throwing} from 'rescape-ramda'
 const {reqPath} = throwing
 
 const [Div, Region] =
   eMap(['div', region]);
+
+export const c = nameLookup({
+  region: true,
+});
 
 /**
  * Displays the Region of the current state and eventually a Region selector.

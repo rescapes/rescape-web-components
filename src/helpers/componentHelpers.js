@@ -16,6 +16,7 @@ import PropTypes from 'prop-types';
 import {filterWithKeys, mapKeys, mergeDeep, throwing} from 'rescape-ramda';
 import * as Either from 'data.either';
 import {getClassAndStyle, getStyleObj} from 'helpers/styleHelpers';
+import prettyFormat from 'pretty-format';
 
 const {reqPath} = throwing;
 
@@ -46,20 +47,25 @@ export const propLensEqual = v(R.curry((lens, props, nextProps) =>
 export const eMap = types => R.map(component => React.createFactory(component), types);
 
 /**
- * Returns a function that expects a data structure containing a loading true/false flag and an optional error flag
- * If error is defined it calls onError. If loading is true it calls onLoading. Otherwise it calls
- * onData, assuming that the result data is somewhere in the given data
+ * Returns a function that expects props containing one of data.loading|error|store
+ * If error is defined it calls onError. If loading is true it calls onLoading. If store it calls onData
+ * Otherwise an exception is thrown
  * @param onError. Function expecting data and called if data.error is not null
  * @param onLoading Function expecting data and called if data.loading is true
  * @param onData Function expecting data and called if onError and onLoading are not called
- * @return {*} A function expecting a data structure
+ * @param props An Object that must have one of data.error|.loading|.store
+ * @return {*} The result of the onError, onLoading, onData, or an Exception if none are matched
  */
-export const errorOrLoadingOrData = (onError, onLoading, onData) =>
+export const errorOrLoadingOrData = R.curry((onError, onLoading, onData, props) =>
   R.cond([
-    [R.prop('error'), onError],
-    [R.prop('loading'), onLoading],
-    [R.T, onData]
-  ]);
+    [R.view(R.lensPath(['data', 'error'])), onError],
+    [R.view(R.lensPath(['data', 'loading'])), onLoading],
+    [R.view(R.lensPath(['data', 'store'])), onData],
+    [R.T, props => {
+      throw new Error(`No error, loading, nor store prop: ${prettyFormat(props)}`);
+    }]
+  ])(props)
+);
 
 /**
  * Copies any needed actions to view containers
@@ -92,7 +98,7 @@ export const mergeActionsForViews = (viewToActionNames) => (stateProps, dispatch
  * Given a mapping from view names to an array of prop paths,
  * and given actual prop values,
  * adds or merges a views property into the props, where views is an object keyed by
- * the same keys as viewToProps and valued by the resolution of the viewToProps props strings.
+ * the same keys as viewToPropPaths and valued by the resolution of the viewToPropPaths props strings.
  * This allows a Container or Component to efficiently specify which props to give the view
  * used by each sub component
  * Example, if aComponent and bComponents are two child components that need the following props:
@@ -122,23 +128,24 @@ export const mergeActionsForViews = (viewToActionNames) => (stateProps, dispatch
   }
  *
  */
-export const mergePropsForViews = R.curry((viewToPropNames, props) => {
+export const mergePropsForViews = R.curry((viewToPropPaths, props) => {
   return R.over(
     R.lensProp('views'),
     views =>
-      R.mapObjIndexed(
-        // For each view in props.views
-        (viewProps, viewName) => R.compose(
-          // Then merge with the existing props in the view
-          R.merge(viewProps),
-          // Map the values of the props listed in the corresponding viewToPropNames
-          R.pick(R.propOr([], viewName, viewToPropNames))
-        )(props),
-        R.merge(
-          // this initializes all the view names to an empty object if the name isn't in views
-          R.map(_ => ({}), viewToPropNames),
-          // this can be null
-          views
+      mergeDeep(
+        // Merge any existing values in props.views
+        views,
+        // Map each propPath to the value in props or undefined
+        // This transforms {viewName: {propName: 'pathInPropsToPropName (e.g. store.propName)', ...}
+        // This results in {viewName: {propName: propValue, ...}
+        R.map(
+          propNameToPropPath =>
+            R.map(
+              propPath => R.view(R.lensPath(propPath), props),
+              // Within each view, map each propNameToPropPath
+              propNameToPropPath),
+          // Map each view
+          viewToPropPaths
         )
       ),
     props
@@ -146,26 +153,22 @@ export const mergePropsForViews = R.curry((viewToPropNames, props) => {
 });
 
 /**
- * Merges the results of an Apollo query (or the loading or error state) with ownProps, and then
- * returns an Either.Left if an error is detected or and Either.Right if loading is detected.
- * Both of these are called with the Apollo data object. If neither loading, nor error, meaning
- * the data is ready, and Either.Right is called with mergePropsForViews(viewsToProps, data)
+ * Merges the results of an Apollo query (or the loading or error state) with ownProps
+ * and then calls mergePropsForViews
  * @props {Object} viewToProps See mergePropsForViews
  * @props {Object} data The Apollo data object that results from a query
  * @props {Object} ownProps Props that Apollo passes through from wrapping container
  * (in our case this is the result of mapStateToProps)
  * @returns {Either} An Either as described above
  */
-export const resolveApolloProps = R.curry((viewsToPropNames, {data, ownProps}) => errorOrLoadingOrData(
-    // For the error and loading cases, give the views only what's in ownProps, since data isn't loaded
-    // ownProps might have legitimate props that can be show in a loading or error state
-    () => mergePropsForViews(viewsToPropNames, ownProps),
-    () => mergePropsForViews(viewsToPropNames, ownProps),
-    mergePropsForViews(viewsToPropNames)
-  )(
+export const resolveApolloProps = R.curry((viewsToPropNames, {data, ownProps}) =>
+  // For the error and loading cases, give the views only what's in ownProps, since data isn't loaded
+  // ownProps might have legitimate props that can be show in a loading or error state
+  mergePropsForViews(
+    viewsToPropNames,
     mergeDeep(
       ownProps,
-      data
+      {data}
     )
   )
 );
@@ -259,10 +262,41 @@ export const mergeStylesIntoViews = (getStyles, props) => {
   );
 };
 
-export const propsFor = (name, viewProps) => R.merge(
-  getClassAndStyle(name, R.propOr({name: {style: {}}}, name, viewProps)),
-  R.omit(['style'], viewProps)
-);
+/**
+ * Given viewProps keyed by by view names, find the one that matches name.
+ * Then create the class and style props from the name and style props and merge it with the other props
+ * If no matches props are found, {className: decamelized name} is returned
+ * Example: name = 'fooOuterDiv'
+ * viewProps: {
+ *  fooOuterDiv: {
+ *    bar: 1,
+ *    style: {
+ *      color: 'red'
+ *    }
+ *  }
+ * }
+ * resolves to {
+ *  bar: 1,
+ *  className: 'foo-outer-div'
+ *  style: {
+ *    color: 'red'
+ *  }
+ * }
+ *
+ * @param name
+ * @param viewProps
+ * @return {*}
+ */
+export const propsFor = (name, viewProps) => {
+  const propsForView = R.defaultTo({}, R.view(R.lensProp(name), viewProps));
+  return R.merge(
+    propsForView,
+    getClassAndStyle(
+      name,
+      viewProps
+    )
+  );
+};
 
 export const propsAndStyle = (name, viewProps) => R.merge(
   getStyleObj(name, R.propOr({name: {style: {}}}, name, viewProps)),

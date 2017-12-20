@@ -1,36 +1,46 @@
-
 import {styleMultiplier, createScaledPropertyGetter, classNamer} from './styleHelpers';
 import {getClassAndStyle, getStyleObj} from 'helpers/styleHelpers';
 
 describe('styles', () => {
   test('classNamer', () => {
-    expect(classNamer('chicken', 'outsidePen')).toEqual('chicken-outside-pen')
-  })
+    expect(classNamer('chicken', 'outsidePen')).toEqual('chicken-outside-pen');
+  });
   test('getClassAndStyle', () => {
-    expect(getClassAndStyle('chickenOutsidePen', {
+    const viewObj =  {
       chickenOutsidePen: {
         style: {
           border: 'coop'
         }
       }
-    })).toEqual({
+    }
+    expect(getClassAndStyle('chickenOutsidePen', viewObj)).toEqual({
       className: 'chicken-outside-pen',
       style: {
         border: 'coop'
       }
-    })
-  })
-  expect(getStyleObj('chickenOutsidePen', {
-    chickenOutsidePen: {
+    });
+    expect(getClassAndStyle('sheepGotoHeaven', viewObj)).toEqual({
+      className: 'sheep-goto-heaven'
+    });
+  });
+  test('getStyleObj', () => {
+    const viewObj = {
+      chickenOutsidePen: {
+        style: {
+          border: 'coop'
+        }
+      },
+      sheepGoToHeaven: {}
+    }
+    expect(getStyleObj('chickenOutsidePen', viewObj)).toEqual({
       style: {
         border: 'coop'
       }
-    }
-  })).toEqual({
-    style: {
-      border: 'coop'
-    }
-  })
+    });
+    expect(getStyleObj('sheepGotoHeaven', viewObj)).toEqual({
+    });
+  });
+
   test('styleMultiplier', () => {
     expect(styleMultiplier(100, 0.25)).toEqual(25);
   });

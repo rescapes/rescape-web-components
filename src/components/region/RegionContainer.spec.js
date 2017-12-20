@@ -9,16 +9,17 @@ import {testPropsMaker as currentPropsMaker} from 'components/current/CurrentCon
 import {eMap} from 'helpers/componentHelpers';
 import * as R from 'ramda'
 import {createWaitForElement} from 'enzyme-wait';
+import {c} from 'components/current/Current';
 
 describe('RegionContainer', () => {
   // Get the parent Region from the CurrentContainer's testPropMaker
-  const {views: {regionProps}} = propsFromSampleStateAndContainer(currentPropsMaker, {})
+  const {views} = propsFromSampleStateAndContainer(currentPropsMaker, {})
   const parentProps = R.merge({
     style: {
       width: 500,
       height: 500
     },
-  }, regionProps)
+  }, views[c.region])
   // Get the test props for RegionContainer
   const props = propsFromSampleStateAndContainer(testPropsMaker, parentProps)
 
@@ -43,8 +44,8 @@ describe('RegionContainer', () => {
     const [regionContainer] = eMap([RegionContainer]);
     const wrapper = wrapWithMockGraphqlAndStore(regionContainer(parentProps))
     const component = wrapper.find('Region');
-    expect(R.keys(component.props())).toEqual(['data', 'styles', 'views'])
-    const waitForSample = createWaitForElement('.region-mapbox-outer');
+    expect(R.keys(component.props())).toEqual(['data', 'style', 'views'])
+    const waitForSample = createWaitForElement('.region-mapbox-outer-props');
     waitForSample(component).then(
       component => expect(component.text()).to.include('ready')
     );
