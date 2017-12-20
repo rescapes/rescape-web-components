@@ -89,20 +89,25 @@ export const mergeActionsForViews = (viewToActionNames) => (stateProps, dispatch
 };
 
 /**
- * Given a mapping from view names to an array of prop names and actual prop values,
- * Adds or merges a views property into the props, where views is an object keyed by
+ * Given a mapping from view names to an array of prop paths,
+ * and given actual prop values,
+ * adds or merges a views property into the props, where views is an object keyed by
  * the same keys as viewToProps and valued by the resolution of the viewToProps props strings.
  * This allows a Container or Component to efficiently specify which props to give the view
  * used by each sub component
  * Example, if aComponent and bComponents are two child components that need the following props:
- * const viewToProps = {aComponent: ['foo', 'bar'], bComponent: ['bar', 'zwar']}
+ * const viewToProps = {aComponent: ['foo', 'store.bar'], bComponent: ['store.bar', 'zwar']}
  * and props are
  * const props = {
       a: 1,
       views: {aComponent: {stuff: 1}, bComponent: {moreStuff: 2}},
-      foo: 1,
-      bar: 2,
-      zwar: 3
+      data: {
+        foo: 1,
+        zwar: 3
+        store: {
+          bar: 2
+        }
+      }
     };
  * The function returns
  * {
@@ -129,7 +134,12 @@ export const mergePropsForViews = R.curry((viewToPropNames, props) => {
           // Map the values of the props listed in the corresponding viewToPropNames
           R.pick(R.propOr([], viewName, viewToPropNames))
         )(props),
-        (R.defaultTo({}, views))
+        R.merge(
+          // this initializes all the view names to an empty object if the name isn't in views
+          R.map(_ => ({}), viewToPropNames),
+          // this can be null
+          views
+        )
       ),
     props
   );
@@ -147,14 +157,15 @@ export const mergePropsForViews = R.curry((viewToPropNames, props) => {
  * @returns {Either} An Either as described above
  */
 export const resolveApolloProps = R.curry((viewsToPropNames, {data, ownProps}) => errorOrLoadingOrData(
-    R.identity,
-    R.identity,
+    // For the error and loading cases, give the views only what's in ownProps, since data isn't loaded
+    // ownProps might have legitimate props that can be show in a loading or error state
+    () => mergePropsForViews(viewsToPropNames, ownProps),
+    () => mergePropsForViews(viewsToPropNames, ownProps),
     mergePropsForViews(viewsToPropNames)
   )(
     mergeDeep(
       ownProps,
-      // Merge data.store with data if store is defined
-      R.merge(R.omit(['store'], data), R.view(R.lensProp(['store']), data))
+      data
     )
   )
 );
@@ -246,9 +257,9 @@ export const mergeStylesIntoViews = (getStyles, props) => {
     views => mergeDeep(views, viewStyles),
     props
   );
-}
+};
 
-export const propsClassAndStyle = (name, viewProps) => R.merge(
+export const propsFor = (name, viewProps) => R.merge(
   getClassAndStyle(name, R.propOr({name: {style: {}}}, name, viewProps)),
   R.omit(['style'], viewProps)
 );
@@ -266,4 +277,4 @@ export const nameLookup = nameObj =>
   R.mapObjIndexed(
     (v, k) => k,
     nameObj
-  )
+  );

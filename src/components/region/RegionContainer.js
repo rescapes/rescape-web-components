@@ -1,18 +1,16 @@
 import {connect} from 'react-redux';
 import Region, {c} from './Region';
 import {makeMergeDefaultStyleWithProps} from 'selectors/styleSelectors';
-import {createSelector} from 'reselect';
 import {gql} from 'apollo-client-preset';
 import {graphql} from 'react-apollo';
 import {
-  errorOrLoadingOrData, makeGraphQlTestPropsFunction, makeTestPropsFunction,
-  mergeActionsForViews, resolveApolloProps, mergePropsForViews
+  makeTestPropsFunction,
+  mergeActionsForViews, resolveApolloProps
 } from 'helpers/componentHelpers';
 import {mergeDeep, throwing} from 'rescape-ramda';
 import React from 'react';
 import * as R from 'ramda';
-
-const {reqPath} = throwing;
+import {createSelector} from 'reselect';
 
 /**
  * RegionContainer expects the state to contain the active user and that user's Regions
@@ -86,7 +84,8 @@ export const queries = {
         }
       }),
       props: props => resolveApolloProps({
-        [c.regionMapboxProps]: ['region']
+        // region is expected from the query result
+        [c.regionMapboxProps]: ['store.region']
       }, props)
     }
   }

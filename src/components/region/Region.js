@@ -14,7 +14,7 @@ import sankey from 'components/map/sankey/SankeyContainer';
 import markerList from 'components/map/marker/MarkerListContainer';
 import PropTypes from 'prop-types';
 import {makeMergeContainerStyleProps} from 'selectors/styleSelectors';
-import {nameLookup, eMap, propsClassAndStyle, propsAndStyle} from 'helpers/componentHelpers';
+import {nameLookup, eMap, propsFor, propsAndStyle} from 'helpers/componentHelpers';
 import {mergeDeep, throwing} from 'rescape-ramda';
 import * as R from 'ramda';
 import {Component} from 'react/cjs/react.production.min';
@@ -49,7 +49,9 @@ export default class Region extends Component {
       [R.prop('store'), () =>
         this.renderData(props)
       ],
-      [R.T, () => { throw new Error("Expected loading, error, or store prop")}]
+      [R.T, () => {
+        throw new Error("Expected loading, error, or store prop")
+      }]
     ]);
 
     return Div(getClassAndStyle('regionProps', props.views),
@@ -90,19 +92,20 @@ export default class Region extends Component {
     /* We additionally give Mapbox the container width and height so the map can track changes to these
      We have to apply the width and height fractions of this container to them.
      */
+    const props = R.flip(propsFor)(views)
 
     return [
-      Div(propsClassAndStyle(c.regionProps, views),
-        Div(propsClassAndStyle(c.regionMapboxOuterProps, views),
+      Div(props(c.regionProps),
+        Div(props(c.regionMapboxOuterProps),
           Mapbox(
-            propsAndStyle(c.regionMapboxProps, views)
+            props(c.regionMapboxProps)
           ),
           Sankey(
-            propsAndStyle(c.regionSankeyProps, views)
+            props(c.regionSankeyProps)
           )
         ),
-        Div(propsClassAndStyle(c.regionLocationsOuterProps, views),
-          MarkerList(propsAndStyle(c.regionLocationsProps, views))
+        Div(props(c.regionLocationsOuterProps),
+          MarkerList(props(c.regionLocationsProps))
         )
       )
     ];
