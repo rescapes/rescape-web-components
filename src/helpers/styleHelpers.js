@@ -13,40 +13,56 @@ import * as R from 'ramda';
 import PropTypes from 'prop-types';
 import {v} from 'rescape-validate';
 import {compact, throwing} from 'rescape-ramda';
+import decamelize from 'decamelize';
 
 const {reqPath} = throwing;
 
 /**
- * Creates a class name from a root name and a suffix
+ * Creates a class name from a root name and a suffix. The given root and suffix will be decamelized
+ * with -'s and joined with a -
  * @param {String} root The root of the name matching the React component
  * @param {String} suffix The suffix matching the minor component (such as 'outer', 'inner' for divs).
  * If null then the className will simply be the root
  * @returns {String} root-suffix or root if suffix is not specified
  */
-export const classNamer = R.curry((root, suffix) => R.join('-', compact([root, suffix])));
+export const classNamer = (root, suffix = null) => R.join(
+  '-',
+  R.map(
+    // flip decamelize so the map arg is separate
+    R.flip(
+      decamelize
+    )('-'),
+    compact(
+      [root, suffix]
+    )
+  )
+);
 
 /**
  * Given a name, generates a className and style
- * @param {String} name Name to use for the className
- * @param {Object} styles Contains a key matching name containing the styles
+ * @param {String} name Name to use for the className. You can pass a camelized name and it will decamelize
+ * (e.g. outerRegionDiv is converted to outer-region-div) for the actual className
+ * @param {Object} views Contains a key matching name containing a style object.
+ * e.g. if name is 'regionProps' views must have {regionProps: {style: {border: 'red', ...}}}
  * @returns {Object} An object with a style and className key and corresponding values
  */
-export const getClassAndStyle = (name, styles) =>
+export const getClassAndStyle = (name, views) =>
   R.merge({
-    className: classNamer(name)
-  },
-  getStyleObj(name, styles)
-);
+      className: classNamer(name)
+    },
+    getStyleObj(name, views)
+  );
 
 /**
  * Given a name, generates a style object
  * @param {String} name Name to use for the to resolve the style
- * @param {Object} styles Contains a key matching name containing the styles
+ * @param {Object} views Contains a key matching name containing a style object.
+ * e.g. if name is 'regionProps' views must have {regionProps: {style: {border: 'red', ...}}}
  * @returns {Object} An object with a style key and corresponding style values
  *
  */
-export const getStyleObj = (name, styles) => ({
-  style: reqPath(R.split('.', name), styles)
+export const getStyleObj = (name, views) => ({
+  style: reqPath(R.concat([name], ['style']), views)
 });
 
 

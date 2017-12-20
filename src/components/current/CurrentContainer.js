@@ -3,7 +3,7 @@ import Current from './Current'
 import * as R from 'ramda';
 import {createSelector} from 'reselect';
 import { makeActiveUserAndSettingsStateSelector } from 'selectors/storeSelectors';
-import {makeBrowserProportionalDimensionsSelector} from 'selectors/styleSelectors';
+import {makeBrowserProportionalDimensionsSelector, makeMergeDefaultStyleWithProps} from 'selectors/styleSelectors';
 import {mergeDeep, throwing} from 'rescape-ramda'
 import {makeTestPropsFunction, mergeActionsForViews} from 'helpers/componentHelpers';
 import {bindActionCreators} from 'redux';
@@ -25,9 +25,10 @@ export const mapStateToProps = (state, props) =>
       (state, props) => {
         return makeActiveUserAndSettingsStateSelector()(mergeDeep(state, R.defaultTo({}, props)));
       },
+      makeMergeDefaultStyleWithProps(),
       makeBrowserProportionalDimensionsSelector()
     ],
-    (activeUserAndSettings, style) =>
+    (activeUserAndSettings, style, browserProportionalStyle) =>
       ({
         // No current graphql queries, pass the winnowed state
         // It might turn out that Current doesn't need anything because it simply renders child containers
@@ -35,12 +36,13 @@ export const mapStateToProps = (state, props) =>
         // props from the parent contain style instructions
         // TODO we need to set width and height proportional to the browser dimensions, not equal to
         data: mergeDeep(activeUserAndSettings, {style}),
+        style,
         views: {
           regionProps: {
             region: activeUserRegionSelector(activeUserAndSettings),
             style: {
-              width: style.width,
-              height: style.height
+              width: browserProportionalStyle.width,
+              height: browserProportionalStyle.height
             }
           }
         }

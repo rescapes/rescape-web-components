@@ -14,15 +14,22 @@ import sankey from 'components/map/sankey/SankeyContainer';
 import markerList from 'components/map/marker/MarkerListContainer';
 import PropTypes from 'prop-types';
 import {makeMergeContainerStyleProps} from 'selectors/styleSelectors';
-import {eMap} from 'helpers/componentHelpers';
+import {nameLookup, eMap, propsClassAndStyle, propsAndStyle} from 'helpers/componentHelpers';
 import {mergeDeep, throwing} from 'rescape-ramda';
 import * as R from 'ramda';
 import {Component} from 'react/cjs/react.production.min';
-import * as decamelize from 'decamelize';
-import {mergeStylesIntoViews} from 'helpers/componentHelpers'
+import {mergeStylesIntoViews} from 'helpers/componentHelpers';
 
 const [Mapbox, Sankey, MarkerList, Div] = eMap([mapbox, sankey, markerList, 'div']);
 const {reqPath} = throwing;
+export const c = nameLookup({
+  regionProps: true,
+  regionMapboxOuterProps: true,
+  regionMapboxProps: true,
+  regionSankeyProps: true,
+  regionLocationsOuterProps: true,
+  regionLocationsProps: true
+});
 
 /**
  * The View for a Region, such as California. Theoretically we could display multiple regions at once
@@ -30,7 +37,7 @@ const {reqPath} = throwing;
  */
 export default class Region extends Component {
   render() {
-    const props = mergeStylesIntoViews(this.getStyles, this.props)
+    const props = mergeStylesIntoViews(this.getStyles, this.props);
 
     const renderChoicePoint = R.cond([
       [R.prop('loading'), (d) =>
@@ -39,72 +46,63 @@ export default class Region extends Component {
       [R.prop('error'), () =>
         this.renderError(props)
       ],
-      [R.T, () =>
+      [R.prop('store'), () =>
         this.renderData(props)
-      ]
+      ],
+      [R.T, () => { throw new Error("Expected loading, error, or store prop")}]
     ]);
 
-    return Div(getClassAndStyle('region', props.data.style),
+    return Div(getClassAndStyle('regionProps', props.views),
       renderChoicePoint(reqPath(['data'], props))
     );
   }
 
-  getStyles(style) {
-    return makeMergeContainerStyleProps()(
-      {
-        views: {
-          // Map props.styles to the root element
-          regionProps: style,
-          // Just map width/height to mapbox. TODO this probably won't stand, but it's more of a proof of concept now
-          mapboxProps: R.pick(['width', 'height'], style)
-        }
+  getStyles({style}) {
+    return {
+      [c.regionProps]: R.merge(style, {
+        position: 'absolute',
+        width: styleMultiplier(1),
+        height: styleMultiplier(1)
+      }),
+
+      [c.regionMapboxProps]: R.merge(
+        // Just map width/height to mapbox.
+        // TODO this probably won't stand, but it's more of a proof of concept now
+        R.pick(['width', 'height'], style),
+        {}),
+
+      [c.regionMapboxOuterProps]: {
+        position: 'absolute',
+        width: styleMultiplier(.5),
+        height: styleMultiplier(1)
       },
-      {
-        regionProps: {
-          position: 'absolute',
-          width: styleMultiplier(1),
-          height: styleMultiplier(1)
-        },
 
-        regionMapboxOuterProps: {
-          position: 'absolute',
-          width: styleMultiplier(.5),
-          height: styleMultiplier(1)
-        },
-
-        regionLocationsOuterProps: {
-          position: 'absolute',
-          top: .02,
-          left: .55,
-          right: .05
-        }
-      });
+      [c.regionLocationsOuterProps]: {
+        position: 'absolute',
+        top: .02,
+        left: .55,
+        right: .05
+      }
+    };
   }
 
   renderData({views}) {
     /* We additionally give Mapbox the container width and height so the map can track changes to these
      We have to apply the width and height fractions of this container to them.
      */
-    const propsClassAndStyle = (name, viewProps) => R.merge(
-      getClassAndStyle(decamelize(name, '-'), R.propOr({}, name, viewProps)),
-      R.omit(['style'], viewProps)
-    );
-    const propsAndStyle = (name, viewProps) => R.merge(
-      getStyleObj(decamelize(name, '-'), R.propOr({}, name, viewProps)),
-      R.omit(['style'], viewProps)
-    );
+
     return [
-      Div(propsClassAndStyle('region', views),
-        Div(propsClassAndStyle('regionMapboxOuter', views),
+      Div(propsClassAndStyle(c.regionProps, views),
+        Div(propsClassAndStyle(c.regionMapboxOuterProps, views),
           Mapbox(
-            propsAndStyle('regionMapbox', views)
+            propsAndStyle(c.regionMapboxProps, views)
           ),
           Sankey(
-            propsAndStyle('regionSankey', views)
+            propsAndStyle(c.regionSankeyProps, views)
           )
         ),
-        Div(propsClassAndStyle('regionLocationsOuter', views),
-          MarkerList(propsAndStyle('regionLocations', views))
+        Div(propsClassAndStyle(c.regionLocationsOuterProps, views),
+          MarkerList(propsAndStyle(c.regionLocationsProps, views))
         )
       )
     ];

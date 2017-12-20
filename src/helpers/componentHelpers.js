@@ -13,9 +13,9 @@ import React from 'react';
 import * as R from 'ramda';
 import {v} from 'rescape-validate';
 import PropTypes from 'prop-types';
-import {filterWithKeys, mergeDeep, throwing} from 'rescape-ramda';
-import graphql from 'graphql';
+import {filterWithKeys, mapKeys, mergeDeep, throwing} from 'rescape-ramda';
 import * as Either from 'data.either';
+import {getClassAndStyle, getStyleObj} from 'helpers/styleHelpers';
 
 const {reqPath} = throwing;
 
@@ -146,8 +146,7 @@ export const mergePropsForViews = R.curry((viewToPropNames, props) => {
  * (in our case this is the result of mapStateToProps)
  * @returns {Either} An Either as described above
  */
-export const resolveApolloProps = R.curry((viewsToPropNames, {data, ownProps}) =>
-  errorOrLoadingOrData(
+export const resolveApolloProps = R.curry((viewsToPropNames, {data, ownProps}) => errorOrLoadingOrData(
     R.identity,
     R.identity,
     mergePropsForViews(viewsToPropNames)
@@ -231,7 +230,7 @@ export const liftAndExtractItems = (component, propsWithItems) => {
 
 /**
  * Given a getStyles function that expects props and returns styles keyed by view, merges those
- * view values into the views of the props
+ * view values into the views of the props.
  * @param getStyles
  * @param props
  * @return {*}
@@ -239,12 +238,32 @@ export const liftAndExtractItems = (component, propsWithItems) => {
 export const mergeStylesIntoViews = (getStyles, props) => {
   const viewStyles = R.map(
     style => ({style}),
-    getStyles(reqPath(['data', 'style'], props))
+    getStyles(props)
   );
-  // Replace props.data.style with computed styles
+  // Replace props.style with computed styles
   return R.over(
     R.lensProp('views'),
     views => mergeDeep(views, viewStyles),
     props
   );
 }
+
+export const propsClassAndStyle = (name, viewProps) => R.merge(
+  getClassAndStyle(name, R.propOr({name: {style: {}}}, name, viewProps)),
+  R.omit(['style'], viewProps)
+);
+
+export const propsAndStyle = (name, viewProps) => R.merge(
+  getStyleObj(name, R.propOr({name: {style: {}}}, name, viewProps)),
+  R.omit(['style'], viewProps)
+);
+
+/**
+ * Creates {name1: name1, name2: name2} from a list of names
+ * @param {Array} names A list of names to be constants
+ */
+export const nameLookup = nameObj =>
+  R.mapObjIndexed(
+    (v, k) => k,
+    nameObj
+  )

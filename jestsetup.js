@@ -10,14 +10,17 @@
  */
 
 // Make Enzyme Rx available in all test files without importing
-import { shallow, render, mount } from 'enzyme';
+import {shallow, render, mount} from 'enzyme';
 // Enzyme setup
 import enzyme from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
-enzyme.configure({ adapter: new Adapter() });
+import * as R from 'ramda'
+
+enzyme.configure({adapter: new Adapter()});
 
 import fs from 'fs';
 import {JSDOM} from 'jsdom';
+
 global.shallow = shallow;
 global.render = render;
 global.mount = mount;
@@ -28,24 +31,27 @@ global.navigator = {};
 function copyProps(src, target) {
   const props = Object.getOwnPropertyNames(src)
     .filter(prop => typeof target[prop] === 'undefined')
-    .reduce((result, prop) => ({
-      ...result,
-      [prop]: Object.getOwnPropertyDescriptor(src, prop),
-    }), {});
+    .reduce((result, prop) => R.merge(
+      result,
+      {
+        [prop]: Object.getOwnPropertyDescriptor(src, prop)
+      }),
+      {});
   Object.defineProperties(target, props);
 }
+
 global.jsdom = new JSDOM('<!doctype html><html><body></body></html>');
-const { window } = jsdom;
+const {window} = jsdom;
 global.window = window;
 global.document = window.document;
 global.navigator = {
-  userAgent: 'node.js',
+  userAgent: 'node.js'
 };
 copyProps(window, global);
 
 Error.stackTraceLimit = Infinity;
 // Have exceptions traces traverse async processes
-if (process.env.NODE_ENV !== 'production'){
+if (process.env.NODE_ENV !== 'production') {
   require('longjohn');
 }
 
@@ -81,5 +87,5 @@ console.error = message => {
  */
 // https://github.com/facebook/jest/issues/3251
 process.on('unhandledRejection', (reason) => {
-    console.log('Unhandled Promise', reason)
-})
+  console.log('Unhandled Promise', reason);
+});

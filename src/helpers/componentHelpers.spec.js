@@ -10,7 +10,7 @@
  */
 import * as R from 'ramda';
 import {propLensEqual, mergeActionsForViews, makeTestPropsFunction, liftAndExtract} from './componentHelpers';
-import {mergePropsForViews, mergeStylesIntoViews, resolveApolloProps} from 'helpers/componentHelpers';
+import {mergePropsForViews, mergeStylesIntoViews, nameLookup, resolveApolloProps} from 'helpers/componentHelpers';
 import * as Either from 'data.either';
 
 describe('componentHelpers', () => {
@@ -192,14 +192,14 @@ describe('componentHelpers', () => {
   test('mergeStylesIntoViews', () => {
     expect(
       mergeStylesIntoViews(
-        props => (
-            {someProp: {color: 'red'}},
-        ),
+        props => ({
+          someProp: R.merge({
+            color: 'red'
+          }, props.style)
+        }),
         {
-          data: {
-            style: {
-              styleFromProps: 'blue'
-            }
+          style: {
+            styleFromProps: 'blue'
           },
           views: {
             someProp: {foo: 1}
@@ -208,10 +208,8 @@ describe('componentHelpers', () => {
       )
     ).toEqual(
       {
-        data: {
-          style: {
-            styleFromProps: 'blue'
-          }
+        style: {
+          styleFromProps: 'blue'
         },
         views: {
           someProp: {
@@ -226,4 +224,10 @@ describe('componentHelpers', () => {
     );
 
   });
+
+  test('nameLookup', () => {
+    expect(nameLookup({toast: true, is: true, good: true})).toEqual(
+      {toast: 'toast', is: 'is', good: 'good'}
+    )
+  })
 });

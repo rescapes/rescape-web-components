@@ -1,5 +1,5 @@
 import {connect} from 'react-redux';
-import Region from './Region';
+import Region, {c} from './Region';
 import {makeMergeDefaultStyleWithProps} from 'selectors/styleSelectors';
 import {createSelector} from 'reselect';
 import {gql} from 'apollo-client-preset';
@@ -11,7 +11,6 @@ import {
 import {mergeDeep, throwing} from 'rescape-ramda';
 import React from 'react';
 import * as R from 'ramda';
-import Either from 'data.either';
 
 const {reqPath} = throwing;
 
@@ -31,7 +30,9 @@ export const mapStateToProps =
     style => {
       return {
         // Initiate data from props and default style
-        data: mergeDeep({style}, props)
+        data: R.omit(['style'], props),
+        // State and props merged style
+        style
       };
     }
   )(state, props);
@@ -85,7 +86,7 @@ export const queries = {
         }
       }),
       props: props => resolveApolloProps({
-        mapboxProps: ['region']
+        [c.regionMapboxProps]: ['region']
       }, props)
     }
   }
@@ -99,7 +100,7 @@ const ContainerWithData = graphql(queries.region.query, queries.region.args)(Reg
  */
 export const mergeProps = mergeActionsForViews({
   // Region child component needs the following actions
-  mapboxProps: []
+  [c.regionMapboxProps]: []
 });
 
 // Returns a function that expects state and ownProps for testing

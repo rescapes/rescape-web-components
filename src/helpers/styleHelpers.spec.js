@@ -1,7 +1,36 @@
 
-import {styleMultiplier, createScaledPropertyGetter} from './styleHelpers';
+import {styleMultiplier, createScaledPropertyGetter, classNamer} from './styleHelpers';
+import {getClassAndStyle, getStyleObj} from 'helpers/styleHelpers';
 
 describe('styles', () => {
+  test('classNamer', () => {
+    expect(classNamer('chicken', 'outsidePen')).toEqual('chicken-outside-pen')
+  })
+  test('getClassAndStyle', () => {
+    expect(getClassAndStyle('chickenOutsidePen', {
+      chickenOutsidePen: {
+        style: {
+          border: 'coop'
+        }
+      }
+    })).toEqual({
+      className: 'chicken-outside-pen',
+      style: {
+        border: 'coop'
+      }
+    })
+  })
+  expect(getStyleObj('chickenOutsidePen', {
+    chickenOutsidePen: {
+      style: {
+        border: 'coop'
+      }
+    }
+  })).toEqual({
+    style: {
+      border: 'coop'
+    }
+  })
   test('styleMultiplier', () => {
     expect(styleMultiplier(100, 0.25)).toEqual(25);
   });

@@ -8,7 +8,6 @@ import RegionContainer, {testPropsMaker, queries} from 'components/region/Region
 import {testPropsMaker as currentPropsMaker} from 'components/current/CurrentContainer'
 import {eMap} from 'helpers/componentHelpers';
 import * as R from 'ramda'
-import { createWaitForElement } from 'enzyme-wait';
 
 describe('RegionContainer', () => {
   // Get the parent Region from the CurrentContainer's testPropMaker
