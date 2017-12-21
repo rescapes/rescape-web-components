@@ -14,14 +14,16 @@ import sankey from 'components/map/sankey/SankeyContainer';
 import markerList from 'components/map/marker/MarkerListContainer';
 import PropTypes from 'prop-types';
 import {applyMatchingStyles, makeMergeContainerStyleProps, mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
-import {nameLookup, eMap, propsFor, propsAndStyle, errorOrLoadingOrData} from 'helpers/componentHelpers';
+import {
+  nameLookup, eMap, propsFor, errorOrLoadingOrData,
+  mergePropsForViews, mergeActionsForViews
+} from 'helpers/componentHelpers';
 import {mergeDeep, throwing} from 'rescape-ramda';
 import * as R from 'ramda';
 import {Component} from 'react/cjs/react.production.min';
 import {mergeStylesIntoViews} from 'helpers/componentHelpers';
 
 const [Mapbox, Sankey, MarkerList, Div] = eMap([mapbox, sankey, markerList, 'div']);
-const {reqPath} = throwing;
 export const c = nameLookup({
   region: true,
   regionMapboxOuter: true,
@@ -37,12 +39,15 @@ export const c = nameLookup({
  */
 export default class Region extends Component {
   render() {
-    const props = mergeStylesIntoViews(
-      this.getStyles,
+    const props = R.compose(
+      mergeActionsForViews(this.viewActions()),
+      mergePropsForViews(this.viewProps()),
+      mergeStylesIntoViews(this.getStyles),
+    )(
       this.props
     );
 
-    return Div(getClassAndStyle('region', props.views),
+    return Div(propsFor(c.region, props.views),
       errorOrLoadingOrData(
         this.renderLoading,
         this.renderError,
@@ -52,7 +57,7 @@ export default class Region extends Component {
   }
 
   getStyles({style}) {
-    return {
+    return mergeStylesIntoViews({
       [c.region]: mergeAndApplyMatchingStyles(style, {
         position: 'absolute',
         width: styleMultiplier(1),
@@ -77,7 +82,20 @@ export default class Region extends Component {
         left: .55,
         right: .05
       }
-    };
+    });
+  }
+
+  viewProps() {
+    // region is expected from the query result
+    return {
+      [c.regionMapbox]: {region: 'store.region'}
+    }
+  }
+
+  viewActions() {
+    return {
+      [c.regionMapbox]: {}
+    }
   }
 
   renderData({views}) {
@@ -119,13 +137,4 @@ const {
 } = PropTypes;
 
 Region.propTypes = {
-  settings: object.isRequired,
-  region: shape({
-    mapbox: shape({
-      mapboxAccessToken: string.isRequired
-    }).isRequired
-  }).isRequired,
-  style: object.isRequired,
-  onRegionIsChanged: func.isRequired,
-  fetchMarkersData: func.isRequired
 };

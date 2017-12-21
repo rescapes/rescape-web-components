@@ -16,109 +16,91 @@ import React from 'react';
 //import MapMarkers from 'components/mapMarker/index';
 import {throwing} from 'rescape-ramda';
 //import Deck from '../deck/Deck';
-import {eMap} from 'helpers/componentHelpers';
+import {
+  eMap, errorOrLoadingOrData, mergeActionsForViews, mergePropsForViews, mergeStylesIntoViews,
+  nameLookup, propsFor
+} from 'helpers/componentHelpers';
 import * as R from 'ramda';
-import {classNamer, getClassAndStyle} from 'helpers/styleHelpers';
-import {makeMergeContainerStyleProps} from 'selectors/styleSelectors';
+import {classNamer, getClassAndStyle, styleMultiplier} from 'helpers/styleHelpers';
+import {applyMatchingStyles, makeMergeContainerStyleProps, mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
+import {Component} from 'react/cjs/react.production.min';
 
 const [Div, MapGl] = eMap(['div', mapGl]);
-//const MapStops = createMapStops(React);
+export const c = nameLookup({
+  mapbox: true,
+  mapGl: true
+});
 
-const Mapbox = ({style, views: {mapGl: mapGlProps}}) => {
+/**
+ * The View for a Region, such as California. Theoretically we could display multiple regions at once
+ * if we had more than one, or we could have a zoomed in region of California like the Bay Area.
+ */
+export default class Mapbox extends Component {
+  render() {
+    const props = R.compose(
+      mergeActionsForViews(this.viewActions()),
+      mergePropsForViews(this.viewProps()),
+      mergeStylesIntoViews(this.getStyles),
+    )(
+      this.props
+    );
 
-  const styles = makeMergeContainerStyleProps()(
-    {
-      style: {
-        root: style
-      }
-    },
-    {
-      root: {
+    return Div(propsFor(c.mapbox, props.views),
+      errorOrLoadingOrData(
+        this.renderLoading,
+        this.renderError,
+        this.renderData
+      )(props)
+    );
+  }
+
+  getStyles({style}) {
+    return mergeStylesIntoViews({
+      [c.mapbox]: mergeAndApplyMatchingStyles(style, {
         position: 'absolute',
-        width: '100%',
-        height: '100%'
-      }
+        width: styleMultiplier(1),
+        height: styleMultiplier(1)
+      }),
+
+      [c.mapGl]: applyMatchingStyles(style, {
+        width: styleMultiplier(1),
+        height: styleMultiplier(1)
+      })
     });
+  }
 
-  //const {iconAtlas, showCluster, hoverMarker, selectMarker} = this.props;
-  //const {node, way} = reqPath(['osmByType'], this.props) || {};
-  //const markers = {type: 'FeatureCollection', features: reqPath(['state', 'markers'], this) || []};
-
-  // <MapStops geojson={node || {}} viewport={viewport}/>,
-  // <MapLines geojson={way || {}} viewport={viewport}/>,
-  /*
-  const mapMarkers = e(MapMarkers, {
-    geojson: markers,
-    viewport,
-    regionId: this.props.region.id
-  });
-  */
-  /*
-  const deck = e(Deck, reqPath(['deck'], views));
-    viewport,
-    geojson: markers,
-    iconAtlas,
-    showCluster,
-    onHover: hoverMarker,
-    onClick: selectMarker
-  */
-
-  return Div(getClassAndStyle('root', styles),
-    MapGl(mapGlProps)
-  );
-
-  /*
-      mapboxApiAccessToken,
-
-      onChangeViewport: this.props.onChangeViewport
-    deck
-  );
-  */
-};
-
-Mapbox.propTypes = {
-
-  settings: PropTypes.shape({
-    style: PropTypes.object.isRequired,
-    iconAtlas: PropTypes.string.isRequired,
-    showCluster: PropTypes.bool.isRequired
-  }).isRequired,
-
-  data: PropTypes.shape({
-    regions: PropTypes.shape({
-      id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
-      osm: PropTypes.shape({
-        featuresByType: PropTypes.shape().isRequired,
-        markersByType: PropTypes.shape().isRequired
-      }).isRequired,
-      mapbox: PropTypes.shape({
-        mapboxApiAccessToken: PropTypes.string.isRequired,
-        viewport: PropTypes.shape().isRequired
-      }).isRequired
-    }).isRequired
-  }).isRequired,
-
-  // Custom PropTypes function to expect one user key
-  users: R.compose(
-    (props, propName, componentName) => {
-      const length = R.length(R.keys(props[propName]));
-      if (R.equals(1, length)) {
-        return new Error(
-          `Invalid prop ${propName} supplied to ${componentName}.
-           Validation failed. Object length is not one, rather ${length}`
-        );
+  viewProps() {
+    return {
+      [c.mapGl]: {
+        region: 'region',
+        viewport: 'viewport'
       }
-    },
-    PropTypes.objectOf(PropTypes.shape({}))
-  ).isRequired,
+    }
+  }
 
-  actions: PropTypes.shape({
-    hoverMarker: PropTypes.func.isRequired,
-    selectMarker: PropTypes.func.isRequired,
-    onChangeViewport: PropTypes.func.isRequired
-  }).isRequired
+  viewActions() {
+    return {
+      [c.mapGl]: ['onChangeViewport', 'hoverMarker', 'selectMarker']
+    }
+  }
+
+  renderData({views}) {
+    /* We additionally give Mapbox the container width and height so the map can track changes to these
+     We have to apply the width and height fractions of this container to them.
+     */
+    const props = R.flip(propsFor)(views);
+
+    return [
+      MapGl(props(c.mapGl))
+    ];
+  }
+
+  renderLoading({data}) {
+    return [];
+  };
+
+  renderError({data}) {
+    return [];
+  }
 };
-
-export default Mapbox;
-
 

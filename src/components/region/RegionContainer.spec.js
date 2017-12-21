@@ -19,7 +19,7 @@ describe('RegionContainer', () => {
       width: 500,
       height: 500
     },
-  }, views[c.region])
+  }, views[c.currentRegion])
   // Get the test props for RegionContainer
   const props = propsFromSampleStateAndContainer(testPropsMaker, parentProps)
 
@@ -44,7 +44,7 @@ describe('RegionContainer', () => {
     const [regionContainer] = eMap([RegionContainer]);
     const wrapper = wrapWithMockGraphqlAndStore(regionContainer(parentProps))
     const component = wrapper.find('Region');
-    expect(R.keys(component.props())).toEqual(['data', 'style', 'views'])
+    expect(R.keys(component.props())).toEqual(['data', 'style'])
     const waitForSample = createWaitForElement('.region-mapbox-outer-props');
     waitForSample(component).then(
       component => expect(component.text()).to.include('ready')

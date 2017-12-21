@@ -8,18 +8,21 @@ import {testPropsMaker as regionPropsMaker} from 'components/region/RegionContai
 import {eMap} from 'helpers/componentHelpers';
 import MapboxContainer from 'components/map/mapbox/MapboxContainer';
 import * as R from 'ramda'
+import {c as cCurrent} from 'components/current/Current';
+import {c as cRegion} from 'components/region/Region'
 
 describe('MapboxContainer', () => {
-  // Build up the correct parent props from Current adn Region
-  const {views: {regionProps}} = propsFromSampleStateAndContainer(currentPropsMaker, {})
-  const {views: {mapboxProps}} = propsFromSampleStateAndContainer(regionPropsMaker, regionProps)
+  // Build up the correct parent props from Current and Region
+  const currentProps = propsFromSampleStateAndContainer(currentPropsMaker, {})
+  const regionProps = propsFromSampleStateAndContainer(regionPropsMaker, currentProps[cCurrent.currentRegion])
 
   const parentProps = R.merge({
     style: {
       width: 500,
       height: 500
     },
-  }, mapboxProps)
+  }, regionProps[cRegion.regionMapbox])
+
   // Get the test props for MapboxContainer
   const props = propsFromSampleStateAndContainer(testPropsMaker, parentProps)
 

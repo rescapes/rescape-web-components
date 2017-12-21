@@ -1,16 +1,16 @@
 import {connect} from 'react-redux';
-import Region, {c} from './Region';
 import {makeMergeDefaultStyleWithProps} from 'selectors/styleSelectors';
 import {gql} from 'apollo-client-preset';
 import {graphql} from 'react-apollo';
 import {
-  makeTestPropsFunction,
-  mergeActionsForViews, resolveApolloProps
+  makeApolloTestPropsFunction,
+  makeTestPropsFunction
 } from 'helpers/componentHelpers';
 import {mergeDeep, throwing} from 'rescape-ramda';
 import React from 'react';
 import * as R from 'ramda';
 import {createSelector} from 'reselect';
+import Region from './Region';
 
 /**
  * RegionContainer expects the state to contain the active user and that user's Regions
@@ -23,16 +23,11 @@ import {createSelector} from 'reselect';
 export const mapStateToProps =
   (state, props) => createSelector(
     [
+      // State and props merged style
       makeMergeDefaultStyleWithProps()
     ],
-    style => {
-      return {
-        // Initiate data from props and default style
-        data: R.omit(['style'], props),
-        // State and props merged style
-        style
-      };
-    }
+    // Replace props.style with style
+    style => R.merge(props, {style})
   )(state, props);
 
 export const mapDispatchToProps = (dispatch) => {
@@ -75,6 +70,9 @@ const regionQuery = gql`
  * @type {{region: {query: *, args: {options: (function({data: *}): {variables: {regionId}}), props: (function({data: *, ownProps?: *}): *)}}}}
  */
 export const queries = {
+  /**
+   * Expect a region stub with an id and resolves the full region from the data layer
+   */
   region: {
     query: regionQuery,
     args: {
@@ -83,27 +81,30 @@ export const queries = {
           regionId: region.id
         }
       }),
-      props: props => resolveApolloProps({
-        // region is expected from the query result
-        [c.regionMapbox]: {region: 'store.region'}
-      }, props)
+      props: ({data, ownProps}) => mergeDeep(
+        ownProps,
+        {data}
+      )
     }
   }
 };
 
-const ContainerWithData = graphql(queries.region.query, queries.region.args)(Region);
+// Create the GraphQL Container.
+// TODO We should handle all queries in queries here
+const ContainerWithData = graphql(
+  queries.region.query,
+  queries.region.args)
+(Region);
 
 /**
- * Combines mapStateToProps, mapDispatchToProps with the given viewToActions mapping
+ * Combines mapStateToProps and mapDispatchToProps, but not ownProps, which were already merged
  * @type {Function}
  */
-export const mergeProps = mergeActionsForViews({
-  // Region child component needs the following actions
-  [c.regionMapbox]: []
-});
+export const mergeProps = R.merge
 
 // Returns a function that expects state and ownProps for testing
-export const testPropsMaker = makeTestPropsFunction(mapStateToProps, mapDispatchToProps, mergeProps);
+export const testPropsMaker = makeApolloTestPropsFunction(mapStateToProps, mapDispatchToProps, mergeProps)(queries.region)
+
 
 export default connect(mapStateToProps, mapDispatchToProps, mergeProps)(ContainerWithData);
 

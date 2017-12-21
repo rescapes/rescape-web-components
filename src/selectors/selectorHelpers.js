@@ -11,23 +11,8 @@
 
 import Either from 'data.either';
 import {filterWithKeys, mapPropValueAsIndex, mergeDeep, throwing} from 'rescape-ramda';
-import {createSelectorCreator, defaultMemoize} from 'reselect';
-import {propLensEqual} from 'helpers/componentHelpers';
 import * as R from 'ramda';
-
 const {findOne, onlyOneValue} = throwing;
-
-/**
- * Creates a reselect selector creator that compares the length of values of the
- * selected object from one call to the next to determine equality instead of doing and equals check.
- * This is used for large datasets like geojson features where we assume no change unless the list size changes
- */
-export const createLengthEqualSelector =
-  // Use propLensEqual as the equality check to defaultMemoize
-  createSelectorCreator(
-    defaultMemoize,
-    propLensEqual(R.lensProp('length'))
-  );
 
 /**
  * Object statuses

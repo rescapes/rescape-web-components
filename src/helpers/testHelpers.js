@@ -25,7 +25,6 @@ import {createSelectorResolvedSchema} from 'schema/selectorResolvers';
 import {InMemoryCache} from 'apollo-client-preset';
 import {SchemaLink} from 'apollo-link-schema';
 import PropTypes from 'prop-types';
-import {makeGraphQlTestPropsFunction} from 'helpers/componentHelpers';
 import * as R from 'ramda';
 
 

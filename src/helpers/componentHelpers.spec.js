@@ -11,10 +11,9 @@
 import * as R from 'ramda';
 import {propLensEqual, mergeActionsForViews, makeTestPropsFunction, liftAndExtract} from './componentHelpers';
 import {
-  errorOrLoadingOrData, mergePropsForViews, mergeStylesIntoViews, nameLookup, propsFor,
-  resolveApolloProps
+  errorOrLoadingOrData, makeApolloTestPropsFunction, mergePropsForViews, mergeStylesIntoViews, nameLookup, propsFor
 } from 'helpers/componentHelpers';
-import * as Either from 'data.either';
+import {gql} from 'apollo-client-preset';
 
 describe('componentHelpers', () => {
   test('propLensEqual', () => {
@@ -44,7 +43,7 @@ describe('componentHelpers', () => {
     };
     // mergeProps should merge stateProps and dispatchProps but copy the actions to stateProps.views according
     // to the mapping given to mergeActionsForViews
-    expect(mergeProps(stateProps, dispatchProps)).toEqual(
+    expect(mergeProps(R.merge(stateProps, dispatchProps))).toEqual(
       R.merge({
         a: 1,
         views: {
@@ -56,12 +55,17 @@ describe('componentHelpers', () => {
   });
 
   test('mergePropsForViews', () => {
-    const mergeProps = mergePropsForViews({aComponent: ['foo', 'bar'], bComponent: ['bar', 'zwar']});
+    const mergeProps = mergePropsForViews({
+      aComponent: {foo: 'foo', bar: 'store.bar'},
+      bComponent: {bar: 'store.bar', zwar: 'zwar'}
+    });
     const props = {
       a: 1,
       views: {aComponent: {stuff: 1}, bComponent: {moreStuff: 2}},
       foo: 1,
-      bar: 2,
+      store: {
+        bar: 2
+      },
       zwar: 3
     };
 
@@ -75,85 +79,12 @@ describe('componentHelpers', () => {
           bComponent: {moreStuff: 2, bar: 2, zwar: 3}
         },
         foo: 1,
-        bar: 2,
+        store: {
+          bar: 2
+        },
         zwar: 3
       }
     );
-  });
-
-  test('resolveApolloProps', () => {
-    const viewToPropNames = {aComponent: ['foo', 'bar'], bComponent: ['bar', 'zwar']};
-    const complete = {
-      store: {
-        foo: 1,
-        bar: 2,
-        zwar: 3
-      }
-    };
-    const loading = {
-      loading: true
-    };
-    const error = {
-      error: true
-    };
-    const ownProps = {
-      a: 1,
-      views: {
-        aComponent: {stuff: 1},
-        bComponent: {moreStuff: 2}
-      }
-    };
-
-    // Query complete
-    expect(resolveApolloProps(
-      viewToPropNames,
-      R.merge({data: complete}, {ownProps})
-    )).toEqual(
-      // Query complete case
-      {
-        a: 1,
-        views: {
-          aComponent: {stuff: 1, foo: 1, bar: 2},
-          bComponent: {moreStuff: 2, bar: 2, zwar: 3}
-        },
-        foo: 1,
-        bar: 2,
-        zwar: 3
-      }
-    );
-
-    // Query loading
-    expect(resolveApolloProps(
-      viewToPropNames,
-      R.merge({data: loading}, {ownProps})
-    )).toEqual(
-      // Query complete case
-      {
-        a: 1,
-        views: {
-          aComponent: {stuff: 1},
-          bComponent: {moreStuff: 2}
-        },
-        loading: true
-      }
-    );
-
-    // Query error
-    expect(resolveApolloProps(
-      viewToPropNames,
-      R.merge({data: error}, {ownProps})
-    )).toEqual(
-      // Query complete case
-      {
-        a: 1,
-        views: {
-          aComponent: {stuff: 1},
-          bComponent: {moreStuff: 2}
-        },
-        error: true
-      }
-    );
-
   });
 
   test('makeTestPropsFunction', () => {
@@ -183,6 +114,51 @@ describe('componentHelpers', () => {
       );
   });
 
+  test('makeApolloTestPropsFunction', () => {
+    const mergeProps = mergeActionsForViews({aComponent: ['action1', 'action2'], bComponent: ['action2', 'action3']});
+    const sampleState = ({data: {regionId: 1}, views: {aComponent: {stuff: 1}, bComponent: {moreStuff: 2}}});
+    const sampleOwnProps = {style: {width: 100}};
+    const mapStateToProps = (state, ownProps) => R.merge(state, ownProps);
+    const dispatchResults = {
+      action1: R.identity,
+      action2: R.identity,
+      action3: R.identity
+    };
+    const mapDispatchToProps = (dispatch, ownProps) => dispatchResults;
+    // given mapStateToProps, mapDispatchToProps, and mergeProps we get a function back
+    // that then takes sample state and ownProps. The result is a merged object based on container methods
+    // and sample data. Next apply the apollo query
+    const query = {
+      query: gql`
+          query region($regionId: String!) {
+              store {
+                  region(id: $regionId) {
+                      id
+                      name
+                  },
+              }
+          }
+      `,
+      args: ({data: {regionId}}) => ({
+        variables: {
+          regionId
+        }
+      })
+    };
+    const func = makeApolloTestPropsFunction(mapStateToProps, mapDispatchToProps, mergeProps, query)
+    expect(func(sampleState, sampleOwnProps)).toEqual(
+      R.merge({
+        data: {regionId: 1},
+        style: {width: 100},
+        views: {
+          aComponent: {stuff: 1, action1: R.identity, action2: R.identity},
+          bComponent: {moreStuff: 2, action2: R.identity, action3: R.identity}
+        }
+      }, dispatchResults)
+    );
+
+  });
+
   test('liftAndExtract', () => {
     // Pretend R.identity is a component function
     expect(
@@ -193,57 +169,70 @@ describe('componentHelpers', () => {
   });
 
   test('mergeStylesIntoViews', () => {
+    const props = {
+      style: {
+        styleFromProps: 'blue'
+      },
+      views: {
+        someProp: {foo: 1}
+      }
+    };
+    const expected = {
+      style: {
+        styleFromProps: 'blue'
+      },
+      views: {
+        someProp: {
+          style: {
+            styleFromProps: 'blue',
+            color: 'red'
+          },
+          foo: 1
+        }
+      }
+    };
+    // Should work with styles as an object
     expect(
       mergeStylesIntoViews(
-        props => ({
+        {
           someProp: R.merge({
             color: 'red'
           }, props.style)
-        }),
-        {
-          style: {
-            styleFromProps: 'blue'
-          },
-          views: {
-            someProp: {foo: 1}
-          }
-        }
-      )
-    ).toEqual(
-      {
-        style: {
-          styleFromProps: 'blue'
         },
-        views: {
-          someProp: {
-            style: {
-              styleFromProps: 'blue',
-              color: 'red'
-            },
-            foo: 1
-          }
-        }
-      }
-    );
+        props
+      )
+    ).toEqual(expected);
+
+    // Should work with styles as a function expecting props
+    expect(
+      mergeStylesIntoViews(
+        p => ({
+          someProp: R.merge({
+            color: 'red'
+          }, p.style)
+        }),
+        props
+      )
+    ).toEqual(expected);
 
   });
 
   test('nameLookup', () => {
     expect(nameLookup({toast: true, is: true, good: true})).toEqual(
       {toast: 'toast', is: 'is', good: 'good'}
-    )
-  })
+    );
+  });
 
   test('errorOrLoadingOrData', () => {
     const func = errorOrLoadingOrData(
       p => p.bad,
       p => p.okay,
-      p => p.good,
-    )
-    expect(func({data: {error: true}, bad: 'bad'})).toEqual('bad')
-    expect(func({data: {loading: true}, okay: 'okay'})).toEqual('okay')
-    expect(func({data: {store: true}, good: 'good'})).toEqual('good')
-  })
+      p => p.good
+    );
+    expect(func({data: {error: true}, bad: 'bad'})).toEqual('bad');
+    expect(func({data: {loading: true}, okay: 'okay'})).toEqual('okay');
+    expect(func({data: {store: true}, good: 'good'})).toEqual('good');
+  });
 
   test('propsFor', () => {
     const viewProps = {
@@ -253,7 +242,7 @@ describe('componentHelpers', () => {
         },
         bar: 1
       }
-    }
+    };
     expect(propsFor('fooProps', viewProps)).toEqual(
       {
         className: 'foo-props',
@@ -262,9 +251,9 @@ describe('componentHelpers', () => {
         },
         bar: 1
       }
-    )
+    );
     expect(propsFor('bermudaProps', viewProps)).toEqual(
       {className: 'bermuda-props'}
-    )
-  })
+    );
+  });
 });

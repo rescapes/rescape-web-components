@@ -11,7 +11,6 @@
 
 import PropTypes from 'prop-types';
 import region from 'components/region/RegionContainer';
-import styles from './Current.style';
 import React from 'react';
 import {eMap, nameLookup} from 'helpers/componentHelpers';
 import * as R from 'ramda';
@@ -22,7 +21,7 @@ const [Div, Region] =
   eMap(['div', region]);
 
 export const c = nameLookup({
-  region: true,
+  currentRegion: true,
 });
 
 /**
