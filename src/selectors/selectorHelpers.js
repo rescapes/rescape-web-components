@@ -14,6 +14,8 @@ import {filterWithKeys, mapPropValueAsIndex, mergeDeep, throwing} from 'rescape-
 import * as R from 'ramda';
 const {findOne, onlyOneValue} = throwing;
 
+
+
 /**
  * Object statuses
  * @type {{IS_SELECTED: string, IS_ACTIVE: string}}

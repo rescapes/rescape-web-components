@@ -9,24 +9,24 @@
  * THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import {connect} from 'react-redux'
-import {bindActionCreators} from 'redux'
-import {onChangeViewport} from 'redux-map-gl'
-import {makeMergeDefaultStyleWithProps} from 'selectors/styleSelectors'
+import {connect} from 'react-redux';
+import {bindActionCreators} from 'redux';
+import {onChangeViewport} from 'redux-map-gl';
+import {makeMergeDefaultStyleWithProps} from 'selectors/styleSelectors';
 import {viewportSelector} from 'selectors/mapboxSelectors';
-import { makeActiveUserAndSettingsStateSelector } from 'selectors/storeSelectors';
-import {createSelector} from 'reselect'
-import {mergeActionsForViews, makeTestPropsFunction} from 'helpers/componentHelpers'
+import {makeActiveUserAndSettingsStateSelector} from 'selectors/storeSelectors';
+import {createSelector} from 'reselect';
+import {mergeActionsForViews, makeTestPropsFunction} from 'helpers/componentHelpers';
 import {mergeDeep, throwing} from 'rescape-ramda';
-const {reqPath} = throwing
-import Mapbox from './Mapbox'
+
+const {reqPath} = throwing;
+import Mapbox from './Mapbox';
 import * as R from 'ramda';
 
 
 /**
- * Limits the state to the current selections
- * TODO does this need to be a Creator.
- * TODO should this be moved up to a parent and just take incoming props as state
+ * Selects the current user from state
+ * and the Viewport for the region in the props
  * @returns {Object} The props
  */
 export const mapStateToProps = (state, props) => {
@@ -34,36 +34,25 @@ export const mapStateToProps = (state, props) => {
     [
       makeActiveUserAndSettingsStateSelector(),
       makeMergeDefaultStyleWithProps(),
-      viewportSelector,
+      viewportSelector
     ],
-    (selectedState, style) => {
-      return {
-        data: R.merge(
-          props,
-          {style}
-        )
-      }
-    }
-  )(state, props)
-}
+    (selectedState, style) => ({
+      data: props,
+      style
+    })
+  )(state, props);
+};
 
 export const mapDispatchToProps = (dispatch, ownProps) => {
   return bindActionCreators({
-    onChangeViewport,
+    onChangeViewport
     //hoverMarker,
     //selectMarker
-  }, dispatch)
-}
-
-
-/**
- * Combines mapStateToProps, mapDispatchToProps but not ownProps
- * @type {Function}
- */
-export const mergeProps = R.merge
+  }, dispatch);
+};
 
 // Returns a function that expects a sample state and ownProps for testing
-export const testPropsMaker = makeTestPropsFunction(mapStateToProps, mapDispatchToProps, mergeProps)
+export const testPropsMaker = makeTestPropsFunction(mapStateToProps, mapDispatchToProps);
 
-export default connect(mapStateToProps, mapDispatchToProps, mergeProps)(Mapbox)
+export default connect(mapStateToProps, mapDispatchToProps, R.merge)(Mapbox);
 

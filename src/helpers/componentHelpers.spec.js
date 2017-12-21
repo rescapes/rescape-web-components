@@ -11,9 +11,9 @@
 import * as R from 'ramda';
 import {propLensEqual, mergeActionsForViews, makeTestPropsFunction, liftAndExtract} from './componentHelpers';
 import {
+  awaitMakeApolloTestPropsFunction,
   errorOrLoadingOrData, makeApolloTestPropsFunction, mergePropsForViews, mergeStylesIntoViews, nameLookup, propsFor
 } from 'helpers/componentHelpers';
-import {gql} from 'apollo-client-preset';
 
 describe('componentHelpers', () => {
   test('propLensEqual', () => {
@@ -88,7 +88,6 @@ describe('componentHelpers', () => {
   });
 
   test('makeTestPropsFunction', () => {
-    const mergeProps = mergeActionsForViews({aComponent: ['action1', 'action2'], bComponent: ['action2', 'action3']});
     const sampleState = ({a: 1, views: {aComponent: {stuff: 1}, bComponent: {moreStuff: 2}}});
     const sampleOwnProps = {style: {width: 100}};
     const mapStateToProps = (state, ownProps) => R.merge(state, ownProps);
@@ -100,23 +99,22 @@ describe('componentHelpers', () => {
     const mapDispatchToProps = (dispatch, ownProps) => dispatchResults;
     // given mapStateToProps, mapDispatchToProps, and mergeProps we get a function back
     // that then takes sample state and ownProps. The result is a merged object based on container methods
-    // and sample data
-    expect(makeTestPropsFunction(mapStateToProps, mapDispatchToProps, mergeProps)(sampleState, sampleOwnProps))
+    // and sample da
+    expect(makeTestPropsFunction(mapStateToProps, mapDispatchToProps)(sampleState, sampleOwnProps))
       .toEqual(
         R.merge({
           a: 1,
           style: {width: 100},
           views: {
-            aComponent: {stuff: 1, action1: R.identity, action2: R.identity},
-            bComponent: {moreStuff: 2, action2: R.identity, action3: R.identity}
+            aComponent: {stuff: 1},
+            bComponent: {moreStuff: 2}
           }
         }, dispatchResults)
       );
   });
 
-  test('makeApolloTestPropsFunction', () => {
-    const mergeProps = mergeActionsForViews({aComponent: ['action1', 'action2'], bComponent: ['action2', 'action3']});
-    const sampleState = ({data: {regionId: 1}, views: {aComponent: {stuff: 1}, bComponent: {moreStuff: 2}}});
+  test('awaitMakeApolloTestPropsFunction', async () => {
+    const sampleState = ({data: {regionId: 'oakland'}, views: {aComponent: {stuff: 1}, bComponent: {moreStuff: 2}}});
     const sampleOwnProps = {style: {width: 100}};
     const mapStateToProps = (state, ownProps) => R.merge(state, ownProps);
     const dispatchResults = {
@@ -128,8 +126,8 @@ describe('componentHelpers', () => {
     // given mapStateToProps, mapDispatchToProps, and mergeProps we get a function back
     // that then takes sample state and ownProps. The result is a merged object based on container methods
     // and sample data. Next apply the apollo query
-    const query = {
-      query: gql`
+    const queryObj = {
+      query: `
           query region($regionId: String!) {
               store {
                   region(id: $regionId) {
@@ -139,24 +137,29 @@ describe('componentHelpers', () => {
               }
           }
       `,
-      args: ({data: {regionId}}) => ({
-        variables: {
-          regionId
-        }
-      })
+      args: {
+        options: ({data: {regionId}}) => ({
+          variables: {
+            regionId
+          }
+        })
+      }
     };
-    const func = makeApolloTestPropsFunction(mapStateToProps, mapDispatchToProps, mergeProps, query)
-    expect(func(sampleState, sampleOwnProps)).toEqual(
+    const value = await makeApolloTestPropsFunction(mapStateToProps, mapDispatchToProps, queryObj)(sampleState, sampleOwnProps).then(
+      either => new Promise((resolve, reject) => either.map(resolve).leftMap(reject))
+    );
+
+    expect(value).toEqual(
       R.merge({
-        data: {regionId: 1},
+        // Expect this data came from Apollo
+        data: {store: {region: {id: "oakland", name: "Oakland"}}},
         style: {width: 100},
         views: {
-          aComponent: {stuff: 1, action1: R.identity, action2: R.identity},
-          bComponent: {moreStuff: 2, action2: R.identity, action3: R.identity}
+          aComponent: {stuff: 1},
+          bComponent: {moreStuff: 2}
         }
       }, dispatchResults)
     );
-
   });
 
   test('liftAndExtract', () => {

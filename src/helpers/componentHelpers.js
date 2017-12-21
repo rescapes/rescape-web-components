@@ -45,17 +45,6 @@ export const propLensEqual = v(R.curry((lens, props, nextProps) =>
     ['nextProps', PropTypes.oneOfType([PropTypes.object, PropTypes.array]).isRequired]
   ], 'propLensEqual');
 
-/**
- * Creates a reselect selector creator that compares the length of values of the
- * selected object from one call to the next to determine equality instead of doing and equals check.
- * This is used for large datasets like geojson features where we assume no change unless the list size changes
- */
-export const createLengthEqualSelector =
-  // Use propLensEqual as the equality check to defaultMemoize
-  createSelectorCreator(
-    defaultMemoize,
-    propLensEqual(R.lensProp('length'))
-  );
 
 /**
  * Maps each Reach element to an curried e function.
@@ -150,6 +139,10 @@ export const mergeActionsForViews = (viewToActionNames) => (props) => {
     zwar: 3
   }
  *
+ * @param {Object} viewsToPropPaths As described above. Note that the paths are always relative to props.data
+ * @param {Object} props
+ * @param {Object} props.data Must be present to search for propPaths
+ * @props {Object} props with props added to props.views
  */
 export const mergePropsForViews = R.curry((viewToPropPaths, props) => {
   return R.over(
@@ -164,7 +157,7 @@ export const mergePropsForViews = R.curry((viewToPropPaths, props) => {
         R.map(
           propNameToPropPath =>
             R.map(
-              propPath => R.view(R.lensPath(R.split('.', propPath)), props),
+              propPath => R.view(R.lensPath(R.split('.', propPath)), reqPath(['data'], props)),
               // Within each view, map each propNameToPropPath
               propNameToPropPath),
           // Map each view
@@ -203,22 +196,26 @@ export const resolveViewProps = R.curry((viewsToPropNames, {data, ownProps}) =>
  * sampleState and sampleOwnProps when invoked
  * @param {Function} mapDispatchToProps The mapDispatchToProps function of a container. It will be passed
  * the identity function for a fake dispatch and sampleOwnProps when invoked
- * @param {Function} [mergeProps] Optional mergeProps function. Defaults to R.merge to merge the result
- * of mapStateToProps and mapDispatchToProps results
  * @returns {Function} A function that expects a sample state and sample ownProps and returns a complete
  * sample props according to the functions of the container
  */
-export const makeTestPropsFunction = (mapStateToProps, mapDispatchToProps, mergeProps = R.merge) =>
-  (sampleState, sampleOwnProps) => mergeProps(
+export const makeTestPropsFunction = (mapStateToProps, mapDispatchToProps) =>
+  (sampleState, sampleOwnProps) => R.merge(
     mapStateToProps(sampleState, sampleOwnProps),
-    mapDispatchToProps(R.identity), sampleOwnProps
+    mapDispatchToProps(R.identity)
   );
 
 /**
  * Like makeTestPropsFunction, but additionally resolves an Apollo query to supply complete data for a test
- * @param mapStateToProps
- * @param mapDispatchToProps
- * @param mergeProps
+ * @param {Function} mapStateToProps
+ * @param {Function} mapDispatchToProps
+ * @param {Function} mergeProps
+ * @query {String} query Contains an apollo query string (not gql string)
+ * @args {Function} args Contains an apollo query args in the format
+ * {
+ *  options: { variables: { query args } }
+ * }
+ *
  * @return {function({query?: *, args?: *})} query is an Apollo query string and args is a function that
  * expects props and produces query args with their values inside a key 'variables'. This matches the
  * Apollo React client setup. Example
@@ -227,22 +224,40 @@ export const makeTestPropsFunction = (mapStateToProps, mapDispatchToProps, merge
  *    regionId: props.region.id
  *  }
  *  }
+ *  The function returns a Promise that passes an Either.Left or Right. If Left there ar errors in the Either.value. If
+ *  Right then the value is the store
  */
-export const makeApolloTestPropsFunction = (mapStateToProps, mapDispatchToProps, mergeProps, {query, args}) => async (state, ownProps) => {
+export const makeApolloTestPropsFunction = R.curry((mapStateToProps, mapDispatchToProps, {query, args}) => {
   const resolvedSchema = createSelectorResolvedSchema(makeSchema(), sampleConfig);
 
-  return await R.composeP(
-    props => graphql(resolvedSchema, query, {}, {options: {dataSource: sampleConfig}}, reqPath(['variables'], args(props))).then(
+  return R.composeP(
+    props => graphql(
+      resolvedSchema,
+      query, {},
+      { options: {dataSource: sampleConfig} },
+      // Add data and ownProps since that is what Apollo query arguments props functions expect
+      reqPath(['variables'], args.options(props))
+    ).then(
       // Merge the makeTestPropsFunction props with the Apollo result. Put Apollo under the data.store key
       // just like our Apollo React Client does by default
-      store => mergeDeep(
-        props,
-        {data: {store}})
-    ),
+      ({data, errors}) => {
+        if (errors)
+          return Either.Left(errors);
+        return Either.Right(
+          mergeDeep(
+            props,
+            {data}
+          )
+        );
+      }
+    ).catch(e => {
+      return Either.Left([e]);
+    }),
     // Creates Redux function props
-    (...args) => Promise.resolve(makeTestPropsFunction(mapStateToProps, mapDispatchToProps, mergeProps)(...args))
-  )(state, ownProps);
-};
+    (...args) => Promise.resolve(makeTestPropsFunction(mapStateToProps, mapDispatchToProps)(...args))
+  );
+});
+
 /**
  * Wraps a function that expects states and props and returns sample props with a function that
  * runs a graphql query
@@ -365,3 +380,22 @@ export const nameLookup = nameObj =>
     (v, k) => k,
     nameObj
   );
+
+/**
+ * Convenience method to call mergeActionsForView, mergePropsForView, and mergeStylesIntoViews
+ * @param {Object} viewActions Argument to mergeActionsForView. See mergeActionsForViews
+ * @param {Object} viewProps Argument to mergePropsForViews. See mergePropsForViews
+ * @param {Object|Function} getStyles Argument to mergeStylesIntoViews. See mergeStylesIntoViews
+ * @param {Object} props Props that are used for the composition. Each of the three functions
+ * is called with the props. There should be no dependencies between the three functions--they
+ * each contribute to the returned props.views
+ * @return {Function} The modified props with view properties added by each of the three functions
+ */
+export const composeViews = R.curry((viewActions, viewProps, getStyles, props) => R.compose(
+  mergeActionsForViews(viewActions),
+  mergePropsForViews(viewProps),
+  mergeStylesIntoViews(getStyles)
+  )(props)
+);
+
+

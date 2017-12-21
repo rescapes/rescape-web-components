@@ -10,35 +10,10 @@
  */
 
 import * as R from 'ramda';
-import { createLengthEqualSelector, mergeStateAndProps, makeInnerJoinByLensThenFilterSelector, findById, findByParams }
+import { mergeStateAndProps, makeInnerJoinByLensThenFilterSelector, findById, findByParams }
   from './selectorHelpers';
 
 describe('reselectHelpers', () => {
-
-  // TODO createLengthEqualSelector is not memoizing as expected
-  test('createLengthEqualSelector', () => {
-    let state = {foo: [1, 2, 3]};
-    // Mock function that simply returns foo
-    const myMockFn = jest.fn()
-      .mockImplementation(state => {
-        return state.foo;
-      });
-    // createLengthEqualSelector should only track changes to foo's length, not its contents
-    const selector = createLengthEqualSelector(
-      [myMockFn],
-      R.identity
-    );
-    // Initial call to selector
-    selector(state);
-    // Subsequent call to selector with length of lens target changed
-    state = R.set(R.lensPath(['foo', 3]), 11, state);
-    selector(state);
-    expect(myMockFn.mock.calls.length).toEqual(2);
-    // Subsequent call to selector with lens target changed but not length
-    state = R.set(R.lensPath(['foo', 0]), 11, state);
-    selector(state);
-    expect(myMockFn.mock.calls.length).toEqual(3); // TODO Should equal 2
-  });
 
   test('mergeStateAndProps', () => {
     const state = {

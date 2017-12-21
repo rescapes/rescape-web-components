@@ -78,6 +78,19 @@ export const makeSampleInitialState = (sampleUserSettings = {}) => {
 export const propsFromSampleStateAndContainer = (containerPropMaker, sampleOwnProps = {}) =>
   containerPropMaker(makeSampleInitialState(), sampleOwnProps);
 
+/**
+ * Async version of propsFromSampleStateAndContainer for containerPropMaker that is asynchronous because it uses
+ * apollo queries or similar
+ * @param {Function} containerPropMaker A function from a container that expects a sample state and sampleOwnProps
+ * and then applies the container's mapStateToProps, mapDispatchToProps, and optional mergeProps
+ * @param sampleOwnProps Sample props that would normally come from the parent container
+ * @returns {Promise} A Promise to the complete test props
+ */
+export const asyncPropsFromSampleStateAndContainer = (containerPropMaker, sampleOwnProps = {}) =>
+  containerPropMaker(makeSampleInitialState(), sampleOwnProps).then(
+    either => new Promise((resolve, reject) => either.map(resolve).leftMap(reject))
+  );
+
 export const propsWithGraphQlFromSampleStateAndContainer = (queryArgs, containerPropMaker, sampleOwnProps = {}) =>
   R.compose(
     makeGraphQlTestPropsFunction(resolvedSchema, dataSource, queryArgs),
@@ -118,8 +131,8 @@ export const mockApolloClient = (schema, context) => {
  * Creates a mockApolloClient using makeSchema and makeSampleInitialState
  */
 export const mockApolloClientWithSamples = () => {
-  const state = makeSampleInitialState()
-  const context = {options: {dataSource: state}}
+  const state = makeSampleInitialState();
+  const context = {options: {dataSource: state}};
   const resolvedSchema = createSelectorResolvedSchema(makeSchema(), state);
   return mockApolloClient(resolvedSchema, context);
 };
@@ -130,8 +143,8 @@ export const mockApolloClientWithSamples = () => {
  * @return {*}
  */
 export const wrapWithMockGraphqlAndStore = (component) => {
-  const state = makeSampleInitialState()
-  const context = {options: {dataSource: state}}
+  const state = makeSampleInitialState();
+  const context = {options: {dataSource: state}};
   const resolvedSchema = createSelectorResolvedSchema(makeSchema(), state);
   const store = makeSampleStore();
 

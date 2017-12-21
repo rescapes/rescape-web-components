@@ -16,7 +16,7 @@ import PropTypes from 'prop-types';
 import {applyMatchingStyles, makeMergeContainerStyleProps, mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
 import {
   nameLookup, eMap, propsFor, errorOrLoadingOrData,
-  mergePropsForViews, mergeActionsForViews
+  mergePropsForViews, mergeActionsForViews, composeViews
 } from 'helpers/componentHelpers';
 import {mergeDeep, throwing} from 'rescape-ramda';
 import * as R from 'ramda';
@@ -39,94 +39,110 @@ export const c = nameLookup({
  */
 export default class Region extends Component {
   render() {
-    const props = R.compose(
-      mergeActionsForViews(this.viewActions()),
-      mergePropsForViews(this.viewProps()),
-      mergeStylesIntoViews(this.getStyles),
-    )(
-      this.props
-    );
-
+    const props = Region.views(this.props);
     return Div(propsFor(c.region, props.views),
-      errorOrLoadingOrData(
-        this.renderLoading,
-        this.renderError,
-        this.renderData
-      )(props)
+      Region.choicepoint(props)
     );
-  }
-
-  getStyles({style}) {
-    return mergeStylesIntoViews({
-      [c.region]: mergeAndApplyMatchingStyles(style, {
-        position: 'absolute',
-        width: styleMultiplier(1),
-        height: styleMultiplier(1)
-      }),
-
-      [c.regionMapbox]: R.merge(
-        // Just map width/height to mapbox.
-        // TODO this probably won't stand, but it's more of a proof of concept now
-        R.pick(['width', 'height'], style),
-        {}),
-
-      [c.regionMapboxOuter]: applyMatchingStyles(style, {
-        position: 'absolute',
-        width: styleMultiplier(.5),
-        height: styleMultiplier(1)
-      }),
-
-      [c.regionLocationsOuter]: {
-        position: 'absolute',
-        top: .02,
-        left: .55,
-        right: .05
-      }
-    });
-  }
-
-  viewProps() {
-    // region is expected from the query result
-    return {
-      [c.regionMapbox]: {region: 'store.region'}
-    }
-  }
-
-  viewActions() {
-    return {
-      [c.regionMapbox]: {}
-    }
-  }
-
-  renderData({views}) {
-    /* We additionally give Mapbox the container width and height so the map can track changes to these
-     We have to apply the width and height fractions of this container to them.
-     */
-    const props = R.flip(propsFor)(views);
-
-    return [
-      Div(props(c.regionMapboxOuter),
-        Mapbox(
-          props(c.regionMapbox)
-        ),
-        Sankey(
-          props(c.regionSankey)
-        )
-      ),
-      Div(props(c.regionLocationsOuter),
-        MarkerList(props(c.regionLocations))
-      )
-    ];
-  }
-
-  renderLoading({data}) {
-    return [];
-  };
-
-  renderError({data}) {
-    return [];
   }
 }
+
+/**
+ * Merges parent and state styles into component styles
+ * @param style
+ */
+Region.getStyles = ({style}) => {
+  return mergeStylesIntoViews({
+    [c.region]: mergeAndApplyMatchingStyles(style, {
+      position: 'absolute',
+      width: styleMultiplier(1),
+      height: styleMultiplier(1)
+    }),
+
+    [c.regionMapbox]: R.merge(
+      // Just map width/height to mapbox.
+      // TODO this probably won't stand, but it's more of a proof of concept now
+      R.pick(['width', 'height'], style),
+      {}),
+
+    [c.regionMapboxOuter]: applyMatchingStyles(style, {
+      position: 'absolute',
+      width: styleMultiplier(.5),
+      height: styleMultiplier(1)
+    }),
+
+    [c.regionLocationsOuter]: {
+      position: 'absolute',
+      top: .02,
+      left: .55,
+      right: .05
+    }
+  });
+};
+
+Region.viewProps = () => {
+  // region is expected from the query result
+  const region = 'store.region';
+  return {
+    [c.region]: {region},
+    [c.regionMapbox]: {region}
+  };
+};
+
+Region.viewActions = () => {
+  return {
+    [c.regionMapbox]: {}
+  };
+};
+
+Region.renderData = ({views}) => {
+  /* We additionally give Mapbox the container width and height so the map can track changes to these
+   We have to apply the width and height fractions of this container to them.
+   */
+  const props = R.flip(propsFor)(views);
+
+  return [
+    Div(props(c.regionMapboxOuter),
+      Mapbox(
+        props(c.regionMapbox)
+      ),
+      Sankey(
+        props(c.regionSankey)
+      )
+    ),
+    Div(props(c.regionLocationsOuter),
+      MarkerList(props(c.regionLocations))
+    )
+  ];
+};
+
+Region.renderLoading = ({data}) => {
+  return [];
+};
+
+Region.renderError = ({data}) => {
+  return [];
+};
+
+
+/**
+ * Adds to props.views for each component configured in viewActions, viewProps, and getStyles
+ * @param {Object} props this.props or equivalent for testing
+ * @returns {Object} modified props
+ */
+Region.views = composeViews(
+  Region.viewActions(),
+  Region.viewProps(),
+  Region.getStyles
+)
+
+/**
+ * Loading, Error, or Data based on the props
+ */
+Region.choicepoint = errorOrLoadingOrData(
+  Region.renderLoading,
+  Region.renderError,
+  Region.renderData
+)
 
 /**
  * Expect the region
@@ -136,5 +152,4 @@ const {
   string, object, number, func, shape
 } = PropTypes;
 
-Region.propTypes = {
-};
+Region.propTypes = {};

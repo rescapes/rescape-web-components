@@ -37,21 +37,23 @@ export const c = nameLookup({
  */
 export default class Mapbox extends Component {
   render() {
-    const props = R.compose(
-      mergeActionsForViews(this.viewActions()),
-      mergePropsForViews(this.viewProps()),
-      mergeStylesIntoViews(this.getStyles),
-    )(
-      this.props
-    );
-
-    return Div(propsFor(c.mapbox, props.views),
+    const props = this.views(this.props)
+    return Div(propsFor(c.region, props.views),
       errorOrLoadingOrData(
         this.renderLoading,
         this.renderError,
         this.renderData
       )(props)
     );
+  }
+
+  /**
+   * Adds to props.views for each component configured in viewActions, viewProps, and getStyles
+   * @param {Object} props this.props or equivalent for testing
+   * @returns {Object} modified props
+   */
+  views(props) {
+    return composeViews(this.viewActions(), this.viewProps(), this.getStyles)(props)
   }
 
   getStyles({style}) {

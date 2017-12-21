@@ -27,7 +27,10 @@ export const mapStateToProps =
       makeMergeDefaultStyleWithProps()
     ],
     // Replace props.style with style
-    style => R.merge(props, {style})
+    style => ({
+      data: props,
+      style
+    })
   )(state, props);
 
 export const mapDispatchToProps = (dispatch) => {
@@ -53,7 +56,7 @@ export const mapDispatchToProps = (dispatch) => {
  * Without prerequisites:
  *  Skip render
  */
-const regionQuery = gql`
+const regionQuery = ` 
     query region($regionId: String!) {
         store {
             region(id: $regionId) {
@@ -92,19 +95,13 @@ export const queries = {
 // Create the GraphQL Container.
 // TODO We should handle all queries in queries here
 const ContainerWithData = graphql(
-  queries.region.query,
+  gql`${queries.region.query}`,
   queries.region.args)
 (Region);
 
-/**
- * Combines mapStateToProps and mapDispatchToProps, but not ownProps, which were already merged
- * @type {Function}
- */
-export const mergeProps = R.merge
-
 // Returns a function that expects state and ownProps for testing
-export const testPropsMaker = makeApolloTestPropsFunction(mapStateToProps, mapDispatchToProps, mergeProps)(queries.region)
+export const testPropsMaker = makeApolloTestPropsFunction(mapStateToProps, mapDispatchToProps, queries.region);
 
-
-export default connect(mapStateToProps, mapDispatchToProps, mergeProps)(ContainerWithData);
+// Using R.merge to ignore ownProps, which were already merged by mapStateToProps
+export default connect(mapStateToProps, mapDispatchToProps, R.merge)(ContainerWithData);
 

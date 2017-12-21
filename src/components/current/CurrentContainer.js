@@ -8,6 +8,7 @@ import {mergeDeep, throwing} from 'rescape-ramda'
 import {makeTestPropsFunction, mergeActionsForViews} from 'helpers/componentHelpers';
 import {bindActionCreators} from 'redux';
 import {activeUserRegionSelector} from 'selectors/userSelectors';
+import {c} from 'components/current/Current';
 
 /**
  * Combined selector that:
@@ -38,7 +39,7 @@ export const mapStateToProps = (state, props) =>
         data: mergeDeep(activeUserAndSettings, {style}),
         style,
         views: {
-          region: {
+          [c.currentRegion]: {
             region: activeUserRegionSelector(activeUserAndSettings),
             style: {
               width: browserProportionalStyle.width,
@@ -54,16 +55,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
   }, dispatch)
 }
 
-/**
- * Combines mapStateToProps, mapDispatchToProps with the given viewToActions mapping
- * @type {Function}
- */
-export const mergeProps = mergeActionsForViews({
-  // Region child component needs the following actions
-  region: []
-})
-
 // Returns a function that expects ownProps for testing
-export const testPropsMaker = makeTestPropsFunction(mapStateToProps, mapDispatchToProps, mergeProps)
+export const testPropsMaker = makeTestPropsFunction(mapStateToProps, mapDispatchToProps)
 
-export default connect(mapStateToProps, mapDispatchToProps, mergeProps)(Current)
+export default connect(mapStateToProps, mapDispatchToProps)(Current)
