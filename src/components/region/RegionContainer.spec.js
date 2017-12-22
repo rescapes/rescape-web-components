@@ -11,7 +11,9 @@ import {eMap} from 'helpers/componentHelpers';
 import * as R from 'ramda';
 import {createWaitForElement} from 'enzyme-wait';
 import Current, {c} from 'components/current/Current';
+import {c} from 'components/region/Region'
 import {gql} from 'apollo-client-preset';
+import {getClass} from 'helpers/styleHelpers';
 
 describe('RegionContainer', () => {
   // Get the parent Region from the CurrentContainer's testPropMaker
@@ -49,7 +51,8 @@ describe('RegionContainer', () => {
     const wrapper = wrapWithMockGraphqlAndStore(regionContainer(parentProps));
     const component = wrapper.find('Region');
     expect(component.props()).toMatchSnapshot();
-    const waitForSample = createWaitForElement('.region-mapbox-outer-props');
+    // Wait for region-mapbox element to exist, which indicates data loading is complete
+    const waitForSample = createWaitForElement(`.${getClass(c.regionMapboxOuter)}`);
     waitForSample(component).then(
       component => {
         expect(component.text()).to.include('ready');

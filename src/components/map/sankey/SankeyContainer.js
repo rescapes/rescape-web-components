@@ -11,7 +11,7 @@
 
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import {onChangeViewport} from 'redux-map-gl';
+import {onViewportChange} from 'redux-map-gl';
 import Sankey from './Sankey'
 import {viewportSelector} from 'selectors/mapboxSelectors'
 import {
@@ -57,7 +57,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
  */
 export const mergeProps = mergeActionsForViews({
   // MapGl child component needs the following actions
-  mapGl: ['onChangeViewport', 'hoverMarker', 'selectMarker']
+  mapboxMapGl: ['onChangeViewport', 'hoverMarker', 'selectMarker']
 })
 
 // Returns a function that expects a sample state and ownProps for testing

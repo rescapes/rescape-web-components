@@ -12,7 +12,7 @@
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {actionCreators} from 'src/redux/geojson/geojsonReducer';
-import {onChangeViewport} from 'redux-map-gl';
+import {onViewportChange} from 'redux-map-gl';
 import Mapbox from './Mapbox'
 const {hoverMarker, selectMarker} = actionCreators;
 import {v} from 'rescape-validate';
@@ -42,7 +42,7 @@ export const mapStateToProps = createSelector(
 
 export const mapDispatchToProps = (dispatch, ownProps) => {
   return bindActionCreators({
-    onChangeViewport,
+    onViewportChange,
     hoverMarker,
     selectMarker
   }, dispatch);

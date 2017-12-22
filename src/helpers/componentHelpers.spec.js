@@ -12,7 +12,8 @@ import * as R from 'ramda';
 import {propLensEqual, mergeActionsForViews, makeTestPropsFunction, liftAndExtract} from './componentHelpers';
 import {
   awaitMakeApolloTestPropsFunction,
-  errorOrLoadingOrData, makeApolloTestPropsFunction, mergePropsForViews, mergeStylesIntoViews, nameLookup, propsFor
+  errorOrLoadingOrData, makeApolloTestPropsFunction, mergePropsForViews, mergeStylesIntoViews, nameLookup, propsFor,
+  propsForSansClass
 } from 'helpers/componentHelpers';
 
 describe('componentHelpers', () => {
@@ -259,4 +260,26 @@ describe('componentHelpers', () => {
       {className: 'bermuda-props'}
     );
   });
+
+  test('propsForSansClass', () => {
+    const viewProps = {
+      fooProps: {
+        style: {
+          color: 'red'
+        },
+        bar: 1
+      }
+    };
+    expect(propsForSansClass('fooProps', viewProps)).toEqual(
+      {
+        style: {
+          color: 'red'
+        },
+        bar: 1
+      }
+    );
+    expect(propsForSansClass('bermudaProps', viewProps)).toEqual(
+      {}
+    );
+  })
 });

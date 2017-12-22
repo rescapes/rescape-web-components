@@ -368,17 +368,31 @@ export const mergeStylesIntoViews = R.curry((viewStyles, props) => {
  * }
  *
  * @param name
- * @param viewProps
+ * @param views
  * @return {*}
  */
-export const propsFor = (name, viewProps) => {
-  const propsForView = R.defaultTo({}, R.view(R.lensProp(name), viewProps));
+export const propsFor = (name, views) => {
+  const propsForView = R.defaultTo({}, R.view(R.lensProp(name), views));
   return R.merge(
     propsForView,
     getClassAndStyle(
       name,
-      viewProps
+      views
     )
+  );
+};
+
+/**
+ * Like propsFor but doesn't generate a className since non-trivial components ignore it
+ * @param name
+ * @param views
+ * @return {*}
+ */
+export const propsForSansClass = (name, views) => {
+  const propsForView = R.defaultTo({}, R.view(R.lensProp(name), views));
+  return R.merge(
+    propsForView,
+    getStyleObj(name, views)
   );
 };
 

@@ -15,7 +15,7 @@ import {makeMergeContainerStyleProps} from 'selectors/styleSelectors'
 import React from 'react';
 import {eMap} from 'helpers/componentHelpers';
 import current from 'components/current'
-import {classNamer} from 'helpers/styleHelpers';
+import {getClass} from 'helpers/styleHelpers';
 import {throwing} from 'rescape-ramda'
 const {reqPath} = throwing;
 const [Div, Current] = eMap(['div', current]);
@@ -26,7 +26,7 @@ const [Div, Current] = eMap(['div', current]);
  */
 const Main = (props) => {
 
-  const nameClass = classNamer('main');
+  const nameClass = getClass('main');
   const styles = makeMergeContainerStyleProps()(
     {
       style: {

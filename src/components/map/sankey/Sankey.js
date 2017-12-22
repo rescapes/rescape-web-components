@@ -23,7 +23,7 @@ import {eMap} from 'helpers/componentHelpers';
 import sample from 'data/sankey.sample';
 import * as d3 from 'd3';
 import {resolveSvgPoints, resolveSvgReact} from 'helpers/svgHelpers';
-import {classNamer, styleMultiplier} from 'helpers/styleHelpers';
+import {getClass, styleMultiplier} from 'helpers/styleHelpers';
 import {makeMergeContainerStyleProps} from 'selectors/styleSelectors'
 import mapGl from 'react-map-gl'
 
@@ -43,7 +43,7 @@ const {reqPath} = throwing;
 
 const Sankey = (props) => {
 
-  const nameClass = classNamer('sankey');
+  const nameClass = getClass('sankey');
   const styles = makeMergeContainerStyleProps()(
     {
       style: {
@@ -83,7 +83,7 @@ const Sankey = (props) => {
       // setting to `true` should cause the map to flicker because all sources
       // and layers need to be reloaded without diffing enabled.
       preventStyleDiffing: false,
-      onChangeViewport: this.props.onChangeViewport
+      onViewportChange: this.props.onViewportChange
     }),
     deck
   );
@@ -119,7 +119,7 @@ Sankey.propTypes = {
   region: object.isRequired,
   hoverMarker: func.isRequired,
   selectMarker: func.isRequired,
-  onChangeViewport: func.isRequired,
+  onViewportChange: func.isRequired,
   geojson: object.isRequired
 };
 

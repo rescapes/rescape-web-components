@@ -11,18 +11,17 @@
 
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import {onChangeViewport} from 'redux-map-gl';
+import {onViewportChange} from 'redux-map-gl';
 import {makeMergeDefaultStyleWithProps} from 'selectors/styleSelectors';
 import {viewportSelector} from 'selectors/mapboxSelectors';
 import {makeActiveUserAndSettingsSelector} from 'selectors/storeSelectors';
 import {createSelector} from 'reselect';
-import {loadingCompleteStatus, makeTestPropsFunction} from 'helpers/componentHelpers';
+import {loadingCompleteStatus, makeApolloTestPropsFunction} from 'helpers/componentHelpers';
 import {mergeDeep, throwing} from 'rescape-ramda';
 import Mapbox from './Mapbox';
 import * as R from 'ramda';
 import {graphql} from 'react-apollo';
 import {gql} from 'apollo-client-preset';
-
 
 /**
  * Selects the current user from state
@@ -37,10 +36,11 @@ export const mapStateToProps = (state, props) => {
       viewportSelector
     ],
     (userAndSettings, style, viewport) => ({
-      data: R.merge(
+      data: R.mergeAll([
         userAndSettings,
-        {viewport}
-      ),
+        { viewport },
+        props
+      ]),
       style
     })
   )(state, props);
@@ -48,24 +48,53 @@ export const mapStateToProps = (state, props) => {
 
 export const mapDispatchToProps = (dispatch, ownProps) => {
   return bindActionCreators({
-    onChangeViewport
+    onViewportChange
     //hoverMarker,
     //selectMarker
   }, dispatch);
 };
 
 
+/**
+ * Query
+ * Prerequisites:
+ *   A Region
+ * Resolves:
+ *  The geojson of the Region
+ * Without prerequisites:
+ *  Skip render
+ */
+const geojsonQuery = `
+    query geojson($regionId: String!) {
+        store {
+            region(id: $regionId) {
+                geojson {
+                    osm {
+                        features {
+                            id
+                            type
+                            geometry {
+                                type
+                                coordinates
+                            }
+                            properties
+                        }
+                    }
+                }
+            },
+        }
+    }
+`;
 
 /**
  * All queries used by the container
- * @type {{region: {query: *, args: {options: (function({data: *}): {variables: {regionId}}), props: (function({data: *, ownProps?: *}): *)}}}}
  */
 export const queries = {
   /**
-   * Expect a region stub with an id and resolves the full region from the data layer
+   * Expects a region with an id and resolves geojson of the region
    */
-  region: {
-    query: regionQuery,
+  geojson: {
+    query: geojsonQuery,
     args: {
       options: ({data: {region}}) => ({
         variables: {
@@ -80,36 +109,15 @@ export const queries = {
   }
 };
 
-/**
- * Query
- * Prerequisites:
- *   A User in context
- * Resolves:
- *  The Regions of the User
- * Without prerequisites:
- *  Skip render
- */
-const Query = ` 
-    query geojson($regionId: String!) {
-        store {
-            region(id: $regionId) {
-                geojson {
-                }
-            },
-        }
-    }
-`;
-
-
 // Create the GraphQL Container.
 // TODO We should handle all queries in queries here
 const ContainerWithData = graphql(
-  gql`${queries.region.query}`,
-  queries.region.args)
+  gql`${queries.geojson.query}`,
+  queries.geojson.args)
 (Mapbox);
 
 // Returns a function that expects state and ownProps for testing
-export const testPropsMaker = makeApolloTestPropsFunction(mapStateToProps, mapDispatchToProps, queries.region);
+export const testPropsMaker = makeApolloTestPropsFunction(mapStateToProps, mapDispatchToProps, queries.geojson);
 
 // Using R.merge to ignore ownProps, which were already merged by mapStateToProps
 export default connect(mapStateToProps, mapDispatchToProps, R.merge)(ContainerWithData);

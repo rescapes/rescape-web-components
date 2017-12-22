@@ -9,27 +9,23 @@
  * THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import PropTypes from 'prop-types';
 import mapGl from 'react-map-gl';
 import React from 'react';
-//import createMapStops from 'components/mapStop/index';
-//import MapMarkers from 'components/mapMarker/index';
 import {throwing} from 'rescape-ramda';
-//import Deck from '../deck/Deck';
 import {
-  composeViews,
-  eMap, errorOrLoadingOrData, mergeActionsForViews, mergePropsForViews, mergeStylesIntoViews,
-  nameLookup, propsFor
+  composeViews, eMap, errorOrLoadingOrData, mergeStylesIntoViews, nameLookup, propsFor,
+  propsForSansClass
 } from 'helpers/componentHelpers';
 import * as R from 'ramda';
-import {classNamer, getClassAndStyle, styleMultiplier} from 'helpers/styleHelpers';
-import {applyMatchingStyles, makeMergeContainerStyleProps, mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
+import {styleMultiplier} from 'helpers/styleHelpers';
+import {applyMatchingStyles, mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
 import {Component} from 'react/cjs/react.production.min';
 
 const [Div, MapGl] = eMap(['div', mapGl]);
 export const c = nameLookup({
   mapbox: true,
-  mapGl: true
+  mapboxMapGlOuter: true,
+  mapboxMapGl: true
 });
 
 /**
@@ -39,7 +35,7 @@ export const c = nameLookup({
 export default class Mapbox extends Component {
   render() {
     const props = this.views(this.props)
-    return Div(propsFor(c.region, props.views),
+    return Div(propsFor(c.mapbox, props.views),
       errorOrLoadingOrData(
         this.renderLoading,
         this.renderError,
@@ -65,7 +61,7 @@ export default class Mapbox extends Component {
         height: styleMultiplier(1)
       }),
 
-      [c.mapGl]: applyMatchingStyles(style, {
+      [c.mapboxMapGl]: applyMatchingStyles(style, {
         width: styleMultiplier(1),
         height: styleMultiplier(1)
       })
@@ -74,16 +70,17 @@ export default class Mapbox extends Component {
 
   viewProps() {
     return {
-      [c.mapGl]: {
+      [c.mapboxMapGl]: {
         region: 'region',
-        viewport: 'viewport'
+        viewport: 'viewport',
+        osm: 'store.region.geojson.osm'
       }
     }
   }
 
   viewActions() {
     return {
-      [c.mapGl]: ['onChangeViewport', 'hoverMarker', 'selectMarker']
+      [c.mapboxMapGl]: ['onViewportChange', 'hoverMarker', 'selectMarker']
     }
   }
 
@@ -92,10 +89,11 @@ export default class Mapbox extends Component {
      We have to apply the width and height fractions of this container to them.
      */
     const props = R.flip(propsFor)(views);
+    const propsSansClass = R.flip(propsForSansClass)(views);
 
-    return [
-      MapGl(props(c.mapGl))
-    ];
+    return Div(props(c.mapboxMapGlOuter),
+      MapGl(propsSansClass(c.mapboxMapGl))
+    )
   }
 
   renderLoading({data}) {

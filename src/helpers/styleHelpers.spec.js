@@ -1,9 +1,9 @@
-import {styleMultiplier, createScaledPropertyGetter, classNamer} from './styleHelpers';
+import {styleMultiplier, createScaledPropertyGetter, getClass} from './styleHelpers';
 import {getClassAndStyle, getStyleObj} from 'helpers/styleHelpers';
 
 describe('styles', () => {
-  test('classNamer', () => {
-    expect(classNamer('chicken', 'outsidePen')).toEqual('chicken-outside-pen');
+  test('getClass', () => {
+    expect(getClass('chicken', 'outsidePen')).toEqual('chicken-outside-pen');
   });
   test('getClassAndStyle', () => {
     const viewObj =  {

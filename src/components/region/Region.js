@@ -14,7 +14,10 @@ import sankey from 'components/map/sankey/SankeyContainer';
 import markerList from 'components/map/marker/MarkerListContainer';
 import PropTypes from 'prop-types';
 import {applyMatchingStyles, mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
-import {nameLookup, eMap, propsFor, errorOrLoadingOrData, composeViews} from 'helpers/componentHelpers';
+import {
+  nameLookup, eMap, propsFor, errorOrLoadingOrData, composeViews,
+  propsForSansClass
+} from 'helpers/componentHelpers';
 import {mergeDeep, throwing} from 'rescape-ramda';
 import * as R from 'ramda';
 import {Component} from 'react/cjs/react.production.min';
@@ -82,10 +85,10 @@ Region.getStyles = ({style}) => {
 Region.viewProps = () => {
   // region is expected from the query result
   const region = 'store.region';
-  const status = {loading: 'loading', error: 'error'};
   return {
-    [c.region]: {region, ...status},
-    [c.regionMapbox]: {region, ...status}
+    [c.region]: {region},
+    [c.regionMapbox]: {region},
+    [c.regionSankey]: {region}
   };
 };
 
@@ -97,18 +100,19 @@ Region.viewActions = () => {
 
 Region.renderData = ({views}) => {
   const props = R.flip(propsFor)(views);
+  const propsSansClass = R.flip(propsForSansClass)(views);
 
   return [
     Div(props(c.regionMapboxOuter),
       Mapbox(
-        props(c.regionMapbox)
+        propsSansClass(c.regionMapbox)
       ),
       Sankey(
-        props(c.regionSankey)
+        propsSansClass(c.regionSankey)
       )
     ),
     Div(props(c.regionLocationsOuter),
-      MarkerList(props(c.regionLocations))
+      MarkerList(propsSansClass(c.regionLocations))
     )
   ];
 };

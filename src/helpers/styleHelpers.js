@@ -25,7 +25,7 @@ const {reqPath} = throwing;
  * If null then the className will simply be the root
  * @returns {String} root-suffix or root if suffix is not specified
  */
-export const classNamer = (root, suffix = null) => R.join(
+export const getClass = (root, suffix = null) => R.join(
   '-',
   R.map(
     // flip decamelize so the map arg is separate
@@ -48,7 +48,7 @@ export const classNamer = (root, suffix = null) => R.join(
  */
 export const getClassAndStyle = (name, views) =>
   R.merge({
-      className: classNamer(name)
+      className: getClass(name)
     },
     getStyleObj(name, views)
   );
