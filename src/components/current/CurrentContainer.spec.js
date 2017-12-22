@@ -9,26 +9,27 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import {mapStateToProps} from './CurrentContainer';
-import {makeSampleInitialState, propsFromSampleStateAndContainer, wrapWithMockStore} from 'helpers/testHelpers';
-import CurrentContainer from './CurrentContainer'
-import Current from './Current'
+import {propsFromSampleStateAndContainer, wrapWithMockGraphqlAndStore, wrapWithMockStore} from 'helpers/testHelpers';
+import CurrentContainer from './CurrentContainer';
 import {eMap} from 'helpers/componentHelpers';
-import * as R from 'ramda'
-import React from 'react'
+import React from 'react';
 import {testPropsMaker} from 'components/current/CurrentContainer';
 
 describe('CurrentContainer', () => {
+  const parentProps = {
+    style: {}
+  }
+  // Get the test props for CurrentContainer
+  const props = propsFromSampleStateAndContainer(testPropsMaker, parentProps);
+
   test('mapStateToProps', () => {
-    // For now let's assume this container gets its dimensions from the browser, not a parent
-    const props = propsFromSampleStateAndContainer(testPropsMaker, {})
-    expect(props).toMatchSnapshot()
-  })
+    expect(props).toMatchSnapshot();
+  });
 
   test('render', () => {
-    const parentProps = {}
-    const [currentContainer] = eMap([CurrentContainer]);
-    const wrapper = wrapWithMockStore(currentContainer(parentProps))
-    const current = wrapper.find('Current');
-    expect(R.keys(current.props())).toEqual(['data', 'views'])
-  })
+    const [regionContainer] = eMap([CurrentContainer]);
+    const wrapper = wrapWithMockGraphqlAndStore(regionContainer(parentProps));
+    const component = wrapper.find('Current');
+    expect(component.props()).toMatchSnapshot();
+  });
 });

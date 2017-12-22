@@ -4,7 +4,7 @@ import {connect} from 'react-redux';
 import App from 'components/app/App';
 import * as R from 'ramda';
 import {createSelector} from 'reselect';
-import {makeActiveUserAndRegionStateSelector, } from 'selectors/storeSelectors';
+import {makeActiveUserRegionsAndSettingsSelector, } from 'selectors/storeSelectors';
 import {makeBrowserProportionalDimensionsSelector} from 'selectors/styleSelectors';
 import {mergeDeep} from 'rescape-ramda';
 
@@ -40,7 +40,7 @@ export const mapStateToProps = (state, props) =>
   createSelector(
     [
       (state, props) => {
-        return makeActiveUserAndRegionStateSelector()(mergeDeep(state, R.defaultTo({}, props)));
+        return makeActiveUserRegionsAndSettingsSelector()(mergeDeep(state, R.defaultTo({}, props)));
       },
       makeBrowserProportionalDimensionsSelector()
     ],

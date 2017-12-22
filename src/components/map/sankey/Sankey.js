@@ -31,6 +31,16 @@ const [MapGL, DeckGL, Svg, G, Circle, Div] =
   eMap([mapGl, deckGL, 'svg', 'g', 'circle', 'div']);
 const {reqPath} = throwing;
 
+/**
+ *
+ *
+ *  // MapGl needs these props
+ mapGlProps: {
+            region: reqPath(['region'], props),
+            viewport
+          }
+ */
+
 const Sankey = (props) => {
 
   const nameClass = classNamer('sankey');

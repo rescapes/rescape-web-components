@@ -2,10 +2,7 @@ import {connect} from 'react-redux';
 import {makeMergeDefaultStyleWithProps} from 'selectors/styleSelectors';
 import {gql} from 'apollo-client-preset';
 import {graphql} from 'react-apollo';
-import {
-  makeApolloTestPropsFunction,
-  makeTestPropsFunction
-} from 'helpers/componentHelpers';
+import { makeApolloTestPropsFunction } from 'helpers/componentHelpers';
 import {mergeDeep, throwing} from 'rescape-ramda';
 import React from 'react';
 import * as R from 'ramda';
@@ -62,6 +59,13 @@ const regionQuery = `
             region(id: $regionId) {
                 id
                 name
+                mapbox {
+                  viewport {
+                    latitude
+                    longitude
+                    zoom
+                  }
+                }
             },
         }
     }

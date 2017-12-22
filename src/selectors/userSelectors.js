@@ -65,7 +65,7 @@ export const activeUserValueSelector = createSelector(
  * Selects the selected region of the active user. This is not the resolved region, rather the identifier object
  * @param state
  */
-export const activeUserRegionSelector = state => createSelector(
+export const activeUserSelectedRegionSelector = state => createSelector(
   [R.compose(onlyOneValue, activeUsersSelector)],
   user => userSelectedRegionSelector(state, {user})
 )(state)

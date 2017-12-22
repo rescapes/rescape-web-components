@@ -17,6 +17,7 @@ import React from 'react';
 import {throwing} from 'rescape-ramda';
 //import Deck from '../deck/Deck';
 import {
+  composeViews,
   eMap, errorOrLoadingOrData, mergeActionsForViews, mergePropsForViews, mergeStylesIntoViews,
   nameLookup, propsFor
 } from 'helpers/componentHelpers';

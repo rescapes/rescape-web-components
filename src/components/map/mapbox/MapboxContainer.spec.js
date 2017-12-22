@@ -8,15 +8,17 @@ import {testPropsMaker as regionPropsMaker} from 'components/region/RegionContai
 import {eMap} from 'helpers/componentHelpers';
 import MapboxContainer from 'components/map/mapbox/MapboxContainer';
 import * as R from 'ramda';
-import {c as cCurrent} from 'components/current/Current';
+import Current, {c as cCurrent} from 'components/current/Current';
 import Region, {c as cRegion} from 'components/region/Region';
 
 describe('MapboxContainer', () => {
   test('render', async () => {
     // Build up the correct parent props from Current and Region
     const currentProps = propsFromSampleStateAndContainer(currentPropsMaker, {});
-    const regionProps = await asyncPropsFromSampleStateAndContainer(regionPropsMaker, currentProps.views[cCurrent.currentRegion]);
-    const regionViews = Region.views(regionProps).views
+    const currentViews = Current.views(currentProps).views
+    // Get async props from the RegionContainer and then resolve the Region view props
+    const regionViews = await asyncPropsFromSampleStateAndContainer(regionPropsMaker, currentViews[cCurrent.currentRegion])
+      .then(props => Region.views(props).views)
 
     const parentProps = R.merge({
       style: {

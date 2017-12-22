@@ -86,8 +86,8 @@ export const propsFromSampleStateAndContainer = (containerPropMaker, sampleOwnPr
  * @param sampleOwnProps Sample props that would normally come from the parent container
  * @returns {Promise} A Promise to the complete test props
  */
-export const asyncPropsFromSampleStateAndContainer = (containerPropMaker, sampleOwnProps = {}) =>
-  containerPropMaker(makeSampleInitialState(), sampleOwnProps).then(
+export const asyncPropsFromSampleStateAndContainer =
+  (containerPropMaker, sampleOwnProps = {}) => containerPropMaker(makeSampleInitialState(), sampleOwnProps).then(
     either => new Promise((resolve, reject) => either.map(resolve).leftMap(reject))
   );
 
@@ -199,3 +199,9 @@ export const shallowWrap = (componentFactory, props) => {
     componentFactory(props)
   );
 };
+
+/**
+ * Converts an Either to a Promise. Either.right calls resolve and Either.left calls reject
+ * @param either
+ */
+export const eitherToPromise =  either => new Promise((resolve, reject) => either.map(resolve).leftMap(reject))

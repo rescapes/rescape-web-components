@@ -14,7 +14,7 @@ import * as R from 'ramda';
 import {STATUS} from './selectorHelpers';
 import {activeUsersSelector, userResolvedRegionsSelector} from './userSelectors';
 import {
-  activeUserRegionSelector, activeUserValueSelector, userRegionsSelector,
+  activeUserSelectedRegionSelector, activeUserValueSelector, userRegionsSelector,
   userSelectedRegionSelector
 } from 'selectors/userSelectors';
 
@@ -63,11 +63,11 @@ describe('userSelectors', () => {
     expect(activeUserValueSelector(state)).toEqual({name: 'Duk', [IS_ACTIVE]: true});
   });
 
-  test('activeUserRegionSelector', () => {
+  test('activeUserSelectedRegionSelector', () => {
     const state = {
       users
     };
-    expect(activeUserRegionSelector(state)).toEqual({
+    expect(activeUserSelectedRegionSelector(state)).toEqual({
       id: 'pie',
       [IS_SELECTED]: true
     });

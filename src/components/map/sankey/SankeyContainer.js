@@ -15,40 +15,33 @@ import {onChangeViewport} from 'redux-map-gl';
 import Sankey from './Sankey'
 import {viewportSelector} from 'selectors/mapboxSelectors'
 import {
-  makeActiveUserAndSettingsStateSelector
+  makeActiveUserAndSettingsSelector
 } from 'selectors/storeSelectors';
 
 import {createSelector} from 'reselect';
 import {mergeDeep, throwing} from 'rescape-ramda';
 import {makeTestPropsFunction, mergeActionsForViews} from 'helpers/componentHelpers';
 import {makeMergeDefaultStyleWithProps} from 'selectors/styleSelectors';
+import * as R from 'ramda';
 const {reqPath} = throwing
 //const {hoverMarker, selectMarker} = actionCreators;
 
-/**
- * Limits the state to the current selections
- * @returns {Object} The props
- */
-export const mapStateToProps = (state, props) =>
-  createSelector(
+export const mapStateToProps = (state, props) => {
+  return createSelector(
     [
-      makeActiveUserAndSettingsStateSelector(),
+      makeActiveUserAndSettingsSelector(),
       makeMergeDefaultStyleWithProps(),
-      viewportSelector,
+      viewportSelector
     ],
-    (selectedState, style, mapboxSettings, viewport) => {
-      return {
-        data: mergeDeep({style}, props),
-        views: {
-          // MapGl needs these props
-          mapGlProps: {
-            region: reqPath(['region'], props),
-            viewport
-          }
-        }
-      }
-    }
-  )(state, props)
+    (userAndSettings, style, viewport) => ({
+      data: R.merge(
+        userAndSettings,
+        {viewport}
+      ),
+      style
+    })
+  )(state, props);
+};
 
 export const mapDispatchToProps = (dispatch, ownProps) => {
   return bindActionCreators({

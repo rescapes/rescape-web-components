@@ -14,14 +14,14 @@ import {bindActionCreators} from 'redux';
 import {onChangeViewport} from 'redux-map-gl';
 import {makeMergeDefaultStyleWithProps} from 'selectors/styleSelectors';
 import {viewportSelector} from 'selectors/mapboxSelectors';
-import {makeActiveUserAndSettingsStateSelector} from 'selectors/storeSelectors';
+import {makeActiveUserAndSettingsSelector} from 'selectors/storeSelectors';
 import {createSelector} from 'reselect';
-import {mergeActionsForViews, makeTestPropsFunction} from 'helpers/componentHelpers';
+import {loadingCompleteStatus, makeTestPropsFunction} from 'helpers/componentHelpers';
 import {mergeDeep, throwing} from 'rescape-ramda';
-
-const {reqPath} = throwing;
 import Mapbox from './Mapbox';
 import * as R from 'ramda';
+import {graphql} from 'react-apollo';
+import {gql} from 'apollo-client-preset';
 
 
 /**
@@ -32,12 +32,15 @@ import * as R from 'ramda';
 export const mapStateToProps = (state, props) => {
   return createSelector(
     [
-      makeActiveUserAndSettingsStateSelector(),
+      makeActiveUserAndSettingsSelector(),
       makeMergeDefaultStyleWithProps(),
       viewportSelector
     ],
-    (selectedState, style) => ({
-      data: props,
+    (userAndSettings, style, viewport) => ({
+      data: R.merge(
+        userAndSettings,
+        {viewport}
+      ),
       style
     })
   )(state, props);
@@ -51,8 +54,63 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
   }, dispatch);
 };
 
-// Returns a function that expects a sample state and ownProps for testing
-export const testPropsMaker = makeTestPropsFunction(mapStateToProps, mapDispatchToProps);
 
-export default connect(mapStateToProps, mapDispatchToProps, R.merge)(Mapbox);
+
+/**
+ * All queries used by the container
+ * @type {{region: {query: *, args: {options: (function({data: *}): {variables: {regionId}}), props: (function({data: *, ownProps?: *}): *)}}}}
+ */
+export const queries = {
+  /**
+   * Expect a region stub with an id and resolves the full region from the data layer
+   */
+  region: {
+    query: regionQuery,
+    args: {
+      options: ({data: {region}}) => ({
+        variables: {
+          regionId: region.id
+        }
+      }),
+      props: ({data, ownProps}) => mergeDeep(
+        ownProps,
+        {data}
+      )
+    }
+  }
+};
+
+/**
+ * Query
+ * Prerequisites:
+ *   A User in context
+ * Resolves:
+ *  The Regions of the User
+ * Without prerequisites:
+ *  Skip render
+ */
+const Query = ` 
+    query geojson($regionId: String!) {
+        store {
+            region(id: $regionId) {
+                geojson {
+                }
+            },
+        }
+    }
+`;
+
+
+// Create the GraphQL Container.
+// TODO We should handle all queries in queries here
+const ContainerWithData = graphql(
+  gql`${queries.region.query}`,
+  queries.region.args)
+(Mapbox);
+
+// Returns a function that expects state and ownProps for testing
+export const testPropsMaker = makeApolloTestPropsFunction(mapStateToProps, mapDispatchToProps, queries.region);
+
+// Using R.merge to ignore ownProps, which were already merged by mapStateToProps
+export default connect(mapStateToProps, mapDispatchToProps, R.merge)(ContainerWithData);
 

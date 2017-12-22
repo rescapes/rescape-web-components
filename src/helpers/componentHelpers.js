@@ -27,6 +27,16 @@ import {createSelectorCreator, defaultMemoize} from 'reselect';
 const {reqPath} = throwing;
 
 /**
+ * Default statuses for Components that don't have any Apollo queries
+ * @type {{loading: boolean, error: boolean}}
+ */
+export const loadingCompleteStatus = {
+  loading: false,
+  error: false,
+  store: {},
+}
+
+/**
  * Returns true if the lens applied to props equals the lens applied to nextProps
  * @param {Function} lens Ramda lens
  * @param {Object|Array} props React props
@@ -246,7 +256,13 @@ export const makeApolloTestPropsFunction = R.curry((mapStateToProps, mapDispatch
         return Either.Right(
           mergeDeep(
             props,
-            {data}
+            {
+              data: R.merge(
+                // Simulate loading complete
+                loadingCompleteStatus,
+                data
+              )
+            }
           )
         );
       }

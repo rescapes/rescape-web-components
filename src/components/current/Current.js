@@ -12,16 +12,21 @@
 import PropTypes from 'prop-types';
 import region from 'components/region/RegionContainer';
 import React from 'react';
-import {eMap, nameLookup} from 'helpers/componentHelpers';
+import {
+  composeViews, eMap, errorOrLoadingOrData, mergeStylesIntoViews, nameLookup,
+  propsFor
+} from 'helpers/componentHelpers';
 import * as R from 'ramda';
-import {throwing} from 'rescape-ramda'
-const {reqPath} = throwing
+import {throwing} from 'rescape-ramda';
+import {mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
+import {styleMultiplier} from 'helpers/styleHelpers';
 
 const [Div, Region] =
   eMap(['div', region]);
 
 export const c = nameLookup({
-  currentRegion: true,
+  current: true,
+  currentRegion: true
 });
 
 /**
@@ -30,43 +35,98 @@ export const c = nameLookup({
  */
 class Current extends React.Component {
   render() {
-    return R.cond([
-      [R.propEq('loading'), () => this.renderLoading()],
-      [R.has('error'), ({error}) => this.renderError(error)],
-      [R.T, data => this.renderData(data)],
-    ])(reqPath(['data'], this.props));
-  }
-
-  renderLoading() {
-    return Div();
-  }
-
-  renderError(error) {
-    return Div();
-  }
-
-  renderData({data, views: {regionProps}}) {
-    return Div(
-      {className: 'current'},
-      Region(regionProps)
+    const props = Current.views(this.props);
+    return Div(propsFor(c.current, props.views),
+      Current.choicepoint(props)
     );
   }
 }
 
-const {
-  number,
-  shape
-} = PropTypes;
-
 /**
- * Expect the current region
- * @type {{region: *}}
+ * Merges parent and state styles into component styles
+ * @param style
+ * @returns {Object} props with modified styles within views: props.views = {
+ *  someComponent: {
+ *    style: { ... }
+ *  }
+ *  ...
+ * }
  */
-Current.propTypes = {
-  style: shape({
-    width: number.isRequired,
-    height: number.isRequired
-  })
+Current.getStyles = ({style}) => {
+  return mergeStylesIntoViews({
+    [c.current]: mergeAndApplyMatchingStyles(style, {
+      position: 'absolute',
+      width: styleMultiplier(1),
+      height: styleMultiplier(1)
+    }),
+
+    [c.currentRegion]: R.merge(
+      // Pass width and height to Region component
+      // TODO this probably won't stand, but it's more of a proof of concept now
+      R.pick(['width', 'height'], style),
+      {
+        // Other styles to pass to component (unlikely)
+      }
+    )
+  });
 };
 
+Current.viewProps = () => {
+  const region = 'region';
+  return {
+    [c.currentRegion]: {region}
+  };
+};
+
+
+Current.viewActions = () => {
+  return {
+    [c.regionMapbox]: {}
+  };
+};
+
+Current.renderData = ({views}) => {
+  const props = R.flip(propsFor)(views);
+
+  return Region(
+    props(c.currentRegion)
+  );
+};
+
+Current.renderLoading = () => {
+  return Div();
+};
+
+Current.renderError = (error) => {
+  return Div();
+};
+
+
+/**
+ * Adds to props.views for each component configured in viewActions, viewProps, and getStyles
+ * @param {Object} props this.props or equivalent for testing
+ * @returns {Object} modified props
+ */
+Current.views = composeViews(
+  Current.viewActions(),
+  Current.viewProps(),
+  Current.getStyles
+);
+
+/**
+ * Loading, Error, or Data based on the props
+ */
+Current.choicepoint = errorOrLoadingOrData(
+  Current.renderLoading,
+  Current.renderError,
+  Current.renderData
+);
+
+const {
+  string, object, number, func, shape
+} = PropTypes;
+
+Current.propTypes = {};
+
 export default Current;
+

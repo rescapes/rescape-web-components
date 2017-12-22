@@ -3,6 +3,12 @@
 exports[`CurrentContainer mapStateToProps 1`] = `
 Object {
   "data": Object {
+    "error": false,
+    "loading": false,
+    "region": Object {
+      "id": "oakland",
+      "isSelected": true,
+    },
     "settings": Object {
       "api": Object {
         "host": "localhost",
@@ -36,34 +42,120 @@ Object {
         "sleepBetweenCalls": 1000,
       },
     },
-    "users": Object {
-      "californiaManager": Object {
-        "id": "californiaManager",
-        "isActive": true,
-        "name": "Jerry Brown",
-        "permissions": Array [
-          "manage",
-        ],
-        "regions": Array [
-          Object {
-            "id": "oakland",
-            "isSelected": true,
-          },
-        ],
-      },
+    "store": Object {},
+    "user": Object {
+      "id": "californiaManager",
+      "isActive": true,
+      "name": "Jerry Brown",
+      "permissions": Array [
+        "manage",
+      ],
+      "regions": Array [
+        Object {
+          "id": "oakland",
+          "isSelected": true,
+        },
+      ],
     },
   },
   "style": Object {
+    "MozAppearance": "none",
+    "WebkitAppearance": "none",
+    "backgroundColor": "blue",
+    "border": 0,
+    "color": "white",
+    "display": "inline-block",
+    "fontFamily": "inherit",
+    "fontSize": "inherit",
+    "fontWeight": "bold",
     "height": 720,
+    "margin": 0,
+    "paddingBottom": 8,
+    "paddingLeft": 16,
+    "paddingRight": 16,
+    "paddingTop": 8,
+    "textDecoration": "none",
     "width": 1080,
   },
-  "views": Object {
+}
+`;
+
+exports[`CurrentContainer render 1`] = `
+Object {
+  "data": Object {
+    "error": false,
+    "loading": false,
     "region": Object {
-      "region": Object {
-        "id": "oakland",
-        "isSelected": true,
+      "id": "oakland",
+      "isSelected": true,
+    },
+    "settings": Object {
+      "api": Object {
+        "host": "localhost",
+        "port": "3000",
+        "protocol": "http",
+        "root": "/graphql/",
+      },
+      "cycle": Object {
+        "drivers": Object {
+          "api": "HTTP",
+        },
+      },
+      "domain": "localhost",
+      "graphcool": Object {
+        "authTokenKey": "graphcool-auth-token",
+        "linksPerPage": 5,
+        "serviceIdKey": "cjajyycub38710185wt87zsm8",
+        "userId": "graphcool-user-id",
+      },
+      "mapbox": Object {
+        "iconAtlas": "data/location-icon-atlas.png",
+        "mapboxApiAccessToken": "pk.eyJ1IjoiY2Fsb2NhbiIsImEiOiJjaXl1aXkxZjkwMG15MndxbmkxMHczNG50In0.07Zu3XXYijL6GJMuxFtvQg",
+        "perspectiveEnabled": true,
+        "preventStyleDiffing": false,
+        "showCluster": "true",
+        "showZoomControls": true,
+      },
+      "markers": Object {},
+      "overpass": Object {
+        "cellSize": 100,
+        "sleepBetweenCalls": 1000,
       },
     },
+    "store": Object {},
+    "user": Object {
+      "id": "californiaManager",
+      "isActive": true,
+      "name": "Jerry Brown",
+      "permissions": Array [
+        "manage",
+      ],
+      "regions": Array [
+        Object {
+          "id": "oakland",
+          "isSelected": true,
+        },
+      ],
+    },
+  },
+  "style": Object {
+    "MozAppearance": "none",
+    "WebkitAppearance": "none",
+    "backgroundColor": "blue",
+    "border": 0,
+    "color": "white",
+    "display": "inline-block",
+    "fontFamily": "inherit",
+    "fontSize": "inherit",
+    "fontWeight": "bold",
+    "height": 720,
+    "margin": 0,
+    "paddingBottom": 8,
+    "paddingLeft": 16,
+    "paddingRight": 16,
+    "paddingTop": 8,
+    "textDecoration": "none",
+    "width": 1080,
   },
 }
 `;

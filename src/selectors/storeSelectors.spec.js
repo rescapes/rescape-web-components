@@ -10,7 +10,12 @@
  */
 
 import {STATUS} from './selectorHelpers';
-import {makeActiveUserAndRegionStateSelector} from './storeSelectors';
+import {makeActiveUserRegionsAndSettingsSelector} from './storeSelectors';
+import {
+  makeActiveUserAndSettingsSelector,
+  makeActiveUserSelectedRegionAndSettingsSelector
+} from 'selectors/storeSelectors';
+
 const {IS_SELECTED, IS_ACTIVE} = STATUS;
 
 describe('storeSelectors', () => {
@@ -35,30 +40,52 @@ describe('storeSelectors', () => {
       }
     }
   };
-  test('makeActiveUserAndRegionStateSelector', () => {
+  test('makeActiveUserRegionsAndSettingsSelector', () => {
     expect(
-      makeActiveUserAndRegionStateSelector()({
+      makeActiveUserRegionsAndSettingsSelector()({
         settings: 'dessert',
-        regions: {
-          pie: {
-            id: 'pie'
-          }
-        },
         users
       })
     ).toEqual(
       {
         settings: 'dessert',
-        regions: {
-          pie: {
+        regions: [
+          {
             id: 'pie',
-            geojson: {osm: {featuresByType: {}, locationsByType: {}}},
             [IS_SELECTED]: true
           }
+        ],
+        user: users.blinky
+      }
+    );
+  });
+  test('makeActiveUserSelectedRegionAndSettingsSelector', () => {
+    expect(
+      makeActiveUserSelectedRegionAndSettingsSelector()({
+        settings: 'dessert',
+        users
+      })
+    ).toEqual(
+      {
+        settings: 'dessert',
+        region: {
+          id: 'pie',
+          [IS_SELECTED]: true
         },
-        users: {
-          blinky: users.blinky
-        }
+        user: users.blinky
+      }
+    );
+  });
+  test('makeActiveUserAndSettingsSelector', () => {
+    expect(
+      makeActiveUserAndSettingsSelector()({
+        settings: 'dessert',
+        users
+      })
+    ).toEqual(
+      {
+        settings: 'dessert',
+        user: users.blinky
       }
     );
   });

@@ -4,13 +4,8 @@ exports[`The current application Current can mount 1`] = `
 <div
   className="current"
 >
-  <Connect(Region)
-    style={
-      Object {
-        "height": 360,
-        "width": 540,
-      }
-    }
+  <Connect(Apollo(Region))
+    className="current-region"
   />
 </div>
 `;

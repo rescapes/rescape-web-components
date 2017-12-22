@@ -3,9 +3,28 @@
 exports[`RegionContainer mapStateToProps 1`] = `
 Object {
   "data": Object {
+    "error": false,
+    "loading": false,
     "region": Object {
       "id": "oakland",
       "isSelected": true,
+    },
+    "store": Object {
+      "region": Object {
+        "id": "oakland",
+        "mapbox": Object {
+          "viewport": Object {
+            "latitude": 37,
+            "longitude": -119,
+            "zoom": 5,
+          },
+        },
+        "name": "Oakland",
+      },
+    },
+    "style": Object {
+      "height": 500,
+      "width": 500,
     },
   },
   "style": Object {
@@ -18,14 +37,14 @@ Object {
     "fontFamily": "inherit",
     "fontSize": "inherit",
     "fontWeight": "bold",
-    "height": 720,
+    "height": 500,
     "margin": 0,
     "paddingBottom": 8,
     "paddingLeft": 16,
     "paddingRight": 16,
     "paddingTop": 8,
     "textDecoration": "none",
-    "width": 1080,
+    "width": 500,
   },
 }
 `;
@@ -38,6 +57,17 @@ Object {
       "region": Object {
         "__typename": "Region",
         "id": "oakland",
+        "mapbox": Object {
+          "__typename": "Mapbox",
+          "viewport": Object {
+            "__typename": "Viewport",
+            "latitude": null,
+            "longitude": null,
+            "zoom": null,
+            Symbol(id): "$Region:oakland.mapbox.viewport",
+          },
+          Symbol(id): "$Region:oakland.mapbox",
+        },
         "name": "Oakland",
         Symbol(id): "Region:oakland",
       },
@@ -48,5 +78,51 @@ Object {
   "loading": false,
   "networkStatus": 7,
   "stale": false,
+}
+`;
+
+exports[`RegionContainer render 1`] = `
+Object {
+  "data": Object {
+    "error": undefined,
+    "fetchMore": [Function],
+    "loading": true,
+    "networkStatus": 1,
+    "refetch": [Function],
+    "region": Object {
+      "id": "oakland",
+      "isSelected": true,
+    },
+    "startPolling": [Function],
+    "stopPolling": [Function],
+    "style": Object {
+      "height": 500,
+      "width": 500,
+    },
+    "subscribeToMore": [Function],
+    "updateQuery": [Function],
+    "variables": Object {
+      "regionId": "oakland",
+    },
+  },
+  "style": Object {
+    "MozAppearance": "none",
+    "WebkitAppearance": "none",
+    "backgroundColor": "blue",
+    "border": 0,
+    "color": "white",
+    "display": "inline-block",
+    "fontFamily": "inherit",
+    "fontSize": "inherit",
+    "fontWeight": "bold",
+    "height": 500,
+    "margin": 0,
+    "paddingBottom": 8,
+    "paddingLeft": 16,
+    "paddingRight": 16,
+    "paddingTop": 8,
+    "textDecoration": "none",
+    "width": 500,
+  },
 }
 `;

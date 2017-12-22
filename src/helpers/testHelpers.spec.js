@@ -20,6 +20,8 @@ import {sampleConfig} from 'data/samples/sampleConfig';
 import {eMap} from 'helpers/componentHelpers';
 const [div] = eMap(['div']);
 import React from 'react';
+import * as Either from 'data.either';
+import {eitherToPromise} from 'helpers/testHelpers';
 
 describe('jestHelpers', () => {
   test('expectTask', () => {
@@ -91,5 +93,10 @@ describe('jestHelpers', () => {
     // Expect the apollo data prop, the redux dispatch, and the someProp we added
     expect(R.keys(wrapper.props()).sort()).toEqual(['data', 'dispatch', 'someProp'])
   });
+
+  test('eitherToPromise', () => {
+    expect(eitherToPromise(Either.Right(1))).resolves.toBe(1)
+    expect(eitherToPromise(Either.Left(1))).rejects.toBe(1)
+  })
 });
 

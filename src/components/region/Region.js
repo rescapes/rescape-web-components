@@ -8,16 +8,13 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import {getClassAndStyle, getStyleObj, styleMultiplier} from 'helpers/styleHelpers';
+import {styleMultiplier} from 'helpers/styleHelpers';
 import mapbox from 'components/map/mapbox/MapboxContainer';
 import sankey from 'components/map/sankey/SankeyContainer';
 import markerList from 'components/map/marker/MarkerListContainer';
 import PropTypes from 'prop-types';
-import {applyMatchingStyles, makeMergeContainerStyleProps, mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
-import {
-  nameLookup, eMap, propsFor, errorOrLoadingOrData,
-  mergePropsForViews, mergeActionsForViews, composeViews
-} from 'helpers/componentHelpers';
+import {applyMatchingStyles, mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
+import {nameLookup, eMap, propsFor, errorOrLoadingOrData, composeViews} from 'helpers/componentHelpers';
 import {mergeDeep, throwing} from 'rescape-ramda';
 import * as R from 'ramda';
 import {Component} from 'react/cjs/react.production.min';
@@ -59,10 +56,13 @@ Region.getStyles = ({style}) => {
     }),
 
     [c.regionMapbox]: R.merge(
-      // Just map width/height to mapbox.
+      // Pass width and height to Mapbox component
       // TODO this probably won't stand, but it's more of a proof of concept now
       R.pick(['width', 'height'], style),
-      {}),
+      {
+        // Other styles to pass to component (unlikely)
+      }
+    ),
 
     [c.regionMapboxOuter]: applyMatchingStyles(style, {
       position: 'absolute',
@@ -82,9 +82,10 @@ Region.getStyles = ({style}) => {
 Region.viewProps = () => {
   // region is expected from the query result
   const region = 'store.region';
+  const status = {loading: 'loading', error: 'error'};
   return {
-    [c.region]: {region},
-    [c.regionMapbox]: {region}
+    [c.region]: {region, ...status},
+    [c.regionMapbox]: {region, ...status}
   };
 };
 
@@ -95,9 +96,6 @@ Region.viewActions = () => {
 };
 
 Region.renderData = ({views}) => {
-  /* We additionally give Mapbox the container width and height so the map can track changes to these
-   We have to apply the width and height fractions of this container to them.
-   */
   const props = R.flip(propsFor)(views);
 
   return [
@@ -133,7 +131,7 @@ Region.views = composeViews(
   Region.viewActions(),
   Region.viewProps(),
   Region.getStyles
-)
+);
 
 /**
  * Loading, Error, or Data based on the props
@@ -142,7 +140,7 @@ Region.choicepoint = errorOrLoadingOrData(
   Region.renderLoading,
   Region.renderError,
   Region.renderData
-)
+);
 
 /**
  * Expect the region

@@ -10,49 +10,55 @@
  */
 
 import {settingsSelector} from 'selectors/settingsSelectors';
-import {activeUserRegionsSelector, activeUserSelectedRegionsSelector} from 'selectors/regionSelectors';
 import {activeUsersSelector} from 'selectors/userSelectors';
-import {createStructuredSelector} from 'reselect';
+import {createSelector, createStructuredSelector} from 'reselect';
+import {throwing} from 'rescape-ramda';
+import * as R from 'ramda';
+
+const {onlyOneValue, reqPath} = throwing;
 
 /**
- * This selector creates a state that narrows down the state to the active user and region,
- * remove any users that are not active and any regions that are not selected.
- * Any ComponentContainer that must operate in the context of a single user and region can
- * use this selector, or more likely receive this state = their parent component.
+ * This selector creates a state that narrows down the state to the active user and their regions
+ * Any ComponentContainer that must operate in the context of a single user and their regions can
+ * use this selector.
+ * Note that the regions are id stubs, not resolved (e.g. [{id: 'someRegion'}, ...])
  * @returns {Function} A reselect selector that is called with state and props and returns
- * an object containing settings, regions, and users, where regions and users must limited to
- * one each
+ * an object containing settings, user, and regions
  */
-export const makeActiveUserAndRegionStateSelector = () =>
-  createStructuredSelector({
-    settings: settingsSelector,
-    regions: activeUserRegionsSelector,
-    users: activeUsersSelector
-  });
+export const makeActiveUserRegionsAndSettingsSelector = () => createSelector(
+  [settingsSelector, R.compose(onlyOneValue, activeUsersSelector)],
+  (settings, user) => ({
+    settings,
+    user,
+    // Select user.regions, grab values if an obj, and select the one and only one value
+    regions: R.compose(R.values, reqPath(['regions']))(user)
+  })
+);
 
 /**
- * This selector creates a state that narrows down the state to the active user and region,
- * remove any users that are not active and any regions that are not selected.
- * Any ComponentContainer that must operate in the context of a single user and region can
- * use this selector, or more likely receive this state = their parent component.
+ * This selector creates a state that narrows down the state to the active user and their single selected region
+ * Any ComponentContainer that must operate in the context of a single user and their region can use this selector
+ * Note that the region is an id stub, not resolved (e.g. {id: 'someRegion'})
  * @returns {Function} A reselect selector that is called with state and props and returns
- * an object containing settings, regions, and users, where regions and users must limited to
- * one each
+ * an object containing settings, user, and region
  */
-export const makeActiveUserAndSelectedRegionStateSelector = () =>
-  createStructuredSelector({
-    settings: settingsSelector,
-    regions: activeUserSelectedRegionsSelector,
-    users: activeUsersSelector
-  });
+export const makeActiveUserSelectedRegionAndSettingsSelector = () => createSelector(
+  [settingsSelector, R.compose(onlyOneValue, activeUsersSelector)],
+  (settings, user) => ({
+    settings,
+    user,
+    // Select user.regions, grab values if an object, and select the one and only one value
+    region: R.compose(onlyOneValue, R.values, reqPath(['regions']))(user)
+  })
+)
 
 /**
  * Returns the active user and global settings. Used when regions are not a concern
  * @returns {Function} A reselect selector that is called with state and props and returns
- * an object containing settings and users
+ * an object containing settings and user
  */
-export const makeActiveUserAndSettingsStateSelector = () =>
+export const makeActiveUserAndSettingsSelector = () =>
   createStructuredSelector({
     settings: settingsSelector,
-    users: activeUsersSelector
+    user: R.compose(onlyOneValue, activeUsersSelector)
   });

@@ -21,12 +21,14 @@ const {reqPath} = throwing;
  * @param region The Region
  * @returns A selector which extracts the viewport from the region's mapbox and merges it with the state's mapbox settings
  */
-export const viewportSelector = (state, {region}) => createSelector(
-  [mapboxSettingsSelector],
-  mapboxSettings => R.merge(
-    // Merge
-    R.defaultTo({}, mapboxSettings.viewport),
-    reqPath(['mapbox', 'viewport'], region)
-  )
-)(state, {region});
+export const viewportSelector = (state, {region}) => {
+  return createSelector(
+    [mapboxSettingsSelector],
+    mapboxSettings => R.merge(
+      // Merge
+      R.defaultTo({}, mapboxSettings.viewport),
+      reqPath(['mapbox', 'viewport'], region)
+    )
+  )(state, {region});
+}
 
