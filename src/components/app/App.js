@@ -3,18 +3,18 @@ import Login from 'components/login/LoginContainer';
 import Main from 'components/main/Main';
 import { Switch, Route } from 'react-router-dom'
 import {eMap} from 'helpers/componentHelpers';
-import HeaderContainer from 'components/header/HeaderContainer';
-const [div, header, switcher, route] = eMap(['div', HeaderContainer, Switch, Route])
+import header from 'components/header/HeaderContainer';
+const [Div, Header, Switchy, Routey] = eMap(['div', header, Switch, Route])
 
 class App extends Component {
   render() {
     return (
-      div({},
-        header(),
-        div({},
-          switcher({}, [
-            route({exact: true, path:'/', component:Main}),
-            route({exact: true, path:'/login', component:Login}),
+      Div({},
+        Header(),
+        Div({},
+          Switchy({}, [
+            Routey({key:'/', exact: true, path:'/', component:Main}),
+            Routey({key:'/login', exact: true, path:'/login', component:Login}),
           ]))
         )
     )

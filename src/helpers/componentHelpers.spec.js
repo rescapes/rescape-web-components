@@ -12,7 +12,9 @@ import * as R from 'ramda';
 import {propLensEqual, mergeActionsForViews, makeTestPropsFunction, liftAndExtract} from './componentHelpers';
 import {
   awaitMakeApolloTestPropsFunction,
-  errorOrLoadingOrData, makeApolloTestPropsFunction, mergePropsForViews, mergeStylesIntoViews, nameLookup, propsFor,
+  errorOrLoadingOrData, joinComponents, loadingCompleteStatus, makeApolloTestPropsFunction, mergePropsForViews,
+  mergeStylesIntoViews,
+  nameLookup, propsFor,
   propsForSansClass
 } from 'helpers/componentHelpers';
 import {throwing} from 'rescape-ramda';
@@ -161,7 +163,11 @@ describe('componentHelpers', () => {
     expect(value).toEqual(
       R.merge({
         // Expect this data came from Apollo
-        data: {store: {region: {id: "oakland", name: "Oakland"}}},
+        data: R.merge(
+          loadingCompleteStatus, {
+            store: {region: {id: "oakland", name: "Oakland"}},
+            regionId: 'oakland'
+          }),
         style: {width: 100},
         views: {
           aComponent: {stuff: 1},
@@ -186,7 +192,8 @@ describe('componentHelpers', () => {
         styleFromProps: 'blue'
       },
       views: {
-        someProp: {foo: 1}
+        // Some existing property foo that we don't care about
+        someView: {foo: 1}
       }
     };
     const expected = {
@@ -194,7 +201,7 @@ describe('componentHelpers', () => {
         styleFromProps: 'blue'
       },
       views: {
-        someProp: {
+        someView: {
           style: {
             styleFromProps: 'blue',
             color: 'red'
@@ -207,9 +214,11 @@ describe('componentHelpers', () => {
     expect(
       mergeStylesIntoViews(
         {
-          someProp: R.merge({
-            color: 'red'
-          }, props.style)
+          // If we want these styles in our view
+          someView: {
+            color: 'red',
+            styleFromProps: 'blue'
+          }
         },
         props
       )
@@ -219,13 +228,29 @@ describe('componentHelpers', () => {
     expect(
       mergeStylesIntoViews(
         p => ({
-          someProp: R.merge({
+          // If we want these styles in our view, one of which is from props.style
+          someView: R.merge({
             color: 'red'
           }, p.style)
         }),
         props
       )
     ).toEqual(expected);
+
+    // Should work with styles as a function expecting props
+    expect(
+      mergeStylesIntoViews({
+          someView: {
+            style: {
+              color: 'red',
+              styleFromProps: 'blue'
+            },
+            className: 'foo bar'
+          }
+        },
+        props
+      )
+    ).toEqual(R.set(R.lensPath(['views', 'someView', 'className']), 'foo bar', expected));
 
   });
 
@@ -290,4 +315,18 @@ describe('componentHelpers', () => {
       {}
     );
   });
+
+  test('joinComponents', () => {
+    expect(joinComponents(key => ({key, separate: 'me'}), [
+      key => ({key, a: 1}),
+      key => ({key, a: 2}),
+      key => ({key, a: 3}),
+    ])).toEqual([
+      {key: 0, a: 1},
+      {key: 1, separate: 'me'},
+      {key: 2, a: 2},
+      {key: 3, separate: 'me'},
+      {key: 4, a: 3}
+    ])
+  })
 });

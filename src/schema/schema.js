@@ -11,8 +11,6 @@
 
 import * as R from 'ramda';
 import geojson from 'graphql-geojson';
-const {PointObject} = geojson;
-
 import {
   GraphQLScalarType,
   GraphQLSchema,
@@ -24,6 +22,7 @@ import {
   GraphQLBoolean,
   GraphQLNonNull
 } from 'graphql';
+const {PointObject} = geojson;
 
 
 /**

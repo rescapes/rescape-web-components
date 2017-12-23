@@ -39,7 +39,9 @@ export const getClass = (root, suffix = null) => R.join(
 );
 
 /**
- * Given a name, generates a className and style
+ * Given a name, generates a className and style. If views[name].className exists, it is added
+ * to the generated className. E.g. if the generated className is 'region-outer' and views[name].class =
+ * 'foo bar', the className will be 'region-outer foo bar'
  * @param {String} name Name to use for the className. You can pass a camelized name and it will decamelize
  * (e.g. outerRegionDiv is converted to outer-region-div) for the actual className
  * @param {Object} views Contains a key matching name containing a style object.
@@ -47,11 +49,18 @@ export const getClass = (root, suffix = null) => R.join(
  * @returns {Object} An object with a style and className key and corresponding values
  */
 export const getClassAndStyle = (name, views) =>
-  R.merge({
+  R.mergeWith(
+    // This can only be called on className
+    (l, r) => R.join(' ', [l, r]),
+    {
       className: getClass(name)
     },
-    getStyleObj(name, views)
-  );
+    compact(R.merge({
+        className: R.view(R.lensPath([name, 'className']), views)
+      },
+      getStyleObj(name, views))
+    )
+  )
 
 /**
  * Given a name, generates a style object with the matching object in views, i.e. views[name].style

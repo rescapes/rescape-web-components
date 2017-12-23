@@ -1,25 +1,25 @@
 import React, {Component} from 'react';
 import {Link} from 'react-router-dom';
-import {withRouter} from 'react-router';
 import {mergeDeep, throwing} from 'rescape-ramda';
-import {eMap, makeTestPropsFunction, mergeActionsForViews} from 'helpers/componentHelpers';
-import {makeMergeDefaultStyleWithProps} from 'selectors/styleSelectors';
+import {eMap, loadingCompleteStatus, makeTestPropsFunction, mergeActionsForViews} from 'helpers/componentHelpers';
+import {makeBrowserProportionalDimensionsSelector, makeMergeDefaultStyleWithProps} from 'selectors/styleSelectors';
 import {createSelector} from 'reselect';
 import {connect} from 'react-redux';
 import Header from 'components/header/Header';
-const {reqPath} = throwing;
-const [div, link] = eMap(['div', Link]);
+import {makeActiveUserRegionsAndSettingsSelector} from 'selectors/storeSelectors';
+import * as R from 'ramda';
 
 export const mapStateToProps =
   (state, props) => createSelector(
     [
+      makeActiveUserRegionsAndSettingsSelector(),
+      makeBrowserProportionalDimensionsSelector(),
       makeMergeDefaultStyleWithProps(),
     ],
-    style => {
+    (data, style, browserProportionalStyle) => {
       return {
-        data: mergeDeep({style}, props),
-        views: {
-        }
+        data: R.merge(data, loadingCompleteStatus),
+        style: R.merge(style, browserProportionalStyle),
       }
     }
   )(state, props);
@@ -29,17 +29,8 @@ export const mapDispatchToProps = (dispatch) => {
   };
 };
 
-/**
- * Combines mapStateToProps, mapDispatchToProps with the given viewToActions mapping
- * @type {Function}
- */
-export const mergeProps = mergeActionsForViews({
-  // Region child component needs the following actions
-  region: []
-})
-
 // Returns a function that expects state and ownProps for testing
-export const testPropsMaker = makeTestPropsFunction(mapStateToProps, mapDispatchToProps, mergeProps)
+export const testPropsMaker = makeTestPropsFunction(mapStateToProps, mapDispatchToProps)
 
-export default connect(mapStateToProps, mapDispatchToProps, mergeProps)(Header)
+export default connect(mapStateToProps, mapDispatchToProps)(Header)
 

@@ -22,6 +22,7 @@ import {createSelectorResolvedSchema} from 'schema/selectorResolvers';
 import {sampleConfig} from 'data/samples/sampleConfig';
 import makeSchema from 'schema/schema';
 import {createSelectorCreator, defaultMemoize} from 'reselect';
+import {compact} from 'enzyme-to-json';
 
 
 const {reqPath} = throwing;
@@ -350,11 +351,22 @@ export const liftAndExtractItems = (component, propsWithItems) => {
  * @return {*}
  */
 export const mergeStylesIntoViews = R.curry((viewStyles, props) => {
-  // Map each {view: styles} to {view: {style: styles}}
+  // viewStyles can be an object or unary function that returns an object
+  const viewObjs = R.ifElse(R.is(Function), f => f(props), R.identity)(viewStyles);
+
+  // if the viewObj has style as a key, we take that to mean that the object is in the
+  // shape {style: {...}, className: 'extra class names'}. Otherwise it means
+  // that it is just style props because no extra className was needed
   const viewToStyle = R.map(
-    style => ({style}),
-    R.ifElse(R.is(Function), f => f(props), R.identity)(viewStyles)
-  );
+    viewObj => R.ifElse(
+      R.has('style'),
+      // Done
+      R.identity,
+      // Wrap it in a style key
+      style => ({style})
+    )(viewObj),
+    viewObjs);
+
   // Deep props.views with viewStyles and return entire props
   return R.over(
     R.lensProp('views'),
@@ -448,3 +460,26 @@ export const composeViews = R.curry((viewActions, viewProps, getStyles, props) =
 );
 
 
+/**
+ * Joins React components with a separatorComponent between each
+ * @param {Function} separatorComponent Unary function that expects a key to index the component in the list
+ * (using the React key property)
+ * @param {[Function]} components List of unary functions returning a component. The function also expects key
+ * to index the component in the list
+ * @returns {Array} The components interspersed with separatorComponents
+ */
+export const joinComponents = (separatorComponent, components) =>
+  R.addIndex(R.reduce)(
+    (prevComponents, component, key) => R.ifElse(
+      R.isNil,
+      // Just component
+      () => [component(key*2)],
+      // Add separator and component to previous
+      R.flip(R.concat)([
+        separatorComponent(key*2-1),
+        component(key*2)
+      ])
+    )(prevComponents),
+    null,
+    components
+  );

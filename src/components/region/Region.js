@@ -21,7 +21,6 @@ import {
 import {mergeDeep, throwing} from 'rescape-ramda';
 import * as R from 'ramda';
 import {Component} from 'react/cjs/react.production.min';
-import {mergeStylesIntoViews} from 'helpers/componentHelpers';
 
 const [Mapbox, Sankey, MarkerList, Div] = eMap([mapbox, sankey, markerList, 'div']);
 export const c = nameLookup({

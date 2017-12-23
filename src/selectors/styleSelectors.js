@@ -44,7 +44,8 @@ export const makeBrowserProportionalDimensionsSelector = () => (state, props) =>
   })
 )(state, props);
 
-const defaultStyleSelector = (state, props) => reqPath(['styles', 'default'], state);
+const defaultStyleSelector = (state) =>
+  reqPath(['styles', 'default'], state);
 
 const mergeDeepWith = R.curry((fn, left, right) => R.mergeWith((l, r) => {
   // If either (hopefully both) items are arrays or not both objects

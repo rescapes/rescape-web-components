@@ -10,10 +10,9 @@
  */
 
 import mapGl from 'react-map-gl';
-import React from 'react';
 import {throwing} from 'rescape-ramda';
 import {
-  composeViews, eMap, errorOrLoadingOrData, mergeStylesIntoViews, nameLookup, propsFor,
+  composeViews, eMap, errorOrLoadingOrData, nameLookup, propsFor,
   propsForSansClass
 } from 'helpers/componentHelpers';
 import * as R from 'ramda';
@@ -78,7 +77,7 @@ export default class Mapbox extends Component {
         latitude: 'viewport.latitude',
         longitude: 'viewport.longitude',
         zoom: 'viewport.zoom',
-        osm: 'store.region.geojson.osm'
+        //osm: 'store.region.geojson.osm'
       }
     }
   }

@@ -2,28 +2,141 @@ import React, {Component} from 'react';
 import {Link} from 'react-router-dom';
 import {withRouter} from 'react-router';
 import {throwing} from 'rescape-ramda';
-import {eMap} from 'helpers/componentHelpers';
-const {reqPath} = throwing;
-const [div, link] = eMap(['div', Link]);
+import {composeViews, eMap, errorOrLoadingOrData, joinComponents, nameLookup, propsFor} from 'helpers/componentHelpers';
+import * as R from 'ramda';
+import {mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
+import {styleMultiplier} from 'helpers/styleHelpers';
+const [Div, Linky] = eMap(['div', Link]);
 
+export const c = nameLookup({
+  header: true,
+  headerLinks: true,
+  headerText: true,
+  link: true,
+  linkSeparator: true
+});
+
+export const labels = {
+  headerText: 'Urbinsight',
+  links: {
+    new: 'New',
+    top: 'Top',
+    search: 'Search'
+  }
+};
+
+export const linkPaths = {
+  new: '/',
+  top: '/top',
+  search: '/search'
+};
+
+/**
+ * The Header
+ */
 class Header extends Component {
-
-  render(props) {
-    const {userIdKey, userAuthTokenKey} = reqPath(['settings', 'graphcool'], props);
-    const userId = localStorage.getItem(userIdKey);
-    return (
-      div({className: 'flex pa1 justify-between nowrap orange'},
-        div({className: 'flex flex-fixed black'},
-          div({className: 'fw7 mr1'}, 'Urbinsight'),
-          link({to: '/', className: 'ml1 no-underline black'}, 'New'),
-          div({className: 'm1'}, '|'),
-          link({to: '/top', className: 'ml1 no-underline black'}, 'Top'),
-          div({className: 'm1'}, '|'),
-          link({to: '/search', className: 'ml1 no-underline black'}, 'Saerch')
-        )
-      )
-    )
+  render() {
+    const props = Header.views(this.props);
+    return Div(propsFor(c.header, props.views),
+      Header.choicepoint(props)
+    );
   }
 }
-export default withRouter(Header)
+
+/*
+* Merges parent and state styles into component styles
+* @param style
+*/
+Header.getStyles = ({style}) => {
+  return {
+    [c.header]: {
+      className: 'flex pa1 justify-between nowrap orange',
+      style: mergeAndApplyMatchingStyles(style, {
+        position: 'absolute',
+        width: styleMultiplier(1),
+        height: styleMultiplier(1)
+      })
+    },
+
+    [c.headerLinks]: {
+      className: 'flex pa1 justify-between nowrap orange',
+      style: mergeAndApplyMatchingStyles(style, {})
+    },
+
+    [c.headerText]: {
+      className: 'fw7 mr1',
+      style: mergeAndApplyMatchingStyles(style, {})
+    },
+
+    [c.link]: {
+      className: 'ml1 no-underline black',
+      style: mergeAndApplyMatchingStyles(style, {}),
+
+      [c.linkSeparator]: {
+        className: 'ml1 no-underline black',
+        style: mergeAndApplyMatchingStyles(style, {})
+      }
+    }
+  };
+};
+
+Header.viewProps = () => {
+  return {
+  };
+};
+
+Header.viewActions = () => {
+  return {
+  };
+};
+
+Header.renderData = ({views}) => {
+  const props = R.flip(propsFor)(views);
+  const mergeLinkProps = R.merge(props(c.link));
+  const mergeSeparatorProps = R.merge(props(c.linkSeparator));
+  const separator = key => Div(mergeSeparatorProps({key}), '|');
+  const link = (linkPath, name) => key => Linky(mergeLinkProps({key, to: linkPath}), labels.links[name]);
+
+  return Div(props(c.headerLinks),
+    Div(props(c.headerText), link.headerText),
+    // Puts separator components between link components
+    ...joinComponents(
+      separator,
+      R.mapObjIndexed(
+        link,
+        linkPaths
+      )
+    )
+  );
+};
+
+Header.renderLoading = ({data}) => {
+  return [];
+};
+
+Header.renderError = ({data}) => {
+  return [];
+};
+
+/**
+ * Adds to props.views for each component configured in viewActions, viewProps, and getStyles
+ * @param {Object} props this.props or equivalent for testing
+ * @returns {Object} modified props
+ */
+Header.views = composeViews(
+  Header.viewActions(),
+  Header.viewProps(),
+  Header.getStyles
+);
+
+/**
+ * Loading, Error, or Data based on the props
+ */
+Header.choicepoint = errorOrLoadingOrData(
+  Header.renderLoading,
+  Header.renderError,
+  Header.renderData
+);
+
+export default withRouter(Header);
 

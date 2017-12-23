@@ -12,10 +12,7 @@
 import PropTypes from 'prop-types';
 import region from 'components/region/RegionContainer';
 import React from 'react';
-import {
-  composeViews, eMap, errorOrLoadingOrData, mergeStylesIntoViews, nameLookup,
-  propsFor
-} from 'helpers/componentHelpers';
+import { composeViews, eMap, errorOrLoadingOrData, nameLookup, propsFor } from 'helpers/componentHelpers';
 import * as R from 'ramda';
 import {throwing} from 'rescape-ramda';
 import {mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
@@ -121,10 +118,6 @@ Current.choicepoint = errorOrLoadingOrData(
   Current.renderError,
   Current.renderData
 );
-
-const {
-  string, object, number, func, shape
-} = PropTypes;
 
 Current.propTypes = {};
 

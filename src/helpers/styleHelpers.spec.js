@@ -8,13 +8,14 @@ describe('styles', () => {
   test('getClassAndStyle', () => {
     const viewObj =  {
       chickenOutsidePen: {
+        className: 'foo bar',
         style: {
           border: 'coop'
-        }
+        },
       }
     }
     expect(getClassAndStyle('chickenOutsidePen', viewObj)).toEqual({
-      className: 'chicken-outside-pen',
+      className: 'chicken-outside-pen foo bar',
       style: {
         border: 'coop'
       }

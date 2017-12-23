@@ -1,25 +1,35 @@
+/**
+ * Created by Andy Likuski on 2017.02.06
+ * Copyright (c) 2017 Andy Likuski
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
 import {mapStateToProps} from './HeaderContainer';
-import {
-  propsFromSampleStateAndContainer, propsWithGraphQlFromSampleStateAndContainer, wrapWithMockGraphqlAndStore
-} from 'helpers/testHelpers';
-import {testPropsMaker} from 'components/header/HeaderContainer';
-import {testPropsMaker as currentPropsMaker} from 'components/current/CurrentContainer'
+import {propsFromSampleStateAndContainer, wrapWithMockStore} from 'helpers/testHelpers';
+import HeaderContainer from './HeaderContainer';
 import {eMap} from 'helpers/componentHelpers';
-import HeaderContainer from 'components/header/HeaderContainer';
-import * as R from 'ramda'
-import {queries} from 'components/header/HeaderContainer';
+import React from 'react';
+import {testPropsMaker} from 'components/header/HeaderContainer';
 
 describe('HeaderContainer', () => {
-  const props = propsFromSampleStateAndContainer(testPropsMaker, {})
+  const parentProps = {
+    style: {}
+  }
+  // Get the test props for HeaderContainer
+  const props = propsFromSampleStateAndContainer(testPropsMaker, parentProps);
 
   test('mapStateToProps', () => {
-    expect(props).toMatchSnapshot()
-  })
+    expect(props).toMatchSnapshot();
+  });
 
   test('render', () => {
-    const [headerContainer] = eMap([HeaderContainer]);
-    const wrapper = wrapWithMockGraphqlAndStore(headerContainer({}))
-    const current = wrapper.find('Header');
-    expect(R.keys(current.props())).toEqual(['data', 'views'])
-  })
+    const [regionContainer] = eMap([HeaderContainer]);
+    const wrapper = wrapWithMockStore(regionContainer(parentProps));
+    const component = wrapper.find('Header');
+    expect(component.props()).toMatchSnapshot();
+  });
 });
