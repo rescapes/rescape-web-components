@@ -33,8 +33,8 @@ const {reqPath} = throwing;
 export const loadingCompleteStatus = {
   loading: false,
   error: false,
-  store: {},
-}
+  store: {}
+};
 
 /**
  * Returns true if the lens applied to props equals the lens applied to nextProps
@@ -122,19 +122,29 @@ export const mergeActionsForViews = (viewToActionNames) => (props) => {
  * adds or merges a views property into the props, where views is an object keyed by
  * the same keys as viewToPropPaths and valued by the resolution of the viewToPropPaths props strings.
  * This allows a Container or Component to efficiently specify which props to give the view
- * used by each sub component
+ * used by each sub component. The strings can optional be a unary function that expects props
+ * and resolves the value manually. This is useful if you need to access something outside of props.data
+ * like props.style
  * Example, if aComponent and bComponents are two child components that need the following props:
- * const viewToProps = {aComponent: ['foo', 'store.bar'], bComponent: ['store.bar', 'zwar']}
+ * const viewToProps = {
+ *  aComponent: {
+ *    foo: 'foo', bar: 'store.bar'
+ * },
+ * bComponent: {
+ *    bar: 'store.bar', width: (props) => props.style.width
+ * }
  * and props are
  * const props = {
       a: 1,
       views: {aComponent: {stuff: 1}, bComponent: {moreStuff: 2}},
       data: {
         foo: 1,
-        zwar: 3
         store: {
           bar: 2
         }
+      }
+      style: {
+        width: '100px'
       }
     };
  * The function returns
@@ -142,14 +152,13 @@ export const mergeActionsForViews = (viewToActionNames) => (props) => {
     a: 1,
     views: {
       aComponent: {stuff: 1, foo: 1, bar: 2},
-      bComponent: {moreStuff: 2, bar: 2, zwar: 3}
+      bComponent: {moreStuff: 2, bar: 2, width: '100px'}
     },
     foo: 1,
     bar: 2,
-    zwar: 3
   }
  *
- * @param {Object} viewsToPropPaths As described above. Note that the paths are always relative to props.data
+ * @param {Object} viewsToPropPaths As described above. Note that the paths are always relative to props.data.
  * @param {Object} props
  * @param {Object} props.data Must be present to search for propPaths
  * @props {Object} props with props added to props.views
@@ -157,23 +166,31 @@ export const mergeActionsForViews = (viewToActionNames) => (props) => {
 export const mergePropsForViews = R.curry((viewToPropPaths, props) => {
   return R.over(
     R.lensProp('views'),
-    views =>
-      mergeDeep(
-        // Merge any existing values in props.views
-        views,
-        // Map each propPath to the value in props or undefined
-        // This transforms {viewName: {propName: 'pathInPropsToPropName (e.g. store.propName)', ...}
-        // This results in {viewName: {propName: propValue, ...}
-        R.map(
-          propNameToPropPath =>
-            R.map(
-              propPath => R.view(R.lensPath(R.split('.', propPath)), reqPath(['data'], props)),
-              // Within each view, map each propNameToPropPath
-              propNameToPropPath),
-          // Map each view
-          viewToPropPaths
-        )
-      ),
+    views => mergeDeep(
+      // Merge any existing values in props.views
+      views,
+      // Map each propPath to the value in props or undefined
+      // This transforms {viewName: {propName: 'pathInPropsToPropName (e.g. store.propName)', ...}
+      // This results in {viewName: {propName: propValue, ...}
+      R.map(
+        propNameToPropPathOrFunc => R.map(
+          // IfElse on propPath
+          R.ifElse(
+            R.is(Function),
+            // if it is function, call with props and expect a value back
+            f => f(props),
+            // if it is a path, resolve the path relative to props.data
+            propPath => R.view(
+              R.lensPath(R.split('.', propPath)),
+              reqPath(['data'], props)
+            )
+          ),
+          // Within each view, map each propNameToPropPath
+          propNameToPropPathOrFunc
+        ),
+        viewToPropPaths
+      )
+    ),
     props
   );
 });
@@ -244,7 +261,7 @@ export const makeApolloTestPropsFunction = R.curry((mapStateToProps, mapDispatch
     props => graphql(
       resolvedSchema,
       query, {},
-      { options: {dataSource: sampleConfig} },
+      {options: {dataSource: sampleConfig}},
       // Add data and ownProps since that is what Apollo query arguments props functions expect
       reqPath(['variables'], args.options(props))
     ).then(
@@ -417,7 +434,9 @@ export const nameLookup = nameObj =>
  * @param {Object} viewProps Argument to mergePropsForViews. See mergePropsForViews
  * @param {Object|Function} getStyles Argument to mergeStylesIntoViews. See mergeStylesIntoViews
  * @param {Object} props Props that are used for the composition. Each of the three functions
- * is called with the props. There should be no dependencies between the three functions--they
+ * is called with the props.
+ * Styles is computed first in case viewProps need to access a computed style value, namely with and height.
+ * Otherwise There should be no dependencies between the three functions--they
  * each contribute to the returned props.views
  * @return {Function} The modified props with view properties added by each of the three functions
  */

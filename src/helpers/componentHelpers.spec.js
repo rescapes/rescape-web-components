@@ -15,6 +15,9 @@ import {
   errorOrLoadingOrData, makeApolloTestPropsFunction, mergePropsForViews, mergeStylesIntoViews, nameLookup, propsFor,
   propsForSansClass
 } from 'helpers/componentHelpers';
+import {throwing} from 'rescape-ramda';
+
+const {reqPath} = throwing;
 
 describe('componentHelpers', () => {
   test('propLensEqual', () => {
@@ -58,32 +61,37 @@ describe('componentHelpers', () => {
   test('mergePropsForViews', () => {
     const mergeProps = mergePropsForViews({
       aComponent: {foo: 'foo', bar: 'store.bar'},
-      bComponent: {bar: 'store.bar', zwar: 'zwar'}
+      bComponent: {bar: 'store.bar', width: reqPath(['views', 'bComponent', 'styles', 'width'])}
     });
     const props = {
-      a: 1,
-      views: {aComponent: {stuff: 1}, bComponent: {moreStuff: 2}},
-      foo: 1,
-      store: {
-        bar: 2
+      views: {
+        aComponent: {stuff: 1},
+        bComponent: {moreStuff: 2, styles: {width: 10}}
       },
-      zwar: 3
+      data: {
+        a: 1,
+        foo: 1,
+        store: {
+          bar: 2
+        }
+      }
     };
 
     // mergeProps should merge stateProps and dispatchProps but copy the actions to stateProps.views according
     // to the mapping given to mergeActionsForViews
     expect(mergeProps(props)).toEqual(
       {
-        a: 1,
         views: {
           aComponent: {stuff: 1, foo: 1, bar: 2},
-          bComponent: {moreStuff: 2, bar: 2, zwar: 3}
+          bComponent: {moreStuff: 2, bar: 2, styles: {width: 10}, width: 10}
         },
-        foo: 1,
-        store: {
-          bar: 2
-        },
-        zwar: 3
+        data: {
+          a: 1,
+          foo: 1,
+          store: {
+            bar: 2
+          }
+        }
       }
     );
   });
@@ -281,5 +289,5 @@ describe('componentHelpers', () => {
     expect(propsForSansClass('bermudaProps', viewProps)).toEqual(
       {}
     );
-  })
+  });
 });

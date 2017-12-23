@@ -51,7 +51,7 @@ export default class Region extends Component {
  * @param style
  */
 Region.getStyles = ({style}) => {
-  return mergeStylesIntoViews({
+  return {
     [c.region]: mergeAndApplyMatchingStyles(style, {
       position: 'absolute',
       width: styleMultiplier(1),
@@ -79,7 +79,7 @@ Region.getStyles = ({style}) => {
       left: .55,
       right: .05
     }
-  });
+  }
 };
 
 Region.viewProps = () => {

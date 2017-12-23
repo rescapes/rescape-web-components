@@ -27,6 +27,7 @@ export const c = nameLookup({
   mapboxMapGlOuter: true,
   mapboxMapGl: true
 });
+const {reqPath} = throwing
 
 /**
  * The View for a Region, such as California. Theoretically we could display multiple regions at once
@@ -54,7 +55,7 @@ export default class Mapbox extends Component {
   }
 
   getStyles({style}) {
-    return mergeStylesIntoViews({
+    return {
       [c.mapbox]: mergeAndApplyMatchingStyles(style, {
         position: 'absolute',
         width: styleMultiplier(1),
@@ -65,14 +66,18 @@ export default class Mapbox extends Component {
         width: styleMultiplier(1),
         height: styleMultiplier(1)
       })
-    });
+    };
   }
 
   viewProps() {
     return {
       [c.mapboxMapGl]: {
-        region: 'region',
-        viewport: 'viewport',
+        // Width and height are calculated in getStyles
+        width: reqPath(['views', [c.mapboxMapGl], 'style', 'width']),
+        height: reqPath(['views', [c.mapboxMapGl], 'style', 'height']),
+        latitude: 'viewport.latitude',
+        longitude: 'viewport.longitude',
+        zoom: 'viewport.zoom',
         osm: 'store.region.geojson.osm'
       }
     }

@@ -53,7 +53,7 @@ class Current extends React.Component {
  * }
  */
 Current.getStyles = ({style}) => {
-  return mergeStylesIntoViews({
+  return {
     [c.current]: mergeAndApplyMatchingStyles(style, {
       position: 'absolute',
       width: styleMultiplier(1),
@@ -68,7 +68,7 @@ Current.getStyles = ({style}) => {
         // Other styles to pass to component (unlikely)
       }
     )
-  });
+  };
 };
 
 Current.viewProps = () => {
