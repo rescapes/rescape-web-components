@@ -174,6 +174,17 @@ const RegionType = new GraphQLObjectType({
   })
 });
 
+// This is a minimal version of Region in the context of the user.
+// It should probably be refactored to use fragments or whatever.
+const UserRegionType = new GraphQLObjectType({
+  name: 'UserRegion',
+  fields: R.merge(idFieldObj, {
+    name: {type: GraphQLString},
+    description: {type: GraphQLString},
+    isSelected: {type: GraphQLBoolean}
+  })
+});
+
 
 // Permission operation
 const OperationType = new GraphQLObjectType({
@@ -199,7 +210,7 @@ const UserType = new GraphQLObjectType({
     email: {type: GraphQLString},
     password: {type: GraphQLString},
     permissions: {type: new GraphQLList(PermissionType)},
-    region: {type: new GraphQLList(RegionType)}
+    regions: {type: new GraphQLList(UserRegionType)}
   })
 });
 
@@ -260,7 +271,10 @@ const StoreType = new GraphQLObjectType({
         type: RegionType,
         args: parentIdFieldObj
       },
-      users: {type: new GraphQLList(UserType)},
+      users: {
+        type: new GraphQLList(UserType),
+        args: idFieldObj
+      },
       settings: {type: new GraphQLList(SettingsType)}
     },
     // Worthless list all the geojson types here so the schema includes them. Feature type needs them as subclass

@@ -10,13 +10,36 @@
  */
 
 import {combineReducers} from 'redux';
+import {createResponsiveStateReducer} from 'redux-responsive';
+import * as R from 'ramda';
 
 /**
  * Combine reducers, supplying an optional mock apollo reducer for testing
- * @param {OBject} [apollo] Reducer for apollow if testing a
+ * @param {Object} [apollo] Reducer for apollow if testing a
  */
 export default () => {
   return combineReducers({
-    // ... Other reducers go here
+    settings: R.compose(R.defaultTo({}), R.identity),
+    regions:  R.compose(R.defaultTo({}), R.identity),
+    users: R.compose(R.defaultTo({}), R.identity),
+    styles: R.compose(R.defaultTo({}), R.identity),
+    browser: (state, action) => createResponsiveStateReducer(
+      null,
+      // Merge predefined browser values with the window object for our extraFields
+      // We want to have the width and height stored in the state
+      R.merge(state, {
+        extraFields: () => R.ifElse(
+          R.or(
+            R.compose(R.isNil, R.type),
+            R.complement(R.has('innerWidth'))
+          ),
+          R.always({}),
+          w => ({
+            width: w.innerWidth,
+            height: w.innerHeight
+          })
+        )(window)
+      })
+    )(state, action),
   });
 }

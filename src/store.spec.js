@@ -13,17 +13,19 @@ import {sampleConfig} from 'data/samples/sampleConfig';
 import storeCreator from './store'
 import thunk from 'redux-thunk';
 import { createLogger } from 'redux-logger'
-import applyMiddleware from 'redux';
+import applyMiddleware, {compose} from 'redux';
 const loggerMiddleware = createLogger();
 const middlewares = [thunk, loggerMiddleware]
-const enhancers = ompose(applyMiddleware(...middlewares));
+const enhancers = compose(applyMiddleware(...middlewares));
 
 describe('store', () => {
   test('storeCreator', () => {
     const store = storeCreator(sampleConfig, enhancers);
-    // Check for our expected state keys
-    expect(R.map(v => ({}), store.getState())).toEqual(
-      { browser: {}, regions: {}, routing: {}, settings: {} }
+    const state = store.getState()
+    expect(
+      R.map(R.always({}), state)
+    ).toEqual(
+      { browser: {}, regions: {}, styles: {}, users: {}, settings: {} }
     );
   });
 });

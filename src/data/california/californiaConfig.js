@@ -9,16 +9,27 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import regions from './californiaRegions'
-import users from './californiaUsers'
+import regions from './californiaRegions';
+import users from './californiaUsers';
 import * as R from 'ramda';
 import {defaultConfig} from 'data/default/defaultConfig';
+import {applyRegionsToUsers, firstUserLens} from 'data/configHelpers';
 
 /**
  * California configuration
  * @type {*}
  */
-export const californiaConfig = R.merge(defaultConfig, {
+
+const config = R.merge(defaultConfig, {
   region: regions,
-  users: users
-});
+  users: applyRegionsToUsers(regions, users)
+})
+
+export const californiaConfig =
+  R.over(
+    firstUserLens(config),
+    // Set the first user to be active for testing.
+    // TODO Get rid of this when login is working
+    R.merge({isActive: true}),
+    config
+  );

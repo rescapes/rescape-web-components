@@ -22,6 +22,8 @@ export const browserDimensionsSelector = createSelector(
   [
     R.compose(
       R.pick(['width', 'height']),
+      // Default each to 0
+      R.merge({width: 0, height: 0}),
       reqPath(['browser'])
     )
   ],

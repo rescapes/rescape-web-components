@@ -40,7 +40,7 @@ export default (config, testEnhancers = []) => {
     );
 
   return createStore(
-    rootReducer,
+    rootReducer(),
     initialStateCreator(config),
     composedEnhancers
   );

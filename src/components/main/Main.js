@@ -10,51 +10,84 @@
  */
 
 import {styleMultiplier} from 'helpers/styleHelpers';
-import PropTypes from 'prop-types';
-import {makeMergeContainerStyleProps} from 'selectors/styleSelectors'
 import React from 'react';
-import {eMap} from 'helpers/componentHelpers';
-import current from 'components/current'
-import {getClass} from 'helpers/styleHelpers';
-import {throwing} from 'rescape-ramda'
-const {reqPath} = throwing;
+import {composeViews, eMap, errorOrLoadingOrData, nameLookup, propsFor} from 'helpers/componentHelpers';
+import current from 'components/current';
+import {throwing} from 'rescape-ramda';
+import {Component} from 'react/cjs/react.production.min';
+import * as R from 'ramda';
 const [Div, Current] = eMap(['div', current]);
 
-/**
- * The View for Main.
- *
- */
-const Main = (props) => {
+export const c = nameLookup({
+  main: true,
+  mainCurrent: true
+});
 
-  const nameClass = getClass('main');
-  const styles = makeMergeContainerStyleProps()(
-    {
-      style: {
-        // Map props.styles to the root element
-        root: reqPath(['style'], props),
-      }
-    },
-    {
-      root: {
-        width: styleMultiplier(1),
-        height: styleMultiplier(1)
-      },
-    });
+class Main extends Component {
+  render() {
+    const props = Main.views(this.props);
+    return Div(propsFor(c.main, props.views),
+      Main.choicepoint(props)
+    );
+  }
+}
 
-  return Div({
-      className: nameClass('root'),
-      style: styles.root
+
+/*
+* Merges parent and state styles into component styles
+* @param style
+*/
+Main.getStyles = ({style}) => {
+  return {
+    [c.main]: {
+      width: styleMultiplier(1),
+      height: styleMultiplier(1)
     },
-    Current({})
-  );
+
+    [c.mainCurrent]: {}
+  };
+};
+
+
+Main.viewProps = () => {
+  return {};
+};
+
+Main.viewActions = () => {
+  return {};
+};
+
+Main.renderData = ({views}) => {
+  const props = R.flip(propsFor)(views);
+  return Current(props(c.mainCurrent));
+};
+
+Main.renderLoading = ({data}) => {
+  return [];
+};
+
+Main.renderError = ({data}) => {
+  return [];
 };
 
 /**
- * @type {{region: *}}
+ * Adds to props.views for each component configured in viewActions, viewProps, and getStyles
+ * @param {Object} props this.props or equivalent for testing
+ * @returns {Object} modified props
  */
-Main.propTypes = {
-  style: PropTypes.shape({
-  })
-};
+Main.views = composeViews(
+  Main.viewActions(),
+  Main.viewProps(),
+  Main.getStyles
+);
+
+/**
+ * Loading, Error, or Data based on the props
+ */
+Main.choicepoint = errorOrLoadingOrData(
+  Main.renderLoading,
+  Main.renderError,
+  Main.renderData
+);
 
 export default Main;

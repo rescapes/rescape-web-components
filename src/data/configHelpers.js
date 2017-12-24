@@ -13,7 +13,8 @@ import * as R from 'ramda';
 import {moveToKeys, mergeDeep, throwing} from 'rescape-ramda';
 import PropTypes from 'prop-types';
 import {v} from 'rescape-validate';
-const {reqPath} = throwing
+
+const {reqPath} = throwing;
 
 /**
  * Copies the 'default' region to the keys of the specified regions, removing the default key,
@@ -108,4 +109,16 @@ export const wrapLocationsWithFeatures = (locations, locationFeatures) =>
     locations
   );
 
-
+// Get the first user so we can make it the active user for testing
+export const firstUserLens = obj => R.lensPath(
+  ['users',
+    R.head(
+      R.keys(
+        R.view(
+          R.lensPath(['users']),
+          obj
+        )
+      )
+    )
+  ]
+);

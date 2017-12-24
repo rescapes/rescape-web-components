@@ -16,7 +16,7 @@ export const mapStateToProps =
       makeBrowserProportionalDimensionsSelector(),
       makeMergeDefaultStyleWithProps(),
     ],
-    (data, style, browserProportionalStyle) => {
+    (data, browserProportionalStyle, style) => {
       return {
         data: R.merge(data, loadingCompleteStatus),
         style: R.merge(style, browserProportionalStyle),

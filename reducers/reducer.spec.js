@@ -1,6 +1,6 @@
 /**
- * Created by Andy Likuski on 2017.02.06
- * Copyright (c) 2017 Andy Likuski
+ * Created by Andy Likuski on 2016.05.23
+ * Copyright (c) 2016 Andy Likuski
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
  *
@@ -8,29 +8,17 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import {mapStateToProps} from './HeaderContainer';
-import {propsFromSampleStateAndContainer, wrapWithMockStore} from 'helpers/testHelpers';
-import headerContainer from './HeaderContainer';
-import { MemoryRouter as memoryRouter } from 'react-router';
-import {eMap} from 'helpers/componentHelpers';
-import React from 'react';
-import {testPropsMaker} from 'components/header/HeaderContainer';
+const reducer = require('./reducer').default;
+const {setState} = require('redux/fullStateReducer');
+const initialState = require('data/initialState').default;
+const makeStore = require('redux/store').default;
+const {currentConfigResolver} = require('data/current/currentConfig');
+const currentConfig = currentConfigResolver();
+const store = makeStore();
 
-describe('HeaderContainer', () => {
-  const parentProps = {
-    style: {}
-  }
-  // Get the test props for HeaderContainer
-  const props = propsFromSampleStateAndContainer(testPropsMaker, parentProps);
-
-  test('mapStateToProps', () => {
-    expect(props).toMatchSnapshot();
-  });
-
-  test('render', () => {
-    const [HeaderContainer, MemoryRouter] = eMap([headerContainer, memoryRouter]);
-    const wrapper = wrapWithMockStore(MemoryRouter({}, HeaderContainer(parentProps)));
-    const component = wrapper.find('Header');
-    expect(component.props()).toMatchSnapshot();
+describe('reducer', () => {
+  test('default', () => {
+    store.dispatch(setState(initialState(currentConfig)));
+    expect(store.getState()).toMatchSnapshot();
   });
 });

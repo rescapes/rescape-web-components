@@ -1,21 +1,55 @@
-/**
- * Created by Andy Likuski on 2017.02.06
- * Copyright (c) 2017 Andy Likuski
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
 import {mapStateToProps} from './MainContainer';
-import {sampleConfig} from 'data/samples/sampleConfig';
-import {makeSampleInitialState} from 'helpers/testHelpers';
-const initialState = makeSampleInitialState();
+import {
+  eitherToPromise,
+  makeSampleInitialState,
+  mockApolloClientWithSamples,
+  propsFromSampleStateAndContainer, wrapWithMockGraphqlAndStore
+} from 'helpers/testHelpers';
+import MainContainer, {testPropsMaker, queries} from 'components/main/MainContainer';
+import {eMap} from 'helpers/componentHelpers';
+import {createWaitForElement} from 'enzyme-wait';
+import {gql} from 'apollo-client-preset';
 
-describe('CurrentContainer', () => {
-  test('mapStateToProps', () => {
-    // For now let's assume this container gets its dimensions from the browser, not a parent
-    expect(mapStateToProps(initialState)).toMatchSnapshot();
+describe('MainContainer', () => {
+  const parentProps = {
+    style: {
+      width: 500,
+      height: 500
+    }
+  }
+
+  test('mapStateToProps', async () => {
+    // Get the test props for MainContainer
+    const props = await propsFromSampleStateAndContainer(testPropsMaker, parentProps).then(eitherToPromise)
+    expect(props).toMatchSnapshot();
+  });
+
+  test('query', async () => {
+    const props = await propsFromSampleStateAndContainer(testPropsMaker, parentProps).then(eitherToPromise)
+    const data = await mockApolloClientWithSamples().query({
+      query: gql`${queries.allUserRegions.query}`,
+      variables: {
+        userId: props.data.user.id
+      },
+      context: {
+        dataSource: makeSampleInitialState()
+      }
+    });
+    expect(data).toMatchSnapshot();
+  });
+
+  test('render', (done) => {
+    const [regionContainer] = eMap([MainContainer]);
+    const wrapper = wrapWithMockGraphqlAndStore(regionContainer(parentProps));
+    const component = wrapper.find('Main');
+    expect(component.props()).toMatchSnapshot();
+    // Wait for region-mapbox element to exist, which indicates data loading is complete
+    const waitForSample = createWaitForElement('Current');
+    waitForSample(component).then(
+      component => {
+        expect(component.text()).to.include('ready');
+        done();
+      }
+    );
   });
 });

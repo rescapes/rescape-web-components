@@ -1,12 +1,12 @@
 import React, {Component} from 'react';
-import {Link} from 'react-router-dom';
+import {Link as link} from 'react-router-dom';
 import {withRouter} from 'react-router';
 import {throwing} from 'rescape-ramda';
 import {composeViews, eMap, errorOrLoadingOrData, joinComponents, nameLookup, propsFor} from 'helpers/componentHelpers';
 import * as R from 'ramda';
 import {mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
 import {styleMultiplier} from 'helpers/styleHelpers';
-const [Div, Linky] = eMap(['div', Link]);
+const [Div, Link] = eMap(['div', link]);
 
 export const c = nameLookup({
   header: true,
@@ -71,11 +71,11 @@ Header.getStyles = ({style}) => {
     [c.link]: {
       className: 'ml1 no-underline black',
       style: mergeAndApplyMatchingStyles(style, {}),
+    },
 
-      [c.linkSeparator]: {
-        className: 'ml1 no-underline black',
-        style: mergeAndApplyMatchingStyles(style, {})
-      }
+    [c.linkSeparator]: {
+      className: 'ml1 no-underline black',
+      style: mergeAndApplyMatchingStyles(style, {})
     }
   };
 };
@@ -95,17 +95,18 @@ Header.renderData = ({views}) => {
   const mergeLinkProps = R.merge(props(c.link));
   const mergeSeparatorProps = R.merge(props(c.linkSeparator));
   const separator = key => Div(mergeSeparatorProps({key}), '|');
-  const link = (linkPath, name) => key => Linky(mergeLinkProps({key, to: linkPath}), labels.links[name]);
+  const linkMaker = (linkPath, name) =>
+      key => Link(mergeLinkProps({key, to: linkPath}), labels.links[name]);
 
   return Div(props(c.headerLinks),
-    Div(props(c.headerText), link.headerText),
+    Div(props(c.headerText), linkMaker.headerText),
     // Puts separator components between link components
     ...joinComponents(
       separator,
-      R.mapObjIndexed(
-        link,
+      R.values(R.mapObjIndexed(
+        linkMaker,
         linkPaths
-      )
+      ))
     )
   );
 };
