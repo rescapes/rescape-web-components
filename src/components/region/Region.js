@@ -16,7 +16,7 @@ import PropTypes from 'prop-types';
 import {applyMatchingStyles, mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
 import {
   nameLookup, eMap, propsFor, errorOrLoadingOrData, composeViews,
-  propsForSansClass
+  propsForSansClass, reqStrPath
 } from 'helpers/componentHelpers';
 import {mergeDeep, throwing} from 'rescape-ramda';
 import * as R from 'ramda';
@@ -83,7 +83,7 @@ Region.getStyles = ({style}) => {
 
 Region.viewProps = () => {
   // region is expected from the query result
-  const region = 'store.region';
+  const region = reqStrPath('store.region');
   return {
     [c.region]: {region},
     [c.regionMapbox]: {region},

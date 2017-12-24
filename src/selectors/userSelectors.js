@@ -12,7 +12,7 @@
 import * as R from 'ramda';
 import {throwing} from 'rescape-ramda';
 import {STATUS, status} from './selectorHelpers';
-import {findByParams} from 'selectors/selectorHelpers';
+import {findOneValueByParams} from 'selectors/selectorHelpers';
 import {createSelector} from 'reselect';
 
 const {findOne, reqPath, onlyOneValue} = throwing;
@@ -41,16 +41,24 @@ export const userResolvedRegionsSelector = (state, {user}) => {
 };
 
 /**
+ * Returns all users in the state
+ * @param state
+ * @returns {Object|Array} The container of users
+ */
+export const usersSelector = reqPath(['users']);
+
+/**
  * Returns the active users in a container by searching state.users for the one and only one isActive property
  * that is true. This only expects one and only one active user
  * @param state
  * @returns {Object|Array} The active user as one key object or single item array
  */
-export const activeUsersSelector = state =>
-  findOne(
+export const activeUsersSelector = state => {
+  return findOne(
     status[STATUS.IS_ACTIVE],
     reqPath(['users'], state)
-  )
+  );
+}
 
 /**
  * Returns the value of the only active user
@@ -59,7 +67,7 @@ export const activeUsersSelector = state =>
 export const activeUserValueSelector = createSelector(
   [activeUsersSelector],
   onlyOneValue
-)
+);
 
 /**
  * Selects the selected region of the active user. This is not the resolved region, rather the identifier object
@@ -68,7 +76,7 @@ export const activeUserValueSelector = createSelector(
 export const activeUserSelectedRegionSelector = state => createSelector(
   [R.compose(onlyOneValue, activeUsersSelector)],
   user => userSelectedRegionSelector(state, {user})
-)(state)
+)(state);
 
 /**
  * Returns the selected region of the given user
@@ -76,7 +84,7 @@ export const activeUserSelectedRegionSelector = state => createSelector(
  * @param user
  */
 export const userSelectedRegionSelector = (state, {user}) =>
-  findByParams(
+  findOneValueByParams(
     {[STATUS.IS_SELECTED]: true},
     userRegionsSelector(state, {user})
-  )
+  );

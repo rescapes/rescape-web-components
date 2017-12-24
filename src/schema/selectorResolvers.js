@@ -21,9 +21,9 @@ const {reqPath} = throwing
 // Trivial resolver for our dataSource, just strips object keys and returns values
 const objectValues = field => parent => R.values(reqPath([field], parent))
 // Calls the given selector, treating the dataSource state and passing props through
-const selectorValues = selector => (parent, params, {options: {dataSource}}) => {
-  return selector(dataSource, {params})
-}
+const selectorValues = selector => (parent, params, {options: {dataSource}}) => R.values(selector(dataSource, {params}))
+const selectorValue = selector => (parent, params, {options: {dataSource}}) => selector(dataSource, {params})
+
 // Calls the given selector with the parent merged into the props at the given parentKey
 const parentSelectorValues = (parentKey, selector) => (parent, props, {options: {dataSource}}) => {
   return selector(dataSource, R.merge(props, {[parentKey]: parent}))
@@ -88,8 +88,8 @@ const makeSelectorResolvers = data => ({
     settings: selectorValues(settingsSelector),
     // Resolves the active region(s) of the active user
     regions: selectorValues(activeUserSelectedRegionsSelector),
-    region: selectorValues(regionSelector),
-    // Resolves the active user
+    region: selectorValue(regionSelector),
+    // Resolves the active user in a container
     users: selectorValues(activeUsersSelector)
   },
 

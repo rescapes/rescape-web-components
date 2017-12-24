@@ -118,21 +118,20 @@ export const mergeActionsForViews = (viewToActionNames) => (props) => {
 };
 
 /**
- * Given a mapping from view names to an array of prop paths,
- * and given actual prop values,
+ * Given a mapping from view names to an array of prop values or functions,
  * adds or merges a views property into the props, where views is an object keyed by
- * the same keys as viewToPropPaths and valued by the resolution of the viewToPropPaths props strings.
+ * the same keys as viewToPropValuesOrFuncs and valued by the resolution of the viewToPropValuesOrFuncs
  * This allows a Container or Component to efficiently specify which props to give the view
- * used by each sub component. The strings can optional be a unary function that expects props
- * and resolves the value manually. This is useful if you need to access something outside of props.data
- * like props.style
+ * used by each sub component. Each props of viewToPropValuesOrFuncs can be a constant value or
+ * a unary function that is passed props and resolves the valuej
  * Example, if aComponent and bComponents are two child components that need the following props:
  * const viewToProps = {
  *  aComponent: {
- *    foo: 'foo', bar: 'store.bar'
+ *    foo: 1, bar: R.lensPath(['store, 'bar'])
  * },
  * bComponent: {
- *    bar: 'store.bar', width: (props) => props.style.width
+ *    // These are two functions that resolve paths in different ways
+ *    bar: R.lensPath(['store', 'bar'], width: (props) => props.style.width
  * }
  * and props are
  * const props = {
@@ -159,12 +158,12 @@ export const mergeActionsForViews = (viewToActionNames) => (props) => {
     bar: 2,
   }
  *
- * @param {Object} viewsToPropPaths As described above. Note that the paths are always relative to props.data.
+ * @param {Object} viewsToPropValuesOrFuncs As described above. Note that the paths are always relative to props.data.
  * @param {Object} props
  * @param {Object} props.data Must be present to search for propPaths
  * @props {Object} props with props added to props.views
  */
-export const mergePropsForViews = R.curry((viewToPropPaths, props) => {
+export const mergePropsForViews = R.curry((viewToPropValuesOrFuncs, props) => {
   return R.over(
     R.lensProp('views'),
     views => mergeDeep(
@@ -174,22 +173,19 @@ export const mergePropsForViews = R.curry((viewToPropPaths, props) => {
       // This transforms {viewName: {propName: 'pathInPropsToPropName (e.g. store.propName)', ...}
       // This results in {viewName: {propName: propValue, ...}
       R.map(
-        propNameToPropPathOrFunc => R.map(
+        propNameToValueOrFunc => R.map(
           // IfElse on propPath
           R.ifElse(
             R.is(Function),
             // if it is function, call with props and expect a value back
             f => f(props),
-            // if it is a path, resolve the path relative to props.data
-            propPath => R.view(
-              R.lensPath(R.split('.', propPath)),
-              reqPath(['data'], props)
-            )
+            // otherwise assume it's already a resolved value
+            R.identity
           ),
           // Within each view, map each propNameToPropPath
-          propNameToPropPathOrFunc
+          propNameToValueOrFunc
         ),
-        viewToPropPaths
+        viewToPropValuesOrFuncs
       )
     ),
     props
@@ -483,3 +479,22 @@ export const joinComponents = (separatorComponent, components) =>
     null,
     components
   );
+
+/**
+ * Expects a prop path and returns a function expecting props,
+ * which resolves the prop indicated by the string. Throws if there is no match
+ * @param {String} str dot-separated prop path
+ * @param {Object} props Object to resolve the path in
+ * @return {function(*=)}
+ */
+export const reqStrPath = R.curry((str, props) => reqPath(R.split('.', str), props))
+/**
+ * Expects a prop path and returns a function expecting props,
+ * which resolves the prop indicated by the string. If not match is found it returns undefined
+ * @param {String} str dot-separated prop path
+ * @param {Object} props Object to resolve the path in
+ * @return {function(*=)}
+ */
+export const strPath = R.curry((str, props) => {
+  return R.view(R.lensPath(R.split('.', str)), props)
+})

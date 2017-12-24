@@ -11,12 +11,16 @@
 
 import {styleMultiplier} from 'helpers/styleHelpers';
 import React from 'react';
-import {composeViews, eMap, errorOrLoadingOrData, nameLookup, propsFor} from 'helpers/componentHelpers';
+import {
+  composeViews, eMap, errorOrLoadingOrData, nameLookup, propsFor,
+  propsForSansClass
+} from 'helpers/componentHelpers';
 import current from 'components/current';
 import {throwing} from 'rescape-ramda';
 import {Component} from 'react/cjs/react.production.min';
 import * as R from 'ramda';
 const [Div, Current] = eMap(['div', current]);
+import PropTypes from 'prop-types'
 
 export const c = nameLookup({
   main: true,
@@ -59,7 +63,8 @@ Main.viewActions = () => {
 
 Main.renderData = ({views}) => {
   const props = R.flip(propsFor)(views);
-  return Current(props(c.mainCurrent));
+  const propsSansClass = R.flip(propsForSansClass)(views);
+  return Current(propsSansClass(c.mainCurrent));
 };
 
 Main.renderLoading = ({data}) => {
@@ -89,5 +94,10 @@ Main.choicepoint = errorOrLoadingOrData(
   Main.renderError,
   Main.renderData
 );
+
+Main.propTypes = {
+  data: PropTypes.shape().isRequired,
+  style: PropTypes.shape().isRequired
+}
 
 export default Main;

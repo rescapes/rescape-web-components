@@ -10,7 +10,7 @@
  */
 
 import * as R from 'ramda';
-import { mergeStateAndProps, makeInnerJoinByLensThenFilterSelector, findById, findByParams }
+import { mergeStateAndProps, makeInnerJoinByLensThenFilterSelector, findById, findOneValueByParams }
   from './selectorHelpers';
 
 describe('reselectHelpers', () => {
@@ -55,14 +55,14 @@ describe('reselectHelpers', () => {
     );
   });
 
-  test('findByParams', () => {
+  test('findOneValueByParams', () => {
     const items = [
       {brand: 'crush', flavor: 'grape'},
       {brand: 'fanta', flavor: 'strawberry'},
       {brand: 'crush', flavor: 'orange'}
     ];
     const params = {brand: 'crush', flavor: 'orange'};
-    expect(findByParams(params, items)).toEqual(
+    expect(findOneValueByParams(params, items)).toEqual(
       {brand: 'crush', flavor: 'orange'}
     );
 

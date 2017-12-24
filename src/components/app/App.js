@@ -1,9 +1,9 @@
 import React, { Component } from 'react'
-import Login from 'components/login/LoginContainer';
-import Main from 'components/main/MainContainer';
+import Login from 'components/login'
+import Main from 'components/main'
 import { Switch as switchy, Route as route } from 'react-router-dom'
 import {eMap} from 'helpers/componentHelpers';
-import header from 'components/header/HeaderContainer';
+import header from 'components/header'
 const [Div, Header, Switch, Route] = eMap(['div', header, switchy, route])
 
 class App extends Component {

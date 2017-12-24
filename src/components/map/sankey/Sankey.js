@@ -8,55 +8,136 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+/**
+ * Created by Andy Likuski on 2017.02.16
+ * Copyright (c) 2017 Andy Likuski
+ *
+ * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
+ */
 
-import {renderSankeySvgPoints} from 'helpers/sankeyHelpers';
-import PropTypes from 'prop-types';
-import React from 'react';
-import createMapStops from 'components/map/mapStop/MapStops';
+import mapGl from 'react-map-gl';
 import {throwing} from 'rescape-ramda';
-import {geojsonByType} from 'helpers/geojsonHelpers';
+import {
+  composeViews, eMap, errorOrLoadingOrData, nameLookup, propsFor,
+  propsForSansClass
+} from 'helpers/componentHelpers';
 import * as R from 'ramda';
-import {sankey, sankeyLinkHorizontal} from 'd3-sankey';
-import {mapDefault} from 'rescape-ramda';
-import deckGL, {ScatterplotLayer, OrthographicViewport, COORDINATE_SYSTEM} from 'deck.gl';
-import {eMap} from 'helpers/componentHelpers';
-import sample from 'data/sankey.sample';
-import * as d3 from 'd3';
-import {resolveSvgPoints, resolveSvgReact} from 'helpers/svgHelpers';
-import {getClass, styleMultiplier} from 'helpers/styleHelpers';
-import {makeMergeContainerStyleProps} from 'selectors/styleSelectors'
-import mapGl from 'react-map-gl'
+import {styleMultiplier} from 'helpers/styleHelpers';
+import {applyMatchingStyles, mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
+import {Component} from 'react/cjs/react.production.min';
 
 const [MapGL, DeckGL, Svg, G, Circle, Div] =
   eMap([mapGl, deckGL, 'svg', 'g', 'circle', 'div']);
+
+export const c = nameLookup({
+  sankey: true,
+  asankeyMapGlOuter: true,
+  sankeyMapGl: true
+});
 const {reqPath} = throwing;
 
 /**
- *
- *
- *  // MapGl needs these props
- mapGlProps: {
-            region: reqPath(['region'], props),
-            viewport
-          }
+ * The View for a Sankey on a Map
  */
+class Sankey extends Component {
+  render() {
+    const props = this.views(this.props);
+    return Div(propsFor(c.sankey, props.views),
+      errorOrLoadingOrData(
+        this.renderLoading,
+        this.renderError,
+        this.renderData
+      )(props)
+    );
+  }
+}
 
-const Sankey = (props) => {
+Sankey.getStyles = ({style}) => {
+  return {
+    [c.sankey]: mergeAndApplyMatchingStyles(style, {
+      position: 'absolute',
+      width: styleMultiplier(1),
+      height: styleMultiplier(1)
+    }),
 
-  const nameClass = getClass('sankey');
-  const styles = makeMergeContainerStyleProps()(
-    {
-      style: {
-        root: reqPath(['style'], props)
-      }
-    },
-    {
-      root: {
-        position: 'absolute',
-        width: '100%',
-        height: '100%'
-      }
-    });
+    [c.sankeyMapGl]: applyMatchingStyles(style, {
+      width: styleMultiplier(1),
+      height: styleMultiplier(1)
+    })
+  };
+};
+
+Sankey.viewProps = () => {
+  return {
+    [c.sankeyMapGl]: {
+      // Width and height are calculated in getStyles
+      width: reqPath(['views', [c.mapboxMapGl], 'style', 'width']),
+      height: reqPath(['views', [c.mapboxMapGl], 'style', 'height']),
+      latitude: 'viewport.latitude',
+      longitude: 'viewport.longitude',
+      zoom: 'viewport.zoom'
+      //osm: 'store.region.geojson.osm'
+    }
+  };
+};
+
+Sankey.viewActions = () => {
+  return {
+    [c.sankeyMapGl]: ['onViewportChange', 'hoverMarker', 'selectMarker']
+  };
+};
+
+Sankey.renderData = ({views}) => {
+  /* We additionally give Mapbox the container width and height so the map can track changes to these
+   We have to apply the width and height fractions of this container to them.
+   */
+  const props = R.flip(propsFor)(views);
+  const propsSansClass = R.flip(propsForSansClass)(views);
+
+  return Div(props(c.mapboxMapGlOuter),
+    MapGl(propsSansClass(c.mapboxMapGl))
+  );
+};
+
+Sankey.renderLoading = ({data}) => {
+  return [];
+};
+
+Sankey.renderError = ({data}) => {
+  return [];
+}
+
+/**
+ * Adds to props.views for each component configured in viewActions, viewProps, and getStyles
+ * @param {Object} props this.props or equivalent for testing
+ * @returns {Object} modified props
+ */
+Sankey.views = composeViews(
+  Sankey.viewActions(),
+  Sankey.viewProps(),
+  Sankey.getStyles
+);
+
+/**
+ * Loading, Error, or Data based on the props
+ */
+Sankey.choicepoint = errorOrLoadingOrData(
+  Sankey.renderLoading,
+  Sankey.renderError,
+  Sankey.renderData
+);
+
+Sankey.propTypes = {
+  data: PropTypes.shape().isRequired,
+  style: PropTypes.shape().isRequired
+}
+
+export default Sankey;
+
   const {viewport, mapboxApiAccessToken} = props;
   const {width, height} = props.style;
   const left = -Math.min(width, height) / 2;

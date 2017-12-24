@@ -9,13 +9,12 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import * as R from 'ramda';
-import {propLensEqual, mergeActionsForViews, makeTestPropsFunction, liftAndExtract} from './componentHelpers';
 import {
-  awaitMakeApolloTestPropsFunction,
+  propLensEqual, mergeActionsForViews, makeTestPropsFunction, liftAndExtract,
   errorOrLoadingOrData, joinComponents, loadingCompleteStatus, makeApolloTestPropsFunction, mergePropsForViews,
   mergeStylesIntoViews,
   nameLookup, propsFor,
-  propsForSansClass
+  propsForSansClass, reqStrPath, strPath
 } from 'helpers/componentHelpers';
 import {throwing} from 'rescape-ramda';
 
@@ -61,9 +60,10 @@ describe('componentHelpers', () => {
   });
 
   test('mergePropsForViews', () => {
+
     const mergeProps = mergePropsForViews({
-      aComponent: {foo: 'foo', bar: 'store.bar'},
-      bComponent: {bar: 'store.bar', width: reqPath(['views', 'bComponent', 'styles', 'width'])}
+      aComponent: {foo: 1, bar: reqStrPath('data.store.bar')},
+      bComponent: {bar: reqStrPath('data.store.bar'), width: reqStrPath('views.bComponent.styles.width')}
     });
     const props = {
       views: {
@@ -72,7 +72,6 @@ describe('componentHelpers', () => {
       },
       data: {
         a: 1,
-        foo: 1,
         store: {
           bar: 2
         }
@@ -89,7 +88,6 @@ describe('componentHelpers', () => {
         },
         data: {
           a: 1,
-          foo: 1,
           store: {
             bar: 2
           }
@@ -320,13 +318,49 @@ describe('componentHelpers', () => {
     expect(joinComponents(key => ({key, separate: 'me'}), [
       key => ({key, a: 1}),
       key => ({key, a: 2}),
-      key => ({key, a: 3}),
+      key => ({key, a: 3})
     ])).toEqual([
       {key: 0, a: 1},
       {key: 1, separate: 'me'},
       {key: 2, a: 2},
       {key: 3, separate: 'me'},
       {key: 4, a: 3}
-    ])
-  })
+    ]);
+  });
+
+  test('reqStrPath', () => {
+    expect(reqStrPath('foo.bar.goo', {
+      foo: {
+        bar: {
+          goo: 1
+        }
+      }
+    })).toEqual(1);
+
+    expect(() => reqStrPath('foo.bar.goo', {
+      foo: {
+        car: {
+          goo: 1
+        }
+      }
+    })).toThrow();
+  });
+
+  test('strPath', () => {
+    expect(strPath('foo.bar.goo', {
+      foo: {
+        bar: {
+          goo: 1
+        }
+      }
+    })).toEqual(1);
+
+    expect(strPath('foo.bar.goo', {
+      foo: {
+        car: {
+          goo: 1
+        }
+      }
+    })).toEqual(undefined);
+  });
 });

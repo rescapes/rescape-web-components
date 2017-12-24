@@ -105,7 +105,7 @@ export const makeInnerJoinByLensThenFilterSelector = (innerJoinPredicate, predic
  * @param params
  * @param items
  */
-export const findByParams = (params, items) => onlyOneValue(findOne(
+export const findOneValueByParams = (params, items) => onlyOneValue(findOne(
   // Compare all the eqProps against each item
   R.allPass(
     // Create a eqProps for each prop of params

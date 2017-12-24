@@ -1,5 +1,5 @@
 import {connect} from 'react-redux';
-import Current from './Current'
+import Current from './Current';
 import * as R from 'ramda';
 import {createSelector} from 'reselect';
 import {
@@ -7,7 +7,7 @@ import {
   makeActiveUserAndSettingsSelector
 } from 'selectors/storeSelectors';
 import {makeBrowserProportionalDimensionsSelector, makeMergeDefaultStyleWithProps} from 'selectors/styleSelectors';
-import {mergeDeep, throwing} from 'rescape-ramda'
+import {mergeDeep, throwing} from 'rescape-ramda';
 import {loadingCompleteStatus, makeTestPropsFunction} from 'helpers/componentHelpers';
 import {bindActionCreators} from 'redux';
 
@@ -24,26 +24,24 @@ export const mapStateToProps = (state, props) =>
     [
       makeActiveUserSelectedRegionAndSettingsSelector(),
       makeMergeDefaultStyleWithProps(),
-      makeBrowserProportionalDimensionsSelector(),
+      makeBrowserProportionalDimensionsSelector()
     ],
-    (data, style, browserProportionalStyle) =>
-      ({
-        // No current graphql queries, pass the winnowed state
-        // It might turn out that Current doesn't need anything because it simply renders child containers
-        // Merge the browser dimensions with the props
-        // props from the parent contain style instructions
-        // TODO we need to set width and height proportional to the browser dimensions, not equal to
-        data: R.merge(data, loadingCompleteStatus),
-        style: R.merge(style, browserProportionalStyle),
-      })
+    (data, style, browserProportionalStyle) => ({
+      // No current graphql queries, pass the winnowed state
+      // It might turn out that Current doesn't need anything because it simply renders child containers
+      // Merge the browser dimensions with the props
+      // props from the parent contain style instructions
+      // TODO we need to set width and height proportional to the browser dimensions, not equal to
+      data: R.merge(data, loadingCompleteStatus),
+      style: R.merge(style, browserProportionalStyle)
+    })
   )(state, props);
 
 export const mapDispatchToProps = (dispatch, ownProps) => {
-  return bindActionCreators({
-  }, dispatch)
-}
+  return bindActionCreators({}, dispatch);
+};
 
 // Returns a function that expects ownProps for testing
-export const testPropsMaker = makeTestPropsFunction(mapStateToProps, mapDispatchToProps)
+export const testPropsMaker = makeTestPropsFunction(mapStateToProps, mapDispatchToProps);
 
-export default connect(mapStateToProps, mapDispatchToProps)(Current)
+export default connect(mapStateToProps, mapDispatchToProps)(Current);

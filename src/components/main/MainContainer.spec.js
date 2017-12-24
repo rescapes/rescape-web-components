@@ -39,12 +39,12 @@ describe('MainContainer', () => {
   });
 
   test('render', (done) => {
-    const [regionContainer] = eMap([MainContainer]);
-    const wrapper = wrapWithMockGraphqlAndStore(regionContainer(parentProps));
+    const [mainContainer] = eMap([MainContainer]);
+    const wrapper = wrapWithMockGraphqlAndStore(mainContainer(parentProps));
     const component = wrapper.find('Main');
     expect(component.props()).toMatchSnapshot();
     // Wait for region-mapbox element to exist, which indicates data loading is complete
-    const waitForSample = createWaitForElement('Current');
+    const waitForSample = createWaitForElement('Main');
     waitForSample(component).then(
       component => {
         expect(component.text()).to.include('ready');

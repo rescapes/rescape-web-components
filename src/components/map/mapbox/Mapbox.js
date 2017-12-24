@@ -26,15 +26,14 @@ export const c = nameLookup({
   mapboxMapGlOuter: true,
   mapboxMapGl: true
 });
-const {reqPath} = throwing
+const {reqPath} = throwing;
 
 /**
- * The View for a Region, such as California. Theoretically we could display multiple regions at once
- * if we had more than one, or we could have a zoomed in region of California like the Bay Area.
+ * The View for Mapbox
  */
-export default class Mapbox extends Component {
+class Mapbox extends Component {
   render() {
-    const props = this.views(this.props)
+    const props = this.views(this.props);
     return Div(propsFor(c.mapbox, props.views),
       errorOrLoadingOrData(
         this.renderLoading,
@@ -43,69 +42,83 @@ export default class Mapbox extends Component {
       )(props)
     );
   }
+}
 
-  /**
-   * Adds to props.views for each component configured in viewActions, viewProps, and getStyles
-   * @param {Object} props this.props or equivalent for testing
-   * @returns {Object} modified props
-   */
-  views(props) {
-    return composeViews(this.viewActions(), this.viewProps(), this.getStyles)(props)
-  }
+Mapbox.getStyles = ({style}) => {
+  return {
+    [c.mapbox]: mergeAndApplyMatchingStyles(style, {
+      position: 'absolute',
+      width: styleMultiplier(1),
+      height: styleMultiplier(1)
+    }),
 
-  getStyles({style}) {
-    return {
-      [c.mapbox]: mergeAndApplyMatchingStyles(style, {
-        position: 'absolute',
-        width: styleMultiplier(1),
-        height: styleMultiplier(1)
-      }),
-
-      [c.mapboxMapGl]: applyMatchingStyles(style, {
-        width: styleMultiplier(1),
-        height: styleMultiplier(1)
-      })
-    };
-  }
-
-  viewProps() {
-    return {
-      [c.mapboxMapGl]: {
-        // Width and height are calculated in getStyles
-        width: reqPath(['views', [c.mapboxMapGl], 'style', 'width']),
-        height: reqPath(['views', [c.mapboxMapGl], 'style', 'height']),
-        latitude: 'viewport.latitude',
-        longitude: 'viewport.longitude',
-        zoom: 'viewport.zoom',
-        //osm: 'store.region.geojson.osm'
-      }
-    }
-  }
-
-  viewActions() {
-    return {
-      [c.mapboxMapGl]: ['onViewportChange', 'hoverMarker', 'selectMarker']
-    }
-  }
-
-  renderData({views}) {
-    /* We additionally give Mapbox the container width and height so the map can track changes to these
-     We have to apply the width and height fractions of this container to them.
-     */
-    const props = R.flip(propsFor)(views);
-    const propsSansClass = R.flip(propsForSansClass)(views);
-
-    return Div(props(c.mapboxMapGlOuter),
-      MapGl(propsSansClass(c.mapboxMapGl))
-    )
-  }
-
-  renderLoading({data}) {
-    return [];
+    [c.mapboxMapGl]: applyMatchingStyles(style, {
+      width: styleMultiplier(1),
+      height: styleMultiplier(1)
+    })
   };
-
-  renderError({data}) {
-    return [];
-  }
 };
 
+Mapbox.viewProps = (props) => {
+  return {
+    [c.mapboxMapGl]: R.merge({
+      // Width and height are calculated in getStyles
+      width: reqPath(['views', [c.mapboxMapGl], 'style', 'width']),
+      height: reqPath(['views', [c.mapboxMapGl], 'style', 'height']),
+    }, props.data.viewport)
+      //osm: 'store.region.geojson.osm'
+  };
+};
+
+Mapbox.viewActions = () => {
+  return {
+    [c.mapboxMapGl]: ['onViewportChange', 'hoverMarker', 'selectMarker']
+  };
+};
+
+Mapbox.renderData = ({views}) => {
+  /* We additionally give Mapbox the container width and height so the map can track changes to these
+   We have to apply the width and height fractions of this container to them.
+   */
+  const props = R.flip(propsFor)(views);
+  const propsSansClass = R.flip(propsForSansClass)(views);
+
+  return Div(props(c.mapboxMapGlOuter),
+    MapGl(propsSansClass(c.mapboxMapGl))
+  );
+};
+
+Mapbox.renderLoading = ({data}) => {
+  return [];
+};
+
+Mapbox.renderError = ({data}) => {
+  return [];
+}
+
+/**
+ * Adds to props.views for each component configured in viewActions, viewProps, and getStyles
+ * @param {Object} props this.props or equivalent for testing
+ * @returns {Object} modified props
+ */
+Mapbox.views = composeViews(
+  Mapbox.viewActions(),
+  Mapbox.viewProps(),
+  Mapbox.getStyles
+);
+
+/**
+ * Loading, Error, or Data based on the props
+ */
+Mapbox.choicepoint = errorOrLoadingOrData(
+  Mapbox.renderLoading,
+  Mapbox.renderError,
+  Mapbox.renderData
+);
+
+Mapbox.propTypes = {
+  data: PropTypes.shape().isRequired,
+  style: PropTypes.shape().isRequired
+}
+
+export default Mapbox;

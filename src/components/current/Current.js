@@ -12,7 +12,7 @@
 import PropTypes from 'prop-types';
 import region from 'components/region/RegionContainer';
 import React from 'react';
-import { composeViews, eMap, errorOrLoadingOrData, nameLookup, propsFor } from 'helpers/componentHelpers';
+import {composeViews, eMap, errorOrLoadingOrData, nameLookup, propsFor, reqStrPath} from 'helpers/componentHelpers';
 import * as R from 'ramda';
 import {throwing} from 'rescape-ramda';
 import {mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
@@ -69,9 +69,8 @@ Current.getStyles = ({style}) => {
 };
 
 Current.viewProps = () => {
-  const region = 'region';
   return {
-    [c.currentRegion]: {region}
+    [c.currentRegion]: {region: reqStrPath('data.region')}
   };
 };
 
