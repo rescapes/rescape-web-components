@@ -61,10 +61,18 @@ describe('componentHelpers', () => {
 
   test('mergePropsForViews', () => {
 
-    const mergeProps = mergePropsForViews({
+
+    const mergeProps = mergePropsForViews(props => ({
       aComponent: {foo: 1, bar: reqStrPath('data.store.bar')},
-      bComponent: {bar: reqStrPath('data.store.bar'), width: reqStrPath('views.bComponent.styles.width')}
-    });
+      bComponent: R.merge(
+        {
+          bar: reqStrPath('data.store.bar'),
+          // say we need width in bComponent's props, not just its props.styles
+          width: reqStrPath('views.bComponent.styles.width')
+        },
+        reqStrPath('data.someExtraProps', props)
+      )
+    }));
     const props = {
       views: {
         aComponent: {stuff: 1},
@@ -74,6 +82,10 @@ describe('componentHelpers', () => {
         a: 1,
         store: {
           bar: 2
+        },
+        someExtraProps: {
+          bat: 'can',
+          man: 'pan'
         }
       }
     };
@@ -84,12 +96,19 @@ describe('componentHelpers', () => {
       {
         views: {
           aComponent: {stuff: 1, foo: 1, bar: 2},
-          bComponent: {moreStuff: 2, bar: 2, styles: {width: 10}, width: 10}
+          bComponent: R.merge(
+            {moreStuff: 2, bar: 2, styles: {width: 10}, width: 10},
+            props.data.someExtraProps
+          )
         },
         data: {
           a: 1,
           store: {
             bar: 2
+          },
+          someExtraProps: {
+            bat: 'can',
+            man: 'pan'
           }
         }
       }
@@ -363,4 +382,5 @@ describe('componentHelpers', () => {
       }
     })).toEqual(undefined);
   });
-});
+})
+;

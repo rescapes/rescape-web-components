@@ -113,8 +113,8 @@ Current.views = composeViews(
  * Loading, Error, or Data based on the props
  */
 Current.choicepoint = errorOrLoadingOrData(
-  Current.renderLoading,
   Current.renderError,
+  Current.renderLoading,
   Current.renderData
 );
 

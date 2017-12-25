@@ -158,7 +158,9 @@ export const mergeActionsForViews = (viewToActionNames) => (props) => {
     bar: 2,
   }
  *
- * @param {Object} viewsToPropValuesOrFuncs As described above. Note that the paths are always relative to props.data.
+ * @param {Function|Object} viewsToPropValuesOrFuncs If an object then as described above.
+ * If a funciton it expects props and returns the object as described above. A function is
+ * useful for generating multiple key/values
  * @param {Object} props
  * @param {Object} props.data Must be present to search for propPaths
  * @props {Object} props with props added to props.views
@@ -185,7 +187,11 @@ export const mergePropsForViews = R.curry((viewToPropValuesOrFuncs, props) => {
           // Within each view, map each propNameToPropPath
           propNameToValueOrFunc
         ),
-        viewToPropValuesOrFuncs
+        // If the entire viewToPropValuesOrFuncs is a function pass props to it
+        R.ifElse(
+          R.is(Function),
+          f => f(props),
+          R.identity)(viewToPropValuesOrFuncs)
       )
     ),
     props

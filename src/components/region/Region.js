@@ -83,7 +83,7 @@ Region.getStyles = ({style}) => {
 
 Region.viewProps = () => {
   // region is expected from the query result
-  const region = reqStrPath('store.region');
+  const region = reqStrPath('data.store.region');
   return {
     [c.region]: {region},
     [c.regionMapbox]: {region},
@@ -140,8 +140,8 @@ Region.views = composeViews(
  * Loading, Error, or Data based on the props
  */
 Region.choicepoint = errorOrLoadingOrData(
-  Region.renderLoading,
   Region.renderError,
+  Region.renderLoading,
   Region.renderData
 );
 

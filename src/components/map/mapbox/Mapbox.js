@@ -13,18 +13,21 @@ import mapGl from 'react-map-gl';
 import {throwing} from 'rescape-ramda';
 import {
   composeViews, eMap, errorOrLoadingOrData, nameLookup, propsFor,
-  propsForSansClass
+  propsForSansClass, reqStrPath
 } from 'helpers/componentHelpers';
 import * as R from 'ramda';
 import {styleMultiplier} from 'helpers/styleHelpers';
 import {applyMatchingStyles, mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
 import {Component} from 'react/cjs/react.production.min';
+import PropTypes from 'prop-types';
 
 const [Div, MapGl] = eMap(['div', mapGl]);
 export const c = nameLookup({
   mapbox: true,
   mapboxMapGlOuter: true,
-  mapboxMapGl: true
+  mapboxMapGl: true,
+  mapboxLoading: true,
+  mapboxError: true
 });
 const {reqPath} = throwing;
 
@@ -33,13 +36,9 @@ const {reqPath} = throwing;
  */
 class Mapbox extends Component {
   render() {
-    const props = this.views(this.props);
+    const props = Mapbox.views(this.props);
     return Div(propsFor(c.mapbox, props.views),
-      errorOrLoadingOrData(
-        this.renderLoading,
-        this.renderError,
-        this.renderData
-      )(props)
+        Mapbox.choicepoint(props)
     );
   }
 }
@@ -62,11 +61,12 @@ Mapbox.getStyles = ({style}) => {
 Mapbox.viewProps = (props) => {
   return {
     [c.mapboxMapGl]: R.merge({
-      // Width and height are calculated in getStyles
-      width: reqPath(['views', [c.mapboxMapGl], 'style', 'width']),
-      height: reqPath(['views', [c.mapboxMapGl], 'style', 'height']),
-    }, props.data.viewport)
-      //osm: 'store.region.geojson.osm'
+        // Width and height are calculated in getStyles
+        width: reqPath(['views', [c.mapboxMapGl], 'style', 'width']),
+        height: reqPath(['views', [c.mapboxMapGl], 'style', 'height'])
+      }, reqStrPath('data.viewport', props)
+    )
+    //osm: 'store.region.geojson.osm'
   };
 };
 
@@ -88,13 +88,15 @@ Mapbox.renderData = ({views}) => {
   );
 };
 
-Mapbox.renderLoading = ({data}) => {
-  return [];
+Mapbox.renderLoading = ({views}) => {
+  const props = R.flip(propsFor)(views);
+  return Div(props(c.mapboxLoading))
 };
 
-Mapbox.renderError = ({data}) => {
-  return [];
-}
+Mapbox.renderError = ({data, views}) => {
+  const props = R.flip(propsFor)(views);
+  return Div(props(c.mapboxError), data.error)
+};
 
 /**
  * Adds to props.views for each component configured in viewActions, viewProps, and getStyles
@@ -103,7 +105,7 @@ Mapbox.renderError = ({data}) => {
  */
 Mapbox.views = composeViews(
   Mapbox.viewActions(),
-  Mapbox.viewProps(),
+  Mapbox.viewProps,
   Mapbox.getStyles
 );
 
@@ -111,14 +113,14 @@ Mapbox.views = composeViews(
  * Loading, Error, or Data based on the props
  */
 Mapbox.choicepoint = errorOrLoadingOrData(
-  Mapbox.renderLoading,
   Mapbox.renderError,
+  Mapbox.renderLoading,
   Mapbox.renderData
 );
 
 Mapbox.propTypes = {
   data: PropTypes.shape().isRequired,
   style: PropTypes.shape().isRequired
-}
+};
 
 export default Mapbox;

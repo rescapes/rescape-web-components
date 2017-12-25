@@ -134,8 +134,8 @@ Header.views = composeViews(
  * Loading, Error, or Data based on the props
  */
 Header.choicepoint = errorOrLoadingOrData(
-  Header.renderLoading,
   Header.renderError,
+  Header.renderLoading,
   Header.renderData
 );
 

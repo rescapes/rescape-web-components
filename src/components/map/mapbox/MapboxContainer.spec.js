@@ -14,6 +14,7 @@ import Mapbox, {c} from 'components/map/mapbox/Mapbox';
 import {gql} from 'apollo-client-preset';
 import {createWaitForElement} from 'enzyme-wait';
 import {getClass} from 'helpers/styleHelpers';
+import prettyFormat from 'pretty-format'
 
 describe('MapboxContainer', async () => {
 
@@ -59,10 +60,15 @@ describe('MapboxContainer', async () => {
     const parentProps = await asyncParentProps()
     const [mapboxContainer] = eMap([MapboxContainer]);
     const wrapper = wrapWithMockGraphqlAndStore(mapboxContainer(parentProps));
-    const component = wrapper.find('Mapbox');
+    const component = wrapper.find('Mapbox', 1000);
     expect(component.props()).toMatchSnapshot();
-    // Waith for the MapGl component to render, which indicates that data loading completed
+    // Wait for the MapGl component to render, which indicates that data loading completed
     const waitForSample = createWaitForElement(`.${getClass(c.mapboxMapGlOuter)}`)
+    const find = component.find
+    component.find = (...args) => {
+      wrapper.update()
+      return find.apply(component, args)
+    }
     waitForSample(component).then(
       child => {
         expect(child.text()).to.include('ready');
@@ -70,8 +76,16 @@ describe('MapboxContainer', async () => {
       }
     )
     .catch(error => {
-      throw new Error(`${error.message}\n${wrapper.find('Mapbox').debug()}`)
+      throw new Error(`${error.message}
+        \n${
+          wrapper.find('Mapbox').debug()
+        }
+        \n${
+          prettyFormat(wrapper.find('Mapbox').props().data)
+        }
+      `
+      )
       done()
-    } )
-  });
+    })
+  }, 20000);
 });

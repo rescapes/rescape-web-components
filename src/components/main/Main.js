@@ -90,8 +90,8 @@ Main.views = composeViews(
  * Loading, Error, or Data based on the props
  */
 Main.choicepoint = errorOrLoadingOrData(
-  Main.renderLoading,
   Main.renderError,
+  Main.renderLoading,
   Main.renderData
 );
 

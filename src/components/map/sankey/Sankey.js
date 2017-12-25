@@ -23,12 +23,16 @@ import mapGl from 'react-map-gl';
 import {throwing} from 'rescape-ramda';
 import {
   composeViews, eMap, errorOrLoadingOrData, nameLookup, propsFor,
-  propsForSansClass
+  propsForSansClass, reqStrPath
 } from 'helpers/componentHelpers';
 import * as R from 'ramda';
 import {styleMultiplier} from 'helpers/styleHelpers';
 import {applyMatchingStyles, mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
 import {Component} from 'react/cjs/react.production.min';
+import deckGL, {OrthographicViewport} from 'deck.gl';
+import {renderSankeySvgPoints} from 'helpers/sankeyHelpers';
+import sample from 'data/sankey.sample';
+import PropTypes from 'prop-types';
 
 const [MapGL, DeckGL, Svg, G, Circle, Div] =
   eMap([mapGl, deckGL, 'svg', 'g', 'circle', 'div']);
@@ -36,7 +40,8 @@ const [MapGL, DeckGL, Svg, G, Circle, Div] =
 export const c = nameLookup({
   sankey: true,
   asankeyMapGlOuter: true,
-  sankeyMapGl: true
+  sankeyMapGl: true,
+  svg: true
 });
 const {reqPath} = throwing;
 
@@ -45,13 +50,9 @@ const {reqPath} = throwing;
  */
 class Sankey extends Component {
   render() {
-    const props = this.views(this.props);
-    return Div(propsFor(c.sankey, props.views),
-      errorOrLoadingOrData(
-        this.renderLoading,
-        this.renderError,
-        this.renderData
-      )(props)
+    const props = Sankey.views(this.props);
+    return Div(propsFor(c.mapbox, props.views),
+      Sankey.choicepoint(props)
     );
   }
 }
@@ -71,17 +72,25 @@ Sankey.getStyles = ({style}) => {
   };
 };
 
-Sankey.viewProps = () => {
+Sankey.viewProps = (props) => {
+  // Width and height need to be passed as properties
+  const width = reqPath(['views', [c.sankey], 'style', 'width'], props);
+  const height = reqPath(['views', [c.sankey], 'style', 'height'], props);
+  const left = -Math.min(width, height) / 2;
+  const top = -Math.min(width, height) / 2;
+  //const glViewport = new OrthographicViewport({width, height, left, top});
   return {
-    [c.sankeyMapGl]: {
-      // Width and height are calculated in getStyles
-      width: reqPath(['views', [c.mapboxMapGl], 'style', 'width']),
-      height: reqPath(['views', [c.mapboxMapGl], 'style', 'height']),
-      latitude: 'viewport.latitude',
-      longitude: 'viewport.longitude',
-      zoom: 'viewport.zoom'
-      //osm: 'store.region.geojson.osm'
+    [c.sankeyMapGl]: R.merge({
+        width: width,
+        height: height
+      },
+      // Pass anything in the viewport
+      reqStrPath('data.viewport', props)
+    ),
+    [c.svg]: {
+      viewBox: `0 0 ${width} ${height}`
     }
+    //osm: 'store.region.geojson.osm'
   };
 };
 
@@ -99,7 +108,12 @@ Sankey.renderData = ({views}) => {
   const propsSansClass = R.flip(propsForSansClass)(views);
 
   return Div(props(c.mapboxMapGlOuter),
-    MapGl(propsSansClass(c.mapboxMapGl))
+    MapGl(propsSansClass(c.mapboxMapGl),
+      Svg(props(c.svg),
+        // TODO first argument needs to be opt from the SVGOverlay layer. See MapMarkers
+        renderSankeySvgPoints(null, props, sample, node)
+      )
+    )
   );
 };
 
@@ -109,7 +123,7 @@ Sankey.renderLoading = ({data}) => {
 
 Sankey.renderError = ({data}) => {
   return [];
-}
+};
 
 /**
  * Adds to props.views for each component configured in viewActions, viewProps, and getStyles
@@ -118,7 +132,7 @@ Sankey.renderError = ({data}) => {
  */
 Sankey.views = composeViews(
   Sankey.viewActions(),
-  Sankey.viewProps(),
+  Sankey.viewProps,
   Sankey.getStyles
 );
 
@@ -126,82 +140,14 @@ Sankey.views = composeViews(
  * Loading, Error, or Data based on the props
  */
 Sankey.choicepoint = errorOrLoadingOrData(
-  Sankey.renderLoading,
   Sankey.renderError,
+  Sankey.renderLoading,
   Sankey.renderData
 );
 
 Sankey.propTypes = {
   data: PropTypes.shape().isRequired,
   style: PropTypes.shape().isRequired
-}
-
-export default Sankey;
-
-  const {viewport, mapboxApiAccessToken} = props;
-  const {width, height} = props.style;
-  const left = -Math.min(width, height) / 2;
-  const top = -Math.min(width, height) / 2;
-  const glViewport = new OrthographicViewport({width, height, left, top});
-
-  const deck = width && height &&
-    Div({
-      className: nameClass('root'),
-      style: styles.root
-    }, [
-      Svg({
-          viewBox: `0 0 ${width} ${height}`
-        }
-        // TODO first argument needs to be opt from the SVGOverlay layer. See MapMarkers
-        //renderSankeySvgPoints(null, props, sample, this.refs.node)
-      )
-    ]);
-
-  return MapGL(R.merge(viewport, {
-      mapboxApiAccessToken,
-      showZoomControls: true,
-      perspectiveEnabled: true,
-      // setting to `true` should cause the map to flicker because all sources
-      // and layers need to be reloaded without diffing enabled.
-      preventStyleDiffing: false,
-      onViewportChange: this.props.onViewportChange
-    }),
-    deck
-  );
-};
-
-/*
-  componentWillReceiveProps(nextProps) {
-    const osmLens = R.lensPath(['region', 'geojson', 'osm', 'features', 'length']);
-    const markersLens = R.lensPath(['region', 'geojson', 'markers']);
-    // Features have changed
-    if (R.view(osmLens, this.props) !== R.view(osmLens, nextProps)) {
-      this.setState({osmByType: geojsonByType(nextProps.region.geojson.osm)});
-    }
-    if (R.view(markersLens, this.props) !== R.view(markersLens, nextProps)) {
-      this.setState({markers: nextProps.region.geojson.markers});
-    }
-  }
-*/
-
-const {
-  string,
-  object,
-  bool,
-  func
-} = PropTypes;
-
-Sankey.propTypes = {
-  style: object.isRequired,
-  viewport: object.isRequired,
-  mapboxApiAccessToken: string.isRequired,
-  iconAtlas: string.isRequired,
-  showCluster: bool.isRequired,
-  region: object.isRequired,
-  hoverMarker: func.isRequired,
-  selectMarker: func.isRequired,
-  onViewportChange: func.isRequired,
-  geojson: object.isRequired
 };
 
 export default Sankey;
