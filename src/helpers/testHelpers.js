@@ -16,8 +16,6 @@ import initialState from 'data/initialState';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
 import {shallow, mount} from 'enzyme';
-
-const middlewares = [thunk];
 import {mockNetworkInterfaceWithSchema} from 'apollo-test-utils';
 import ApolloClient from 'apollo-client';
 import makeSchema from 'schema/schema';
@@ -27,6 +25,9 @@ import {SchemaLink} from 'apollo-link-schema';
 import PropTypes from 'prop-types';
 import {createWaitForElement} from 'enzyme-wait';
 import {getClass} from 'helpers/styleHelpers';
+import { onError } from "apollo-link-error";
+import prettyFormat from 'pretty-format'
+const middlewares = [thunk];
 
 /**
  * Given a task, wraps it in promise and passes it to Jest's expect.
@@ -113,10 +114,20 @@ export const mockApolloClient = (schema, context) => {
   //addMockFunctionsToSchema({schema});
   const mockNetworkInterface = mockNetworkInterfaceWithSchema({schema});
 
+  const errorLink = onError(({ graphQLErrors, response, operation }) => {
+    //if (graphQLErrors) {
+      //graphQLErrors.map(({message, locations, path}) =>
+        //console.log(
+        //  `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
+        //)
+      //);
+    //}
+
+  });
   const apolloCache = new InMemoryCache();
   return new ApolloClient({
     cache: apolloCache,
-    link: new SchemaLink({schema, context}),
+    link: errorLink.concat(new SchemaLink({schema, context})),
     networkInterface: mockNetworkInterface
   });
 };
@@ -198,7 +209,9 @@ export const shallowWrap = (componentFactory, props) => {
  * Converts an Either to a Promise. Either.right calls resolve and Either.left calls reject
  * @param either
  */
-export const eitherToPromise = either => new Promise((resolve, reject) => either.map(resolve).leftMap(reject));
+export const eitherToPromise = either => {
+  return new Promise((resolve, reject) => either.map(resolve).leftMap(reject));
+}
 
 /**
  * Waits for a child component with the given className to render. Useful for apollo along with Enzyme

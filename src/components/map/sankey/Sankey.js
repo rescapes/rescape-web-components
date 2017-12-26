@@ -23,7 +23,7 @@ import mapGl from 'react-map-gl';
 import {throwing} from 'rescape-ramda';
 import {
   composeViews, eMap, errorOrLoadingOrData, nameLookup, propsFor,
-  propsForSansClass, reqStrPath
+  propsForSansClass, renderErrorDefault, renderLoadingDefault, reqStrPath
 } from 'helpers/componentHelpers';
 import * as R from 'ramda';
 import {styleMultiplier} from 'helpers/styleHelpers';
@@ -41,7 +41,9 @@ export const c = nameLookup({
   sankey: true,
   asankeyMapGlOuter: true,
   sankeyMapGl: true,
-  svg: true
+  svg: true,
+  sankeyLoading: true,
+  sankeyError: true
 });
 const {reqPath} = throwing;
 
@@ -81,8 +83,8 @@ Sankey.viewProps = (props) => {
   //const glViewport = new OrthographicViewport({width, height, left, top});
   return {
     [c.sankeyMapGl]: R.merge({
-        width: width,
-        height: height
+        width,
+        height
       },
       // Pass anything in the viewport
       reqStrPath('data.viewport', props)
@@ -140,8 +142,8 @@ Sankey.views = composeViews(
  * Loading, Error, or Data based on the props
  */
 Sankey.choicepoint = errorOrLoadingOrData(
-  Sankey.renderError,
-  Sankey.renderLoading,
+  renderErrorDefault(c.sankeyError),
+  renderLoadingDefault(c.sankeyLoading),
   Sankey.renderData
 );
 

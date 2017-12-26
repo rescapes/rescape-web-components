@@ -16,11 +16,12 @@ import PropTypes from 'prop-types';
 import {applyMatchingStyles, mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
 import {
   nameLookup, eMap, propsFor, errorOrLoadingOrData, composeViews,
-  propsForSansClass, reqStrPath
+  propsForSansClass, renderLoadingDefault, renderErrorDefault, strPath
 } from 'helpers/componentHelpers';
 import {mergeDeep, throwing} from 'rescape-ramda';
 import * as R from 'ramda';
 import {Component} from 'react/cjs/react.production.min';
+const {reqPath} = throwing
 
 const [Mapbox, Sankey, MarkerList, Div] = eMap([mapbox, sankey, markerList, 'div']);
 export const c = nameLookup({
@@ -29,7 +30,9 @@ export const c = nameLookup({
   regionMapbox: true,
   regionSankey: true,
   regionLocationsOuter: true,
-  regionLocations: true
+  regionLocations: true,
+  regionLoading: true,
+  regionError: true
 });
 
 /**
@@ -83,7 +86,7 @@ Region.getStyles = ({style}) => {
 
 Region.viewProps = () => {
   // region is expected from the query result
-  const region = reqStrPath('data.store.region');
+  const region = strPath('data.store.region');
   return {
     [c.region]: {region},
     [c.regionMapbox]: {region},
@@ -116,14 +119,6 @@ Region.renderData = ({views}) => {
   ];
 };
 
-Region.renderLoading = ({data}) => {
-  return [];
-};
-
-Region.renderError = ({data}) => {
-  return [];
-};
-
 
 /**
  * Adds to props.views for each component configured in viewActions, viewProps, and getStyles
@@ -140,17 +135,14 @@ Region.views = composeViews(
  * Loading, Error, or Data based on the props
  */
 Region.choicepoint = errorOrLoadingOrData(
-  Region.renderError,
-  Region.renderLoading,
+  renderErrorDefault(c.regionError),
+  renderLoadingDefault(c.regionLoading),
   Region.renderData
 );
 
-/**
- * Expect the region
- * @type {{region: *}}
- */
-const {
-  string, object, number, func, shape
-} = PropTypes;
+Region.propTypes = {
+  data: PropTypes.shape().isRequired,
+  style: PropTypes.shape().isRequired
+};
 
 Region.propTypes = {};

@@ -100,7 +100,7 @@ export const queries = {
         variables: {
           regionId: region.id
         },
-        errorPolicy: 'all'
+        errorPolicy: 'none'
       }),
       props: ({data, ownProps}) => mergeDeep(
         ownProps,

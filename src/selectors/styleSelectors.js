@@ -83,20 +83,26 @@ export const mergeAndApplyMatchingStyles = (parentStyle, style) => mergeDeepWith
  * @param style
  * @return {*}
  */
-export const applyMatchingStyles = (parentStyle, style) => mergeDeepWith(
-  (stateStyleValue, propStyleValue) =>
-    // If keys match, the propStyleValue trumps unless it is a function, in which case the stateStyleValue
-    // is passed to the propStyleValue function
-    R.when(
-      R.is(Function),
-      x => R.compose(x)(stateStyleValue)
-    )(propStyleValue),
-  R.fromPairs(R.innerJoin(
-    ([parentStyleKey], [styleKey]) => R.equals(parentStyleKey, styleKey),
-    R.toPairs(parentStyle), R.toPairs(style)
-  )),
-  style
-);
+export const applyMatchingStyles = (parentStyle, style) => {
+  // If any value in style is a function and doesn't have a corresponding key
+  // in parentStyle, throw an error. There must be a value in parent in order to resolve the function
+  filterKeys (R.has(style)
+  return mergeDeepWith(
+    (stateStyleValue, propStyleValue) =>
+      // If keys match, the propStyleValue trumps unless it is a function, in which case the stateStyleValue
+      // is passed to the propStyleValue function
+      R.when(
+        R.is(Function),
+        x => R.compose(x)(stateStyleValue)
+      )(propStyleValue),
+    R.fromPairs(R.innerJoin(
+      ([parentStyleKey], [styleKey]) => R.equals(parentStyleKey, styleKey),
+      R.toPairs(parentStyle),
+      R.toPairs(style)
+    )),
+    style
+  );
+}
 
 /**
  * Returns a function that creates a selector to

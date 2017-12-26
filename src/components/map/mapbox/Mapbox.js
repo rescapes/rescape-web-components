@@ -13,7 +13,7 @@ import mapGl from 'react-map-gl';
 import {throwing} from 'rescape-ramda';
 import {
   composeViews, eMap, errorOrLoadingOrData, nameLookup, propsFor,
-  propsForSansClass, reqStrPath
+  propsForSansClass, renderErrorDefault, renderLoadingDefault, reqStrPath
 } from 'helpers/componentHelpers';
 import * as R from 'ramda';
 import {styleMultiplier} from 'helpers/styleHelpers';
@@ -88,16 +88,6 @@ Mapbox.renderData = ({views}) => {
   );
 };
 
-Mapbox.renderLoading = ({views}) => {
-  const props = R.flip(propsFor)(views);
-  return Div(props(c.mapboxLoading))
-};
-
-Mapbox.renderError = ({data, views}) => {
-  const props = R.flip(propsFor)(views);
-  return Div(props(c.mapboxError), data.error)
-};
-
 /**
  * Adds to props.views for each component configured in viewActions, viewProps, and getStyles
  * @param {Object} props this.props or equivalent for testing
@@ -113,8 +103,8 @@ Mapbox.views = composeViews(
  * Loading, Error, or Data based on the props
  */
 Mapbox.choicepoint = errorOrLoadingOrData(
-  Mapbox.renderError,
-  Mapbox.renderLoading,
+  renderErrorDefault(c.mapboxError),
+  renderLoadingDefault(c.mapboxLoading),
   Mapbox.renderData
 );
 

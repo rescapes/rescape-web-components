@@ -23,8 +23,8 @@ Object {
       },
     },
     "style": Object {
-      "height": 500,
-      "width": 500,
+      "height": 720,
+      "width": 1080,
     },
   },
   "style": Object {
@@ -37,14 +37,14 @@ Object {
     "fontFamily": "inherit",
     "fontSize": "inherit",
     "fontWeight": "bold",
-    "height": 500,
+    "height": 720,
     "margin": 0,
     "paddingBottom": 8,
     "paddingLeft": 16,
     "paddingRight": 16,
     "paddingTop": 8,
     "textDecoration": "none",
-    "width": 500,
+    "width": 1080,
   },
 }
 `;
@@ -96,8 +96,8 @@ Object {
     "startPolling": [Function],
     "stopPolling": [Function],
     "style": Object {
-      "height": 500,
-      "width": 500,
+      "height": 720,
+      "width": 1080,
     },
     "subscribeToMore": [Function],
     "updateQuery": [Function],
@@ -115,14 +115,60 @@ Object {
     "fontFamily": "inherit",
     "fontSize": "inherit",
     "fontWeight": "bold",
-    "height": 500,
+    "height": 720,
     "margin": 0,
     "paddingBottom": 8,
     "paddingLeft": 16,
     "paddingRight": 16,
     "paddingTop": 8,
     "textDecoration": "none",
-    "width": 500,
+    "width": 1080,
+  },
+}
+`;
+
+exports[`RegionContainer renderError 1`] = `
+Object {
+  "data": Object {
+    "error": undefined,
+    "fetchMore": [Function],
+    "loading": true,
+    "networkStatus": 1,
+    "refetch": [Function],
+    "region": Object {
+      "id": "foo",
+      "isSelected": true,
+    },
+    "startPolling": [Function],
+    "stopPolling": [Function],
+    "style": Object {
+      "height": 720,
+      "width": 1080,
+    },
+    "subscribeToMore": [Function],
+    "updateQuery": [Function],
+    "variables": Object {
+      "regionId": "foo",
+    },
+  },
+  "style": Object {
+    "MozAppearance": "none",
+    "WebkitAppearance": "none",
+    "backgroundColor": "blue",
+    "border": 0,
+    "color": "white",
+    "display": "inline-block",
+    "fontFamily": "inherit",
+    "fontSize": "inherit",
+    "fontWeight": "bold",
+    "height": 720,
+    "margin": 0,
+    "paddingBottom": 8,
+    "paddingLeft": 16,
+    "paddingRight": 16,
+    "paddingTop": 8,
+    "textDecoration": "none",
+    "width": 1080,
   },
 }
 `;

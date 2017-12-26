@@ -509,3 +509,25 @@ export const reqStrPath = R.curry((str, props) => reqPath(R.split('.', str), pro
 export const strPath = R.curry((str, props) => {
   return R.view(R.lensPath(R.split('.', str)), props)
 })
+
+/**
+ * A default loading React component, which is passed the props in props.views.viewName
+ * @param viewName The viewname with which to resolve the props
+ * @return A function expecting props, which renders the loading component
+ */
+export const renderLoadingDefault = (viewName) => ({views}) => {
+  const [Div] = eMap(['div']);
+  const props = R.flip(propsFor)(views);
+  return Div(props(viewName))
+};
+
+/**
+ * A default error React component, which is passed the props in props.views.viewName
+ * @param viewName The viewname with which to resolve the props
+ * @return A function expecting props, which renders the error component
+ */
+export const renderErrorDefault = viewName => ({data, views}) => {
+  const [Div] = eMap(['div']);
+  const props = R.flip(propsFor)(views);
+  return Div(props(viewName), `Error: ${data.error.message}\nTrace: ${data.error.stack}`)
+};
