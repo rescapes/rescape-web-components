@@ -261,7 +261,8 @@ export const makeApolloTestPropsFunction = R.curry((mapStateToProps, mapDispatch
   const resolvedSchema = createSelectorResolvedSchema(makeSchema(), sampleConfig);
 
   return R.composeP(
-    props => graphql(
+    props => {
+      return graphql(
       resolvedSchema,
       query, {},
       {options: {dataSource: sampleConfig}},
@@ -272,7 +273,9 @@ export const makeApolloTestPropsFunction = R.curry((mapStateToProps, mapDispatch
       // just like our Apollo React Client does by default
       ({data, errors}) => {
         if (errors)
-          return Either.Left(errors);
+          return Either.Left({
+            error: errors
+          });
         return Either.Right(
           mergeDeep(
             props,
@@ -287,8 +290,10 @@ export const makeApolloTestPropsFunction = R.curry((mapStateToProps, mapDispatch
         );
       }
     ).catch(e => {
-      return Either.Left([e]);
-    }),
+      return Either.Left({
+        error: e
+      });
+    }) },
     // Creates Redux function props
     (...args) => Promise.resolve(makeTestPropsFunction(mapStateToProps, mapDispatchToProps)(...args))
   );

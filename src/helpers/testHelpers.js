@@ -25,8 +25,8 @@ import {createSelectorResolvedSchema} from 'schema/selectorResolvers';
 import {InMemoryCache} from 'apollo-client-preset';
 import {SchemaLink} from 'apollo-link-schema';
 import PropTypes from 'prop-types';
-import * as R from 'ramda';
-
+import {createWaitForElement} from 'enzyme-wait';
+import {getClass} from 'helpers/styleHelpers';
 
 /**
  * Given a task, wraps it in promise and passes it to Jest's expect.
@@ -91,13 +91,6 @@ export const asyncPropsFromSampleStateAndContainer =
     either => new Promise((resolve, reject) => either.map(resolve).leftMap(reject))
   );
 
-export const propsWithGraphQlFromSampleStateAndContainer = (queryArgs, containerPropMaker, sampleOwnProps = {}) =>
-  R.compose(
-    makeGraphQlTestPropsFunction(resolvedSchema, dataSource, queryArgs),
-    containerPropMaker(makeSampleInitialState(), sampleOwnProps)
-  );
-
-
 /**
  * Makes a mock store with the given state and optional sampleUserSettings. If the sampleUserSettings
  * they are merged into the state with deepMerge, so make sure the structure matches the state
@@ -119,6 +112,7 @@ export const makeMockStore = (state, sampleUserSettings = {}) => {
 export const mockApolloClient = (schema, context) => {
   //addMockFunctionsToSchema({schema});
   const mockNetworkInterface = mockNetworkInterfaceWithSchema({schema});
+
   const apolloCache = new InMemoryCache();
   return new ApolloClient({
     cache: apolloCache,
@@ -204,4 +198,45 @@ export const shallowWrap = (componentFactory, props) => {
  * Converts an Either to a Promise. Either.right calls resolve and Either.left calls reject
  * @param either
  */
-export const eitherToPromise =  either => new Promise((resolve, reject) => either.map(resolve).leftMap(reject))
+export const eitherToPromise = either => new Promise((resolve, reject) => either.map(resolve).leftMap(reject));
+
+/**
+ * Waits for a child component with the given className to render. Useful for apollo along with Enzyme
+ * 3, since Enzyme 3 doesn't keep it's wrapper synced with all DOM changes, and Apollo doesn't expose
+ * any event that announces when the network status changes to 7 (loaded)
+ * @param wrapper The mounted enzyme Component
+ * @param componentName The component of the wrapper whose render method will render the child componentj
+ * @param childClassName The child class name to search for periodically
+ * @param done Test done function to indicate a successful end of async testingk
+ */
+export const waitForChildComponentRender = (wrapper, componentName, childClassName, done) => {
+  const component = wrapper.find(componentName);
+// Wait for the MapGl component to render, which indicates that data loading completed
+  const waitForSample = createWaitForElement(`.${getClass(childClassName)}`);
+  const find = component.find;
+  // Override find to call update each time we poll for an update
+  // Enzyme 3 doesn't stay synced with React DOM changes without update
+  component.find = (...args) => {
+    wrapper.update();
+    // Wind the component with the updated wrapper, otherwise we get the old component
+    return find.apply(wrapper.find(componentName), args);
+  };
+  waitForSample(component)
+    .then(
+      () => {
+        done();
+      }
+    )
+    .catch(error => {
+      throw new Error(`${error.message}
+        \n${
+        wrapper.find(componentName).debug()
+        }
+        \n${
+        prettyFormat(wrapper.find(componentName).props().data)
+        }
+      `
+      );
+      done();
+    });
+};

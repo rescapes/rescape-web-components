@@ -38,7 +38,7 @@ export const mapStateToProps = (state, props) => {
     (userAndSettings, style, viewport) => ({
       data: R.mergeAll([
         userAndSettings,
-        { viewport },
+        {viewport},
         props
       ]),
       style
@@ -99,7 +99,8 @@ export const queries = {
       options: ({data: {region}}) => ({
         variables: {
           regionId: region.id
-        }
+        },
+        errorPolicy: 'all'
       }),
       props: ({data, ownProps}) => mergeDeep(
         ownProps,
@@ -113,7 +114,8 @@ export const queries = {
 // TODO We should handle all queries in queries here
 const ContainerWithData = graphql(
   gql`${queries.geojson.query}`,
-  queries.geojson.args)
+  queries.geojson.args
+)
 (Mapbox);
 
 // Returns a function that expects state and ownProps for testing
