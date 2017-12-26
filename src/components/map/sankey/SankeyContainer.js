@@ -20,25 +20,28 @@ import {
 
 import {createSelector} from 'reselect';
 import {mergeDeep, throwing} from 'rescape-ramda';
-import {makeTestPropsFunction, mergeActionsForViews} from 'helpers/componentHelpers';
+import {loadingCompleteStatus, makeTestPropsFunction, mergeActionsForViews} from 'helpers/componentHelpers';
 import {makeMergeDefaultStyleWithProps} from 'selectors/styleSelectors';
 import * as R from 'ramda';
 const {reqPath} = throwing
 //const {hoverMarker, selectMarker} = actionCreators;
 
 export const mapStateToProps = (state, props) => {
+  const {style, ...data} = props;
   return createSelector(
     [
       makeActiveUserAndSettingsSelector(),
       makeMergeDefaultStyleWithProps(),
       viewportSelector
     ],
-    (userAndSettings, style, viewport) => ({
-      data: R.merge(
-        userAndSettings,
-        {viewport}
-      ),
-      style
+    (stateData, defaultStyle, viewport) => ({
+      data: R.mergeAll([
+        stateData,
+        {viewport},
+        loadingCompleteStatus,
+        data
+      ]),
+      style: R.merge(defaultStyle, style)
     })
   )(state, props);
 };

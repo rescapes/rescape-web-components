@@ -4,19 +4,19 @@ import {connect} from 'react-redux';
 import App from 'components/app/App';
 import * as R from 'ramda';
 import {createSelector} from 'reselect';
-import {makeActiveUserRegionsAndSettingsSelector, } from 'selectors/storeSelectors';
+import {makeActiveUserRegionsAndSettingsSelector} from 'selectors/storeSelectors';
 import {makeBrowserProportionalDimensionsSelector} from 'selectors/styleSelectors';
 import {mergeDeep} from 'rescape-ramda';
 
 /**
-* Query
-* Prerequisites:
-*   A User in context
-* Resolves:
-*  The Regions of the User
-* Without prerequisites:
-*  Skip render
-*/
+ * Query
+ * Prerequisites:
+ *   A User in context
+ * Resolves:
+ *  The Regions of the User
+ * Without prerequisites:
+ *  Skip render
+ */
 const query = gql`
     query regions($userId: String!) {
         users(id: $id) {
@@ -24,7 +24,7 @@ const query = gql`
             name
         }
     }
-`
+`;
 
 /**
  * Combined selector that:
@@ -36,32 +36,32 @@ const query = gql`
  * @param {Object} [props] The optional props to override the state.
  * @returns {Object} The state and own props mapped to props for the component
  */
-export const mapStateToProps = (state, props) =>
-  createSelector(
+export const mapStateToProps = (state, props) => {
+  const {style, ...data} = props;
+  return createSelector(
     [
       (state, props) => {
         return makeActiveUserRegionsAndSettingsSelector()(mergeDeep(state, R.defaultTo({}, props)));
       },
       makeBrowserProportionalDimensionsSelector()
     ],
-    (activeUserAndRegion, dimensions) => R.merge(
-      activeUserAndRegion,
-      {
-        // Merge the browser dimensions with the props
-        // props from the parent contain style instructions
-        // TODO we need to set width and height proportional to the browser dimensions, not equal to
-        style: dimensions
-      }
-    )
+    (activeUserAndRegion, dimensions) => ({
+      data: R.merge(activeUserAndRegion, data),
+      // Merge the browser dimensions with the props
+      // props from the parent contain style instructions
+      // TODO we need to set width and height proportional to the browser dimensions, not equal to
+      style: R.merge(dimensions, style)
+    })
   )(state, props);
+}
 
 
 // Apply query to component
 const ContainerWithData = graphql(query, {
-  props: ({ data: { loading, store } }) => ({
+  props: ({data: {loading, store}}) => ({
     store,
-    loading,
-  }),
+    loading
+  })
 })(App);
 
 // Wrap queried component with react-redux

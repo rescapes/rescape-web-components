@@ -29,19 +29,20 @@ import {gql} from 'apollo-client-preset';
  * @returns {Object} The props
  */
 export const mapStateToProps = (state, props) => {
+  const {style, ...data} = props
   return createSelector(
     [
       makeActiveUserAndSettingsSelector(),
       makeMergeDefaultStyleWithProps(),
       viewportSelector
     ],
-    (userAndSettings, style, viewport) => ({
+    (userAndSettings, defaultStyle, viewport) => ({
       data: R.mergeAll([
         userAndSettings,
         {viewport},
-        props
+        data
       ]),
-      style
+      style: R.merge(defaultStyle, style)
     })
   )(state, props);
 };

@@ -60,16 +60,23 @@ class Sankey extends Component {
 }
 
 Sankey.getStyles = ({style}) => {
+  const proportionalOrDefault = dim  =>
+    R.ifElse(
+      R.has(dim),
+      s => styleMultiplier(1, R.prop(dim, s)),
+      R.always('100%')
+    )(style)
+
   return {
     [c.sankey]: mergeAndApplyMatchingStyles(style, {
       position: 'absolute',
-      width: styleMultiplier(1),
-      height: styleMultiplier(1)
+      width: proportionalOrDefault('width'),
+      height: proportionalOrDefault('height')
     }),
 
     [c.sankeyMapGl]: applyMatchingStyles(style, {
-      width: styleMultiplier(1),
-      height: styleMultiplier(1)
+      width: proportionalOrDefault('width'),
+      height: proportionalOrDefault('height'),
     })
   };
 };
@@ -110,7 +117,7 @@ Sankey.renderData = ({views}) => {
   const propsSansClass = R.flip(propsForSansClass)(views);
 
   return Div(props(c.mapboxMapGlOuter),
-    MapGl(propsSansClass(c.mapboxMapGl),
+    MapGL(propsSansClass(c.mapboxMapGl),
       Svg(props(c.svg),
         // TODO first argument needs to be opt from the SVGOverlay layer. See MapMarkers
         renderSankeySvgPoints(null, props, sample, node)

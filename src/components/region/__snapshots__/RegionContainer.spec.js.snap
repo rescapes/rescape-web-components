@@ -22,10 +22,6 @@ Object {
         "name": "Oakland",
       },
     },
-    "style": Object {
-      "height": 720,
-      "width": 1080,
-    },
   },
   "style": Object {
     "MozAppearance": "none",
@@ -95,10 +91,6 @@ Object {
     },
     "startPolling": [Function],
     "stopPolling": [Function],
-    "style": Object {
-      "height": 720,
-      "width": 1080,
-    },
     "subscribeToMore": [Function],
     "updateQuery": [Function],
     "variables": Object {
@@ -141,10 +133,6 @@ Object {
     },
     "startPolling": [Function],
     "stopPolling": [Function],
-    "style": Object {
-      "height": 720,
-      "width": 1080,
-    },
     "subscribeToMore": [Function],
     "updateQuery": [Function],
     "variables": Object {

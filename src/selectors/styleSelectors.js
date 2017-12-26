@@ -10,8 +10,9 @@
  */
 
 import {createSelector} from 'reselect';
-import {throwing} from 'rescape-ramda'
+import {filterWithKeys, throwing} from 'rescape-ramda';
 import * as R from 'ramda';
+import prettyFormat from 'pretty-format'
 const {reqPath} = throwing;
 
 /**
@@ -86,7 +87,16 @@ export const mergeAndApplyMatchingStyles = (parentStyle, style) => mergeDeepWith
 export const applyMatchingStyles = (parentStyle, style) => {
   // If any value in style is a function and doesn't have a corresponding key
   // in parentStyle, throw an error. There must be a value in parent in order to resolve the function
-  filterKeys (R.has(style)
+  const badKeyValues = filterWithKeys((value, key) =>
+    R.both(
+      () => R.complement(R.has)(key, parentStyle),
+      R.is(Function)
+    )(value), style)
+  if (R.length(R.keys(badKeyValues))) {
+    throw Error(`Some style keys with function values don't have corresponding parentStyle values: ${prettyFormat(badKeyValues)} of
+    style keys ${R.join(', ', R.keys(style))} and
+    parentStyle keys ${R.join(', ', R.keys(parentStyle))}`)
+  }
   return mergeDeepWith(
     (stateStyleValue, propStyleValue) =>
       // If keys match, the propStyleValue trumps unless it is a function, in which case the stateStyleValue

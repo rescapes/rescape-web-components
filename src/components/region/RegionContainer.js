@@ -2,7 +2,7 @@ import {connect} from 'react-redux';
 import {makeMergeDefaultStyleWithProps} from 'selectors/styleSelectors';
 import {gql} from 'apollo-client-preset';
 import {graphql} from 'react-apollo';
-import { makeApolloTestPropsFunction } from 'helpers/componentHelpers';
+import {makeApolloTestPropsFunction} from 'helpers/componentHelpers';
 import {mergeDeep, throwing} from 'rescape-ramda';
 import React from 'react';
 import * as R from 'ramda';
@@ -17,18 +17,20 @@ import Region from './Region';
  * @param {Object} props The parent props
  * @param {Object} props.Region The region
  */
-export const mapStateToProps =
-  (state, props) => createSelector(
+export const mapStateToProps = (state, props) => {
+  const {style, ...data} = props;
+  return createSelector(
     [
       // State and props merged style
       makeMergeDefaultStyleWithProps()
     ],
     // Replace props.style with style
-    style => ({
-      data: props,
-      style
+    defaultStyle => ({
+      data,
+      style: R.merge(defaultStyle, style)
     })
   )(state, props);
+};
 
 export const mapDispatchToProps = (dispatch) => {
   return {

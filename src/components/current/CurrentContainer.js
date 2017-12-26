@@ -19,23 +19,25 @@ import {bindActionCreators} from 'redux';
  * @param {Object} [props] The optional props to override the state.
  * @returns {Object} The state and own props mapped to props for the component
  */
-export const mapStateToProps = (state, props) =>
-  createSelector(
+export const mapStateToProps = (state, props) => {
+  const {style, ...data} = props
+  return createSelector(
     [
       makeActiveUserSelectedRegionAndSettingsSelector(),
       makeMergeDefaultStyleWithProps(),
       makeBrowserProportionalDimensionsSelector()
     ],
-    (data, style, browserProportionalStyle) => ({
+    (stateData, defaultStyle, browserProportionalStyle) => ({
       // No current graphql queries, pass the winnowed state
       // It might turn out that Current doesn't need anything because it simply renders child containers
       // Merge the browser dimensions with the props
       // props from the parent contain style instructions
       // TODO we need to set width and height proportional to the browser dimensions, not equal to
-      data: R.merge(data, loadingCompleteStatus),
-      style: R.merge(style, browserProportionalStyle)
+      data: R.mergeAll([stateData, loadingCompleteStatus, data]),
+      style: R.mergeAll([defaultStyle, browserProportionalStyle, style])
     })
   )(state, props);
+}
 
 export const mapDispatchToProps = (dispatch, ownProps) => {
   return bindActionCreators({}, dispatch);
