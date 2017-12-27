@@ -26,7 +26,7 @@ import {
   propsForSansClass, renderErrorDefault, renderLoadingDefault, reqStrPath
 } from 'helpers/componentHelpers';
 import * as R from 'ramda';
-import {styleMultiplier} from 'helpers/styleHelpers';
+import {applyStyleFunctionOrDefault, styleMultiplier} from 'helpers/styleHelpers';
 import {applyMatchingStyles, mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
 import {Component} from 'react/cjs/react.production.min';
 import deckGL, {OrthographicViewport} from 'deck.gl';
@@ -60,23 +60,26 @@ class Sankey extends Component {
 }
 
 Sankey.getStyles = ({style}) => {
-  const proportionalOrDefault = dim  =>
-    R.ifElse(
-      R.has(dim),
-      s => styleMultiplier(1, R.prop(dim, s)),
-      R.always('100%')
-    )(style)
+
+  const parentStyle = R.merge(
+    {
+      // default these parent styles
+      width: '100%',
+      height: '100%'
+    },
+    style
+  )
 
   return {
-    [c.sankey]: mergeAndApplyMatchingStyles(style, {
+    [c.sankey]: mergeAndApplyMatchingStyles(parentStyle, {
       position: 'absolute',
-      width: proportionalOrDefault('width'),
-      height: proportionalOrDefault('height')
+      width: styleMultiplier(1),
+      height: styleMultiplier(1)
     }),
 
-    [c.sankeyMapGl]: applyMatchingStyles(style, {
-      width: proportionalOrDefault('width'),
-      height: proportionalOrDefault('height'),
+    [c.sankeyMapGl]: applyMatchingStyles(parentStyle, {
+      width: styleMultiplier(1),
+      height: styleMultiplier(1)
     })
   };
 };
@@ -116,22 +119,15 @@ Sankey.renderData = ({views}) => {
   const props = R.flip(propsFor)(views);
   const propsSansClass = R.flip(propsForSansClass)(views);
 
+  let refs = {}
   return Div(props(c.mapboxMapGlOuter),
     MapGL(propsSansClass(c.mapboxMapGl),
-      Svg(props(c.svg),
+      Svg(R.merge(props(c.svg), {ref: node => {refs.node = node}}),
         // TODO first argument needs to be opt from the SVGOverlay layer. See MapMarkers
-        renderSankeySvgPoints(null, props, sample, node)
+        renderSankeySvgPoints(null, props(c.svg), sample, refs.node)
       )
     )
   );
-};
-
-Sankey.renderLoading = ({data}) => {
-  return [];
-};
-
-Sankey.renderError = ({data}) => {
-  return [];
 };
 
 /**

@@ -62,7 +62,6 @@ Region.getStyles = ({style}) => {
 
     [c.regionMapbox]: R.merge(
       // Pass width and height to Mapbox component
-      // TODO this probably won't stand, but it's more of a proof of concept now
       R.pick(['width', 'height'], style),
       {
         // Other styles to pass to component (unlikely)
@@ -74,6 +73,14 @@ Region.getStyles = ({style}) => {
       width: styleMultiplier(.5),
       height: styleMultiplier(1)
     }),
+
+    [c.regionSankey]: R.merge(
+      // Pass width and height to Mapbox component
+      R.pick(['width', 'height'], style),
+      {
+        // Other styles to pass to component (unlikely)
+      }
+    ),
 
     [c.regionLocationsOuter]: {
       position: 'absolute',

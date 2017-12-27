@@ -199,27 +199,6 @@ export const mergePropsForViews = R.curry((viewToPropValuesOrFuncs, props) => {
 });
 
 /**
- * Merges the results of an Apollo query (or the loading or error state) with ownProps
- * and then calls mergePropsForViews
- * @props {Object} viewToProps See mergePropsForViews
- * @props {Object} data The Apollo data object that results from a query
- * @props {Object} ownProps Props that Apollo passes through from wrapping container
- * (in our case this is the result of mapStateToProps)
- * @returns {Either} An Either as described above
- */
-export const resolveViewProps = R.curry((viewsToPropNames, {data, ownProps}) =>
-  // For the error and loading cases, give the views only what's in ownProps, since data isn't loaded
-  // ownProps might have legitimate props that can be show in a loading or error state
-  mergePropsForViews(
-    viewsToPropNames,
-    mergeDeep(
-      ownProps,
-      {data}
-    )
-  )
-);
-
-/**
  * Given a container's mapStateToProps and mapDispatchToProps, returns a function that accepts a sample state
  * and sample ownProps. This function may be exported by a container to help with unit tests
  * @param {Function} mapStateToProps The mapStatesToProps function of a container. It will be passed

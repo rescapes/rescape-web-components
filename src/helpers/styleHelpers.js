@@ -76,22 +76,31 @@ export const getStyleObj = (name, views) => compact({
 });
 
 
-/** *
+/***
  * Creates a function that multiplies a numeric value of a style by a fraction
  * This is used to map a container style numeric value to a proportional numeric value in the child component
  * when the child component's style must be specified as an absolute value rather than a fraction of the parent
  *
- * @param {Number} containerStyleValue The container style numeric value
- * @param {Object} styleValue The local style decimal value
+ * @param {Number} scaleValue The value to scale the styleValue
+ * @param {String|Number} styleValue The local style value. This can be a number
+ * or any supported css string. Strings will parse out the the number, scale, and
+ * then put it back in a string
  * @sig Number -> Number -> Object
  * @return {Function} A function that accepts two objects. The first object must have a
  * fraction value for the given prop. The second object must have a numeric value
  */
-export const styleMultiplier = v(R.curry((containerStyleValue, styleValue) =>
-  containerStyleValue * styleValue
+export const styleMultiplier = v(R.curry((scaleValue, styleValue) =>
+  R.ifElse(
+    R.is(Number),
+    value => scaleValue * value,
+    value => {
+      const [_, val, rest] = value.match(/(\d+)([^\d]+)/)
+      return `${val * scaleValue}${rest}`
+    }
+  )(styleValue)
 ), [
-  ['containerStyleValue', PropTypes.number.isRequired],
-  ['styleValue', PropTypes.number.isRequired]
+  ['caleValue', PropTypes.number.isRequired],
+  ['styleValue', PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired]
 ], 'styleMultiplier');
 
 /**
@@ -117,6 +126,16 @@ export const createScaledPropertyGetter = R.curry((scale, prop, index) => {
   )(index);
 });
 
-export const applyStyles = R.curry((styles, component) => {
-
-});
+/**
+ * If props has the given prop, call styleFunction with props. Otherwise return default
+ * @param {*} defaultValue A default value for the stylej
+ * @param {String} prop A props object
+ * @param {Function} styleFunction A unary function expecting props[prop]
+ * @return {*} The defaultValue or result of the function call
+ */
+export const applyStyleFunctionOrDefault = (defaultValue, prop, styleFunction)  =>
+  R.ifElse(
+    R.has(prop),
+    s => styleFunction(R.prop(prop, s)),
+    R.always(defaultValue)
+  )

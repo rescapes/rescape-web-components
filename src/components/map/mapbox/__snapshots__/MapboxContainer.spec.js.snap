@@ -446,10 +446,6 @@ Object {
         },
       },
     },
-    "style": Object {
-      "height": 720,
-      "width": 1080,
-    },
     "user": Object {
       "id": "californiaManager",
       "isActive": true,
@@ -990,10 +986,6 @@ Object {
     },
     "startPolling": [Function],
     "stopPolling": [Function],
-    "style": Object {
-      "height": 720,
-      "width": 1080,
-    },
     "subscribeToMore": [Function],
     "updateQuery": [Function],
     "user": Object {
@@ -1095,10 +1087,6 @@ Object {
     },
     "startPolling": [Function],
     "stopPolling": [Function],
-    "style": Object {
-      "height": 720,
-      "width": 1080,
-    },
     "subscribeToMore": [Function],
     "updateQuery": [Function],
     "user": Object {

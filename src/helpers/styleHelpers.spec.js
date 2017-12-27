@@ -1,5 +1,6 @@
 import {styleMultiplier, createScaledPropertyGetter, getClass} from './styleHelpers';
-import {getClassAndStyle, getStyleObj} from 'helpers/styleHelpers';
+import {applyStyleFunctionOrDefault, getClassAndStyle, getStyleObj} from 'helpers/styleHelpers';
+import * as R from 'ramda';
 
 describe('styles', () => {
   test('getClass', () => {
@@ -43,7 +44,8 @@ describe('styles', () => {
   });
 
   test('styleMultiplier', () => {
-    expect(styleMultiplier(100, 0.25)).toEqual(25);
+    expect(styleMultiplier(0.25, 100)).toEqual(25);
+    expect(styleMultiplier(0.25, '100 em')).toEqual('25 em');
   });
 
   test('createScaledPropertyGetter', () => {
@@ -51,4 +53,9 @@ describe('styles', () => {
     expect(() => createScaledPropertyGetter([2, 4, 8], 'margin', 'mayo')).toThrow();
     expect(() => createScaledPropertyGetter([2, 'tuna fish', 8], 'margin', 1)).toThrow();
   });
+
+  test('applyStyleFunctionOrDefault', () => {
+    expect(applyStyleFunctionOrDefault(11, 'width', R.add(1))({width: 5})).toEqual(6)
+    expect(applyStyleFunctionOrDefault(11, 'width', R.add(1))({height: 5})).toEqual(11)
+  })
 });
