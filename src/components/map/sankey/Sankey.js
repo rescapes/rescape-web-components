@@ -30,9 +30,12 @@ import {applyStyleFunctionOrDefault, styleMultiplier} from 'helpers/styleHelpers
 import {applyMatchingStyles, mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
 import {Component} from 'react/cjs/react.production.min';
 import deckGL, {OrthographicViewport} from 'deck.gl';
-import {renderSankeySvgPoints} from 'helpers/sankeyHelpers';
+import {sankeyGenerator} from 'helpers/sankeyHelpers';
 import sample from 'data/sankey.sample';
 import PropTypes from 'prop-types';
+import { geoMercator, geoPath } from 'd3-geo'
+const projection = geoMercator()
+const pathGenerator = geoPath().projection(projection)
 
 const [MapGL, DeckGL, Svg, G, Circle, Div] =
   eMap([mapGl, deckGL, 'svg', 'g', 'circle', 'div']);
@@ -124,7 +127,7 @@ Sankey.renderData = ({views}) => {
     MapGL(propsSansClass(c.mapboxMapGl),
       Svg(R.merge(props(c.svg), {ref: node => {refs.node = node}}),
         // TODO first argument needs to be opt from the SVGOverlay layer. See MapMarkers
-        renderSankeySvgPoints(null, props(c.svg), sample, refs.node)
+        sankeyGenerator(null, props(c.svg), sample)
       )
     )
   );
