@@ -60,6 +60,12 @@ Region.getStyles = ({style}) => {
       height: styleMultiplier(1)
     }),
 
+    [c.regionMapboxOuter]: applyMatchingStyles(style, {
+      position: 'absolute',
+      width: styleMultiplier(.5),
+      height: styleMultiplier(1)
+    }),
+
     [c.regionMapbox]: R.merge(
       // Pass width and height to Mapbox component
       R.pick(['width', 'height'], style),
@@ -67,12 +73,6 @@ Region.getStyles = ({style}) => {
         // Other styles to pass to component (unlikely)
       }
     ),
-
-    [c.regionMapboxOuter]: applyMatchingStyles(style, {
-      position: 'absolute',
-      width: styleMultiplier(.5),
-      height: styleMultiplier(1)
-    }),
 
     [c.regionSankey]: R.merge(
       // Pass width and height to Mapbox component

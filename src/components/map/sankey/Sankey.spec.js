@@ -13,7 +13,7 @@ import {propsFromSampleStateAndContainer} from 'helpers/testHelpers';
 import mapGL from 'react-map-gl'
 import mapbox from 'components/map/mapbox/Mapbox'
 import {eMap} from 'helpers/componentHelpers';
-const [MapGL, Mapbox] = eMap([mapGL, mapbox]);
+const [MapGL] = eMap([mapGL]);
 
 describe('Sankey', () => {
   test('Can mount', () => {

@@ -42,21 +42,22 @@ export const linkPosition = link => ({
 /**
  * This needs to be debugged
  * @param opt
- * @param props
+ * @param {*} width The width of the containing svg element
+ * @param {*} height The height of the containing svg element
  * @param {Object} sankeyData. An object with a nodes key and links key
  * @param {[Object]} sankeyData.nodes A list of objects that must have a name at a minimum
  * @param {[Object]} sankeyData.links A list of objects that must have a source and target index into the
  * nodes array and must have a value indicating the weight of the link
  * @returns {null}
  */
-export const sankeyGenerator = (opt, props, sankeyData) => {
+export const sankeyGenerator = R.memoize((opt, {width, height}, sankeyData) => {
   // Create a sankey generator
   const sankeyGenerator = sankey()
   // TODO pass from parent
     .nodeWidth(15)
     .nodePadding(10)
     // TODO. I don't know if the max extent is pixels or 1
-    .extent([[1, 1], [props.style.width, props.style.height]]);
+    .extent([[1, 1], [width, height]]);
 
   // Map sample nodes to sample features
   const features = R.map(node =>
@@ -136,4 +137,4 @@ export const sankeyGenerator = (opt, props, sankeyData) => {
 
   // This could be used to create react object from the features
   const reactSvgs = resolveSvgReact(opt, features);
-};
+});

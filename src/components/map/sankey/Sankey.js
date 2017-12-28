@@ -21,11 +21,10 @@ import {resolveSvgReact} from 'helpers/svgHelpers';
  * THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const {SVGOverlay} = require('react-map-gl');
-import mapGl from 'react-map-gl';
+import mapGl, {SVGOverlay as svgOverlay} from 'react-map-gl';
 import {throwing} from 'rescape-ramda';
 import {
-  composeViews, eMap, errorOrLoadingOrData, itemizeProps, nameLookup, propsFor,
+  composeViews, eMap, errorOrLoadingOrData, itemizeProps, mergePropsForViews, nameLookup, propsFor,
   propsForSansClass, renderErrorDefault, renderLoadingDefault, reqStrPath, strPath
 } from 'helpers/componentHelpers';
 import * as R from 'ramda';
@@ -46,11 +45,11 @@ const pathGenerator = geoPath().projection(projection);
 const formatNumber = d3Format(",.0f");
 const format = function (d) {
   return formatNumber(d) + " TWh";
-}
+};
 const color = scaleOrdinal(schemeCategory10);
 
-const [MapGL, DeckGL, Svg, G, Rect, Path, Div] =
-  eMap([mapGl, deckGL, 'svg', 'g', 'rect', 'path', 'div']);
+const [MapGL, SVGOverlay, DeckGL, Svg, G, Rect, Path, Div] =
+  eMap([mapGl, svgOverlay, deckGL, 'svg', 'g', 'rect', 'path', 'div']);
 
 export const c = nameLookup({
   sankey: true,
@@ -73,7 +72,7 @@ const {reqPath} = throwing;
 class Sankey extends Component {
   render() {
     const props = Sankey.views(this.props);
-    return Div(propsFor(c.mapbox, props.views),
+    return Div(propsFor(c.sankey, props.views),
       Sankey.choicepoint(props)
     );
   }
@@ -106,12 +105,11 @@ Sankey.getStyles = ({style}) => {
 };
 
 Sankey.viewProps = (props) => {
-  // Width and height need to be passed as properties
+  // Rely on the width and height calculated in getStyles
   const width = reqPath(['views', [c.sankey], 'style', 'width'], props);
   const height = reqPath(['views', [c.sankey], 'style', 'height'], props);
   const left = -Math.min(width, height) / 2;
   const top = -Math.min(width, height) / 2;
-  const sankeyData = sankeyGenerator(null, props(c.sankeySvg), sample);
   //const glViewport = new OrthographicViewport({width, height, left, top});
   return {
     [c.sankeyMapGl]: R.merge({
@@ -128,36 +126,56 @@ Sankey.viewProps = (props) => {
     [c.sankeySvgOverlay]: {},
 
     [c.sankeySvgLinks]: {
-      // Each node creates a SankeySvgLink element
-      links: reqPath(['links'], sankeyData),
       fill: 'none',
       stroke: '#000',
       strokeOpacity: 0.2
     },
 
     [c.sankeySvgNodes]: {
-      // Each node creates a SankeySvgNode element
-      nodes: reqPath(['nodes'], sankeyData),
       fontFamily: 'sans-serif',
       fontSize: 10,
       x: R.prop('x0'),
       y: R.prop('y0'),
-      height: _ => d => R.subtract(d.y1, d.y0),
-      width: _ => d => R.subtract(d.x1, d.x0),
-      fill: _ => d => color(d.name.replace(/ .*/, '')),
+      height: R.curry((_, d) => R.subtract(d.y1, d.y0)),
+      width: R.curry((_, d) => R.subtract(d.x1, d.x0)),
+      fill: R.curry((_, d) => color(d.name.replace(/ .*/, ''))),
       stroke: '#000'
     },
 
     [c.sankeySvgLink]: {
       // The d element of the svg path is produced by sankeyLinkHorizontal
-      d: sankeyLinkHorizontal(),
+      // Well call the result of sankeyLinkHorizontal on each datum
+      d: _ => sankeyLinkHorizontal(),
       // The stroke is based on the item, so return a unary function
       // The stroke width must be at least 1 (pixel?)
-      strokeWidth: _ => d => Math.max(1, d.width),
+      strokeWidth: R.curry((_, d) => Math.max(1, d.width)),
       // The title is based on the item, so return a unary function
-      title: _ => d => `${d.source.name} →  ${d.target.name} \n ${format(d.value)}`
+      title: R.curry((_, d) => `${d.source.name} →  ${d.target.name} \n ${format(d.value)}`)
     }
   };
+};
+
+/**
+ * We have props that depend on Mapbox's project() method, which is only available at render time,
+ * So merge in props that need projection
+ * @param views
+ * @param {Object} opt Properties of the SvgOverlay.redraw function
+ * @param {Function} opt.project Projects SVG Points to the coordinate space of Mapbox
+ */
+Sankey.viewPropsAtRender = ({views, opt}) => {
+  //resolveSvgReact(opt, this.props.geojson.features);
+  // TODO these should be the SVG width/height
+  const width = reqPath([[c.sankeyMapGl], 'width'], views);
+  const height = reqPath([[c.sankeyMapGl], 'height'], views);
+  const {links, nodes} = sankeyGenerator(opt, {width, height}, sample);
+  return mergePropsForViews({
+    [c.sankeySvgLinks]: {
+      links
+    },
+    [c.sankeySvgNodes]: {
+      nodes
+    }
+  }, {views});
 };
 
 Sankey.viewActions = () => {
@@ -165,6 +183,7 @@ Sankey.viewActions = () => {
     [c.sankeyMapGl]: ['onViewportChange', 'hoverMarker', 'selectMarker']
   };
 };
+
 
 Sankey.renderData = ({views}) => {
   /* We additionally give Mapbox the container width and height so the map can track changes to these
@@ -177,28 +196,32 @@ Sankey.renderData = ({views}) => {
 
   return Div(props(c.mapboxMapGlOuter),
     MapGL(propsSansClass(c.mapboxMapGl),
-      SVGOverlay(R.merge(
-        props(c.sankeySvgOverlay),
-        {
-          // The redraw property of SVGOverlay
-          redraw: opt => {
-            resolveSvgReact(opt, this.props.geojson.features);
-            return Svg(props(c.sankeySvg),
-              G(props(c.sankeySvgLinks),
-                R.map(
-                  d => SankeySvgLink(linkProps(d)),
-                  reqPath([c.sankeySvgLinks, 'links'])
+      SVGOverlay(
+        R.merge(
+          props(c.sankeySvgOverlay),
+          {
+            // The redraw property of SVGOverlay
+            redraw: opt => {
+              // Update props that are dependent on the opt.project method
+              const projectedViews = Sankey.viewPropsAtRender({views, opt});
+              const projectedProps = R.flip(propsFor)(projectedViews);
+
+              return Svg(props(c.sankeySvg),
+                G(projectedProps(c.sankeySvgLinks),
+                  R.map(
+                    d => SankeySvgLink(linkProps(d)),
+                    reqPath([c.sankeySvgLinks, 'links'])
+                  )
+                ),
+                G(projectedProps(c.sankeySvgNodes),
+                  R.map(
+                    d => SankeySvgNode(nodeProps(d)),
+                    reqPath([c.sankeySvgLinks, 'nodes'])
+                  )
                 )
-              ),
-              G(props(c.sankeySvgNodes),
-                R.map(
-                  d => SankeySvgNode(nodeProps(d)),
-                  reqPath([c.sankeySvgLinks, 'nodes'])
-                )
-              )
-            );
+              );
+            }
           }
-        }
         )
       )
     )

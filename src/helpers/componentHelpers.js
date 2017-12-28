@@ -348,7 +348,7 @@ export const liftAndExtractItems = (component, propsWithItems) => {
  */
 export const mergeStylesIntoViews = R.curry((viewStyles, props) => {
   // viewStyles can be an object or unary function that returns an object
-  // pass props to it if its a function
+
   const viewObjs = applyToIfFunction(props, viewStyles)
 
   // if the viewObj has style as a key, we take that to mean that the object is in the

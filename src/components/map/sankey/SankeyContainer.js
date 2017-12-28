@@ -12,33 +12,34 @@
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {onViewportChange} from 'redux-map-gl';
-import Sankey from './Sankey'
-import {viewportSelector} from 'selectors/mapboxSelectors'
-import {
-  makeActiveUserAndSettingsSelector
-} from 'selectors/storeSelectors';
-
-import {createSelector} from 'reselect';
-import {mergeDeep, throwing} from 'rescape-ramda';
-import {loadingCompleteStatus, makeTestPropsFunction, mergeActionsForViews} from 'helpers/componentHelpers';
 import {makeMergeDefaultStyleWithProps} from 'selectors/styleSelectors';
+import {viewportSelector} from 'selectors/mapboxSelectors';
+import {makeActiveUserAndSettingsSelector} from 'selectors/storeSelectors';
+import {createSelector} from 'reselect';
+import {makeApolloTestPropsFunction} from 'helpers/componentHelpers';
+import {mergeDeep, throwing} from 'rescape-ramda';
+import Sankey from './Sankey';
 import * as R from 'ramda';
-const {reqPath} = throwing
-//const {hoverMarker, selectMarker} = actionCreators;
+import {graphql} from 'react-apollo';
+import {gql} from 'apollo-client-preset';
 
+/**
+ * Selects the current user from state
+ * and the Viewport for the region in the props
+ * @returns {Object} The props
+ */
 export const mapStateToProps = (state, props) => {
-  const {style, ...data} = props;
+  const {style, ...data} = props
   return createSelector(
     [
       makeActiveUserAndSettingsSelector(),
       makeMergeDefaultStyleWithProps(),
       viewportSelector
     ],
-    (stateData, defaultStyle, viewport) => ({
+    (userAndSettings, defaultStyle, viewport) => ({
       data: R.mergeAll([
-        stateData,
+        userAndSettings,
         {viewport},
-        loadingCompleteStatus,
         data
       ]),
       style: R.merge(defaultStyle, style)
@@ -48,22 +49,79 @@ export const mapStateToProps = (state, props) => {
 
 export const mapDispatchToProps = (dispatch, ownProps) => {
   return bindActionCreators({
-    onViewportChange,
+    onViewportChange
     //hoverMarker,
     //selectMarker
   }, dispatch);
 };
 
+
 /**
- * Combines mapStateToProps, mapDispatchToProps with the given viewToActions mapping
- * @type {Function}
+ * Query
+ * Prerequisites:
+ *   A Region
+ * Resolves:
+ *  The geojson of the Region
+ * Without prerequisites:
+ *  Skip render
  */
-export const mergeProps = mergeActionsForViews({
-  // MapGl child component needs the following actions
-  mapboxMapGl: ['onChangeViewport', 'hoverMarker', 'selectMarker']
-})
+const geojsonQuery = `
+    query geojson($regionId: String!) {
+        store {
+            region(id: $regionId) {
+                geojson {
+                    osm {
+                        features {
+                            id
+                            type
+                            geometry {
+                                type
+                                coordinates
+                            }
+                            properties
+                        }
+                    }
+                }
+            },
+        }
+    }
+`;
 
-// Returns a function that expects a sample state and ownProps for testing
-export const testPropsMaker = makeTestPropsFunction(mapStateToProps, mapDispatchToProps, mergeProps)
+/**
+ * All queries used by the container
+ */
+export const queries = {
+  /**
+   * Expects a region with an id and resolves geojson of the region
+   */
+  geojson: {
+    query: geojsonQuery,
+    args: {
+      options: ({data: {region}}) => ({
+        variables: {
+          regionId: region.id
+        },
+        errorPolicy: 'none'
+      }),
+      props: ({data, ownProps}) => mergeDeep(
+        ownProps,
+        {data}
+      )
+    }
+  }
+};
 
-export default connect(mapStateToProps, mapDispatchToProps, mergeProps)(Sankey)
+// Create the GraphQL Container.
+// TODO We should handle all queries in queries here
+const ContainerWithData = graphql(
+  gql`${queries.geojson.query}`,
+  queries.geojson.args
+)
+(Sankey);
+
+// Returns a function that expects state and ownProps for testing
+export const testPropsMaker = makeApolloTestPropsFunction(mapStateToProps, mapDispatchToProps, queries.geojson);
+
+// Using R.merge to ignore ownProps, which were already merged by mapStateToProps
+export default connect(mapStateToProps, mapDispatchToProps, R.merge)(ContainerWithData);
+

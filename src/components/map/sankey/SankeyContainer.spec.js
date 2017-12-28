@@ -1,31 +1,67 @@
-/**
- * Created by Andy Likuski on 2017.02.06
- * Copyright (c) 2017 Andy Likuski
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
+import {asyncPropsFromSampleStateAndContainer, propsFromSampleStateAndContainer} from 'helpers/testHelpers';
+import {queries, testPropsMaker} from 'components/map/sankey/SankeyContainer';
+import {testPropsMaker as currentPropsMaker} from 'components/current/CurrentContainer';
+import {testPropsMaker as regionPropsMaker} from 'components/region/RegionContainer';
+import {eMap} from 'helpers/componentHelpers';
+import SankeyContainer from 'components/map/sankey/SankeyContainer';
+import * as R from 'ramda';
+import Current, {c as cCurrent} from 'components/current/Current';
+import Region, {c as cRegion} from 'components/region/Region';
+import Sankey, {c} from 'components/map/sankey/Sankey';
+import {gql} from 'apollo-client-preset';
+import {apolloContainerTests} from 'helpers/apolloContainerTestHelpers';
 
-import {mapStateToProps as currentContainerMapStateToProps} from './CurrentContainer';
-import {mapStateToProps as regionMapStateToProps} from './RegionContainer';
-import {mapStateToProps} from './SankeyContainer';
-import {makeSampleInitialState} from 'helpers/testHelpers';
-
-describe('SankeyContainer', () => {
-  currentContainerMapStateToProps
-  test('mapStateToProps', () => {
-    const ownProps = {
-      region,
-      views
-      style: {
-        width: 500,
-        height: 500
-      }
-    };
-
-    expect(mapStateToProps(makeSampleInitialState(), ownProps)).toMatchSnapshot();
-  });
+// Test this container
+const [Container] = eMap([SankeyContainer]);
+// Find this React component
+const componentName = 'Sankey';
+// Find this class in the data renderer
+const childClassDataName = c.sankeyMapGlOuter;
+// Find this class in the loading renderer
+const childClassLoadingName = c.sankeyLoading;
+// Find this class in the error renderer
+const childClassErrorName = c.sankeyError;
+// Run this apollo query
+const query = gql`${queries.geojson.query}`;
+// Use these query variables
+const queryVariables = props => ({
+  regionId: props.data.region.id
 });
+// Use this to make a query that errors
+const errorMaker = parentProps => R.set(R.lensPath(['region', 'id']), 'foo', parentProps);
+
+// Use this to get properties from parent containers to test our container
+// This returns a promise for consistency across tests. Some parent test props are async
+const asyncParentProps = () => {
+  // Build up the correct parent props from Current and Region
+  const currentProps = propsFromSampleStateAndContainer(currentPropsMaker, {});
+  const currentViews = Current.views(currentProps).views;
+  const currentRegionView = currentViews[cCurrent.currentRegion];
+  // Get async props from the RegionContainer and then resolve the Region.views
+  return asyncPropsFromSampleStateAndContainer(regionPropsMaker, currentRegionView)
+    .then(props =>
+      R.merge(
+        {
+          style: {
+            width: 500,
+            height: 500
+          }
+        },
+        Region.views(props).views
+      )[cRegion.regionSankey]
+    );
+};
+
+describe('SankeyContainer', () => apolloContainerTests({
+    Container,
+    componentName,
+    childClassDataName,
+    childClassLoadingName,
+    childClassErrorName,
+    testPropsMaker,
+    asyncParentProps,
+    query,
+    queryVariables,
+    errorMaker
+  })
+);
