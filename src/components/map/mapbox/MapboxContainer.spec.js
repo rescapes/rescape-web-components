@@ -16,7 +16,7 @@ const [Container] = eMap([MapboxContainer]);
 // Find this React component
 const componentName = 'Mapbox';
 // Find this class in the data renderer
-const childClassDataName = c.mapboxMapGlOuter;
+const childClassDataName = c.mapboxMapReactGlOuter;
 // Find this class in the loading renderer
 const childClassLoadingName = c.mapboxLoading;
 // Find this class in the error renderer

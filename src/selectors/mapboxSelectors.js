@@ -13,21 +13,30 @@ import {throwing} from 'rescape-ramda';
 import {createSelector} from 'reselect';
 import * as R from 'ramda';
 import {mapboxSettingsSelector} from 'selectors/settingsSelectors';
+import {fromImmutable, toImmutable} from 'helpers/immutableHelpers';
+
 const {reqPath} = throwing;
 
 /**
  * Selects the viewport from the given Region's mapbox and merges it with the state's mapbox settings
- * @param state The redux State
- * @param region The Region
+ * @param {Object} state The redux State
+ * @param {Object} [region] The Region Supply either this or mapbox
+ * @param {Object} [mapbox] The Mapbox Supply either this or region
  * @returns A selector which extracts the viewport from the region's mapbox and merges it with the state's mapbox settings
  */
-export const viewportSelector = (state, {region}) => {
+export const viewportSelector = (state, {region, mapbox}) => {
   return createSelector(
     [mapboxSettingsSelector],
+    // Viewport is stored as an immutable, since react-map-gl's createViewportReducer expects it
+    // If we don't need the reducer we should be able to get rid of the immutable
     mapboxSettings => R.merge(
       // Merge
       R.defaultTo({}, mapboxSettings.viewport),
-      reqPath(['mapbox', 'viewport'], region)
+      fromImmutable(
+        region ?
+          reqPath(['mapbox', 'viewport'], region) :
+          reqPath(['viewport'], mapbox)
+      )
     )
   )(state, {region});
 }

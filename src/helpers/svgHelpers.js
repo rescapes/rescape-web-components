@@ -18,7 +18,7 @@ const {circle, polygon, polyline, g} = eMap(['circle', 'polygon', 'polyline', 'g
  * @param {Object} feature The geojson object from which to resolve points
  * @return {Object} An object with the geometry type and points
  */
-export const resolveSvgPoints = (opt, feature) => {
+export const resolveSvgPoints = R.curry((opt, feature) => {
     switch (feature.geometry.type) {
         case 'Point':
             return {
@@ -38,7 +38,7 @@ export const resolveSvgPoints = (opt, feature) => {
         default:
             throw new Error(`Unexpected geometry type ${feature.geometry.type}`);
     }
-};
+});
 
 /**
  * Inspects a feature and returns its type and projected point representation

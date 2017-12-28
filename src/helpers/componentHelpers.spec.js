@@ -11,10 +11,10 @@
 import * as R from 'ramda';
 import {
   propLensEqual, mergeActionsForViews, makeTestPropsFunction, liftAndExtract,
-  errorOrLoadingOrData, joinComponents, loadingCompleteStatus, makeApolloTestPropsFunction, mergePropsForViews,
+  renderChoicepoint, joinComponents, loadingCompleteStatus, makeApolloTestPropsFunction, mergePropsForViews,
   mergeStylesIntoViews,
   nameLookup, propsFor,
-  propsForSansClass, reqStrPath, strPath, itemizeProps, applyToIfFunction
+  propsForSansClass, reqStrPath, strPath, itemizeProps, applyToIfFunction, keyWith
 } from 'helpers/componentHelpers';
 import {throwing} from 'rescape-ramda';
 
@@ -277,8 +277,8 @@ describe('componentHelpers', () => {
     );
   });
 
-  test('errorOrLoadingOrData', () => {
-    const func = errorOrLoadingOrData(
+  test('renderChoicepoint', () => {
+    const func = renderChoicepoint(
       p => p.bad,
       p => p.okay,
       p => p.good
@@ -408,5 +408,28 @@ describe('componentHelpers', () => {
   test('applyToIfFunction', () => {
     expect(applyToIfFunction({kangaroo: 1}, R.prop('kangaroo'))).toEqual(1)
     expect(applyToIfFunction({kangaroo: 1}, 'rat')).toEqual('rat')
+  })
+
+  test('keyWith', () => {
+    // With constant
+    expect(keyWith('id', {
+      id: 1,
+      billy: 'low ground'
+    })).toEqual({
+      key: 1,
+      id: 1,
+      billy: 'low ground'
+    })
+
+    // With func that is resolvec later
+    const billyFunc = (props, d) => 'low ground'
+    expect(keyWith('billy', {
+      id: 1,
+      billy: billyFunc
+    })).toEqual({
+      key: billyFunc,
+      id: 1,
+      billy: billyFunc
+    })
   })
 });

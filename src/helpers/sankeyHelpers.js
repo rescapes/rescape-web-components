@@ -63,6 +63,7 @@ export const sankeyGenerator = R.memoize((opt, {width, height}, sankeyData) => {
   const features = R.map(node =>
       ({
         type: 'Feature',
+        name: node.name,
         properties: {
           '@id': 'node/27233097',
           'STIF:zone': '3',
@@ -114,7 +115,7 @@ export const sankeyGenerator = R.memoize((opt, {width, height}, sankeyData) => {
   */
 
   // Create the points needed to render the shape of each feature
-  const pointsOfFeatures = resolveSvgPoints(opt, features);
+  const pointsOfFeatures = R.map(resolveSvgPoints(opt), features);
 
   // Call the generator with the features as nodes and the original links
   // This updates the links and nodes.

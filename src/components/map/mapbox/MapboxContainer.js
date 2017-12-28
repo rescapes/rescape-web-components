@@ -69,6 +69,7 @@ const geojsonQuery = `
     query geojson($regionId: String!) {
         store {
             region(id: $regionId) {
+                id
                 geojson {
                     osm {
                         features {
@@ -101,6 +102,7 @@ export const queries = {
         variables: {
           regionId: region.id
         },
+        // Pass through error so we can handle it in the component
         errorPolicy: 'none'
       }),
       props: ({data, ownProps}) => mergeDeep(

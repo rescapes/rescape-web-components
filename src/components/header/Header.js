@@ -2,7 +2,7 @@ import React, {Component} from 'react';
 import {Link as link} from 'react-router-dom';
 import {withRouter} from 'react-router';
 import {throwing} from 'rescape-ramda';
-import {composeViews, eMap, errorOrLoadingOrData, joinComponents, nameLookup, propsFor} from 'helpers/componentHelpers';
+import {composeViews, eMap, renderChoicepoint, joinComponents, nameLookup, propsFor} from 'helpers/componentHelpers';
 import * as R from 'ramda';
 import {mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
 import {styleMultiplier} from 'helpers/styleHelpers';
@@ -133,7 +133,7 @@ Header.views = composeViews(
 /**
  * Loading, Error, or Data based on the props
  */
-Header.choicepoint = errorOrLoadingOrData(
+Header.choicepoint = renderChoicepoint(
   Header.renderError,
   Header.renderLoading,
   Header.renderData

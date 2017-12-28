@@ -88,7 +88,9 @@ export const queries = {
       options: ({data: {region}}) => ({
         variables: {
           regionId: region.id
-        }
+        },
+        // Pass through error so we can handle it in the component
+        errorPolicy: 'none'
       }),
       props: ({data, ownProps}) => mergeDeep(
         ownProps,

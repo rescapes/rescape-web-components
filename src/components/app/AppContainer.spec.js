@@ -1,21 +1,50 @@
-/**
- * Created by Andy Likuski on 2017.02.06
- * Copyright (c) 2017 Andy Likuski
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
-import {mapStateToProps} from './AppContainer';
-import {sampleConfig} from 'data/samples/sampleConfig';
-import {makeSampleInitialState} from 'helpers/testHelpers';
-const initialState = makeSampleInitialState();
+import appContainer, {testPropsMaker, queries} from 'components/app/AppContainer';
+import {eMap} from 'helpers/componentHelpers';
+import * as R from 'ramda';
+import {c} from 'components/app/App';
+import {gql} from 'apollo-client-preset';
+import {apolloContainerTests} from 'helpers/apolloContainerTestHelpers';
+import {MemoryRouter as memoryRouter} from 'react-router-dom'
 
-describe('CurrentContainer', () => {
-  test('mapStateToProps', () => {
-    // For now let's assume this container gets its dimensions from the browser, not a parent
-    expect(mapStateToProps(initialState)).toMatchSnapshot();
-  });
+const [AppContainer, MemoryRouter] = eMap([appContainer, memoryRouter]);
+// Test this container with a memory router so we can test the main route
+const Container = (...args) => MemoryRouter({initialEntries: [ '/' ]},
+  AppContainer(...args)
+)
+
+// Find this React component
+const componentName = 'App';
+// Find this class in the data renderer
+const childClassDataName = c.appBody;
+// Find this class in the loading renderer
+const childClassLoadingName = c.appLoading;
+// Find this class in the error renderer
+const childClassErrorName = c.appError;
+// Run this apollo query
+const query = gql`${queries.userRegions.query}`;
+// Use these query variables
+const queryVariables = props => ({
+  userId: props.data.user.id
 });
+const errorMaker = parentProps => R.set(R.lensPath(['user', 'id']), 'foo', parentProps);
+
+/**
+ * Nothing to do here, since App has no parent component
+ */
+const asyncParentProps = () => new Promise((resolve) => {
+  resolve({});
+});
+
+describe('AppContainer', () => apolloContainerTests({
+    Container,
+    componentName,
+    childClassDataName,
+    childClassLoadingName,
+    childClassErrorName,
+    testPropsMaker,
+    asyncParentProps,
+    query,
+    queryVariables,
+    errorMaker
+  })
+);

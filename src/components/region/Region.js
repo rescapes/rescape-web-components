@@ -15,7 +15,7 @@ import markerList from 'components/map/marker/MarkerListContainer';
 import PropTypes from 'prop-types';
 import {applyMatchingStyles, mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
 import {
-  nameLookup, eMap, propsFor, errorOrLoadingOrData, composeViews,
+  nameLookup, eMap, propsFor, renderChoicepoint, composeViews,
   propsForSansClass, renderLoadingDefault, renderErrorDefault, strPath
 } from 'helpers/componentHelpers';
 import {mergeDeep, throwing} from 'rescape-ramda';
@@ -97,7 +97,9 @@ Region.viewProps = () => {
   return {
     [c.region]: {region},
     [c.regionMapbox]: {region},
-    [c.regionSankey]: {region}
+    [c.regionMapboxOuter]: {key: c.regionMapboxOuter},
+    [c.regionSankey]: {region},
+    [c.regionLocationsOuter]: {key: c.regionLocationsOuter}
   };
 };
 
@@ -113,16 +115,16 @@ Region.renderData = ({views}) => {
 
   return [
     Div(props(c.regionMapboxOuter),
-      Mapbox(
-        propsSansClass(c.regionMapbox)
-      ),
+      //Mapbox(
+      //  propsSansClass(c.regionMapbox)
+      //),
       Sankey(
         propsSansClass(c.regionSankey)
       )
     ),
-    Div(props(c.regionLocationsOuter),
-      MarkerList(propsSansClass(c.regionLocations))
-    )
+    //Div(props(c.regionLocationsOuter),
+    //  MarkerList(propsSansClass(c.regionLocations))
+    //)
   ];
 };
 
@@ -141,7 +143,7 @@ Region.views = composeViews(
 /**
  * Loading, Error, or Data based on the props
  */
-Region.choicepoint = errorOrLoadingOrData(
+Region.choicepoint = renderChoicepoint(
   renderErrorDefault(c.regionError),
   renderLoadingDefault(c.regionLoading),
   Region.renderData

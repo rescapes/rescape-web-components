@@ -69,6 +69,7 @@ const geojsonQuery = `
     query geojson($regionId: String!) {
         store {
             region(id: $regionId) {
+                id
                 geojson {
                     osm {
                         features {

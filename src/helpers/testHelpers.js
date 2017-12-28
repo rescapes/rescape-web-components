@@ -231,7 +231,7 @@ export const waitForChildComponentRender = (wrapper, componentName, childClassNa
   // Enzyme 3 doesn't stay synced with React DOM changes without update
   component.find = (...args) => {
     wrapper.update();
-    // Wind the component with the updated wrapper, otherwise we get the old component
+    // Find the component with the updated wrapper, otherwise we get the old component
     return find.apply(wrapper.find(componentName), args);
   };
   waitForSample(component)

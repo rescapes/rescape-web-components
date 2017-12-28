@@ -12,15 +12,15 @@
 import {styleMultiplier} from 'helpers/styleHelpers';
 import React from 'react';
 import {
-  composeViews, eMap, errorOrLoadingOrData, nameLookup, propsFor,
+  composeViews, eMap, renderChoicepoint, nameLookup, propsFor,
   propsForSansClass
 } from 'helpers/componentHelpers';
 import current from 'components/current';
 import {throwing} from 'rescape-ramda';
 import {Component} from 'react'
 import * as R from 'ramda';
-const [Div, Current] = eMap(['div', current]);
 import PropTypes from 'prop-types'
+const [Div, Current] = eMap(['div', current]);
 
 export const c = nameLookup({
   main: true,
@@ -89,7 +89,7 @@ Main.views = composeViews(
 /**
  * Loading, Error, or Data based on the props
  */
-Main.choicepoint = errorOrLoadingOrData(
+Main.choicepoint = renderChoicepoint(
   Main.renderError,
   Main.renderLoading,
   Main.renderData

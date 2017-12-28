@@ -21,11 +21,11 @@ import {resolveSvgReact} from 'helpers/svgHelpers';
  * THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import mapGl, {SVGOverlay as svgOverlay} from 'react-map-gl';
+import reactMapGl, {SVGOverlay as svgOverlay} from 'react-map-gl';
 import {throwing} from 'rescape-ramda';
 import {
-  composeViews, eMap, errorOrLoadingOrData, itemizeProps, mergePropsForViews, nameLookup, propsFor,
-  propsForSansClass, renderErrorDefault, renderLoadingDefault, reqStrPath, strPath
+  composeViews, eMap, renderChoicepoint, itemizeProps, mergePropsForViews, nameLookup, propsFor,
+  propsForSansClass, renderErrorDefault, renderLoadingDefault, reqStrPath, strPath, keyWith
 } from 'helpers/componentHelpers';
 import * as R from 'ramda';
 import {applyStyleFunctionOrDefault, styleMultiplier} from 'helpers/styleHelpers';
@@ -48,19 +48,22 @@ const format = function (d) {
 };
 const color = scaleOrdinal(schemeCategory10);
 
-const [MapGL, SVGOverlay, DeckGL, Svg, G, Rect, Path, Div] =
-  eMap([mapGl, svgOverlay, deckGL, 'svg', 'g', 'rect', 'path', 'div']);
+const [ReactMapGl, SVGOverlay, DeckGL, Svg, G, Rect, Text, Title, Path, Div] =
+  eMap([reactMapGl, svgOverlay, deckGL, 'svg', 'g', 'rect', 'text', 'title', 'path', 'div']);
 
 export const c = nameLookup({
   sankey: true,
-  asankeyMapGlOuter: true,
-  sankeyMapGl: true,
+  sankeyReactMapGlOuter: true,
+  sankeyReactMapGl: true,
   sankeySvgOverlay: true,
   sankeySvg: true,
   sankeySvgLinks: true,
   sankeySvgLink: true,
   sankeySvgNodes: true,
   sankeySvgNode: true,
+  sankeySvgNodeRect: true,
+  sankeySvgNodeText: true,
+  sankeySvgNodeTitle: true,
   sankeyLoading: true,
   sankeyError: true
 });
@@ -96,7 +99,7 @@ Sankey.getStyles = ({style}) => {
       height: styleMultiplier(1)
     }),
 
-    [c.sankeyMapGl]: applyMatchingStyles(parentStyle, {
+    [c.sankeyReactMapGl]: applyMatchingStyles(parentStyle, {
       width: styleMultiplier(1),
       height: styleMultiplier(1)
     })
@@ -110,39 +113,81 @@ Sankey.viewProps = (props) => {
   const height = reqPath(['views', [c.sankey], 'style', 'height'], props);
   const left = -Math.min(width, height) / 2;
   const top = -Math.min(width, height) / 2;
-  //const glViewport = new OrthographicViewport({width, height, left, top});
+  // Change the text position if the following is true
+  const nodeTextCond = (_, d) => d.x0 < width / 2;
   return {
-    [c.sankeyMapGl]: R.merge({
+    [c.sankeyReactMapGl]: R.merge({
         width,
         height
       },
       // Pass anything in the viewport
       reqStrPath('data.viewport', props)
     ),
-    [c.sankeySvg]: {
-      viewBox: `0 0 ${width} ${height}`,
-      features: strPath('data.region.geojson.features')
-    },
-    [c.sankeySvgOverlay]: {},
 
-    [c.sankeySvgLinks]: {
-      fill: 'none',
-      stroke: '#000',
-      strokeOpacity: 0.2
+    [c.sankeySvgOverlay]: {
+      viewBox: `0 0 ${width} ${height}`
     },
 
     [c.sankeySvgNodes]: {
+      key: 'svgNodes',
       fontFamily: 'sans-serif',
-      fontSize: 10,
-      x: R.prop('x0'),
-      y: R.prop('y0'),
+      fontSize: 10
+    },
+
+    [c.sankeySvgNode]: {
+      key: R.curry((_, d) => d.name)
+    },
+
+    [c.sankeySvgNodeRect]: {
+      key: 'svgNodeRect',
+      //key: R.curry((_, d) => d.name),
+      x: R.curry((_, d) => R.prop('x0', d)),
+      y: R.curry((_, d) => R.prop('y0', d)),
       height: R.curry((_, d) => R.subtract(d.y1, d.y0)),
       width: R.curry((_, d) => R.subtract(d.x1, d.x0)),
       fill: R.curry((_, d) => color(d.name.replace(/ .*/, ''))),
       stroke: '#000'
     },
 
-    [c.sankeySvgLink]: {
+    [c.sankeySvgNodeText]: {
+      key: R.curry((_, d) => d.name),
+      x: R.curry((_, d) => R.ifElse(
+        // Position text based on the condition
+        nodeTextCond,
+        (_, d) => R.add(d.x1, 6),
+        (_, d) => R.subtract(d.x0, 6)
+      )(_, d)),
+      y: R.curry((_, d) => R.divide(R.add(d.y1, d.y0), 2)),
+      dy: '0.35em',
+      // Anchor text based on the condition
+      textAnchor: R.curry((_, d) => R.ifElse(
+        nodeTextCond,
+        R.always('start'),
+        R.always('end')
+      )(_, d)),
+      text: R.curry((_, d) => d.name),
+
+      height: R.curry((_, d) => R.subtract(d.y1, d.y0)),
+      width: R.curry((_, d) => R.subtract(d.x1, d.x0)),
+      fill: R.curry((_, d) => color(d.name.replace(/ .*/, ''))),
+      stroke: '#000'
+    },
+
+    [c.sankeySvgNodeTitle]: {
+      key: 'svgNodeTitle',
+      text: R.curry((_, d) => `${d.name}\n${format(d.value)}`)
+    },
+
+    [c.sankeySvgLinks]: {
+      key: 'svgLinks',
+      fontFamily: 'sans-serif',
+      fontSize: 10
+    },
+
+    [c.sankeySvgLink]: keyWith('title', {
+      fill: 'none',
+      stroke: '#000',
+      strokeOpacity: 0.2,
       // The d element of the svg path is produced by sankeyLinkHorizontal
       // Well call the result of sankeyLinkHorizontal on each datum
       d: _ => sankeyLinkHorizontal(),
@@ -151,7 +196,7 @@ Sankey.viewProps = (props) => {
       strokeWidth: R.curry((_, d) => Math.max(1, d.width)),
       // The title is based on the item, so return a unary function
       title: R.curry((_, d) => `${d.source.name} →  ${d.target.name} \n ${format(d.value)}`)
-    }
+    })
   };
 };
 
@@ -165,8 +210,8 @@ Sankey.viewProps = (props) => {
 Sankey.viewPropsAtRender = ({views, opt}) => {
   //resolveSvgReact(opt, this.props.geojson.features);
   // TODO these should be the SVG width/height
-  const width = reqPath([[c.sankeyMapGl], 'width'], views);
-  const height = reqPath([[c.sankeyMapGl], 'height'], views);
+  const width = reqPath([[c.sankeyReactMapGl], 'width'], views);
+  const height = reqPath([[c.sankeyReactMapGl], 'height'], views);
   const {links, nodes} = sankeyGenerator(opt, {width, height}, sample);
   return mergePropsForViews({
     [c.sankeySvgLinks]: {
@@ -180,7 +225,7 @@ Sankey.viewPropsAtRender = ({views, opt}) => {
 
 Sankey.viewActions = () => {
   return {
-    [c.sankeyMapGl]: ['onViewportChange', 'hoverMarker', 'selectMarker']
+    [c.sankeyReactMapGl]: ['onViewportChange', 'hoverMarker', 'selectMarker']
   };
 };
 
@@ -193,9 +238,12 @@ Sankey.renderData = ({views}) => {
   const propsSansClass = R.flip(propsForSansClass)(views);
   const linkProps = itemizeProps(props(c.sankeySvgLink));
   const nodeProps = itemizeProps(props(c.sankeySvgNode));
+  const nodeRectProps = itemizeProps(props(c.sankeySvgNodeRect));
+  const nodeTextProps = itemizeProps(props(c.sankeySvgNodeText));
+  const nodeTitleProps = itemizeProps(props(c.sankeySvgNodeTitle));
 
-  return Div(props(c.mapboxMapGlOuter),
-    MapGL(propsSansClass(c.mapboxMapGl),
+  return Div(props(c.sankeyReactMapGlOuter),
+    ReactMapGl(propsSansClass(c.sankeyReactMapGl),
       SVGOverlay(
         R.merge(
           props(c.sankeySvgOverlay),
@@ -203,23 +251,26 @@ Sankey.renderData = ({views}) => {
             // The redraw property of SVGOverlay
             redraw: opt => {
               // Update props that are dependent on the opt.project method
-              const projectedViews = Sankey.viewPropsAtRender({views, opt});
+              const {views: projectedViews} = Sankey.viewPropsAtRender({views, opt});
               const projectedProps = R.flip(propsFor)(projectedViews);
+              // Separate out our links and nodes, which are for iterating, from the container props
+              const {links, ...linksProps} = projectedProps(c.sankeySvgLinks);
+              const {nodes, ...nodesProps} = projectedProps(c.sankeySvgNodes);
 
-              return Svg(props(c.sankeySvg),
-                G(projectedProps(c.sankeySvgLinks),
+              return [
+                G(linksProps,
                   R.map(
                     d => SankeySvgLink(linkProps(d)),
-                    reqPath([c.sankeySvgLinks, 'links'])
+                    links
                   )
                 ),
-                G(projectedProps(c.sankeySvgNodes),
+                G(nodesProps,
                   R.map(
-                    d => SankeySvgNode(nodeProps(d)),
-                    reqPath([c.sankeySvgLinks, 'nodes'])
+                    d => SankeySvgNode({node: nodeProps(d), rect: nodeRectProps(d), text: nodeTextProps(d), title: nodeTitleProps(d)}),
+                    nodes
                   )
                 )
-              );
+              ];
             }
           }
         )
@@ -229,8 +280,15 @@ Sankey.renderData = ({views}) => {
 };
 
 
-const SankeySvgNode = (props) => {
-  return Rect(props);
+const SankeySvgNode = ({node, rect, text, title}) => {
+  // Extract text element from props
+  const {text: textText, ...textProps} = text;
+  const {text: titleText, ...titleProps} = title;
+  return G(node,
+    Rect(rect),
+    Text(textProps, textText),
+    Title(titleProps, titleText)
+  );
 };
 
 const SankeySvgLink = (props) => {
@@ -252,7 +310,7 @@ Sankey.views = composeViews(
 /**
  * Loading, Error, or Data based on the props
  */
-Sankey.choicepoint = errorOrLoadingOrData(
+Sankey.choicepoint = renderChoicepoint(
   renderErrorDefault(c.sankeyError),
   renderLoadingDefault(c.sankeyLoading),
   Sankey.renderData

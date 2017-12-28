@@ -9,10 +9,10 @@
  * THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import mapGl from 'react-map-gl';
+import reactMapGl from 'react-map-gl';
 import {throwing} from 'rescape-ramda';
 import {
-  composeViews, eMap, errorOrLoadingOrData, nameLookup, propsFor,
+  composeViews, eMap, renderChoicepoint, nameLookup, propsFor,
   propsForSansClass, renderErrorDefault, renderLoadingDefault, reqStrPath
 } from 'helpers/componentHelpers';
 import * as R from 'ramda';
@@ -21,11 +21,11 @@ import {applyMatchingStyles, mergeAndApplyMatchingStyles} from 'selectors/styleS
 import {Component} from 'react'
 import PropTypes from 'prop-types';
 
-const [Div, MapGl] = eMap(['div', mapGl]);
+const [Div, ReactMapGl] = eMap(['div', reactMapGl]);
 export const c = nameLookup({
   mapbox: true,
-  mapboxMapGlOuter: true,
-  mapboxMapGl: true,
+  mapboxMapReactGlOuter: true,
+  mapboxReactMapGl: true,
   mapboxLoading: true,
   mapboxError: true
 });
@@ -51,7 +51,7 @@ Mapbox.getStyles = ({style}) => {
       height: styleMultiplier(1)
     }),
 
-    [c.mapboxMapGl]: applyMatchingStyles(style, {
+    [c.mapboxReactMapGl]: applyMatchingStyles(style, {
       width: styleMultiplier(1),
       height: styleMultiplier(1)
     })
@@ -60,10 +60,10 @@ Mapbox.getStyles = ({style}) => {
 
 Mapbox.viewProps = (props) => {
   return {
-    [c.mapboxMapGl]: R.merge({
+    [c.mapboxReactMapGl]: R.merge({
         // Width and height are calculated in getStyles
-        width: reqPath(['views', [c.mapboxMapGl], 'style', 'width']),
-        height: reqPath(['views', [c.mapboxMapGl], 'style', 'height'])
+        width: reqPath(['views', [c.mapboxReactMapGl], 'style', 'width']),
+        height: reqPath(['views', [c.mapboxReactMapGl], 'style', 'height'])
       }, reqStrPath('data.viewport', props)
     )
     //osm: 'store.region.geojson.osm'
@@ -72,7 +72,7 @@ Mapbox.viewProps = (props) => {
 
 Mapbox.viewActions = () => {
   return {
-    [c.mapboxMapGl]: ['onViewportChange', 'hoverMarker', 'selectMarker']
+    [c.mapboxReactMapGl]: ['onViewportChange', 'hoverMarker', 'selectMarker']
   };
 };
 
@@ -83,8 +83,8 @@ Mapbox.renderData = ({views}) => {
   const props = R.flip(propsFor)(views);
   const propsSansClass = R.flip(propsForSansClass)(views);
 
-  return Div(props(c.mapboxMapGlOuter),
-    MapGl(propsSansClass(c.mapboxMapGl))
+  return Div(props(c.mapboxMapReactGlOuter),
+    ReactMapGl(propsSansClass(c.mapboxReactMapGl))
   );
 };
 
@@ -102,7 +102,7 @@ Mapbox.views = composeViews(
 /**
  * Loading, Error, or Data based on the props
  */
-Mapbox.choicepoint = errorOrLoadingOrData(
+Mapbox.choicepoint = renderChoicepoint(
   renderErrorDefault(c.mapboxError),
   renderLoadingDefault(c.mapboxLoading),
   Mapbox.renderData

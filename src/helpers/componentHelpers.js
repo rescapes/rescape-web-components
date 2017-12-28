@@ -74,7 +74,7 @@ export const eMap = types => R.map(component => React.createFactory(component), 
  * @param props An Object that must have one of data.error|.loading|.store
  * @return {*} The result of the onError, onLoading, onData, or an Exception if none are matched
  */
-export const errorOrLoadingOrData = R.curry((onError, onLoading, onData, props) =>
+export const renderChoicepoint = R.curry((onError, onLoading, onData, props) =>
   R.cond([
     [R.view(R.lensPath(['data', 'error'])), onError],
     [R.view(R.lensPath(['data', 'loading'])), onLoading],
@@ -189,6 +189,17 @@ export const mergePropsForViews = R.curry((viewToPropValuesOrFuncs, props) => {
     props
   );
 });
+
+/**
+ * Adds a 'key' to the viewProps for React iteration. The value of key must be a key in viewProps
+ * that generates a unique value, such as an id, name, or title
+ * @param {String} key Any key in viewProps that generates a unique value
+ * @param {Object} viewProps Prop configuration for a particular view (see mergePropsForViews)
+ * The values can be constants or functions, as supported by mergePropsForView. The value matching
+ * key will simply be referred by 'key'
+ * @return {*} viewProps with 'key' added
+ */
+export const keyWith = (key, viewProps) => R.merge(viewProps, {key: reqPath([key], viewProps)})
 
 /**
  * If maybeFunc is a func, call it with obj, otherwise return maybeFunc
@@ -349,7 +360,7 @@ export const liftAndExtractItems = (component, propsWithItems) => {
 export const mergeStylesIntoViews = R.curry((viewStyles, props) => {
   // viewStyles can be an object or unary function that returns an object
 
-  const viewObjs = applyToIfFunction(props, viewStyles)
+  const viewObjs = applyToIfFunction(props, viewStyles);
 
   // if the viewObj has style as a key, we take that to mean that the object is in the
   // shape {style: {...}, className: 'extra class names'}. Otherwise it means
@@ -397,16 +408,20 @@ export const mergeStylesIntoViews = R.curry((viewStyles, props) => {
  * @param views
  * @return {*}
  */
-export const propsFor = (name, views) => {
-  const propsForView = R.defaultTo({}, R.view(R.lensProp(name), views));
-  return R.merge(
-    propsForView,
-    getClassAndStyle(
-      name,
-      views
-    )
-  );
-};
+export const propsFor = v((name, views) => {
+    const propsForView = R.defaultTo({}, R.view(R.lensProp(name), views));
+    return R.merge(
+      propsForView,
+      getClassAndStyle(
+        name,
+        views
+      )
+    );
+  },
+  [
+    ['name', PropTypes.string.isRequired],
+    ['views', PropTypes.shape().isRequired],
+  ], 'propsFor');
 
 /**
  * Like propsFor but doesn't generate a className since non-trivial components ignore it
@@ -414,13 +429,17 @@ export const propsFor = (name, views) => {
  * @param views
  * @return {*}
  */
-export const propsForSansClass = (name, views) => {
+export const propsForSansClass = v((name, views) => {
   const propsForView = R.defaultTo({}, R.view(R.lensProp(name), views));
   return R.merge(
     propsForView,
     getStyleObj(name, views)
   );
-};
+},
+  [
+    ['name', PropTypes.string.isRequired],
+    ['views', PropTypes.shape().isRequired],
+  ], 'propsForSansClass');
 
 export const propsAndStyle = (name, viewProps) => R.merge(
   getStyleObj(name, R.propOr({name: {style: {}}}, name, viewProps)),
@@ -538,3 +557,4 @@ export const renderErrorDefault = viewName => ({data, views}) => {
   const props = R.flip(propsFor)(views);
   return Div(props(viewName), `Error: ${data.error.message}\nTrace: ${data.error.stack}`);
 };
+

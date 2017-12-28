@@ -7,24 +7,8 @@ import {createSelector} from 'reselect';
 import {makeActiveUserRegionsAndSettingsSelector} from 'selectors/storeSelectors';
 import {makeBrowserProportionalDimensionsSelector} from 'selectors/styleSelectors';
 import {mergeDeep} from 'rescape-ramda';
+import {makeApolloTestPropsFunction} from 'helpers/componentHelpers';
 
-/**
- * Query
- * Prerequisites:
- *   A User in context
- * Resolves:
- *  The Regions of the User
- * Without prerequisites:
- *  Skip render
- */
-const query = gql`
-    query regions($userId: String!) {
-        users(id: $id) {
-            id
-            name
-        }
-    }
-`;
 
 /**
  * Combined selector that:
@@ -55,18 +39,71 @@ export const mapStateToProps = (state, props) => {
   )(state, props);
 }
 
+export const mapDispatchToProps = (dispatch) => {
+  return {
+  };
+};
 
-// Apply query to component
-const ContainerWithData = graphql(query, {
-  props: ({data: {loading, store}}) => ({
-    store,
-    loading
-  })
-})(App);
 
-// Wrap queried component with react-redux
-const CurrentContainer = connect(
-  mapStateToProps
-)(ContainerWithData);
+/**
+ * Query
+ * Prerequisites:
+ *   A User in context
+ * Resolves:
+ *  The Regions of the User
+ * Without prerequisites:
+ *  Skip render
+ */
+const userRegionsQuery = gql`
+    query regions($userId: String!) {
+        store {
+            users(id: $userId) {
+                regions {
+                    id,
+                    name,
+                    description,
+                    isSelected
+                }
+            }
+        }
+    }
+`;
 
-export default CurrentContainer;
+/**
+ * All queries used by the container
+ * @type {{region: {query: *, args: {options: (function({data: *}): {variables: {regionId}}), props: (function({data: *, ownProps?: *}): *)}}}}
+ */
+export const queries = {
+  /**
+   * Expect a region stub with an id and resolves the full region from the data layer
+   */
+  userRegions: {
+    query: userRegionsQuery,
+    args: {
+      options: ({data: {user}}) => ({
+        variables: {
+          userId: user.id
+        },
+        // Pass through error so we can handle it in the component
+        errorPolicy: 'none'
+      }),
+      props: ({data, ownProps}) => mergeDeep(
+        ownProps,
+        {data}
+      )
+    }
+  }
+};
+
+// Create the GraphQL Container.
+// TODO We should handle all queries in queries here
+const ContainerWithData = graphql(
+  gql`${queries.userRegions.query}`,
+  queries.userRegions.args)
+(App)
+
+// Returns a function that expects state and ownProps for testing
+export const testPropsMaker = makeApolloTestPropsFunction(mapStateToProps, mapDispatchToProps, queries.userRegions);
+
+// Using R.merge to ignore ownProps, which were already merged by mapStateToProps
+export default connect(mapStateToProps, mapDispatchToProps, R.merge)(ContainerWithData);
