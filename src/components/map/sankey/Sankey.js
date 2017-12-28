@@ -37,15 +37,17 @@ import {sankeyGenerator} from 'helpers/sankeyHelpers';
 import sample from 'data/sankey.sample';
 import PropTypes from 'prop-types';
 import {geoMercator, geoPath} from 'd3-geo';
-import * as d3 from 'd3-sankey';
+import {sankeyLinkHorizontal} from 'd3-sankey';
+import {format as d3Format} from 'd3-format';
+import {scaleOrdinal, schemeCategory10} from 'd3-scale';
 
 const projection = geoMercator();
 const pathGenerator = geoPath().projection(projection);
-const formatNumber = d3.format(",.0f"),
-  format = function (d) {
-    return formatNumber(d) + " TWh";
-  },
-  color = d3.scaleOrdinal(d3.schemeCategory10);
+const formatNumber = d3Format(",.0f");
+const format = function (d) {
+  return formatNumber(d) + " TWh";
+}
+const color = scaleOrdinal(schemeCategory10);
 
 const [MapGL, DeckGL, Svg, G, Rect, Path, Div] =
   eMap([mapGl, deckGL, 'svg', 'g', 'rect', 'path', 'div']);
@@ -98,7 +100,7 @@ Sankey.getStyles = ({style}) => {
     [c.sankeyMapGl]: applyMatchingStyles(parentStyle, {
       width: styleMultiplier(1),
       height: styleMultiplier(1)
-    }),
+    })
 
   };
 };
@@ -140,20 +142,20 @@ Sankey.viewProps = (props) => {
       fontSize: 10,
       x: R.prop('x0'),
       y: R.prop('y0'),
-      height: d => R.subtract(d.y1, d.y0),
-      width: d => R.subtract(d.x1, d.x0),
-      fill: d => color(d.name.replace(/ .*/, '')),
+      height: _ => d => R.subtract(d.y1, d.y0),
+      width: _ => d => R.subtract(d.x1, d.x0),
+      fill: _ => d => color(d.name.replace(/ .*/, '')),
       stroke: '#000'
     },
 
     [c.sankeySvgLink]: {
       // The d element of the svg path is produced by sankeyLinkHorizontal
-      d: d3.sankeyLinkHorizontal(),
+      d: sankeyLinkHorizontal(),
       // The stroke is based on the item, so return a unary function
       // The stroke width must be at least 1 (pixel?)
-      strokeWidth: d => Math.max(1, d.width),
+      strokeWidth: _ => d => Math.max(1, d.width),
       // The title is based on the item, so return a unary function
-      title: d => `${d.source.name} →  ${d.target.name} \n ${format(d.value)}`
+      title: _ => d => `${d.source.name} →  ${d.target.name} \n ${format(d.value)}`
     }
   };
 };
@@ -205,11 +207,11 @@ Sankey.renderData = ({views}) => {
 
 
 const SankeySvgNode = (props) => {
-  return Rect(props)
+  return Rect(props);
 };
 
 const SankeySvgLink = (props) => {
-  return Path(props)
+  return Path(props);
 };
 
 

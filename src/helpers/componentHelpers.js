@@ -179,27 +179,33 @@ export const mergePropsForViews = R.curry((viewToPropValuesOrFuncs, props) => {
       // This results in {viewName: {propName: propValue, ...}
       R.map(
         propNameToValueOrFunc => R.map(
-          // IfElse on propPath
-          R.ifElse(
-            R.is(Function),
-            // if it is function, call with props and expect a value back
-            f => f(props),
-            // otherwise assume it's already a resolved value
-            R.identity
-          ),
-          // Within each view, map each propNameToPropPath
+          applyToIfFunction(props),
           propNameToValueOrFunc
         ),
         // If the entire viewToPropValuesOrFuncs is a function pass props to it
-        R.ifElse(
-          R.is(Function),
-          f => f(props),
-          R.identity)(viewToPropValuesOrFuncs)
+        applyToIfFunction(props, viewToPropValuesOrFuncs)
       )
     ),
     props
   );
 });
+
+/**
+ * If maybeFunc is a func, call it with obj, otherwise return maybeFunc
+ * This is somewhat like d3, where a value can be a static or a unary function
+ * @param {*} obj The obj to pass to maybeFunc if maybeFunc is a function
+ * @param {*} maybeFunc If a function, call it with obj, otherwise return it
+ * @return {*} maybeFunc(obj) or maybeFunc
+ */
+export const applyToIfFunction = R.curry((obj, maybeFunc) =>
+  R.ifElse(
+    R.is(Function),
+    // if it is function, call with props and expect a value back
+    R.applyTo(obj),
+    // otherwise assume it's already a resolved value
+    R.identity
+  )(maybeFunc)
+);
 
 /**
  * Given a container's mapStateToProps and mapDispatchToProps, returns a function that accepts a sample state
@@ -342,7 +348,8 @@ export const liftAndExtractItems = (component, propsWithItems) => {
  */
 export const mergeStylesIntoViews = R.curry((viewStyles, props) => {
   // viewStyles can be an object or unary function that returns an object
-  const viewObjs = R.ifElse(R.is(Function), f => f(props), R.identity)(viewStyles);
+  // pass props to it if its a function
+  const viewObjs = applyToIfFunction(props, viewStyles)
 
   // if the viewObj has style as a key, we take that to mean that the object is in the
   // shape {style: {...}, className: 'extra class names'}. Otherwise it means

@@ -11,18 +11,11 @@
 
 import * as R from 'ramda';
 import {sankey} from 'd3-sankey';
-import * as d3 from 'd3';
 import {resolveSvgPoints} from 'helpers/svgHelpers';
 import {resolveSvgReact} from 'helpers/svgHelpers';
-
 const DEGREE_TO_RADIAN = Math.PI / 180;
 const NUM_POINTS = 2000;
-
 const round = x => Math.round(x * 10) / 10;
-const formatNumber = d3.format(",.0f"),
-  format = function(d) { return formatNumber(d) + " TWh"; },
-  color = d3.scaleOrdinal(d3.schemeCategory10);
-
 
 /**
  * Calculates teh x, y, dx, and dy representing a node based on the
@@ -138,41 +131,6 @@ export const sankeyGenerator = (opt, props, sankeyData) => {
   sankeyGenerator(update);
   return update
 
-  const linkPaths = link
-    // Assign data to the linkPaths
-    .data(sankeyData.links)
-    // On enter d3 appends a path element to the svg.g (Link) element
-    .enter().append("path")
-    // This seems to create the actual path based on the two nodes of the link
-    .attr("d", d3.sankeyLinkHorizontal())
-    // The stroke width must be at least 1 (pixel?)
-    .attr("stroke-width", function(d) { return Math.max(1, d.width); });
-
-  // Append a title element to each link svg path based on the names of the nodes and link value
-  linkPaths.append("title")
-    .text(function(d) { return d.source.name + " → " + d.target.name + "\n" + format(d.value); });
-
-  const nodeShapes = node
-     // Assign data to the linkPaths
-    .data(features)
-    // Upon enter append a g svg element for each node
-    .enter().append("g");
-
-  // For each node
-  nodeShapes.append("rect")
-    // position x and y as caculated by the sankey generator
-    .attr("x", function(d) { return d.x0; })
-    .attr("y", function(d) { return d.y0; })
-    // calculate height and width as the difference of the ys and xs, respectively
-    .attr("height", function(d) { return d.y1 - d.y0; })
-    .attr("width", function(d) { return d.x1 - d.x0; })
-    // This seems to fill the node based on the last word of the node name ??
-    .attr("fill", function(d) { return color(d.name.replace(/ .*/, "")); })
-    // Stroke!
-    .attr("stroke", "#000");
-
-  // For each node and corresponding feature point, determine the d3 rectangle for the node
-  // My hope is to use this instead of d3.sankeys automatic positioning, so that we can show the
   // nodes in the right place on the map
   const positionedNodes = R.zipWith(nodePosition, sankeyData.nodes, R.map(R.prop('geometry'), features));
 

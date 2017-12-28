@@ -14,7 +14,7 @@ import {
   errorOrLoadingOrData, joinComponents, loadingCompleteStatus, makeApolloTestPropsFunction, mergePropsForViews,
   mergeStylesIntoViews,
   nameLookup, propsFor,
-  propsForSansClass, reqStrPath, strPath, itemizeProps
+  propsForSansClass, reqStrPath, strPath, itemizeProps, applyToIfFunction
 } from 'helpers/componentHelpers';
 import {throwing} from 'rescape-ramda';
 
@@ -404,5 +404,9 @@ describe('componentHelpers', () => {
       }
     );
   });
-})
-;
+
+  test('applyToIfFunction', () => {
+    expect(applyToIfFunction({kangaroo: 1}, R.prop('kangaroo'))).toEqual(1)
+    expect(applyToIfFunction({kangaroo: 1}, 'rat')).toEqual('rat')
+  })
+});
