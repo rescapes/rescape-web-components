@@ -88,8 +88,8 @@ export const errorOrLoadingOrData = R.curry((onError, onLoading, onData, props) 
 /**
  * Copies any needed actions to view containers
  * Also removes ownProps from the return value since we already incorporated theses into stateProps
- * @props {Object} viewToActions An object keyed by view that is in stateProps.views and valued by
- * an array of action names
+ * @props {Object} viewToActionNames An object keyed by view that is in stateProps.views and valued by
+ * an array of action names.
  * @returns {Function} A mergeProps function that expects props (e.g. A merge stateProps and dispatchProps)
  */
 export const mergeActionsForViews = (viewToActionNames) => (props) => {
@@ -106,7 +106,10 @@ export const mergeActionsForViews = (viewToActionNames) => (props) => {
           actionNames =>
             R.fromPairs(R.map(
               // Create a pair [actionName, action func]
-              actionName => [actionName, R.view(R.lensProp(actionName), props)],
+              actionName => [
+                actionName,
+                R.view(R.lensProp(actionName), props)
+              ],
               // Within each view, map each actinoName
               actionNames)),
           // Map each view
@@ -242,37 +245,38 @@ export const makeApolloTestPropsFunction = R.curry((mapStateToProps, mapDispatch
   return R.composeP(
     props => {
       return graphql(
-      resolvedSchema,
-      query, {},
-      {options: {dataSource: sampleConfig}},
-      // Add data and ownProps since that is what Apollo query arguments props functions expect
-      reqPath(['variables'], args.options(props))
-    ).then(
-      // Merge the makeTestPropsFunction props with the Apollo result. Put Apollo under the data.store key
-      // just like our Apollo React Client does by default
-      ({data, errors}) => {
-        if (errors)
-          return Either.Left({
-            error: errors
-          });
-        return Either.Right(
-          mergeDeep(
-            props,
-            {
-              data: R.merge(
-                // Simulate loading complete
-                loadingCompleteStatus,
-                data
-              )
-            }
-          )
-        );
-      }
-    ).catch(e => {
-      return Either.Left({
-        error: e
+        resolvedSchema,
+        query, {},
+        {options: {dataSource: sampleConfig}},
+        // Add data and ownProps since that is what Apollo query arguments props functions expect
+        reqPath(['variables'], args.options(props))
+      ).then(
+        // Merge the makeTestPropsFunction props with the Apollo result. Put Apollo under the data.store key
+        // just like our Apollo React Client does by default
+        ({data, errors}) => {
+          if (errors)
+            return Either.Left({
+              error: errors
+            });
+          return Either.Right(
+            mergeDeep(
+              props,
+              {
+                data: R.merge(
+                  // Simulate loading complete
+                  loadingCompleteStatus,
+                  data
+                )
+              }
+            )
+          );
+        }
+      ).catch(e => {
+        return Either.Left({
+          error: e
+        });
       });
-    }) },
+    },
     // Creates Redux function props
     (...args) => Promise.resolve(makeTestPropsFunction(mapStateToProps, mapDispatchToProps)(...args))
   );
@@ -417,6 +421,23 @@ export const propsAndStyle = (name, viewProps) => R.merge(
 );
 
 /**
+ * Applies an item to props that have functional values
+ * @param props The props to which to apply the item
+ * @param item The item to which to call on properties that are function
+ */
+export const itemizeProps = R.curry((props, item) =>
+  R.map(
+    R.ifElse(
+      R.is(Function),
+      // Apply the prop function to item (i.e. call the function with item
+      R.applyTo(item),
+      R.identity
+    ),
+    props
+  )
+);
+
+/**
  * Creates {name1: name1, name2: name2} from a list of names
  * @param {Array} names A list of names to be constants
  */
@@ -459,11 +480,11 @@ export const joinComponents = (separatorComponent, components) =>
     (prevComponents, component, key) => R.ifElse(
       R.isNil,
       // Just component
-      () => [component(key*2)],
+      () => [component(key * 2)],
       // Add separator and component to previous
       R.flip(R.concat)([
-        separatorComponent(key*2-1),
-        component(key*2)
+        separatorComponent(key * 2 - 1),
+        component(key * 2)
       ])
     )(prevComponents),
     null,
@@ -477,7 +498,7 @@ export const joinComponents = (separatorComponent, components) =>
  * @param {Object} props Object to resolve the path in
  * @return {function(*=)}
  */
-export const reqStrPath = R.curry((str, props) => reqPath(R.split('.', str), props))
+export const reqStrPath = R.curry((str, props) => reqPath(R.split('.', str), props));
 /**
  * Expects a prop path and returns a function expecting props,
  * which resolves the prop indicated by the string. If not match is found it returns undefined
@@ -486,8 +507,8 @@ export const reqStrPath = R.curry((str, props) => reqPath(R.split('.', str), pro
  * @return {function(*=)}
  */
 export const strPath = R.curry((str, props) => {
-  return R.view(R.lensPath(R.split('.', str)), props)
-})
+  return R.view(R.lensPath(R.split('.', str)), props);
+});
 
 /**
  * A default loading React component, which is passed the props in props.views.viewName
@@ -497,7 +518,7 @@ export const strPath = R.curry((str, props) => {
 export const renderLoadingDefault = (viewName) => ({views}) => {
   const [Div] = eMap(['div']);
   const props = R.flip(propsFor)(views);
-  return Div(props(viewName))
+  return Div(props(viewName));
 };
 
 /**
@@ -508,5 +529,5 @@ export const renderLoadingDefault = (viewName) => ({views}) => {
 export const renderErrorDefault = viewName => ({data, views}) => {
   const [Div] = eMap(['div']);
   const props = R.flip(propsFor)(views);
-  return Div(props(viewName), `Error: ${data.error.message}\nTrace: ${data.error.stack}`)
+  return Div(props(viewName), `Error: ${data.error.message}\nTrace: ${data.error.stack}`);
 };

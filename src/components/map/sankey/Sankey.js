@@ -8,6 +8,8 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
+import {resolveSvgReact} from 'helpers/svgHelpers';
+
 /**
  * Created by Andy Likuski on 2017.02.16
  * Copyright (c) 2017 Andy Likuski
@@ -19,32 +21,45 @@
  * THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
+const {SVGOverlay} = require('react-map-gl');
 import mapGl from 'react-map-gl';
 import {throwing} from 'rescape-ramda';
 import {
-  composeViews, eMap, errorOrLoadingOrData, nameLookup, propsFor,
-  propsForSansClass, renderErrorDefault, renderLoadingDefault, reqStrPath
+  composeViews, eMap, errorOrLoadingOrData, itemizeProps, nameLookup, propsFor,
+  propsForSansClass, renderErrorDefault, renderLoadingDefault, reqStrPath, strPath
 } from 'helpers/componentHelpers';
 import * as R from 'ramda';
 import {applyStyleFunctionOrDefault, styleMultiplier} from 'helpers/styleHelpers';
 import {applyMatchingStyles, mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
-import {Component} from 'react/cjs/react.production.min';
+import {Component} from 'react';
 import deckGL, {OrthographicViewport} from 'deck.gl';
 import {sankeyGenerator} from 'helpers/sankeyHelpers';
 import sample from 'data/sankey.sample';
 import PropTypes from 'prop-types';
-import { geoMercator, geoPath } from 'd3-geo'
-const projection = geoMercator()
-const pathGenerator = geoPath().projection(projection)
+import {geoMercator, geoPath} from 'd3-geo';
+import * as d3 from 'd3-sankey';
 
-const [MapGL, DeckGL, Svg, G, Circle, Div] =
-  eMap([mapGl, deckGL, 'svg', 'g', 'circle', 'div']);
+const projection = geoMercator();
+const pathGenerator = geoPath().projection(projection);
+const formatNumber = d3.format(",.0f"),
+  format = function (d) {
+    return formatNumber(d) + " TWh";
+  },
+  color = d3.scaleOrdinal(d3.schemeCategory10);
+
+const [MapGL, DeckGL, Svg, G, Rect, Path, Div] =
+  eMap([mapGl, deckGL, 'svg', 'g', 'rect', 'path', 'div']);
 
 export const c = nameLookup({
   sankey: true,
   asankeyMapGlOuter: true,
   sankeyMapGl: true,
-  svg: true,
+  sankeySvgOverlay: true,
+  sankeySvg: true,
+  sankeySvgLinks: true,
+  sankeySvgLink: true,
+  sankeySvgNodes: true,
+  sankeySvgNode: true,
   sankeyLoading: true,
   sankeyError: true
 });
@@ -71,7 +86,7 @@ Sankey.getStyles = ({style}) => {
       height: '100%'
     },
     style
-  )
+  );
 
   return {
     [c.sankey]: mergeAndApplyMatchingStyles(parentStyle, {
@@ -83,7 +98,8 @@ Sankey.getStyles = ({style}) => {
     [c.sankeyMapGl]: applyMatchingStyles(parentStyle, {
       width: styleMultiplier(1),
       height: styleMultiplier(1)
-    })
+    }),
+
   };
 };
 
@@ -93,6 +109,7 @@ Sankey.viewProps = (props) => {
   const height = reqPath(['views', [c.sankey], 'style', 'height'], props);
   const left = -Math.min(width, height) / 2;
   const top = -Math.min(width, height) / 2;
+  const sankeyData = sankeyGenerator(null, props(c.sankeySvg), sample);
   //const glViewport = new OrthographicViewport({width, height, left, top});
   return {
     [c.sankeyMapGl]: R.merge({
@@ -102,10 +119,42 @@ Sankey.viewProps = (props) => {
       // Pass anything in the viewport
       reqStrPath('data.viewport', props)
     ),
-    [c.svg]: {
-      viewBox: `0 0 ${width} ${height}`
+    [c.sankeySvg]: {
+      viewBox: `0 0 ${width} ${height}`,
+      features: strPath('data.region.geojson.features')
+    },
+    [c.sankeySvgOverlay]: {},
+
+    [c.sankeySvgLinks]: {
+      // Each node creates a SankeySvgLink element
+      links: reqPath(['links'], sankeyData),
+      fill: 'none',
+      stroke: '#000',
+      strokeOpacity: 0.2
+    },
+
+    [c.sankeySvgNodes]: {
+      // Each node creates a SankeySvgNode element
+      nodes: reqPath(['nodes'], sankeyData),
+      fontFamily: 'sans-serif',
+      fontSize: 10,
+      x: R.prop('x0'),
+      y: R.prop('y0'),
+      height: d => R.subtract(d.y1, d.y0),
+      width: d => R.subtract(d.x1, d.x0),
+      fill: d => color(d.name.replace(/ .*/, '')),
+      stroke: '#000'
+    },
+
+    [c.sankeySvgLink]: {
+      // The d element of the svg path is produced by sankeyLinkHorizontal
+      d: d3.sankeyLinkHorizontal(),
+      // The stroke is based on the item, so return a unary function
+      // The stroke width must be at least 1 (pixel?)
+      strokeWidth: d => Math.max(1, d.width),
+      // The title is based on the item, so return a unary function
+      title: d => `${d.source.name} →  ${d.target.name} \n ${format(d.value)}`
     }
-    //osm: 'store.region.geojson.osm'
   };
 };
 
@@ -121,17 +170,48 @@ Sankey.renderData = ({views}) => {
    */
   const props = R.flip(propsFor)(views);
   const propsSansClass = R.flip(propsForSansClass)(views);
+  const linkProps = itemizeProps(props(c.sankeySvgLink));
+  const nodeProps = itemizeProps(props(c.sankeySvgNode));
 
-  let refs = {}
   return Div(props(c.mapboxMapGlOuter),
     MapGL(propsSansClass(c.mapboxMapGl),
-      Svg(R.merge(props(c.svg), {ref: node => {refs.node = node}}),
-        // TODO first argument needs to be opt from the SVGOverlay layer. See MapMarkers
-        sankeyGenerator(null, props(c.svg), sample)
+      SVGOverlay(R.merge(
+        props(c.sankeySvgOverlay),
+        {
+          // The redraw property of SVGOverlay
+          redraw: opt => {
+            resolveSvgReact(opt, this.props.geojson.features);
+            return Svg(props(c.sankeySvg),
+              G(props(c.sankeySvgLinks),
+                R.map(
+                  d => SankeySvgLink(linkProps(d)),
+                  reqPath([c.sankeySvgLinks, 'links'])
+                )
+              ),
+              G(props(c.sankeySvgNodes),
+                R.map(
+                  d => SankeySvgNode(nodeProps(d)),
+                  reqPath([c.sankeySvgLinks, 'nodes'])
+                )
+              )
+            );
+          }
+        }
+        )
       )
     )
   );
 };
+
+
+const SankeySvgNode = (props) => {
+  return Rect(props)
+};
+
+const SankeySvgLink = (props) => {
+  return Path(props)
+};
+
 
 /**
  * Adds to props.views for each component configured in viewActions, viewProps, and getStyles

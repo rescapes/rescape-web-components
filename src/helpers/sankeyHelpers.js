@@ -100,20 +100,24 @@ export const sankeyGenerator = (opt, props, sankeyData) => {
 
   // Create an svg.g element (link) and select all paths
   // Our links our drawn as paths
+  /*
   let link = svg.append("g")
     .attr("class", "links")
     .attr("fill", "none")
     .attr("stroke", "#000")
     .attr("stroke-opacity", 0.2)
     .selectAll("path");
+  */
 
   // Create an svg.g element (node) and select all svg.g (node) g elements
   // Our links our drawn as individual g tags
+  /*
   const node = svg.append("g")
     .attr("class", "nodes")
     .attr("font-family", "sans-serif")
     .attr("font-size", 10)
     .selectAll("g");
+  */
 
   // Create the points needed to render the shape of each feature
   const pointsOfFeatures = resolveSvgPoints(opt, features);
@@ -130,7 +134,9 @@ export const sankeyGenerator = (opt, props, sankeyData) => {
   // The y0 and y1 are some portion of the vertical service of the two nodes (I think),
   // although there must be more to it since they have to attach to two nodes at different y positions
   // It also gives each link an index
-  const graph = sankeyGenerator({links: sankeyData.links, nodes: features});
+  const update = {links: sankeyData.links, nodes: features}
+  sankeyGenerator(update);
+  return update
 
   const linkPaths = link
     // Assign data to the linkPaths

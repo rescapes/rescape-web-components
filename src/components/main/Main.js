@@ -17,7 +17,7 @@ import {
 } from 'helpers/componentHelpers';
 import current from 'components/current';
 import {throwing} from 'rescape-ramda';
-import {Component} from 'react/cjs/react.production.min';
+import {Component} from 'react'
 import * as R from 'ramda';
 const [Div, Current] = eMap(['div', current]);
 import PropTypes from 'prop-types'

@@ -9,11 +9,13 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import {sankeyGenerator} from 'helpers/sankeyHelpers';
+
+import {sankesampleyGenerator} from 'helpers/sankeyHelpers';
+import sankeyData from 'data/sankey.sample';
 
 describe('sankeyHelpers', () => {
   test('sankeyGenerator', () => {
-    //expect(sankeyGenerator(opt, props, sankeyData, elem)).toMatchSnapshot();
+    expect(sankeyGenerator(opt, {style: {width: 480, height: 640}}, sankeyData)).toMatchSnapshot();
   })  
 });
 

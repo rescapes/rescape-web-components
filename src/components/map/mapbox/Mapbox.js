@@ -18,7 +18,7 @@ import {
 import * as R from 'ramda';
 import {styleMultiplier} from 'helpers/styleHelpers';
 import {applyMatchingStyles, mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
-import {Component} from 'react/cjs/react.production.min';
+import {Component} from 'react'
 import PropTypes from 'prop-types';
 
 const [Div, MapGl] = eMap(['div', mapGl]);

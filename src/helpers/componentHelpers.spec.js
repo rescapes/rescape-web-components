@@ -14,7 +14,7 @@ import {
   errorOrLoadingOrData, joinComponents, loadingCompleteStatus, makeApolloTestPropsFunction, mergePropsForViews,
   mergeStylesIntoViews,
   nameLookup, propsFor,
-  propsForSansClass, reqStrPath, strPath
+  propsForSansClass, reqStrPath, strPath, itemizeProps
 } from 'helpers/componentHelpers';
 import {throwing} from 'rescape-ramda';
 
@@ -381,6 +381,28 @@ describe('componentHelpers', () => {
         }
       }
     })).toEqual(undefined);
+  });
+
+  test('itemizeProps', () => {
+    expect(itemizeProps({
+        name: 'props',
+        a: 1,
+        b: R.prop('cucumber'),
+        c: item => R.add(2, item.c)
+      },
+      {
+        name: 'item',
+        cucumber: 'tasty',
+        c: 5
+      }
+    )).toEqual(
+      {
+        name: 'props',
+        a: 1,
+        b: 'tasty',
+        c: 7
+      }
+    );
   });
 })
 ;
