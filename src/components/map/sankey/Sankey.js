@@ -140,7 +140,6 @@ Sankey.viewProps = (props) => {
 
     [c.sankeySvgNodeRect]: {
       key: 'svgNodeRect',
-      //key: R.curry((_, d) => d.name),
       x: R.curry((_, d) => R.prop('x0', d)),
       y: R.curry((_, d) => R.prop('y0', d)),
       height: R.curry((_, d) => R.subtract(d.y1, d.y0)),
@@ -150,7 +149,7 @@ Sankey.viewProps = (props) => {
     },
 
     [c.sankeySvgNodeText]: {
-      key: R.curry((_, d) => d.name),
+      key: 'svgNodeText',
       x: R.curry((_, d) => R.ifElse(
         // Position text based on the condition
         nodeTextCond,
