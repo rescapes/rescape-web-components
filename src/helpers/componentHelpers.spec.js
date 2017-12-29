@@ -14,7 +14,7 @@ import {
   renderChoicepoint, joinComponents, loadingCompleteStatus, makeApolloTestPropsFunction, mergePropsForViews,
   mergeStylesIntoViews,
   nameLookup, propsFor,
-  propsForSansClass, reqStrPath, strPath, itemizeProps, applyToIfFunction, keyWith
+  propsForSansClass, reqStrPath, strPath, itemizeProps, applyToIfFunction, keyWith, hasStrPath
 } from 'helpers/componentHelpers';
 import {throwing} from 'rescape-ramda';
 
@@ -431,5 +431,10 @@ describe('componentHelpers', () => {
       id: 1,
       billy: billyFunc
     })
+  })
+
+  test('hasStrPath', () => {
+    expect(hasStrPath('tan.khaki.pants', {tan: {khaki: {pants: false}}})).toEqual(true)
+    expect(hasStrPath('tan.khaki.blazer', {tan: {khaki: {pants: false}}})).toEqual(false)
   })
 });

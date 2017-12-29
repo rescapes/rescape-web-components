@@ -60,12 +60,17 @@ Mapbox.getStyles = ({style}) => {
 
 Mapbox.viewProps = (props) => {
   return {
-    [c.mapboxReactMapGl]: R.merge({
+    [c.mapboxReactMapGl]: R.mergeAll([
+      {
         // Width and height are calculated in getStyles
         width: reqPath(['views', [c.mapboxReactMapGl], 'style', 'width']),
         height: reqPath(['views', [c.mapboxReactMapGl], 'style', 'height'])
-      }, reqStrPath('data.viewport', props)
-    )
+      },
+      // Pass anything in mapbox
+      reqStrPath('data.mapbox', props),
+      // Pass anything in viewport
+      reqStrPath('data.viewport', props)
+    ])
     //osm: 'store.region.geojson.osm'
   };
 };

@@ -9,11 +9,12 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-const { combineReducers } = require('redux');
-const geojsonReducer = require('redux/geojson/geojsonReducer').default;
-const {createViewportReducer} = require('redux-map-gl');
-const R = require('ramda');
-const {SET_STATE} = require('redux/fullStateReducer');
+import {combineReducers} from 'redux';
+//import geojsonReducer from './geojsonReducer'
+import {createViewportReducer} from 'redux-map-gl';
+import * as R from 'ramda';
+import {SET_STATE} from './fullStateReducer';
+import {hasStrPath, reqStrPath} from 'helpers/componentHelpers';
 
 /**
  * Only allow the region reducer to be created once for each Region
@@ -21,8 +22,8 @@ const {SET_STATE} = require('redux/fullStateReducer');
  * once: () -> regionName -> () -> Reducer
  */
 const once = () => {
-    let done = {};
-    return regionName => fn => done[regionName] || (done[regionName] = fn.apply(this, arguments));
+  let done = {};
+  return regionName => fn => done[regionName] || (done[regionName] = fn.apply(this, arguments));
 };
 
 /**
@@ -33,14 +34,14 @@ const once = () => {
  */
 const regionReducerOnce = once();
 const regionReducer = regionName => regionReducerOnce(regionName)(() =>
-    combineReducers(R.merge(
-        {
-            geojson: geojsonReducer,
-            mapbox: createViewportReducer()
-        },
-        // Implement reducers for these as/if needed
-        R.fromPairs(R.map(key=>[key, (state = {}) => state], ['id', 'geospatial', 'travel', 'gtfs']))
-    ))
+  combineReducers(R.merge(
+    {
+      //geojson: geojsonReducer,
+      mapbox: createViewportReducer()
+    },
+    // Implement reducers for these as/if needed
+    R.fromPairs(R.map(key => [key, (state = {}) => state], ['id', 'name', 'description', 'geojson', 'geospatial', 'travel', 'gtfs']))
+  ))
 );
 
 /**
@@ -72,31 +73,36 @@ const regionReducer = regionName => regionReducerOnce(regionName)(() =>
  */
 
 /**
- * @param {Object<String, Region>} state The regions reducer reduces an object keyed by Region id
- * @param {String} state.regionId The id of the region
+ * @param {Object<String, Region>} regionsState The regions reducer reduces an object keyed by Region id
+ * @param {String} regionsState.regionId The id of the region
 
  * @param {Object} action The action
  * @return {Object} The reduced state
  */
-module.exports.default = regionsReducer = (
-    state = {}, action = {}
-) => {
-    switch (action.type) {
-        case SET_STATE:
-            return R.merge(state, action.state.regions || {});
-        default:
-            // Delegate all other actionTypes to the current Region's reducer
-            // This lens points to the state of the current Region
-            const currentRegionLens = R.lensPath([state.currentKey]);
-            return state.currentKey ? R.set(
-                currentRegionLens,
-                // Get or create the reducer for this region
-                regionReducer(state.currentKey)(
-                    // Only pass the region state keys that are handled by the regionReducer
-                    R.view(currentRegionLens, state),
-                    action),
-                // TODO we need to prevent R.set from overwriting the state object inner components
-                state
-            ) : state;
-    }
+export default (regionsState = {}, action = {}) => {
+  switch (action.type) {
+    case SET_STATE:
+      return R.merge(regionsState, action.state.regions || {});
+    default:
+      if (hasStrPath('payload.mapState.region', action)) {
+        const region = reqStrPath('payload.mapState.region', action)
+        // Delegate all other actionTypes to the current Region's reducer
+        // This lens points to the state of the current Region
+        const regionLens = R.lensProp(region.id)
+        return R.set(
+          regionLens,
+          // Get or create the reducer for this region
+          regionReducer(region.id)(
+            // Only pass the region state keys that are handled by the regionReducer
+            R.view(regionLens, regionsState),
+            R.omit(['region'], action)
+          ),
+          // TODO we need to prevent R.set from overwriting the state object inner components
+          regionsState
+        )
+      }
+      else {
+        return regionsState
+      }
+  }
 };

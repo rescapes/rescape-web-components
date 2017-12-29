@@ -12,10 +12,6 @@ input {
   color: #828282;
 }
 
-.orange {
-  background-color: #ff6600;
-}
-
 .background-gray {
   background-color: rgb(246,246,239);
 }
@@ -40,4 +36,8 @@ input {
   border-color: buttonface;
   cursor: pointer;
   max-width: 250px;
+}
+
+svg {
+  pointer-events: none;
 }

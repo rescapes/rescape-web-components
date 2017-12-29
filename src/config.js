@@ -24,7 +24,6 @@ export default {
       showCluster: true,
       showZoomControls: true,
       // Universal Mapbox parameters to apply to any mapbox instance
-      perspectiveEnabled: true,
       preventStyleDiffing: false
     },
     cycle: {

@@ -9,41 +9,55 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import {viewportSelector} from 'selectors/mapboxSelectors';
-import {throwing} from 'rescape-ramda'
-const {reqPath} = throwing
-import * as R from 'ramda'
+import {mapboxSelector, viewportSelector} from 'selectors/mapboxSelectors';
+import {throwing} from 'rescape-ramda';
+
+const {reqPath} = throwing;
+import * as R from 'ramda';
 
 describe('mapboxSelectors', () => {
+  const oakland = {
+    mapbox: {
+      viewport: {
+        zoom: 5
+      }
+    }
+  };
+  const paris = {
+    mapbox: {
+      viewport: {
+        zoom: 4
+      }
+    }
+  };
+  const state = {
+    regions: {oakland, paris},
+    settings: {
+      mapbox: {
+        mapboxApiAccessToken: 'secret',
+        viewport: {
+          foo: 1
+        }
+      }
+    }
+  };
+
+  test('mapboxSelector', () => {
+    expect(mapboxSelector(state, {region: oakland})).toEqual(
+      {
+        mapboxApiAccessToken: 'secret',
+        viewport: R.merge(
+          {foo: 1},
+          reqPath(['mapbox', 'viewport'], oakland))
+      }
+    );
+  });
+
   test('viewportSelector', () => {
-    const oakland = {
-      mapbox: {
-        viewport: {
-          zoom: 5
-        }
-      }
-    }
-    const paris = {
-      mapbox: {
-        viewport: {
-          zoom: 4
-        }
-      }
-    }
-    const state = {
-      regions: {oakland, paris},
-      settings: {
-        mapbox: {
-          viewport: {
-            foo: 1
-          }
-        }
-      }
-    }
     expect(viewportSelector(state, {region: oakland})).toEqual(
       R.merge(
         {foo: 1},
         reqPath(['mapbox', 'viewport'], oakland))
-      )
-  })
-})
+    );
+  });
+});

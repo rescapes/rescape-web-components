@@ -31,10 +31,6 @@ const errorMaker = parentProps => R.set(R.lensPath(['user', 'id']), 'foo', paren
 /**
  * Nothing to do here, since App has no parent component
  */
-const asyncParentProps = () => new Promise((resolve) => {
-  resolve({});
-});
-
 describe('AppContainer', () => apolloContainerTests({
     Container,
     componentName,
@@ -42,7 +38,6 @@ describe('AppContainer', () => apolloContainerTests({
     childClassLoadingName,
     childClassErrorName,
     testPropsMaker,
-    asyncParentProps,
     query,
     queryVariables,
     errorMaker

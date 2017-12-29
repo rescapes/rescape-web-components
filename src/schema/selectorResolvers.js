@@ -16,7 +16,7 @@ import {throwing} from 'rescape-ramda'
 import { activeUserSelectedRegionsSelector, regionSelector} from 'selectors/regionSelectors';
 import { settingsSelector} from 'selectors/settingsSelectors';
 import { activeUsersSelector} from 'selectors/userSelectors';
-import {viewportSelector} from 'selectors/mapboxSelectors';
+import {mapboxSelector, viewportSelector} from 'selectors/mapboxSelectors';
 import prettyFormat from 'pretty-format'
 import {fromImmutable} from 'helpers/immutableHelpers';
 
@@ -63,11 +63,11 @@ const makeSelectorResolvers = data => ({
   },
 
   Mapbox: {
-    viewport: parentSelectorValues('mapbox', viewportSelector),
   },
 
   Region: {
     geojson: parentSelectorValues('region', makeGeojsonSelector()),
+    mapbox: parentSelectorValues('region', mapboxSelector)
   },
 
   MapboxSettings: {

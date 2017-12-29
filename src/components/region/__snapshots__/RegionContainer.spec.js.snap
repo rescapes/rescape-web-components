@@ -57,9 +57,9 @@ Object {
           "__typename": "Mapbox",
           "viewport": Object {
             "__typename": "Viewport",
-            "latitude": null,
-            "longitude": null,
-            "zoom": null,
+            "latitude": 37,
+            "longitude": -119,
+            "zoom": 5,
             Symbol(id): "$Region:oakland.mapbox.viewport",
           },
           Symbol(id): "$Region:oakland.mapbox",

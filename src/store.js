@@ -8,15 +8,14 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import client from './apolloClient';
 import thunk from 'redux-thunk';
 import {createLogger} from 'redux-logger';
 import {applyMiddleware, compose, createStore} from 'redux';
 import rootReducer from 'reducers';
 import initialStateCreator from 'data/initialState';
+import {composeWithDevTools} from 'redux-devtools-extension';
 
 const loggerMiddleware = createLogger();
-
 
 /**
  * Creates a store
@@ -25,19 +24,11 @@ const loggerMiddleware = createLogger();
  * @returns {Object} The redux store
  */
 export default (config, testEnhancers = []) => {
-  const devToolsExtension = window.devToolsExtension;
-  const enhancers = [];
-  if (typeof devToolsExtension === 'function') {
-    enhancers.push(devToolsExtension());
-  }
   // compose enhancers unless supplied.
   // this prevents running Apollo's client.middleware() in node tests
-  const composedEnhancers = testEnhancers ?
+  const composedEnhancers = testEnhancers.length ?
     compose(...testEnhancers) :
-    compose(
-      applyMiddleware(thunk, loggerMiddleware, client.middleware()),
-      ...enhancers
-    );
+    composeWithDevTools(applyMiddleware(thunk, loggerMiddleware))
 
   return createStore(
     rootReducer(),

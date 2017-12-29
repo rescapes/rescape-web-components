@@ -39,17 +39,7 @@ const asyncParentProps = () => {
   const currentRegionView = currentViews[cCurrent.currentRegion];
   // Get async props from the RegionContainer and then resolve the Region.views
   return asyncPropsFromSampleStateAndContainer(regionPropsMaker, currentRegionView)
-    .then(props =>
-      R.merge(
-        {
-          style: {
-            width: 500,
-            height: 500
-          }
-        },
-        Region.views(props).views
-      )[cRegion.regionSankey]
-    );
+    .then(props => Region.views(props).views[cRegion.regionSankey]);
 };
 
 describe('SankeyContainer', () => apolloContainerTests({

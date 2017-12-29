@@ -199,7 +199,7 @@ export const mergePropsForViews = R.curry((viewToPropValuesOrFuncs, props) => {
  * key will simply be referred by 'key'
  * @return {*} viewProps with 'key' added
  */
-export const keyWith = (key, viewProps) => R.merge(viewProps, {key: reqPath([key], viewProps)})
+export const keyWith = (key, viewProps) => R.merge(viewProps, {key: reqPath([key], viewProps)});
 
 /**
  * If maybeFunc is a func, call it with obj, otherwise return maybeFunc
@@ -420,7 +420,7 @@ export const propsFor = v((name, views) => {
   },
   [
     ['name', PropTypes.string.isRequired],
-    ['views', PropTypes.shape().isRequired],
+    ['views', PropTypes.shape().isRequired]
   ], 'propsFor');
 
 /**
@@ -430,15 +430,15 @@ export const propsFor = v((name, views) => {
  * @return {*}
  */
 export const propsForSansClass = v((name, views) => {
-  const propsForView = R.defaultTo({}, R.view(R.lensProp(name), views));
-  return R.merge(
-    propsForView,
-    getStyleObj(name, views)
-  );
-},
+    const propsForView = R.defaultTo({}, R.view(R.lensProp(name), views));
+    return R.merge(
+      propsForView,
+      getStyleObj(name, views)
+    );
+  },
   [
     ['name', PropTypes.string.isRequired],
-    ['views', PropTypes.shape().isRequired],
+    ['views', PropTypes.shape().isRequired]
   ], 'propsForSansClass');
 
 export const propsAndStyle = (name, viewProps) => R.merge(
@@ -535,6 +535,18 @@ export const reqStrPath = R.curry((str, props) => reqPath(R.split('.', str), pro
 export const strPath = R.curry((str, props) => {
   return R.view(R.lensPath(R.split('.', str)), props);
 });
+
+/**
+ * Returns true if the given string path is non-null
+ * @param {String} str dot-separated prop path
+ * @param {Object} props Object to resolve the path in
+ * @returns {Boolean} true
+ */
+export const hasStrPath = R.curry((str, props) =>
+  R.complement(R.isNil)(
+    R.view(R.lensPath(R.split('.', str)), props)
+  )
+);
 
 /**
  * A default loading React component, which is passed the props in props.views.viewName

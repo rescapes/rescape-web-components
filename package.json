@@ -11,6 +11,7 @@
     "apollo-link-schema": "^1.0.0",
     "apollo-link-ws": "^1.0.0",
     "autoprefixer": "7.1.6",
+    "babel-core": "^6.26.0",
     "babel-eslint": "7.2.3",
     "babel-jest": "20.0.3",
     "babel-loader": "^7.1.2",
@@ -95,6 +96,7 @@
   },
   "scripts": {
     "start": "node scripts/start.js",
+    "startTest": "NODE_ENV=test node scripts/start.js",
     "build": "node scripts/build.js",
     "test": "node scripts/test.js --env=jsdom"
   },
@@ -107,7 +109,8 @@
     "install": "^0.10.2",
     "jest-sourcemaps": "^1.0.1",
     "jsdom": "^11.5.1",
-    "longjohn": "^0.2.12"
+    "longjohn": "^0.2.12",
+    "redux-devtools-extension": "^2.13.2"
   },
   "jest": {
     "modulePaths": [

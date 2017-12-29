@@ -54,8 +54,8 @@ export const mapDispatchToProps = (dispatch) => {
  * Without prerequisites:
  *  Skip render
  */
-const userRegionsQuery = gql`
-    query regions($userId: String!) {
+const userRegionsQuery = `
+    query userRegions($userId: String!) {
         store {
             users(id: $userId) {
                 regions {
@@ -99,8 +99,7 @@ export const queries = {
 // TODO We should handle all queries in queries here
 const ContainerWithData = graphql(
   gql`${queries.userRegions.query}`,
-  queries.userRegions.args)
-(App)
+  queries.userRegions.args)(App)
 
 // Returns a function that expects state and ownProps for testing
 export const testPropsMaker = makeApolloTestPropsFunction(mapStateToProps, mapDispatchToProps, queries.userRegions);

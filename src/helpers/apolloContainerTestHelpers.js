@@ -55,7 +55,7 @@ export const apolloContainerTests = (config) => {
     childClassLoadingName,
     childClassErrorName,
     testPropsMaker,
-    // Required, must return parent props as a Promise
+    // Optional, must return parent props as a Promise
     asyncParentProps,
 
     // Optional. Only for components with queries
@@ -63,16 +63,18 @@ export const apolloContainerTests = (config) => {
     // Optional. Only for components with queries
     queryVariables,
     // Optional. Only for components with queries
-    errorMaker,
+    errorMaker
   } = config;
 
   // Get the test props for this container
   const asyncProps = () =>
-    asyncParentProps()
-      .then(parentProps =>
-        propsFromSampleStateAndContainer(testPropsMaker, parentProps)
-      )
-      .then(eitherToPromise);
+    asyncParentProps ?
+      asyncParentProps()
+        .then(parentProps => propsFromSampleStateAndContainer(testPropsMaker, parentProps))
+        .then(eitherToPromise) :
+      Promise.resolve({})
+
+  const asyncParentPropsOrDefault = asyncParentProps ? asyncParentProps() : Promise.resolve({})
 
   test('mapStateToProps', async () => {
     // Get the test props for RegionContainer
@@ -81,7 +83,7 @@ export const apolloContainerTests = (config) => {
   });
 
   test('query', async () => {
-    const parentProps = await asyncParentProps();
+    const parentProps = await asyncParentPropsOrDefault
     const props = await propsFromSampleStateAndContainer(testPropsMaker, parentProps).then(eitherToPromise);
     const data = await mockApolloClientWithSamples().query({
       query,
@@ -94,7 +96,7 @@ export const apolloContainerTests = (config) => {
   });
 
   test('render', async (done) => {
-    const parentProps = await asyncParentProps();
+    const parentProps = await asyncParentPropsOrDefault
     const wrapper = wrapWithMockGraphqlAndStore(Container(parentProps));
     const component = wrapper.find(componentName);
     expect(component.find(`.${getClass(childClassLoadingName)}`).length).toEqual(1);
@@ -102,12 +104,14 @@ export const apolloContainerTests = (config) => {
     waitForChildComponentRender(wrapper, componentName, childClassDataName, done);
   });
 
-  test('renderError', async (done) => {
-    const parentProps = await asyncParentProps().then(errorMaker);
-    const wrapper = wrapWithMockGraphqlAndStore(Container(parentProps));
-    const component = wrapper.find(componentName);
-    expect(component.find(`.${getClass(childClassLoadingName)}`).length).toEqual(1);
-    expect(component.props()).toMatchSnapshot();
-    waitForChildComponentRender(wrapper, componentName, childClassErrorName, done);
-  });
-}
+  if (errorMaker) {
+    test('renderError', async (done) => {
+      const parentProps = await asyncParentPropsOrDefault.then(errorMaker)
+      const wrapper = wrapWithMockGraphqlAndStore(Container(parentProps));
+      const component = wrapper.find(componentName);
+      expect(component.find(`.${getClass(childClassLoadingName)}`).length).toEqual(1);
+      expect(component.props()).toMatchSnapshot();
+      waitForChildComponentRender(wrapper, componentName, childClassErrorName, done);
+    });
+  }
+};

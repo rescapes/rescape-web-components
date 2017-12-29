@@ -50,7 +50,11 @@ export const linkPosition = link => ({
  * nodes array and must have a value indicating the weight of the link
  * @returns {null}
  */
-export const sankeyGenerator = R.memoize((opt, {width, height}, sankeyData) => {
+export const sankeyGenerator = R.memoizeWith(
+  (opt, {width, height}, sankeyData) => {
+    return `${width}:${height}`
+  },
+  (opt, {width, height}, sankeyData) => {
   // Create a sankey generator
   const sankeyGenerator = sankey()
   // TODO pass from parent

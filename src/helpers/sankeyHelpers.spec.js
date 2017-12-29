@@ -10,7 +10,7 @@
  */
 
 
-import {sankesampleyGenerator} from 'helpers/sankeyHelpers';
+import {sankeyGenerator} from 'helpers/sankeyHelpers';
 import sankeyData from 'data/sankey.sample';
 
 describe('sankeyHelpers', () => {

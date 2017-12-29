@@ -10,13 +10,20 @@ import {Provider as provider} from 'react-redux';
 import storeCreator from './store';
 import {getCurrentConfig} from 'data/current/currentConfig';
 import {eMap} from 'helpers/componentHelpers';
+import * as R from 'ramda';
+import {mockApolloClientWithSamples} from 'helpers/testHelpers';
 
 const [BrowserRouter, ApolloProvider, Provider, App] = eMap([browserRouter, apolloProvider, provider, app]);
 
 // Create a store based on the configured environment (development, production, test)
 const store = storeCreator(getCurrentConfig());
 
-const client = createClient();
+// Set the client to the mockApolloClient for testingj
+const client = R.cond([
+  [R.equals('test'), () => mockApolloClientWithSamples()],
+  [R.T, () => createClient()]
+])(process.env.NODE_ENV);
+
 // Render the React components
 // BrowserRouter routes anything defined in a child component Switch
 // ApolloProvider wraps our components with the ApolloClient so we can access GraphQL data from anywhere

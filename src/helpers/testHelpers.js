@@ -25,8 +25,9 @@ import {SchemaLink} from 'apollo-link-schema';
 import PropTypes from 'prop-types';
 import {createWaitForElement} from 'enzyme-wait';
 import {getClass} from 'helpers/styleHelpers';
-import { onError } from "apollo-link-error";
-import prettyFormat from 'pretty-format'
+import {onError} from "apollo-link-error";
+import prettyFormat from 'pretty-format';
+
 const middlewares = [thunk];
 
 /**
@@ -114,13 +115,13 @@ export const mockApolloClient = (schema, context) => {
   //addMockFunctionsToSchema({schema});
   const mockNetworkInterface = mockNetworkInterfaceWithSchema({schema});
 
-  const errorLink = onError(({ graphQLErrors, response, operation }) => {
+  const errorLink = onError(({graphQLErrors, response, operation}) => {
     //if (graphQLErrors) {
-      //graphQLErrors.map(({message, locations, path}) =>
-        //console.log(
-        //  `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
-        //)
-      //);
+    //graphQLErrors.map(({message, locations, path}) =>
+    //console.log(
+    //  `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
+    //)
+    //);
     //}
 
   });
@@ -211,7 +212,7 @@ export const shallowWrap = (componentFactory, props) => {
  */
 export const eitherToPromise = either => {
   return new Promise((resolve, reject) => either.map(resolve).leftMap(reject));
-}
+};
 
 /**
  * Waits for a child component with the given className to render. Useful for apollo along with Enzyme
@@ -241,15 +242,18 @@ export const waitForChildComponentRender = (wrapper, componentName, childClassNa
       }
     )
     .catch(error => {
-      throw new Error(`${error.message}
-        \n${
-        wrapper.find(componentName).debug()
-        }
-        \n${
-        prettyFormat(wrapper.find(componentName).props().data)
-        }
+      const comp = wrapper.find(componentName);
+      if (comp.length) {
+        throw new Error(`${error.message}
+        \n${error.stack}
+        \n${comp.debug()}
+        \n${prettyFormat(comp.props().data)}
       `
-      );
+        );
+      }
+      else {
+        throw error
+      }
       done();
     });
 };

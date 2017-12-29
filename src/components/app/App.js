@@ -37,9 +37,7 @@ App.viewProps = () => {
 };
 
 App.viewActions = () => {
-  return {
-    [c.regionMapbox]: {}
-  };
+  return {};
 };
 
 App.renderData = ({views}) => {

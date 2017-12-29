@@ -9,13 +9,41 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import {throwing} from 'rescape-ramda';
+import {mergeDeepAll, throwing} from 'rescape-ramda';
 import {createSelector} from 'reselect';
 import * as R from 'ramda';
 import {mapboxSettingsSelector} from 'selectors/settingsSelectors';
 import {fromImmutable, toImmutable} from 'helpers/immutableHelpers';
 
 const {reqPath} = throwing;
+
+/**
+ * Selects mapbox properties
+ * @param state
+ * @param region
+ * @param mapbox
+ * @return {*}
+ */
+export const mapboxSelector = (state, {region, mapbox}) => {
+  return createSelector(
+    [
+      mapboxSettingsSelector,
+      viewportSelector
+    ],
+    (mapboxSettings, viewport) => R.merge(
+      // Merge
+      R.defaultTo({}, mapboxSettings),
+      // Set the viewport with the results of the viewportSelector, which merges settings and resolves an immutable
+      R.set(
+        R.lensProp('viewport'),
+        viewport,
+        region ?
+          reqPath(['mapbox'], region) :
+          reqPath(['viewport'], mapbox)
+      )
+    )
+  )(state, {region});
+}
 
 /**
  * Selects the viewport from the given Region's mapbox and merges it with the state's mapbox settings
@@ -29,15 +57,19 @@ export const viewportSelector = (state, {region, mapbox}) => {
     [mapboxSettingsSelector],
     // Viewport is stored as an immutable, since react-map-gl's createViewportReducer expects it
     // If we don't need the reducer we should be able to get rid of the immutable
-    mapboxSettings => R.merge(
+    mapboxSettings => mergeDeepAll([
       // Merge
       R.defaultTo({}, mapboxSettings.viewport),
       fromImmutable(
         region ?
           reqPath(['mapbox', 'viewport'], region) :
           reqPath(['viewport'], mapbox)
+      ),
+      // Temporarily merge the updated viewport from the state, since we are updating it via redux
+      fromImmutable(
+          reqPath(['regions', region.id, 'mapbox', 'viewport'], state)
       )
-    )
+    ])
   )(state, {region});
 }
 

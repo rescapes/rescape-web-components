@@ -13,7 +13,7 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {onViewportChange} from 'redux-map-gl';
 import {makeMergeDefaultStyleWithProps} from 'selectors/styleSelectors';
-import {viewportSelector} from 'selectors/mapboxSelectors';
+import {mapboxSelector, viewportSelector} from 'selectors/mapboxSelectors';
 import {makeActiveUserAndSettingsSelector} from 'selectors/storeSelectors';
 import {createSelector} from 'reselect';
 import {makeApolloTestPropsFunction} from 'helpers/componentHelpers';
@@ -34,12 +34,14 @@ export const mapStateToProps = (state, props) => {
     [
       makeActiveUserAndSettingsSelector(),
       makeMergeDefaultStyleWithProps(),
-      viewportSelector
+      mapboxSelector
     ],
-    (userAndSettings, defaultStyle, viewport) => ({
+    (userAndSettings, defaultStyle, {viewport, ...mapbox}) => ({
       data: R.mergeAll([
         userAndSettings,
-        {viewport},
+        // Mapbox is selected separately to combine region.mapbox with settings.mapbox
+        // Viewport is combined with other properties in the react-map-gl component, hence separated here
+        {viewport, mapbox},
         data
       ]),
       style: R.merge(defaultStyle, style)

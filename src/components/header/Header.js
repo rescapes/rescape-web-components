@@ -50,7 +50,7 @@ class Header extends Component {
 Header.getStyles = ({style}) => {
   return {
     [c.header]: {
-      className: 'flex pa1 justify-between nowrap orange',
+      className: 'flex pa1 justify-between nowrap',
       style: mergeAndApplyMatchingStyles(style, {
         position: 'absolute',
         width: styleMultiplier(1),
@@ -59,7 +59,7 @@ Header.getStyles = ({style}) => {
     },
 
     [c.headerLinks]: {
-      className: 'flex pa1 justify-between nowrap orange',
+      className: 'flex pa1 justify-between nowrap',
       style: mergeAndApplyMatchingStyles(style, {})
     },
 

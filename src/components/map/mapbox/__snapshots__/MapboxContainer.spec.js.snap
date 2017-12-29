@@ -5,6 +5,14 @@ Object {
   "data": Object {
     "error": false,
     "loading": false,
+    "mapbox": Object {
+      "iconAtlas": "data/location-icon-atlas.png",
+      "mapboxApiAccessToken": "pk.eyJ1IjoiY2Fsb2NhbiIsImEiOiJjaXl1aXkxZjkwMG15MndxbmkxMHczNG50In0.07Zu3XXYijL6GJMuxFtvQg",
+      "perspectiveEnabled": true,
+      "preventStyleDiffing": false,
+      "showCluster": "true",
+      "showZoomControls": true,
+    },
     "region": Object {
       "id": "oakland",
       "mapbox": Object {
@@ -444,6 +452,7 @@ Object {
             ],
           },
         },
+        "id": "oakland",
       },
     },
     "user": Object {
@@ -916,11 +925,12 @@ Object {
                 Symbol(id): "geojsonFeature:node/3809893083",
               },
             ],
-            Symbol(id): "$ROOT_QUERY.store.region({\\"id\\":\\"oakland\\"}).geojson.osm",
+            Symbol(id): "$Region:oakland.geojson.osm",
           },
-          Symbol(id): "$ROOT_QUERY.store.region({\\"id\\":\\"oakland\\"}).geojson",
+          Symbol(id): "$Region:oakland.geojson",
         },
-        Symbol(id): "$ROOT_QUERY.store.region({\\"id\\":\\"oakland\\"})",
+        "id": "oakland",
+        Symbol(id): "Region:oakland",
       },
       Symbol(id): "$ROOT_QUERY.store",
     },
@@ -938,6 +948,14 @@ Object {
     "error": undefined,
     "fetchMore": [Function],
     "loading": true,
+    "mapbox": Object {
+      "iconAtlas": "data/location-icon-atlas.png",
+      "mapboxApiAccessToken": "pk.eyJ1IjoiY2Fsb2NhbiIsImEiOiJjaXl1aXkxZjkwMG15MndxbmkxMHczNG50In0.07Zu3XXYijL6GJMuxFtvQg",
+      "perspectiveEnabled": true,
+      "preventStyleDiffing": false,
+      "showCluster": "true",
+      "showZoomControls": true,
+    },
     "networkStatus": 1,
     "refetch": [Function],
     "region": Object {
@@ -1039,6 +1057,14 @@ Object {
     "error": undefined,
     "fetchMore": [Function],
     "loading": true,
+    "mapbox": Object {
+      "iconAtlas": "data/location-icon-atlas.png",
+      "mapboxApiAccessToken": "pk.eyJ1IjoiY2Fsb2NhbiIsImEiOiJjaXl1aXkxZjkwMG15MndxbmkxMHczNG50In0.07Zu3XXYijL6GJMuxFtvQg",
+      "perspectiveEnabled": true,
+      "preventStyleDiffing": false,
+      "showCluster": "true",
+      "showZoomControls": true,
+    },
     "networkStatus": 1,
     "refetch": [Function],
     "region": Object {

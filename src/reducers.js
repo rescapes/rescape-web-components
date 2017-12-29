@@ -12,6 +12,7 @@
 import {combineReducers} from 'redux';
 import {createResponsiveStateReducer} from 'redux-responsive';
 import * as R from 'ramda';
+import regionsReducer from 'reducers/regionsReducer';
 
 /**
  * Combine reducers, supplying an optional mock apollo reducer for testing
@@ -20,7 +21,7 @@ import * as R from 'ramda';
 export default () => {
   return combineReducers({
     settings: R.compose(R.defaultTo({}), R.identity),
-    regions:  R.compose(R.defaultTo({}), R.identity),
+    regions:  regionsReducer,
     users: R.compose(R.defaultTo({}), R.identity),
     styles: R.compose(R.defaultTo({}), R.identity),
     browser: (state, action) => createResponsiveStateReducer(

@@ -11,12 +11,12 @@
 
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import {onViewportChange} from 'redux-map-gl';
+import {onChangeViewport} from 'redux-map-gl';
 import {makeMergeDefaultStyleWithProps} from 'selectors/styleSelectors';
-import {viewportSelector} from 'selectors/mapboxSelectors';
+import {mapboxSelector} from 'selectors/mapboxSelectors';
 import {makeActiveUserAndSettingsSelector} from 'selectors/storeSelectors';
 import {createSelector} from 'reselect';
-import {makeApolloTestPropsFunction} from 'helpers/componentHelpers';
+import {makeApolloTestPropsFunction, reqStrPath} from 'helpers/componentHelpers';
 import {mergeDeep, throwing} from 'rescape-ramda';
 import Sankey from './Sankey';
 import * as R from 'ramda';
@@ -29,17 +29,19 @@ import {gql} from 'apollo-client-preset';
  * @returns {Object} The props
  */
 export const mapStateToProps = (state, props) => {
-  const {style, ...data} = props
+  const {style, ...data} = props;
   return createSelector(
     [
       makeActiveUserAndSettingsSelector(),
       makeMergeDefaultStyleWithProps(),
-      viewportSelector
+      mapboxSelector
     ],
-    (userAndSettings, defaultStyle, viewport) => ({
+    (userAndSettings, defaultStyle, {viewport, ...mapbox}) => ({
       data: R.mergeAll([
         userAndSettings,
-        {viewport},
+        // Mapbox is selected separately to combine region.mapbox with settings.mapbox
+        // Viewport is combined with other properties in the react-map-gl component, hence separated here
+        {viewport, mapbox},
         data
       ]),
       style: R.merge(defaultStyle, style)
@@ -49,9 +51,13 @@ export const mapStateToProps = (state, props) => {
 
 export const mapDispatchToProps = (dispatch, ownProps) => {
   return bindActionCreators({
-    onViewportChange
-    //hoverMarker,
-    //selectMarker
+    // react-map-gl renamed this, redux-map-gl did not
+    // add the region to the payload so the reducer knows what region we are
+    onViewportChange: mapState => onChangeViewport(
+      R.set(R.lensProp('region'), reqStrPath('region', ownProps), mapState)
+    )
+  //hoverMarker,
+  //selectMarker
   }, dispatch);
 };
 

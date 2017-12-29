@@ -8,7 +8,7 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import {resolveSvgReact} from 'helpers/svgHelpers';
+//import {resolveSvgReact} from 'helpers/svgHelpers';
 
 /**
  * Created by Andy Likuski on 2017.02.16
@@ -25,10 +25,10 @@ import reactMapGl, {SVGOverlay as svgOverlay} from 'react-map-gl';
 import {throwing} from 'rescape-ramda';
 import {
   composeViews, eMap, renderChoicepoint, itemizeProps, mergePropsForViews, nameLookup, propsFor,
-  propsForSansClass, renderErrorDefault, renderLoadingDefault, reqStrPath, strPath, keyWith
+  propsForSansClass, renderErrorDefault, renderLoadingDefault, reqStrPath, keyWith
 } from 'helpers/componentHelpers';
 import * as R from 'ramda';
-import {applyStyleFunctionOrDefault, styleMultiplier} from 'helpers/styleHelpers';
+import {styleMultiplier} from 'helpers/styleHelpers';
 import {applyMatchingStyles, mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
 import {Component} from 'react';
 import deckGL, {OrthographicViewport} from 'deck.gl';
@@ -102,8 +102,12 @@ Sankey.getStyles = ({style}) => {
     [c.sankeyReactMapGl]: applyMatchingStyles(parentStyle, {
       width: styleMultiplier(1),
       height: styleMultiplier(1)
-    })
+    }),
 
+    [c.sankeySvgOverlay]: applyMatchingStyles(parentStyle, {
+      width: styleMultiplier(1),
+      height: styleMultiplier(1)
+    })
   };
 };
 
@@ -116,16 +120,19 @@ Sankey.viewProps = (props) => {
   // Change the text position if the following is true
   const nodeTextCond = (_, d) => d.x0 < width / 2;
   return {
-    [c.sankeyReactMapGl]: R.merge({
+    [c.sankeyReactMapGl]: R.mergeAll([
+      {
         width,
         height
       },
-      // Pass anything in the viewport
+      // Pass anything in mapbox
+      reqStrPath('data.mapbox', props),
+      // Pass anything in viewport
       reqStrPath('data.viewport', props)
-    ),
+    ]),
 
     [c.sankeySvgOverlay]: {
-      viewBox: `0 0 ${width} ${height}`
+      viewBox: `0 0 ${width / 2} ${height / 2}`
     },
 
     [c.sankeySvgNodes]: {
@@ -265,7 +272,12 @@ Sankey.renderData = ({views}) => {
                 ),
                 G(nodesProps,
                   R.map(
-                    d => SankeySvgNode({node: nodeProps(d), rect: nodeRectProps(d), text: nodeTextProps(d), title: nodeTitleProps(d)}),
+                    d => SankeySvgNode({
+                      node: nodeProps(d),
+                      rect: nodeRectProps(d),
+                      text: nodeTextProps(d),
+                      title: nodeTitleProps(d)
+                    }),
                     nodes
                   )
                 )

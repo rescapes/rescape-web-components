@@ -16,7 +16,6 @@ import {WebSocketLink} from 'apollo-link-ws';
 import fetch from 'node-fetch';
 import {createHttpLink} from 'apollo-link-http';
 import config from './config';
-import { onError } from "apollo-link-error";
 const {settings: {graphcool: {authTokenKey, serviceIdKey}}} = config;
 
 /**
@@ -28,7 +27,7 @@ export default () => {
 // A link to our simple URI on graph.cool
   const httpLink = createHttpLink({uri: `https://api.graph.cool/simple/v1/${serviceIdKey}`, fetch});
 
-// Middleware authentication. Relies on our constant auth token
+  // Middleware authentication. Relies on our constant auth token
   const middlewareAuthLink = new ApolloLink((operation, forward) => {
     const token = localStorage.getItem(authTokenKey);
     const authorizationHeader = token ? `Bearer ${token}` : null;
@@ -67,6 +66,7 @@ export default () => {
     httpLinkWithAuthToken
   )
 
+  /*
   const errorLink = onError(({ graphQLErrors, networkError }) => {
     if (graphQLErrors)
       graphQLErrors.map(({ message, locations, path }) =>
@@ -76,11 +76,12 @@ export default () => {
       );
     if (networkError) console.log(`[Network error]: ${networkError}`);
   });
+  */
 
   // Create the ApolloClient using the following ApolloClientOptions
   return new ApolloClient({
     // Ths split Link
-    link: link.concat(errorLink),
+    link: link,
     // Use InMemoryCache
     cache: new InMemoryCache()
   });

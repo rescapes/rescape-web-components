@@ -60,7 +60,6 @@ export const getPadding = getScaledProperty('padding');
 export const defaultStyles = {
   fontFamily: 'inherit',
   fontSize: 'inherit',
-  fontWeight: 'bold',
   textDecoration: 'none',
   display: 'inline-block',
   margin: 0,
@@ -69,8 +68,7 @@ export const defaultStyles = {
   paddingLeft: 16,
   paddingRight: 16,
   border: 0,
-  color: 'white',
-  backgroundColor: 'blue',
+  color: 'black',
   WebkitAppearance: 'none',
   MozAppearance: 'none'
 };
