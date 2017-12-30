@@ -13,6 +13,7 @@ import * as R from 'ramda';
 import {sankey} from 'd3-sankey';
 import {resolveSvgPoints} from 'helpers/svgHelpers';
 import {resolveSvgReact} from 'helpers/svgHelpers';
+import {asUnaryMemoize} from 'selectors/selectorHelpers';
 
 const round = x => Math.round(x * 10) / 10;
 
@@ -50,18 +51,7 @@ export const linkPosition = link => ({
  * nodes array and must have a value indicating the weight of the link
  * @returns {null}
  */
-export const sankeyGenerator = memoize(
-  /**
-   * Memoize this call efficiently. We can't check sankeyData
-   * @param width
-   * @param height
-   * @param sankeyData
-   * @return {string}
-   */
-  ({width, height}, sankeyData) => {
-    return `${width}:${height}`;
-  },
-  ({width, height}, sankeyData) => {
+export const sankeyGenerator = asUnaryMemoize(({width, height}, sankeyData) => {
     // Create a sankey generator
     const sankeyGenerator = sankey()
     // TODO pass from parent
@@ -149,4 +139,4 @@ export const sankeyGenerator = memoize(
     // This could be used to create react object from the features
     //const reactSvgs = resolveSvgReact(opt, features);
     return update;
-  }, {options: {cache: new WeakTupleMap()}});
+  })

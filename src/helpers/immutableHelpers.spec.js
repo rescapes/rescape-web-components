@@ -8,46 +8,31 @@
  *
  * THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import ImMap from 'immutable'
+import ImMap from 'immutable';
 import f from './immutableHelpers';
-import Task from 'data.task'
-import {immutableMemoize} from 'helpers/immutableHelpers';
+import Task from 'data.task';
+import {immutableMemoize, memoizeCall, toImmutable, toSingleArgMemoize} from 'helpers/immutableHelpers';
 import {taskToPromise} from 'rescape-ramda';
 import moment from 'moment';
+import WeakTupleMap from 'weaktuplemap';
+import NamedTupleMap from 'namedtuplemap'
+import * as R from 'ramda';
+import memoize from 'memoize-immutable';
 
 describe('immutablHelperFunctions', () => {
-    test('Should be an Immutable Map', () => {
-        expect(ImMap.isMap(f.toImmutable({foo: 1}))).
-        toBeTruthy();
-    });
-    test('Should be a plain old javascript object', () => {
-        expect(!ImMap.isMap(f.fromImmutable(f.toImmutable({foo: 1})))).
-        toBeTruthy();
-        expect(f.fromImmutable([f.toImmutable({foo: 1})])).toMatchSnapshot();
-    });
-    test('Should copy an object', (done) => {
-        const obj = { a: {b: 1}};
-        const copy = f.copy(obj);
-        expect(obj).toEqual(copy);
-        expect(obj).not.toBe(copy);
-        expect(obj.a).toEqual(copy.a);
-        expect(obj.a).not.toBe(copy.a);
-    });
-
-    test('immutableMemoize', async () => {
-        const func = (apple, orange, universe) => {
-            return Task((reject, resolve) => {
-
-                setTimeout(() => { resolve(moment())}, 1000)
-            })
-        }
-        const now = moment()
-        const then = await taskToPromise(immutableMemoize(func, 1, 2, {crazy: 888}).fork(
-          error => {},
-          crazy => {
-            expect(crazy).toEqual(888)
-            done()
-          }
-        ))
-    })
+  test('Should be an Immutable Map', () => {
+    expect(ImMap.isMap(f.toImmutable({foo: 1}))).toBeTruthy();
+  });
+  test('Should be a plain old javascript object', () => {
+    expect(!ImMap.isMap(f.fromImmutable(f.toImmutable({foo: 1})))).toBeTruthy();
+    expect(f.fromImmutable([f.toImmutable({foo: 1})])).toMatchSnapshot();
+  });
+  test('Should copy an object', (done) => {
+    const obj = {a: {b: 1}};
+    const copy = f.copy(obj);
+    expect(obj).toEqual(copy);
+    expect(obj).not.toBe(copy);
+    expect(obj.a).toEqual(copy.a);
+    expect(obj.a).not.toBe(copy.a);
+  });
 });

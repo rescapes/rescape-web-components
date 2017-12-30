@@ -10,8 +10,9 @@
  */
 
 import * as R from 'ramda';
-import { mergeStateAndProps, makeInnerJoinByLensThenFilterSelector, findById, findOneValueByParams }
+import { mergeStateAndProps, makeInnerJoinByLensThenFilterSelector, findOneValueByParams }
   from './selectorHelpers';
+import {asUnaryMemoize} from 'selectors/selectorHelpers';
 
 describe('reselectHelpers', () => {
 
@@ -66,5 +67,26 @@ describe('reselectHelpers', () => {
       {brand: 'crush', flavor: 'orange'}
     );
 
+  });
+
+  test('NamedTupleMap', async () => {
+    const cache = new NamedTupleMap()
+    const keyMap = {crazy: 8888, mother: 'hubbard'}
+    const value = {any: 'thing'}
+    cache.set(keyMap, value)
+    const res = cache.get({crazy: 8888, mother: 'hubbard'})
+    expect(res).toEqual(value)
+  })
+
+  test('asUnaryMemoize', () => {
+    let i = 0
+    const func = (apple, orange, universe) => {
+      return {apple, orange, i: i++}
+    };
+    const memoizedFunc = asUnaryMemoize(func);
+    const crazy = {crazy: 888}
+    const now = memoizedFunc(1, 2, crazy)
+    const later = memoizedFunc(1, 2, crazy)
+    expect(now).toEqual(later)
   });
 });

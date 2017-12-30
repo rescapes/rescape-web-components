@@ -12,8 +12,6 @@
 import * as R from 'ramda';
 import {mapPropValueAsIndex} from 'rescape-ramda';
 import {fromJS, Iterable} from 'immutable';
-import WeakTupleMap from 'weaktuplemap';
-import memoize from 'memoize-immutable';
 
 /**
  * Convert the obj to an Immutable if it is not.
@@ -67,13 +65,3 @@ export const toImmutableKeyedByProp = R.curry((prop, objs) =>
  * copy:: a -> a
  */
 export const copy = R.compose(toJS, toImmutable);
-
-
-export const immutableMemoize = (func, ...args) =>
-{
-  return memoize(func, {config: {cache: new WeakTupleMap()}});
-}
-export const memoizeCall = (memoizedFunc, ...args) => {
-  const immutableArgs = R.map(toImmutable, args);
-  const immutableFunc = (...immutableArgs) => memoizedFunc(args);
-};

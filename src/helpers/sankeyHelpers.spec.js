@@ -12,10 +12,29 @@
 
 import {sankeyGenerator} from 'helpers/sankeyHelpers';
 import sankeyData from 'data/sankey.sample';
+import * as R from 'ramda';
+import NamedTupleMap from 'namedtuplemap';
 
 describe('sankeyHelpers', () => {
   test('sankeyGenerator', () => {
-    expect(sankeyGenerator(opt, {style: {width: 480, height: 640}}, sankeyData)).toMatchSnapshot();
-  })  
-});
 
+    const cache = new NamedTupleMap()
+    const q = {width: 480, height: 640}
+    const r = {width: 480, height: 640}
+    const value = {any: 'thing'}
+    cache.set({sankeyData, ...q}, value)
+    const res = cache.get({sankeyData, ...r})
+    expect(res).toEqual(value)
+
+    const f = sankeyGenerator
+    const x = {width: 480, height: 640}
+    const y = {width: 480, height: 640}
+    const a = f(x, sankeyData)
+    const b = f(y, sankeyData)
+
+    expect(a === b).toBe(true)
+    const newSankeyData = R.set(R.lensPath(['nodes', 0, 'name']), 'Foobar', sankeyData)
+    const c = sankeyGenerator({width: 480, height: 640}, newSankeyData)
+    expect(c === b).toBe(false)
+  })
+});

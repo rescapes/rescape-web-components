@@ -12,9 +12,10 @@
 import Either from 'data.either';
 import {filterWithKeys, mapPropValueAsIndex, mergeDeep, throwing} from 'rescape-ramda';
 import * as R from 'ramda';
+
 const {findOne, onlyOneValue} = throwing;
-
-
+import memoize from 'memoize-immutable';
+import NamedTupleMap from 'namedtuplemap';
 
 /**
  * Object statuses
@@ -115,3 +116,56 @@ export const findOneValueByParams = (params, items) => onlyOneValue(findOne(
   ),
   items
 ));
+
+
+/***
+ * Memomizes a function to a single argument function so that we can always NamedTupleMap for the cache.
+ * In order for this to work all objects have to be flattened into one big object. This Cache won't
+ * accept inner objects that have change. So three args like
+ * {a: {wombat: 1, emu: 2}}, {b: {caracal: 1, serval: 2}}, 'hamster' are converted to
+ * {arg1.a: {wombat: 1, emu: 2}, arg2.b: {caracal: 1, serval: 2}, arg3: 'hamster}
+ * Thus it's okay for the outer wrappers to change but the inner objects must be === identical, such as the
+ * womat and caracal objects.
+ * We could flatten even deeper if needed but that would start having performance impacts. This assumes
+ * that the outer containers might have changed through casual merging of properties but nothing internal
+ * was messed with
+ * @param {Function} func A function with any number and type of args
+ * @returns {Function} A function that expects the same args as func
+ */
+export const asUnaryMemoize = func => {
+  // Function that converts immutable args to args
+  const fromSingleArgFunc = (arg) => func(
+    // Sort in order arg1, arg2, ... and take values
+    ...R.values(
+      R.fromPairs(
+        R.sortBy(
+          R.identity,
+          R.toPairs(
+            R.reduce(
+              (acc, [key, value]) => {
+                return R.set(R.lensPath(R.split('.', key)), value, acc);
+              },
+              {},
+              R.toPairs(arg))
+          )
+        )
+      )
+    )
+  );
+  const memoizedFunc = memoize(fromSingleArgFunc, {cache: new NamedTupleMap()});
+  return (...args) => {
+    return memoizedFunc(
+      R.fromPairs(
+        R.addIndex(R.chain)(
+          (arg, i) => {
+            return R.ifElse(
+              R.is(Object),
+              R.compose(R.values, R.mapObjIndexed((v, k) => [`arg${i}.${k}`, v])),
+              a => [[`arg${i}`, a]]
+            )(arg);
+          },
+          args)
+      )
+    );
+  };
+};
