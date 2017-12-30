@@ -6420,6 +6420,10 @@ lru-cache@^4.0.1:
     pseudomap "^1.0.2"
     yallist "^2.1.2"
 
+lrumap@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/lrumap/-/lrumap-1.0.0.tgz#9af73069c064db9314bb480dbd6cb3fa5b706e64"
+
 luma.gl@^4.0.5:
   version "4.0.5"
   resolved "https://registry.yarnpkg.com/luma.gl/-/luma.gl-4.0.5.tgz#adb9add03d1ba1f819a9531e159c83fc71c98f50"
@@ -6523,6 +6527,17 @@ mem@^1.1.0:
   resolved "https://registry.yarnpkg.com/mem/-/mem-1.1.0.tgz#5edd52b485ca1d900fe64895505399a0dfa45f76"
   dependencies:
     mimic-fn "^1.0.0"
+
+memoize-immutable@^3.0.0:
+  version "3.0.0"
+  resolved "https://registry.yarnpkg.com/memoize-immutable/-/memoize-immutable-3.0.0.tgz#5959ee50a4f11d7be45b1afc8b2c6daa7c6d2e1e"
+  dependencies:
+    tuplemap "^1.0.2"
+  optionalDependencies:
+    lrumap "^1.0.0"
+    mixedtuplemap "^1.0.0"
+    namedtuplemap "^1.0.0"
+    weaktuplemap "^1.0.0"
 
 memory-fs@^0.4.0, memory-fs@~0.4.1:
   version "0.4.1"
@@ -6647,6 +6662,10 @@ minimist@~0.0.1:
   version "0.0.10"
   resolved "https://registry.yarnpkg.com/minimist/-/minimist-0.0.10.tgz#de3f98543dbf96082be48ad1a0c7cda836301dcf"
 
+mixedtuplemap@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/mixedtuplemap/-/mixedtuplemap-1.0.0.tgz#3bdad4a14a5478b9a3972aae56092772a759cfc4"
+
 mjolnir.js@>=0.4.1:
   version "0.4.1"
   resolved "https://registry.yarnpkg.com/mjolnir.js/-/mjolnir.js-0.4.1.tgz#b5baa6aa5cdf20d11a8ea7b2ea31f011a6b72508"
@@ -6711,6 +6730,10 @@ mute-stream@0.0.5:
 mute-stream@0.0.7:
   version "0.0.7"
   resolved "https://registry.yarnpkg.com/mute-stream/-/mute-stream-0.0.7.tgz#3075ce93bc21b8fab43e1bc4da7e8115ed1e7bab"
+
+namedtuplemap@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/namedtuplemap/-/namedtuplemap-1.0.0.tgz#c231789c5b7b47b4b3a3e73317f03ddde1ebcb34"
 
 nan@^2.3.0:
   version "2.7.0"
@@ -9370,6 +9393,10 @@ tunnel-agent@^0.6.0:
   dependencies:
     safe-buffer "^5.0.1"
 
+tuplemap@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/tuplemap/-/tuplemap-1.0.2.tgz#d95695820988f124d80a3680f65f0e63292a673d"
+
 turf-jsts@*:
   version "1.1.0"
   resolved "https://registry.yarnpkg.com/turf-jsts/-/turf-jsts-1.1.0.tgz#bb6a5377481c8d3c2bca60abc7710a40728aa7c6"
@@ -9695,6 +9722,10 @@ wbuf@^1.1.0, wbuf@^1.7.2:
   resolved "https://registry.yarnpkg.com/wbuf/-/wbuf-1.7.2.tgz#d697b99f1f59512df2751be42769c1580b5801fe"
   dependencies:
     minimalistic-assert "^1.0.0"
+
+weaktuplemap@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/weaktuplemap/-/weaktuplemap-1.0.0.tgz#fcdb27e395c3054bce3a4f3518d61a4ab8168d3b"
 
 webgl-debug@^1.0.2:
   version "1.0.2"

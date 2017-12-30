@@ -10,13 +10,11 @@
  */
 
 import {styleMultiplier} from 'helpers/styleHelpers';
-import React from 'react';
 import {
   composeViews, eMap, renderChoicepoint, nameLookup, propsFor,
   propsForSansClass
 } from 'helpers/componentHelpers';
 import current from 'components/current';
-import {throwing} from 'rescape-ramda';
 import {Component} from 'react'
 import * as R from 'ramda';
 import PropTypes from 'prop-types'
@@ -62,7 +60,6 @@ Main.viewActions = () => {
 };
 
 Main.renderData = ({views}) => {
-  const props = R.flip(propsFor)(views);
   const propsSansClass = R.flip(propsForSansClass)(views);
   return Current(propsSansClass(c.mainCurrent));
 };

@@ -14,6 +14,7 @@ import {createSelector} from 'reselect';
 import * as R from 'ramda';
 import {mapboxSettingsSelector} from 'selectors/settingsSelectors';
 import {fromImmutable, toImmutable} from 'helpers/immutableHelpers';
+import {reqStrPath} from 'helpers/componentHelpers';
 
 const {reqPath} = throwing;
 
@@ -62,8 +63,8 @@ export const viewportSelector = (state, {region, mapbox}) => {
       R.defaultTo({}, mapboxSettings.viewport),
       fromImmutable(
         region ?
-          reqPath(['mapbox', 'viewport'], region) :
-          reqPath(['viewport'], mapbox)
+          reqStrPath('mapbox.viewport', region) :
+          reqStrPath('viewport', mapbox)
       ),
       // Temporarily merge the updated viewport from the state, since we are updating it via redux
       fromImmutable(
