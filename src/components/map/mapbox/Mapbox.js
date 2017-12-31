@@ -13,13 +13,14 @@ import reactMapGl from 'react-map-gl';
 import {throwing} from 'rescape-ramda';
 import {
   composeViews, eMap, renderChoicepoint, nameLookup, propsFor,
-  propsForSansClass, renderErrorDefault, renderLoadingDefault, reqStrPath
+  propsForSansClass, renderErrorDefault, renderLoadingDefault
 } from 'helpers/componentHelpers';
 import * as R from 'ramda';
 import {styleMultiplier} from 'helpers/styleHelpers';
 import {applyMatchingStyles, mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
 import {Component} from 'react'
 import PropTypes from 'prop-types';
+const {reqPath, reqStrPath} = throwing;
 
 const [Div, ReactMapGl] = eMap(['div', reactMapGl]);
 export const c = nameLookup({
@@ -29,7 +30,6 @@ export const c = nameLookup({
   mapboxLoading: true,
   mapboxError: true
 });
-const {reqPath} = throwing;
 
 /**
  * The View for Mapbox

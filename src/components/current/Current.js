@@ -11,10 +11,12 @@
 
 import region from 'components/region/RegionContainer';
 import React from 'react';
-import {composeViews, eMap, renderChoicepoint, nameLookup, propsFor, reqStrPath} from 'helpers/componentHelpers';
+import {composeViews, eMap, renderChoicepoint, nameLookup, propsFor} from 'helpers/componentHelpers';
+import {throwing} from 'rescape-ramda'
 import * as R from 'ramda';
 import {mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
 import {styleMultiplier} from 'helpers/styleHelpers';
+const {reqStrPath} = throwing
 
 const [Div, Region] =
   eMap(['div', region]);

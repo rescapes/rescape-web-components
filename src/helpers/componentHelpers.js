@@ -518,37 +518,6 @@ export const joinComponents = (separatorComponent, components) =>
   );
 
 /**
- * Expects a prop path and returns a function expecting props,
- * which resolves the prop indicated by the string. Throws if there is no match
- * @param {String} str dot-separated prop path
- * @param {Object} props Object to resolve the path in
- * @return {function(*=)}
- */
-export const reqStrPath = R.curry((str, props) => reqPath(R.split('.', str), props));
-/**
- * Expects a prop path and returns a function expecting props,
- * which resolves the prop indicated by the string. If not match is found it returns undefined
- * @param {String} str dot-separated prop path
- * @param {Object} props Object to resolve the path in
- * @return {function(*=)}
- */
-export const strPath = R.curry((str, props) => {
-  return R.view(R.lensPath(R.split('.', str)), props);
-});
-
-/**
- * Returns true if the given string path is non-null
- * @param {String} str dot-separated prop path
- * @param {Object} props Object to resolve the path in
- * @returns {Boolean} true
- */
-export const hasStrPath = R.curry((str, props) =>
-  R.complement(R.isNil)(
-    R.view(R.lensPath(R.split('.', str)), props)
-  )
-);
-
-/**
  * A default loading React component, which is passed the props in props.views.viewName
  * @param viewName The viewname with which to resolve the props
  * @return A function expecting props, which renders the loading component

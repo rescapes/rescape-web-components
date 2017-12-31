@@ -48,6 +48,15 @@ export const userResolvedRegionsSelector = (state, {user}) => {
 export const usersSelector = reqPath(['users']);
 
 /**
+ * Select the user that matches the params
+ * @param state
+ * @param {Object} params Object of properties and value to match on
+ */
+export const userSelector = (state, {params}) => {
+  return findOneValueByParams(params, reqPath(['users'], state))
+}
+
+/**
  * Returns the active users in a container by searching state.users for the one and only one isActive property
  * that is true. This only expects one and only one active user
  * @param state

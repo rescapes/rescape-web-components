@@ -16,12 +16,13 @@ import {makeMergeDefaultStyleWithProps} from 'selectors/styleSelectors';
 import {mapboxSelector} from 'selectors/mapboxSelectors';
 import {makeActiveUserAndSettingsSelector} from 'selectors/storeSelectors';
 import {createSelector} from 'reselect';
-import {makeApolloTestPropsFunction, reqStrPath} from 'helpers/componentHelpers';
+import {makeApolloTestPropsFunction} from 'helpers/componentHelpers';
 import {mergeDeep, throwing} from 'rescape-ramda';
 import Sankey from './Sankey';
 import * as R from 'ramda';
 import {graphql} from 'react-apollo';
 import {gql} from 'apollo-client-preset';
+const {reqStrPath} = throwing
 
 /**
  * Selects the current user from state

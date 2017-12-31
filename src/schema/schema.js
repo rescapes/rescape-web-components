@@ -275,6 +275,10 @@ const StoreType = new GraphQLObjectType({
         type: new GraphQLList(UserType),
         args: idFieldObj
       },
+      user: {
+        type: UserType,
+        args: idFieldObj
+      },
       settings: {type: new GraphQLList(SettingsType)}
     },
     // Worthless list all the geojson types here so the schema includes them. Feature type needs them as subclass

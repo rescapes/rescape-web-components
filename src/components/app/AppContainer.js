@@ -57,7 +57,7 @@ export const mapDispatchToProps = (dispatch) => {
 const userRegionsQuery = `
     query userRegions($userId: String!) {
         store {
-            users(id: $userId) {
+            user(id: $userId) {
                 regions {
                     id,
                     name,

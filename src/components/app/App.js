@@ -8,10 +8,12 @@ import {
 } from 'helpers/componentHelpers';
 import header from 'components/header';
 import * as R from 'ramda';
+import {Provider as provider} from 'rebass';
 
-const [Div, Header, Switch, Route] = eMap(['div', header, switchy, route]);
+const [Provider, Div, Header, Switch, Route] = eMap([provider, 'div', header, switchy, route]);
 
 export const c = nameLookup({
+  provider: true,
   app: true,
   appHeader: true,
   appBody: true,
@@ -29,11 +31,39 @@ export default class App extends Component {
 }
 
 App.getStyles = ({style}) => {
-  return {};
+  return {
+    // From the bass docs, edit at will
+    // https://github.com/jxnblk/rebass
+    theme: {
+      breakpoints: [
+        // min-width breakpoints in ems
+        40, 52, 64
+      ],
+      space: [
+        0, 6, 12, 18, 24, 30, 36
+      ],
+      fontSizes: [
+        12, 16, 18, 24, 36, 48, 72
+      ],
+      weights: [
+        400, 600
+      ],
+      colors: {
+        black: '#111',
+        white: '#fff',
+        blue: '#07c'
+      },
+      font: 'Georgia, serif',
+      monospace: '"Roboto Mono", Menlo, monospace',
+      radius: 2
+    }
+  };
 };
 
 App.viewProps = () => {
-  return {};
+  return {
+    [c.theme]: {}
+  };
 };
 
 App.viewActions = () => {
@@ -44,13 +74,15 @@ App.renderData = ({views}) => {
   const props = R.flip(propsFor)(views);
   const propsSansClass = R.flip(propsForSansClass)(views);
 
-  return Div(props(c.app),
-    Header(props(c.appHeader)),
-    Div(props(c.appBody),
-      Switch({}, [
-        Route({key: '/', exact: true, path: '/', component: Main}),
-        Route({key: '/login', exact: true, path: '/login', component: Login})
-      ])
+  return Provider(props(c.provider),
+    Div(props(c.app),
+      Header(props(c.appHeader)),
+      Div(props(c.appBody),
+        Switch({}, [
+          Route({key: '/', exact: true, path: '/', component: Main}),
+          Route({key: '/login', exact: true, path: '/login', component: Login})
+        ])
+      )
     )
   );
 };

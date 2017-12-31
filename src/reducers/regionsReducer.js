@@ -14,7 +14,8 @@ import {combineReducers} from 'redux';
 import {createViewportReducer} from 'redux-map-gl';
 import * as R from 'ramda';
 import {SET_STATE} from './fullStateReducer';
-import {hasStrPath, reqStrPath} from 'helpers/componentHelpers';
+import {throwing, hasStrPath} from 'rescape-ramda'
+const {reqStrPath} = throwing
 
 /**
  * Only allow the region reducer to be created once for each Region

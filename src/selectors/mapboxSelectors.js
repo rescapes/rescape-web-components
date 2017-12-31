@@ -14,9 +14,7 @@ import {createSelector} from 'reselect';
 import * as R from 'ramda';
 import {mapboxSettingsSelector} from 'selectors/settingsSelectors';
 import {fromImmutable, toImmutable} from 'helpers/immutableHelpers';
-import {reqStrPath} from 'helpers/componentHelpers';
-
-const {reqPath} = throwing;
+const {reqPath, reqStrPath} = throwing;
 
 /**
  * Selects mapbox properties

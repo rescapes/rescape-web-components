@@ -25,7 +25,7 @@ import reactMapGl, {SVGOverlay as svgOverlay} from 'react-map-gl';
 import {throwing} from 'rescape-ramda';
 import {
   composeViews, eMap, renderChoicepoint, itemizeProps, mergePropsForViews, nameLookup, propsFor,
-  propsForSansClass, renderErrorDefault, renderLoadingDefault, reqStrPath, keyWith
+  propsForSansClass, renderErrorDefault, renderLoadingDefault, keyWith
 } from 'helpers/componentHelpers';
 import * as R from 'ramda';
 import {styleMultiplier} from 'helpers/styleHelpers';
@@ -46,6 +46,7 @@ const formatNumber = d3Format(",.0f");
 const format = function (d) {
   return formatNumber(d) + " TWh";
 };
+const {reqPath, reqStrPath} = throwing;
 const color = scaleOrdinal(schemeCategory10);
 
 const [ReactMapGl, SVGOverlay, DeckGL, Svg, G, Rect, Text, Title, Path, Div] =
@@ -67,7 +68,6 @@ export const c = nameLookup({
   sankeyLoading: true,
   sankeyError: true
 });
-const {reqPath} = throwing;
 
 /**
  * The View for a Sankey on a Map
@@ -218,7 +218,7 @@ Sankey.viewPropsAtRender = ({views, opt}) => {
   // TODO these should be the SVG width/height
   const width = reqPath([[c.sankeyReactMapGl], 'width'], views);
   const height = reqPath([[c.sankeyReactMapGl], 'height'], views);
-  const {links, nodes} = sankeyGenerator(opt, {width, height}, sample);
+  const {links, nodes} = sankeyGenerator({width, height}, sample);
   return mergePropsForViews({
     [c.sankeySvgLinks]: {
       links

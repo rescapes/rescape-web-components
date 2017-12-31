@@ -16,9 +16,9 @@ import PropTypes from 'prop-types';
 import {applyMatchingStyles, mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
 import {
   nameLookup, eMap, propsFor, renderChoicepoint, composeViews,
-  propsForSansClass, renderLoadingDefault, renderErrorDefault, strPath
+  propsForSansClass, renderLoadingDefault, renderErrorDefault
 } from 'helpers/componentHelpers';
-import {mergeDeep, throwing} from 'rescape-ramda';
+import {mergeDeep, strPath, throwing} from 'rescape-ramda';
 import * as R from 'ramda';
 import {Component} from 'react'
 const {reqPath} = throwing

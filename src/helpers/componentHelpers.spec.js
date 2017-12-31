@@ -14,11 +14,10 @@ import {
   renderChoicepoint, joinComponents, loadingCompleteStatus, makeApolloTestPropsFunction, mergePropsForViews,
   mergeStylesIntoViews,
   nameLookup, propsFor,
-  propsForSansClass, reqStrPath, strPath, itemizeProps, applyToIfFunction, keyWith, hasStrPath
+  propsForSansClass, strPath, itemizeProps, applyToIfFunction, keyWith
 } from 'helpers/componentHelpers';
-import {throwing} from 'rescape-ramda';
-
-const {reqPath} = throwing;
+import {throwing, hasStrPath} from 'rescape-ramda';
+const {reqStrPath} = throwing;
 
 describe('componentHelpers', () => {
   test('propLensEqual', () => {
@@ -346,42 +345,7 @@ describe('componentHelpers', () => {
       {key: 4, a: 3}
     ]);
   });
-
-  test('reqStrPath', () => {
-    expect(reqStrPath('foo.bar.goo', {
-      foo: {
-        bar: {
-          goo: 1
-        }
-      }
-    })).toEqual(1);
-
-    expect(() => reqStrPath('foo.bar.goo', {
-      foo: {
-        car: {
-          goo: 1
-        }
-      }
-    })).toThrow();
-  });
-
-  test('strPath', () => {
-    expect(strPath('foo.bar.goo', {
-      foo: {
-        bar: {
-          goo: 1
-        }
-      }
-    })).toEqual(1);
-
-    expect(strPath('foo.bar.goo', {
-      foo: {
-        car: {
-          goo: 1
-        }
-      }
-    })).toEqual(undefined);
-  });
+;
 
   test('itemizeProps', () => {
     expect(itemizeProps({
@@ -433,8 +397,4 @@ describe('componentHelpers', () => {
     })
   })
 
-  test('hasStrPath', () => {
-    expect(hasStrPath('tan.khaki.pants', {tan: {khaki: {pants: false}}})).toEqual(true)
-    expect(hasStrPath('tan.khaki.blazer', {tan: {khaki: {pants: false}}})).toEqual(false)
-  })
 });
