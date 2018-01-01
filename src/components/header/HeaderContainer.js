@@ -13,13 +13,12 @@ export const mapStateToProps =
   (state, props) => createSelector(
     [
       makeActiveUserRegionsAndSettingsSelector(),
-      makeBrowserProportionalDimensionsSelector(),
       makeMergeDefaultStyleWithProps(),
     ],
-    (data, browserProportionalStyle, style) => {
+    (data, style) => {
       return {
         data: R.merge(data, loadingCompleteStatus),
-        style: R.merge(style, browserProportionalStyle),
+        style: R.merge(style, props.style),
       }
     }
   )(state, props);

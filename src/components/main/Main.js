@@ -18,6 +18,7 @@ import current from 'components/current';
 import {Component} from 'react'
 import * as R from 'ramda';
 import PropTypes from 'prop-types'
+import {mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
 const [Div, Current] = eMap(['div', current]);
 
 export const c = nameLookup({
@@ -41,10 +42,10 @@ class Main extends Component {
 */
 Main.getStyles = ({style}) => {
   return {
-    [c.main]: {
+    [c.main]: mergeAndApplyMatchingStyles(style, {
       width: styleMultiplier(1),
       height: styleMultiplier(1)
-    },
+    }),
 
     [c.mainCurrent]: {}
   };

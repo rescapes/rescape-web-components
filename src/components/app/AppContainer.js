@@ -33,7 +33,6 @@ export const mapStateToProps = (state, props) => {
       data: R.merge(activeUserAndRegion, data),
       // Merge the browser dimensions with the props
       // props from the parent contain style instructions
-      // TODO we need to set width and height proportional to the browser dimensions, not equal to
       style: R.merge(dimensions, style)
     })
   )(state, props);

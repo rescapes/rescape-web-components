@@ -12,10 +12,9 @@
 import Either from 'data.either';
 import {filterWithKeys, mapPropValueAsIndex, mergeDeep, throwing} from 'rescape-ramda';
 import * as R from 'ramda';
-
-const {findOne, onlyOneValue} = throwing;
 import memoize from 'memoize-immutable';
 import NamedTupleMap from 'namedtuplemap';
+const {findOne, onlyOneValue} = throwing;
 
 /**
  * Object statuses

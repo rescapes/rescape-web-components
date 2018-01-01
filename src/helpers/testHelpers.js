@@ -221,12 +221,14 @@ export const eitherToPromise = either => {
  * @param wrapper The mounted enzyme Component
  * @param componentName The component of the wrapper whose render method will render the child componentj
  * @param childClassName The child class name to search for periodically
- * @param done Test done function to indicate a successful end of async testingk
+ * @returns {Promise} A promise that returns the component matching childClassName or if an error
+ * occurs return an Error with the message and dump of the props
  */
-export const waitForChildComponentRender = (wrapper, componentName, childClassName, done) => {
+export const waitForChildComponentRender = (wrapper, componentName, childClassName) => {
   const component = wrapper.find(componentName);
+  const childClassNameStr = `.${getClass(childClassName)}`
 // Wait for the MapGl component to render, which indicates that data loading completed
-  const waitForSample = createWaitForElement(`.${getClass(childClassName)}`);
+  const waitForSample = createWaitForElement(childClassNameStr);
   const find = component.find;
   // Override find to call update each time we poll for an update
   // Enzyme 3 doesn't stay synced with React DOM changes without update
@@ -235,12 +237,8 @@ export const waitForChildComponentRender = (wrapper, componentName, childClassNa
     // Find the component with the updated wrapper, otherwise we get the old component
     return find.apply(wrapper.find(componentName), args);
   };
-  waitForSample(component)
-    .then(
-      () => {
-        done();
-      }
-    )
+  return waitForSample(component)
+    .then(component => component.find(childClassNameStr) )
     .catch(error => {
       const comp = wrapper.find(componentName);
       if (comp.length) {
@@ -254,6 +252,5 @@ export const waitForChildComponentRender = (wrapper, componentName, childClassNa
       else {
         throw error
       }
-      done();
     });
 };

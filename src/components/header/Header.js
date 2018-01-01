@@ -5,8 +5,8 @@ import {throwing} from 'rescape-ramda';
 import {composeViews, eMap, renderChoicepoint, joinComponents, nameLookup, propsFor} from 'helpers/componentHelpers';
 import * as R from 'ramda';
 import {mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
-import {styleMultiplier} from 'helpers/styleHelpers';
-const [Div, Link] = eMap(['div', link]);
+import {Grid as grid} from 'components/atoms'
+const [Div, Link, Grid] = eMap(['div', link, grid]);
 
 export const c = nameLookup({
   header: true,
@@ -37,7 +37,7 @@ export const linkPaths = {
 class Header extends Component {
   render() {
     const props = Header.views(this.props);
-    return Div(propsFor(c.header, props.views),
+    return Grid(propsFor(c.header, props.views),
       Header.choicepoint(props)
     );
   }
@@ -51,11 +51,7 @@ Header.getStyles = ({style}) => {
   return {
     [c.header]: {
       className: 'flex pa1 justify-between nowrap',
-      style: mergeAndApplyMatchingStyles(style, {
-        position: 'absolute',
-        width: styleMultiplier(1),
-        height: styleMultiplier(1)
-      })
+      style
     },
 
     [c.headerLinks]: {
