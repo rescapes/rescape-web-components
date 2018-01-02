@@ -29,8 +29,6 @@ const queryVariables = props => ({
 const errorMaker = parentProps => R.set(R.lensPath(['region', 'id']), 'foo', parentProps);
 
 const asyncParentProps = () => new Promise((resolve) => {
-  // Make the region id something nonexistent
-  // Get the parent Region from the CurrentContainer's testPropMaker
   const currentProps = propsFromSampleStateAndContainer(currentPropsMaker, {});
   const currentViews = Current.views(currentProps).views;
   const parentProps = currentViews[cCurrent.currentRegion];

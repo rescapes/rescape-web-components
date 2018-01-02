@@ -2,7 +2,10 @@ import React, {Component} from 'react';
 import {Link as link} from 'react-router-dom';
 import {withRouter} from 'react-router';
 import {throwing} from 'rescape-ramda';
-import {composeViews, eMap, renderChoicepoint, nameLookup, propsFor} from 'helpers/componentHelpers';
+import {
+  composeViews, eMap, renderChoicepoint, nameLookup, propsFor,
+  renderErrorDefault, renderLoadingDefault
+} from 'helpers/componentHelpers';
 import * as R from 'ramda';
 import {mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
 import {Grid as grid, Logo as logo} from 'components/atoms';
@@ -16,8 +19,10 @@ export const c = nameLookup({
   headerLinkHolder: true,
   headerLink: true,
   headerLanguageChooser: true,
-  headerAccoun: true
-});
+  headerAccount: true,
+  headerLoading: true,
+  headerError: true,
+})
 
 export const labels = {
   links: {
@@ -125,8 +130,8 @@ Header.views = composeViews(
  * Loading, Error, or Data based on the props
  */
 Header.choicepoint = renderChoicepoint(
-  Header.renderError,
-  Header.renderLoading,
+  renderErrorDefault(c.headerError),
+  renderLoadingDefault(c.headerLoading),
   Header.renderData
 );
 

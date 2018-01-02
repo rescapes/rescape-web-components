@@ -8,29 +8,45 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import {mapStateToProps} from './HeaderContainer';
-import {propsFromSampleStateAndContainer, wrapWithMockStore} from 'helpers/testHelpers';
-import headerContainer from './HeaderContainer';
-import { MemoryRouter as memoryRouter } from 'react-router';
+
+import {
+  asyncPropsFromSampleStateAndContainer,
+} from 'helpers/testHelpers';
+import headerContainer, {testPropsMaker, queries} from 'components/header/HeaderContainer';
+import {testPropsMaker as appPropsMaker} from 'components/app/AppContainer';
 import {eMap} from 'helpers/componentHelpers';
-import React from 'react';
-import {testPropsMaker} from 'components/header/HeaderContainer';
+import App, {c as cApp} from 'components/app/App';
+import {c} from 'components/header/Header';
+import {apolloContainerTests} from 'helpers/apolloContainerTestHelpers';
+import {MemoryRouter as memoryRouter} from 'react-router';
 
-describe('HeaderContainer', () => {
-  const parentProps = {
-    style: {}
-  }
-  // Get the test props for HeaderContainer
-  const props = propsFromSampleStateAndContainer(testPropsMaker, parentProps);
+// Test this container
+const [HeaderContainer, MemoryRouter] = eMap([headerContainer, memoryRouter]);
+const Container = (...args) => MemoryRouter({initialEntries: ['/']}, HeaderContainer(args));
+// Find this React component
+const componentName = 'Header';
+// Find this class in the data renderer
+const childClassDataName = c.headerLinkHolder;
+// Find this class in the loading renderer
+const childClassLoadingName = c.headerLoading;
+// Find this class in the error renderer
+const childClassErrorName = c.headerError;
 
-  test('mapStateToProps', () => {
-    expect(props).toMatchSnapshot();
-  });
+const asyncParentProps = () =>
+  asyncPropsFromSampleStateAndContainer(appPropsMaker, {}).then(
+    appProps => {
+      const appViews = App.views(appProps).views;
+      const parentProps = appViews[cApp.appHeader];
+      return parentProps;
+    });
 
-  test('render', () => {
-    const [HeaderContainer, MemoryRouter] = eMap([headerContainer, memoryRouter]);
-    const wrapper = wrapWithMockStore(MemoryRouter({}, HeaderContainer(parentProps)));
-    const component = wrapper.find('Header');
-    expect(component.props()).toMatchSnapshot();
-  });
-});
+describe('HeaderContainer', () => apolloContainerTests({
+    Container,
+    componentName,
+    childClassDataName,
+    // We'll probably have a loading state when the user account, etc is loading, but maybe not
+    //childClassLoadingName,
+    testPropsMaker,
+    asyncParentProps
+  })
+);

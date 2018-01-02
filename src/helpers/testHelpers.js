@@ -75,7 +75,7 @@ export const makeSampleInitialState = (sampleUserSettings = {}) => {
  * @param {Function} containerPropMaker A function from a container that expects a sample state and sampleOwnProps
  * and then applies the container's mapStateToProps, mapDispatchToProps, and optional mergeProps
  * @param sampleOwnProps Sample props that would normally come from the parent container
- * @returns {Object} complete test props
+ * @returns {Object|Promise} complete test props or a Promise of the props if the conntainerPropMaker is aysnc
  */
 export const propsFromSampleStateAndContainer = (containerPropMaker, sampleOwnProps = {}) =>
   containerPropMaker(makeSampleInitialState(), sampleOwnProps);
