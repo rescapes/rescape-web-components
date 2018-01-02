@@ -9,11 +9,11 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import {Box as box} from 'rebass';
+import {Box as box, Flex as flex} from 'rebass';
 import {eMap} from 'helpers/componentHelpers';
 import * as R from 'ramda';
 
-const [Box] = eMap([box]);
+const [Box, Flex, Img] = eMap([box, flex, 'img']);
 
 // Adapted from http://jxnblk.com/writing/posts/patterns-for-style-composition-in-react/
 
@@ -71,25 +71,20 @@ export const Quarter = props =>
   );
 
 /**
- * Creates a flex Box
- * @param props
- * @return {*}
- * @constructor
- */
-export const Flex = props =>
-  Box(R.merge(props, {
-      display: 'flex'
-    })
-  );
-
-/**
  * Creates a flex Box with automatic sizing
  * @param props
  * @return {*}
  * @constructor
  */
 export const FlexAuto = props =>
-  Box(R.merge(props, {
+  Flex(R.merge(props, {
       flex: '1 1 auto'
     })
   );
+
+export const Logo = ({logoBox, logoImage}) =>
+  Box(R.merge(logoBox,
+  ),
+    Img(R.merge(logoImage,
+      ))
+  )

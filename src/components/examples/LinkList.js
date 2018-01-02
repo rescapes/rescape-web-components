@@ -76,7 +76,7 @@ class LinkList extends Component {
     const data = store.readQuery({ query: ALL_LINKS_QUERY, variables: { first, skip, orderBy } })
 
     const votedLink = data.allLinks.find(link => link.id === linkId)
-    votedLink.votes = createVote.link.votes
+    votedLink.votes = createVote.headerLink.votes
     store.writeQuery({ query: ALL_LINKS_QUERY, data })
   }
 
@@ -153,8 +153,8 @@ class LinkList extends Component {
         }
       `,
       updateQuery: (previous, { subscriptionData }) => {
-        const votedLinkIndex = previous.allLinks.findIndex(link => link.id === subscriptionData.Vote.node.link.id)
-        const link = subscriptionData.Vote.node.link
+        const votedLinkIndex = previous.allLinks.findIndex(link => link.id === subscriptionData.Vote.node.headerLink.id)
+        const link = subscriptionData.Vote.node.headerLink
         const newAllLinks = previous.allLinks.slice()
         newAllLinks[votedLinkIndex] = link
         const result = {

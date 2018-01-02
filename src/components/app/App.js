@@ -35,7 +35,7 @@ class App extends Component {
 }
 
 App.getStyles = ({style}) => {
-  const headerHeight = 300
+  const headerHeight = 200
   return {
     [c.appHeader]: mergeAndApplyMatchingStyles(style, {
       width: R.identity,

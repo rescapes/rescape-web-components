@@ -1,8 +1,7 @@
 import React, {Component} from 'react';
-import {Link} from 'react-router-dom';
 import {mergeDeep, throwing} from 'rescape-ramda';
-import {eMap, loadingCompleteStatus, makeTestPropsFunction, mergeActionsForViews} from 'helpers/componentHelpers';
-import {makeBrowserProportionalDimensionsSelector, makeMergeDefaultStyleWithProps} from 'selectors/styleSelectors';
+import {loadingCompleteStatus, makeTestPropsFunction, mergeActionsForViews} from 'helpers/componentHelpers';
+import {makeMergeDefaultStyleWithProps} from 'selectors/styleSelectors';
 import {createSelector} from 'reselect';
 import {connect} from 'react-redux';
 import Header from 'components/header/Header';

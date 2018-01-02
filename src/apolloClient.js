@@ -24,7 +24,7 @@ const {settings: {graphcool: {authTokenKey, serviceIdKey}}} = config;
  */
 export default () => {
 
-// A link to our simple URI on graph.cool
+// A headerLink to our simple URI on graph.cool
   const httpLink = createHttpLink({uri: `https://api.graph.cool/simple/v1/${serviceIdKey}`, fetch});
 
   // Middleware authentication. Relies on our constant auth token
@@ -81,7 +81,7 @@ export default () => {
   // Create the ApolloClient using the following ApolloClientOptions
   return new ApolloClient({
     // Ths split Link
-    link: link,
+    headerLink: link,
     // Use InMemoryCache
     cache: new InMemoryCache()
   });

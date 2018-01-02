@@ -15,8 +15,8 @@ class Link extends Component {
           {userId && <div className='ml1 gray f11' onClick={() => this._voteForLink()}>▲</div>}
         </div>
         <div className='ml1'>
-          <div>{this.props.link.description} ({this.props.link.url})</div>
-          <div className='f6 lh-copy gray'>{this.props.link.votes.length} votes | by {this.props.link.postedBy ? this.props.link.postedBy.name : 'Unknown'} {timeDifferenceForDate(this.props.link.createdAt)}</div>
+          <div>{this.props.headerLink.description} ({this.props.headerLink.url})</div>
+          <div className='f6 lh-copy gray'>{this.props.headerLink.votes.length} votes | by {this.props.headerLink.postedBy ? this.props.headerLink.postedBy.name : 'Unknown'} {timeDifferenceForDate(this.props.headerLink.createdAt)}</div>
         </div>
       </div>
     )
@@ -24,13 +24,13 @@ class Link extends Component {
 
   _voteForLink = async () => {
     const userId = localStorage.getItem(GC_USER_ID)
-    const voterIds = this.props.link.votes.map(vote => vote.user.id)
+    const voterIds = this.props.headerLink.votes.map(vote => vote.user.id)
     if (voterIds.includes(userId)) {
       console.log(`User (${userId}) already voted for this link.`)
       return
     }
 
-    const linkId = this.props.link.id
+    const linkId = this.props.headerLink.id
     await this.props.createVoteMutation({
       variables: {
         userId,

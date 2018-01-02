@@ -2,33 +2,39 @@ import React, {Component} from 'react';
 import {Link as link} from 'react-router-dom';
 import {withRouter} from 'react-router';
 import {throwing} from 'rescape-ramda';
-import {composeViews, eMap, renderChoicepoint, joinComponents, nameLookup, propsFor} from 'helpers/componentHelpers';
+import {composeViews, eMap, renderChoicepoint, nameLookup, propsFor} from 'helpers/componentHelpers';
 import * as R from 'ramda';
 import {mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
-import {Grid as grid} from 'components/atoms'
-const [Div, Link, Grid] = eMap(['div', link, grid]);
+import {Grid as grid, Logo as logo} from 'components/atoms';
+import {Box as box, Flex as flex} from 'rebass';
+
+const [Div, Link, Grid, Flex, Box, Logo] = eMap(['div', link, grid, flex, box, logo]);
 
 export const c = nameLookup({
   header: true,
-  headerLinks: true,
-  headerText: true,
-  link: true,
-  linkSeparator: true
+  headerLogo: true,
+  headerLinkHolder: true,
+  headerLink: true,
+  headerLanguageChooser: true,
+  headerAccoun: true
 });
 
 export const labels = {
-  headerText: 'Urbinsight',
   links: {
-    new: 'New',
-    top: 'Top',
-    search: 'Search'
+    tour: 'Tour',
+    features: 'Features',
+    partnerCities: 'Partner Cities',
+    ecoCompass: 'EcoCompass',
+    about: 'About'
   }
 };
 
 export const linkPaths = {
-  new: '/',
-  top: '/top',
-  search: '/search'
+  tour: '/tour',
+  features: '/features',
+  partnerCities: '/partners',
+  ecoCompass: '/ecoCompass',
+  about: '/about'
 };
 
 /**
@@ -50,61 +56,50 @@ class Header extends Component {
 Header.getStyles = ({style}) => {
   return {
     [c.header]: {
-      className: 'flex pa1 justify-between nowrap',
       style
     },
 
-    [c.headerLinks]: {
-      className: 'flex pa1 justify-between nowrap',
-      style: mergeAndApplyMatchingStyles(style, {})
+    [c.headerLinkHolder]: {
+      style: {}
     },
 
-    [c.headerText]: {
-      className: 'fw7 mr1',
-      style: mergeAndApplyMatchingStyles(style, {})
+    [c.headerLink]: {
+      style: {
+        color: '#C1C1C1'
+      }
     },
 
-    [c.link]: {
-      className: 'ml1 no-underline black',
-      style: mergeAndApplyMatchingStyles(style, {}),
+    [c.headerLogo]: {
+      style: {
+      }
     },
 
-    [c.linkSeparator]: {
-      className: 'ml1 no-underline black',
-      style: mergeAndApplyMatchingStyles(style, {})
-    }
   };
 };
 
 Header.viewProps = () => {
-  return {
-  };
+  return {};
 };
 
 Header.viewActions = () => {
-  return {
-  };
+  return {};
 };
 
 Header.renderData = ({views}) => {
   const props = R.flip(propsFor)(views);
-  const mergeLinkProps = R.merge(props(c.link));
-  const mergeSeparatorProps = R.merge(props(c.linkSeparator));
-  const separator = key => Div(mergeSeparatorProps({key}), '|');
+  const mergeLinkProps = R.merge(props(c.headerLink));
   const linkMaker = (linkPath, name) =>
-      key => Link(mergeLinkProps({key, to: linkPath}), labels.links[name]);
+    key => Box(mergeLinkProps({key, to: linkPath}), labels.links[name]);
 
-  return Div(props(c.headerLinks),
-    Div(props(c.headerText), linkMaker.headerText),
-    // Puts separator components between link components
-    ...joinComponents(
-      separator,
+  return [
+    Logo(props(c.headerLogo)),
+    Flex(props(c.headerLinkHolder),
       R.values(R.mapObjIndexed(
         linkMaker,
         linkPaths
       ))
     )
-  );
+  ];
 };
 
 Header.renderLoading = ({data}) => {

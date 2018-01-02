@@ -48,7 +48,7 @@ export const linkPosition = link => ({
  * @param {Object} sankeyData. An object with a nodes key and links key
  * @param {[Object]} sankeyData.nodes A list of objects that must have a name at a minimum
  * @param {[Object]} sankeyData.links A list of objects that must have a source and target index into the
- * nodes array and must have a value indicating the weight of the link
+ * nodes array and must have a value indicating the weight of the headerLink
  * @returns {null}
  */
 export const sankeyGenerator = asUnaryMemoize(({width, height}, sankeyData) => {
@@ -94,10 +94,10 @@ export const sankeyGenerator = asUnaryMemoize(({width, height}, sankeyData) => {
         }),
       sankeyData.nodes);
 
-    // Create an svg.g element (link) and select all paths
+    // Create an svg.g element (headerLink) and select all paths
     // Our links our drawn as paths
     /*
-    let link = svg.append("g")
+    let headerLink = svg.append("g")
       .attr("class", "links")
       .attr("fill", "none")
       .attr("stroke", "#000")
@@ -123,13 +123,13 @@ export const sankeyGenerator = asUnaryMemoize(({width, height}, sankeyData) => {
     //
     // It gives each node a sourceLinks array  and a targetLinks array that reference the links. It also gives each node
     // an x0, y0, x1, y2 to indicate its rectangular bounds. It also gives an index, depth, and value (not sure what
-    // depth and value are for yet. value is calculate from the link values)
+    // depth and value are for yet. value is calculate from the headerLink values)
 
     // It gives each a source and target reference to its nodes as well as
     // a y0, y1, and width to indicate its start y and end y and width of the path
     // The y0 and y1 are some portion of the vertical service of the two nodes (I think),
     // although there must be more to it since they have to attach to two nodes at different y positions
-    // It also gives each link an index
+    // It also gives each headerLink an index
     const update = {links: sankeyData.links, nodes: features};
     sankeyGenerator(update);
 
