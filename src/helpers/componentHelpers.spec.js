@@ -14,9 +14,10 @@ import {
   renderChoicepoint, joinComponents, loadingCompleteStatus, makeApolloTestPropsFunction, mergePropsForViews,
   mergeStylesIntoViews,
   nameLookup, propsFor,
-  propsForSansClass, strPath, itemizeProps, applyToIfFunction, keyWith
+  propsForSansClass, strPath, itemizeProps, applyToIfFunction, keyWith, propsForItem, applyIfFunction
 } from 'helpers/componentHelpers';
 import {throwing, hasStrPath} from 'rescape-ramda';
+
 const {reqStrPath} = throwing;
 
 describe('componentHelpers', () => {
@@ -60,17 +61,27 @@ describe('componentHelpers', () => {
 
   test('mergePropsForViews', () => {
 
-
     const mergeProps = mergePropsForViews(props => ({
-      aComponent: {foo: 1, bar: reqStrPath('data.store.bar')},
+      aComponent: {
+        foo: 1,
+        bar: reqStrPath('data.store.bar')
+      },
       bComponent: R.merge(
         {
           bar: reqStrPath('data.store.bar'),
           // say we need width in bComponent's props, not just its props.styles
           width: reqStrPath('views.bComponent.styles.width')
         },
+        // This returns multiple prop/values
         reqStrPath('data.someExtraProps', props)
-      )
+      ),
+      itemComponent: R.curry((props, item) => ({
+        key: R.toUpper(item.key),
+        title: R.toLower(item.title)
+      })),
+      anotherItemComponent: {
+        key: props => item => `${props.data.a}${item.key}`
+      }
     }));
     const props = {
       views: {
@@ -91,14 +102,35 @@ describe('componentHelpers', () => {
 
     // mergeProps should merge stateProps and dispatchProps but copy the actions to stateProps.views according
     // to the mapping given to mergeActionsForViews
-    expect(mergeProps(props)).toEqual(
+    // At this point we still have unary functions expecting items
+    const mostlyResolvedProps = mergeProps(props);
+
+    // Lets manually map the item functions to some real values so we can test equality
+    // This one is an entire function, map some items with it
+    // This step would normally happen in the react render method when we are iterating some list of data
+    const mergedProps = R.compose(
+      R.over(
+        R.lensPath(['views', 'anotherItemComponent']),
+        // keyFunc is expecting an item
+        propObj => R.map(item => ({key: propObj.key(item)}), [{key: 'a'}, {key: 'b'}])
+      ),
+      R.over(
+        R.lensPath(['views', 'itemComponent']),
+        // viewFunc already resolved the props in mergeProps, now it just needs an item
+        viewFunc => R.map(viewFunc, [{key: 'a', title: 'A'}, {key: 'b', title: 'B'}])
+      )
+    )(mostlyResolvedProps);
+
+    expect(mergedProps).toEqual(
       {
         views: {
           aComponent: {stuff: 1, foo: 1, bar: 2},
           bComponent: R.merge(
             {moreStuff: 2, bar: 2, styles: {width: 10}, width: 10},
             props.data.someExtraProps
-          )
+          ),
+          itemComponent: [{key: 'A', title: 'a'}, {key: 'B', title: 'b'}],
+          anotherItemComponent: [{key: '1a'}, {key: '1b'}]
         },
         data: {
           a: 1,
@@ -345,22 +377,65 @@ describe('componentHelpers', () => {
       {key: 4, a: 3}
     ]);
   });
-;
+  ;
 
   test('itemizeProps', () => {
     expect(itemizeProps({
         name: 'props',
         a: 1,
         b: R.prop('cucumber'),
-        c: item => R.add(2, item.c)
+        c: item => R.add(2, item.c),
+        styles: {
+          // This function should be called with item to produce 'puce'
+          color: item => R.defaultTo('taupe', item.color)
+        }
       },
       {
         name: 'item',
         cucumber: 'tasty',
-        c: 5
+        c: 5,
+        color: 'puce'
       }
     )).toEqual(
       {
+        name: 'props',
+        a: 1,
+        b: 'tasty',
+        c: 7,
+        styles: {
+          color: 'puce'
+        }
+      }
+    );
+  });
+
+  test('propsForItem', () => {
+    expect(propsForItem(
+      {
+        someView: {
+          name: 'props',
+          a: 1,
+          b: R.prop('cucumber'),
+          c: item => R.add(2, item.c),
+          styles: {
+            // This function should be called with item to produce 'puce'
+            color: item => R.defaultTo('taupe', item.color)
+          }
+        }
+      },
+      'someView',
+      {
+        name: 'item',
+        cucumber: 'tasty',
+        c: 5,
+        color: 'puce'
+      }
+    )).toEqual(
+      {
+        className: 'some-view',
+        styles: {
+          color: 'puce'
+        },
         name: 'props',
         a: 1,
         b: 'tasty',
@@ -370,9 +445,15 @@ describe('componentHelpers', () => {
   });
 
   test('applyToIfFunction', () => {
-    expect(applyToIfFunction({kangaroo: 1}, R.prop('kangaroo'))).toEqual(1)
-    expect(applyToIfFunction({kangaroo: 1}, 'rat')).toEqual('rat')
-  })
+    expect(applyToIfFunction({kangaroo: 1}, R.prop('kangaroo'))).toEqual(1);
+    expect(applyToIfFunction({kangaroo: 1}, 'rat')).toEqual('rat');
+  });
+
+
+  test('applyIfFunction', () => {
+    expect(applyIfFunction([1, 2], R.add)).toEqual(3);
+    expect(applyIfFunction([1, 2], 'rat')).toEqual('rat');
+  });
 
   test('keyWith', () => {
     // With constant
@@ -383,10 +464,10 @@ describe('componentHelpers', () => {
       key: 1,
       id: 1,
       billy: 'low ground'
-    })
+    });
 
     // With func that is resolvec later
-    const billyFunc = (props, d) => 'low ground'
+    const billyFunc = (props, d) => 'low ground';
     expect(keyWith('billy', {
       id: 1,
       billy: billyFunc
@@ -394,7 +475,7 @@ describe('componentHelpers', () => {
       key: billyFunc,
       id: 1,
       billy: billyFunc
-    })
-  })
+    });
+  });
 
 });

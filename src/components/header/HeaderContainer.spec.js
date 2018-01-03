@@ -18,19 +18,21 @@ import {eMap} from 'helpers/componentHelpers';
 import App, {c as cApp} from 'components/app/App';
 import {c} from 'components/header/Header';
 import {apolloContainerTests} from 'helpers/apolloContainerTestHelpers';
-import {MemoryRouter as memoryRouter} from 'react-router';
+import mockRouter from 'react-mock-router'
+import * as R from 'ramda'
 
 // Test this container
-const [HeaderContainer, MemoryRouter] = eMap([headerContainer, memoryRouter]);
-const Container = (...args) => MemoryRouter({initialEntries: ['/']}, HeaderContainer(args));
+const [HeaderContainer, MockRouter] = eMap([headerContainer, mockRouter]);
+const Container = R.compose(
+  // Wrap a MemoryRouter since Headers have Routing Links
+  c => MockRouter({initialEntries: ['/']}, c),
+  HeaderContainer
+)
+
 // Find this React component
 const componentName = 'Header';
 // Find this class in the data renderer
 const childClassDataName = c.headerLinkHolder;
-// Find this class in the loading renderer
-const childClassLoadingName = c.headerLoading;
-// Find this class in the error renderer
-const childClassErrorName = c.headerError;
 
 const asyncParentProps = () =>
   asyncPropsFromSampleStateAndContainer(appPropsMaker, {}).then(
@@ -44,8 +46,6 @@ describe('HeaderContainer', () => apolloContainerTests({
     Container,
     componentName,
     childClassDataName,
-    // We'll probably have a loading state when the user account, etc is loading, but maybe not
-    //childClassLoadingName,
     testPropsMaker,
     asyncParentProps
   })

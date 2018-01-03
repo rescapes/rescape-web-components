@@ -4,10 +4,9 @@ import {withRouter} from 'react-router';
 import {throwing} from 'rescape-ramda';
 import {
   composeViews, eMap, renderChoicepoint, nameLookup, propsFor,
-  renderErrorDefault, renderLoadingDefault
+  renderErrorDefault, renderLoadingDefault, keyWith, propsForItem
 } from 'helpers/componentHelpers';
 import * as R from 'ramda';
-import {mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
 import {Grid as grid, Logo as logo} from 'components/atoms';
 import {Box as box, Flex as flex} from 'rebass';
 
@@ -21,26 +20,31 @@ export const c = nameLookup({
   headerLanguageChooser: true,
   headerAccount: true,
   headerLoading: true,
-  headerError: true,
-})
+  headerError: true
+});
 
-export const labels = {
-  links: {
-    tour: 'Tour',
-    features: 'Features',
-    partnerCities: 'Partner Cities',
-    ecoCompass: 'EcoCompass',
-    about: 'About'
+const links = [
+  {
+    text: 'Tour',
+    to: '/tour'
+  },
+  {
+    text: 'Features',
+    to: '/tour'
+  },
+  {
+    text: 'Partner Cities',
+    to: '/partnerCities'
+  },
+  {
+    text: 'EcoCompass',
+    to: '/ecoCompass'
+  },
+  {
+    text: 'About',
+    to: '/about'
   }
-};
-
-export const linkPaths = {
-  tour: '/tour',
-  features: '/features',
-  partnerCities: '/partners',
-  ecoCompass: '/ecoCompass',
-  about: '/about'
-};
+];
 
 /**
  * The Header
@@ -75,15 +79,19 @@ Header.getStyles = ({style}) => {
     },
 
     [c.headerLogo]: {
-      style: {
-      }
-    },
+      style: {}
+    }
 
   };
 };
 
 Header.viewProps = () => {
-  return {};
+  return {
+    [c.headerLogo]: {key: c.headerLogo},
+    [c.headerLinkHolder]: {key: c.headerLinkHolder},
+    // Pass the datum properties to make each link and add a key using the text attribute
+    [c.headerLink]: R.curry((_, d) => keyWith('text', d))
+  };
 };
 
 Header.viewActions = () => {
@@ -92,17 +100,22 @@ Header.viewActions = () => {
 
 Header.renderData = ({views}) => {
   const props = R.flip(propsFor)(views);
-  const mergeLinkProps = R.merge(props(c.headerLink));
-  const linkMaker = (linkPath, name) =>
-    key => Box(mergeLinkProps({key, to: linkPath}), labels.links[name]);
+  const linkPropsForItem = propsForItem(views, c.headerLink)
+  const mapLinks = R.map(
+    item => {
+      // Extract out the text element
+      const {text, ...linkProps} = linkPropsForItem(item)
+      return Link(
+        linkProps,
+        text
+      )
+    }
+  );
 
   return [
     Logo(props(c.headerLogo)),
     Flex(props(c.headerLinkHolder),
-      R.values(R.mapObjIndexed(
-        linkMaker,
-        linkPaths
-      ))
+      mapLinks(links)
     )
   ];
 };

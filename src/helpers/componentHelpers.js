@@ -123,10 +123,16 @@ export const mergeActionsForViews = (viewToActionNames) => (props) => {
 /**
  * Given a mapping from view names to an array of prop values or functions,
  * adds or merges a views property into the props, where views is an object keyed by
- * the same keys as viewToPropValuesOrFuncs and valued by the resolution of the viewToPropValuesOrFuncs
+ * the same keys as viewNamesToViewProps and valued by the resolution of the viewNamesToViewProps
  * This allows a Container or Component to efficiently specify which props to give the view
- * used by each sub component. Each props of viewToPropValuesOrFuncs can be a constant value or
- * a unary function that is passed props and resolves the valuej
+ * used by each sub component. Each props object of viewNamesToViewProps can be a constant value or
+ * a unary function that is passed props. Either way, it results in an object keyed by props and
+ * valued by prop values or a function that accepts props.
+ *
+ * The functions that accept props can optionally take a second argument (they must be curried) or
+ * return a unary function that accepts an item. This is only appropriate for components that are
+ * used in a list and so need to take each item as an argument. See the example.
+ *
  * Example, if aComponent and bComponents are two child components that need the following props:
  * const viewToProps = {
  *  aComponent: {
@@ -134,8 +140,27 @@ export const mergeActionsForViews = (viewToActionNames) => (props) => {
  * },
  * bComponent: {
  *    // These are two functions that resolve paths in different ways
- *    bar: R.lensPath(['store', 'bar'], width: (props) => props.style.width
+ *   bar: R.lensPath(['store', 'bar']),
+ *   width: (props) => props.style.width
  * }
+ * // This view is used as a list item. Since all of its props need to incorporate each item we make
+ * the entire property object a function
+ * itemComponent: R.curry((props, item) => {
+ *  // Unique key to satisfy React iteration
+ *  key: item.name,
+ *  title: item.title
+ * })
+ * // This view is also a list item, but instead uses functions on individual properties
+ * anotherItemComponent: {
+ *  someConstantKey: 'funky',
+ *  // just needs prop
+ *  somePropKey: props => props.cool
+ *  // just needs item
+ *  someItemProp: (_, item) => item.itemName
+ *  // uses both props and item by returning a unary function
+ *  anotherItemProp: props => item => `${prop.name}:${item.name}`
+ * }
+ *
  * and props are
  * const props = {
       a: 1,
@@ -168,22 +193,51 @@ export const mergeActionsForViews = (viewToActionNames) => (props) => {
  * @param {Object} props.data Must be present to search for propPaths
  * @props {Object} props with props added to props.views
  */
-export const mergePropsForViews = R.curry((viewToPropValuesOrFuncs, props) => {
+export const mergePropsForViews = R.curry((viewNamesToViewProps, props) => {
+
+  const mergeDeepWith = module.exports.mergeDeepWith = R.curry((fn, left, right) => R.mergeWith((l, r) => {
+    // If either (hopefully both) items are arrays or not both objects
+    // accept the right value
+    return (
+      (l && l.concat && R.is(Array, l)) ||
+      (r && r.concat && R.is(Array, r))
+    ) ||
+    !(R.all(R.is(Object)))([l, r]) ||
+    R.any(R.is(Function))([l, r]) ?
+      fn(l, r) :
+      mergeDeepWith(fn, l, r); // tail recursive
+  })(left, right));
+
+  // If either matching view props object is a function, wrap them in a function
+  // These functions have to accept an item, the props arg has already been given to them
+  const mergeFunctions = (left, right) => R.ifElse(
+    R.any(R.is(Function)),
+    ([l, r]) => {
+      return item => mergeDeep(
+        ...R.map(applyToIfFunction(item), [l, r])
+      );
+    },
+    R.apply(mergeDeep)
+  )([left, right]);
+
   return R.over(
     R.lensProp('views'),
-    views => mergeDeep(
+    views => mergeDeepWith(
+      // If either merged value is a function, wrap it in a function to resolve later
+      mergeFunctions,
       // Merge any existing values in props.views
       views,
       // Map each propPath to the value in props or undefined
-      // This transforms {viewName: {propName: 'pathInPropsToPropName (e.g. store.propName)', ...}
-      // This results in {viewName: {propName: propValue, ...}
       R.map(
-        propNameToValueOrFunc => R.map(
+        viewPropsObjOrFunction => R.map(
+          // If any individual prop value is a function, pass props to it.
           applyToIfFunction(props),
-          propNameToValueOrFunc
+          // If the viewProps are a function, pass props to it
+          // Either way we end up wih an object of prop keys pointing to prop values or prop functions
+          applyToIfFunction(props, viewPropsObjOrFunction)
         ),
         // If the entire viewToPropValuesOrFuncs is a function pass props to it
-        applyToIfFunction(props, viewToPropValuesOrFuncs)
+        applyToIfFunction(props, viewNamesToViewProps)
       )
     ),
     props
@@ -213,6 +267,22 @@ export const applyToIfFunction = R.curry((obj, maybeFunc) =>
     R.is(Function),
     // if it is function, call with props and expect a value back
     R.applyTo(obj),
+    // otherwise assume it's already a resolved value
+    R.identity
+  )(maybeFunc)
+);
+
+/**
+ * Applies the given arguments if maybeFunc is a function. Otherwise the arguments are ignored
+ * @param {*} obj The obj to pass to maybeFunc if maybeFunc is a function
+ * @param {*} maybeFunc If a function, call it with obj, otherwise return it
+ * @return {*} maybeFunc(obj) or maybeFunc
+ */
+export const applyIfFunction = R.curry((args, maybeFunc) =>
+  R.ifElse(
+    R.is(Function),
+    // if it is function, call with props and expect a value back
+    R.apply(R.__, args),
     // otherwise assume it's already a resolved value
     R.identity
   )(maybeFunc)
@@ -387,14 +457,22 @@ export const mergeStylesIntoViews = R.curry((viewStyles, props) => {
  * Given viewProps keyed by by view names, find the one that matches name.
  * Then create the class and style props from the name and style props and merge it with the other props
  * If no matches props are found, {className: decamelized name} is returned
+ * The resolved props obj can also be a function accepting an item for iteration views
  * Example: name = 'fooOuterDiv'
  * viewProps: {
- *  fooOuterDiv: {
+ *  fooView: {
  *    bar: 1,
  *    style: {
  *      color: 'red'
  *    }
- *  }
+ *  },
+ *  OtherView: item => {
+ *    bar: 1,
+ *    key: item.key
+ *    style: {
+ *      color: 'red'
+ *    }
+ *  },
  * }
  * resolves to {
  *  bar: 1,
@@ -410,13 +488,17 @@ export const mergeStylesIntoViews = R.curry((viewStyles, props) => {
  */
 export const propsFor = v((name, views) => {
     const propsForView = R.defaultTo({}, R.view(R.lensProp(name), views));
-    return R.merge(
-      propsForView,
-      getClassAndStyle(
-        name,
-        views
-      )
+    const classAndStyle = getClassAndStyle(
+      name,
+      views
     );
+
+    // If the resulting propsForView is a function, wrap the merge as a function expecting an item
+    return R.ifElse(
+      R.is(Function),
+      f => item => R.merge(f(item), classAndStyle),
+      obj => R.merge(obj, classAndStyle)
+    )(propsForView);
   },
   [
     ['name', PropTypes.string.isRequired],
@@ -447,21 +529,45 @@ export const propsAndStyle = (name, viewProps) => R.merge(
 );
 
 /**
- * Applies an item to props that have functional values
- * @param props The props to which to apply the item
+ * Applies an item to props that have unary functional values.
+ * Also applies an item to props.styles keys if they are functions.
+ * @param {Object|Function} propsOrFunc The props to which to apply the item. This can also be a function
+ * expecing the item
  * @param item The item to which to call on properties that are function
  */
-export const itemizeProps = R.curry((props, item) =>
-  R.map(
-    R.ifElse(
+export const itemizeProps = R.curry((propsOrFunc, item) => {
+  const mapApplyToItem = R.map(
+    R.when(
       R.is(Function),
-      // Apply the prop function to item (i.e. call the function with item
-      R.applyTo(item),
-      R.identity
+      // Apply the prop function to item (i.e. call the function with item)
+      R.applyTo(item)
+    )
+  );
+
+  return R.compose(
+    // Repeat for style props
+    R.when(
+      R.has('styles'),
+      R.over(
+        R.lensProp('styles'),
+        mapApplyToItem
+      )
     ),
-    props
-  )
-);
+    // For any prop that has a function, call it with item
+    mapApplyToItem
+    // If the propsOrFunc is a func, apply it to item, either way we end up with the props
+  )(applyToIfFunction(item, propsOrFunc));
+});
+
+/**
+ * Calls propsFor wrapped in itemizeProps. This first resolves the props of the view given by name,
+ * then it applies item to any function in the resolved props and in props.style.
+ * @param {Object} views The views keyed by named and valued by a props object (or function that resolves to props)
+ * @param {String} name The view name to resolve
+ * @param {Object} item The item to call on any functions in the resolved props and props.styles
+ * @returns {Object} Fully resolved props for the particular item
+ */
+export const propsForItem = R.curry((views, name, item) => itemizeProps(propsFor(name, views), item));
 
 /**
  * Creates {name1: name1, name2: name2} from a list of names

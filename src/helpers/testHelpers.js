@@ -238,7 +238,7 @@ export const waitForChildComponentRender = (wrapper, componentName, childClassNa
     return find.apply(wrapper.find(componentName), args);
   };
   return waitForSample(component)
-    .then(component => component.find(childClassNameStr) )
+    .then(component => component.find(childClassNameStr).first() )
     .catch(error => {
       const comp = wrapper.find(componentName);
       if (comp.length) {

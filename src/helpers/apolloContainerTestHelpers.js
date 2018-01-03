@@ -108,19 +108,32 @@ export const apolloContainerTests = (config) => {
     }
 
     test('render', async (done) => {
+      // Wait for the sample parent props that feed this component
       const parentProps = await asyncParentPropsOrDefault;
+      // Wrap the component in mock Apollo and Redux providers.
+      // If the compoent doesn't use Apollo it just means that it will render its children synchronously,
+      // rather than asynchronously
       const wrapper = wrapWithMockGraphqlAndStore(Container(parentProps));
+      // Find the top-level component. This is always rendered in any Apollo status (loading, error, store data)
       const component = wrapper.find(componentName);
+      // Make sure the component props are consistent since the last test run
+      expect(component.props()).toMatchSnapshot();
+
+      // If we have an Apollo component, our immediate status after mounting the component is loading. Confirm
       if (childClassLoadingName) {
         expect(component.find(`.${getClass(childClassLoadingName)}`).length).toEqual(1);
       }
-      expect(component.props()).toMatchSnapshot();
+
+      // If we have an Apollo component, we use enzyme-wait to await the query to run and the the child
+      // component that is dependent on the query result to render. If we don't have an Apollo component,
+      // this child will be rendered immediately without delay
       waitForChildComponentRender(wrapper, componentName, childClassDataName).then(
         childComponent => {
           expect(childComponent.props()).toMatchSnapshot();
           done();
         }
       ).catch(e => {
+        // If we don't find it a timeout error or other error occured.
         throw e;
         done();
       });

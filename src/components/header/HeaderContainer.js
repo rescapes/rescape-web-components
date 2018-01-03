@@ -17,7 +17,7 @@ export const mapStateToProps =
     (data, style) => {
       return {
         data: R.merge(data, loadingCompleteStatus),
-        style: R.merge(style, props.style),
+        style: R.merge(style, props.style)
       }
     }
   )(state, props);
