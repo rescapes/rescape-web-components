@@ -9,11 +9,13 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import {Box as box, Flex as flex} from 'rebass';
-import {eMap} from 'helpers/componentHelpers';
+import {Box as box, Flex as flex, Image as image} from 'rebass';
+import {composeViewsFromStruct, eMap, nameLookup, propsFor} from 'helpers/componentHelpers';
 import * as R from 'ramda';
+import {throwing} from 'rescape-ramda';
 
-const [Box, Flex, Img] = eMap([box, flex, 'img']);
+const {reqStrPath} = throwing;
+const [Box, Flex, Image] = eMap([box, flex, image]);
 
 // Adapted from http://jxnblk.com/writing/posts/patterns-for-style-composition-in-react/
 
@@ -82,9 +84,30 @@ export const FlexAuto = props =>
     })
   );
 
-export const Logo = ({logoBox, logoImage}) =>
-  Box(R.merge(logoBox,
-  ),
-    Img(R.merge(logoImage,
-      ))
-  )
+export const Logo = props => {
+
+  const c = nameLookup({
+    logo: true,
+    logoImage: true
+  });
+
+  const viewProps = propsFor(
+    composeViewsFromStruct({
+      props: {
+        [c.logo]: {},
+        [c.logoImage]: {
+          src: reqStrPath('logoSrc')
+        }
+      },
+
+      styles: {
+        //[c.logo]: {},
+        //[c.logoImage]: {}
+      }
+    }, props).views
+  );
+
+  return Box(viewProps(c.logo),
+    Image(viewProps(c.logoImage))
+  );
+};

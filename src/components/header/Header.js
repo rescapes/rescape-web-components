@@ -9,6 +9,7 @@ import {
 import * as R from 'ramda';
 import {Grid as grid, Logo as logo} from 'components/atoms';
 import {Box as box, Flex as flex} from 'rebass';
+import logoImage from 'media/urbinsight_logo_website.png'
 
 const [Div, Link, Grid, Flex, Box, Logo] = eMap(['div', link, grid, flex, box, logo]);
 
@@ -30,7 +31,7 @@ const links = [
   },
   {
     text: 'Features',
-    to: '/tour'
+    to: '/features'
   },
   {
     text: 'Partner Cities',
@@ -52,54 +53,14 @@ const links = [
 class Header extends Component {
   render() {
     const props = Header.views(this.props);
-    return Grid(propsFor(c.header, props.views),
+    return Flex(propsFor(props.views, c.header),
       Header.choicepoint(props)
     );
   }
 }
 
-/*
-* Merges parent and state styles into component styles
-* @param style
-*/
-Header.getStyles = ({style}) => {
-  return {
-    [c.header]: {
-      style
-    },
-
-    [c.headerLinkHolder]: {
-      style: {}
-    },
-
-    [c.headerLink]: {
-      style: {
-        color: '#C1C1C1'
-      }
-    },
-
-    [c.headerLogo]: {
-      style: {}
-    }
-
-  };
-};
-
-Header.viewProps = () => {
-  return {
-    [c.headerLogo]: {key: c.headerLogo},
-    [c.headerLinkHolder]: {key: c.headerLinkHolder},
-    // Pass the datum properties to make each link and add a key using the text attribute
-    [c.headerLink]: R.curry((_, d) => keyWith('text', d))
-  };
-};
-
-Header.viewActions = () => {
-  return {};
-};
-
 Header.renderData = ({views}) => {
-  const props = R.flip(propsFor)(views);
+  const props = propsFor(views);
   const linkPropsForItem = propsForItem(views, c.headerLink)
   const mapLinks = R.map(
     item => {
@@ -118,7 +79,60 @@ Header.renderData = ({views}) => {
       mapLinks(links)
     )
   ];
+}
+
+/*
+* Merges parent and state styles into component styles
+* @param style
+*/
+Header.viewStyles = ({style}) => {
+  return {
+    [c.header]: {
+      style
+    },
+
+    [c.headerLogo]: {
+      style: {
+        width: 200,
+      }
+    },
+
+    [c.headerLinkHolder]: {
+      style: {
+        width: 1000,
+        height: 100,
+        alignItems: 'center',
+        justifyContent: 'space-evenly'
+      }
+    },
+
+    [c.headerLink]: {
+      style: {
+        color: '#C1C1C1'
+      }
+    },
+
+  };
 };
+
+Header.viewProps = () => {
+  return {
+    [c.headerLogo]: {
+      key: c.headerLogo,
+      logoSrc: logoImage
+    },
+    [c.headerLinkHolder]: {
+      key: c.headerLinkHolder
+    },
+    // Pass the datum properties to make each link and add a key using the text attribute
+    [c.headerLink]: R.curry((_, d) => keyWith('text', d))
+  };
+};
+
+Header.viewActions = () => {
+  return {};
+};
+;
 
 Header.renderLoading = ({data}) => {
   return [];
@@ -129,14 +143,14 @@ Header.renderError = ({data}) => {
 };
 
 /**
- * Adds to props.views for each component configured in viewActions, viewProps, and getStyles
+ * Adds to props.views for each component configured in viewActions, viewProps, and viewStyles
  * @param {Object} props this.props or equivalent for testing
  * @returns {Object} modified props
  */
 Header.views = composeViews(
   Header.viewActions(),
   Header.viewProps(),
-  Header.getStyles
+  Header.viewStyles
 );
 
 /**

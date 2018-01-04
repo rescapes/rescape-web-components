@@ -28,13 +28,13 @@ export const c = nameLookup({
 class App extends Component {
   render() {
     const props = App.views(this.props);
-    return Div(propsFor(c.app, props.views),
+    return Div(propsFor(props.views, c.app),
       App.choicepoint(props)
     );
   }
 }
 
-App.getStyles = ({style}) => {
+App.viewStyles = ({style}) => {
   const headerHeight = 200
   return {
     [c.appHeader]: mergeAndApplyMatchingStyles(style, {
@@ -61,8 +61,8 @@ App.viewActions = () => {
 };
 
 App.renderData = ({views}) => {
-  const props = R.flip(propsFor)(views);
-  const propsSansClass = R.flip(propsForSansClass)(views);
+  const props = propsFor(views);
+  const propsSansClass = propsForSansClass(views);
 
   return Provider(props(c.provider),
     Div(props(c.app),
@@ -78,14 +78,14 @@ App.renderData = ({views}) => {
 };
 
 /**
- * Adds to props.views for each component configured in viewActions, viewProps, and getStyles
+ * Adds to props.views for each component configured in viewActions, viewProps, and viewStyles
  * @param {Object} props this.props or equivalent for testing
  * @returns {Object} modified props
  */
 App.views = composeViews(
   App.viewActions(),
   App.viewProps(),
-  App.getStyles
+  App.viewStyles
 );
 
 /**

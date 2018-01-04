@@ -29,7 +29,7 @@ export const c = nameLookup({
 class Main extends Component {
   render() {
     const props = Main.views(this.props);
-    return Div(propsFor(c.main, props.views),
+    return Div(propsFor(props.views, c.main),
       Main.choicepoint(props)
     );
   }
@@ -40,7 +40,7 @@ class Main extends Component {
 * Merges parent and state styles into component styles
 * @param style
 */
-Main.getStyles = ({style}) => {
+Main.viewStyles = ({style}) => {
   return {
     [c.main]: mergeAndApplyMatchingStyles(style, {
       width: styleMultiplier(1),
@@ -61,7 +61,7 @@ Main.viewActions = () => {
 };
 
 Main.renderData = ({views}) => {
-  const propsSansClass = R.flip(propsForSansClass)(views);
+  const propsSansClass = propsForSansClass(views);
   return Current(propsSansClass(c.mainCurrent));
 };
 
@@ -74,14 +74,14 @@ Main.renderError = ({data}) => {
 };
 
 /**
- * Adds to props.views for each component configured in viewActions, viewProps, and getStyles
+ * Adds to props.views for each component configured in viewActions, viewProps, and viewStyles
  * @param {Object} props this.props or equivalent for testing
  * @returns {Object} modified props
  */
 Main.views = composeViews(
   Main.viewActions(),
   Main.viewProps(),
-  Main.getStyles
+  Main.viewStyles
 );
 
 /**

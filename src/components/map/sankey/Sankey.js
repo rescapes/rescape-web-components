@@ -75,13 +75,13 @@ export const c = nameLookup({
 class Sankey extends Component {
   render() {
     const props = Sankey.views(this.props);
-    return Div(propsFor(c.sankey, props.views),
+    return Div(propsFor(props.views, c.sankey),
       Sankey.choicepoint(props)
     );
   }
 }
 
-Sankey.getStyles = ({style}) => {
+Sankey.viewStyles = ({style}) => {
 
   const parentStyle = R.merge(
     {
@@ -112,7 +112,7 @@ Sankey.getStyles = ({style}) => {
 };
 
 Sankey.viewProps = (props) => {
-  // Rely on the width and height calculated in getStyles
+  // Rely on the width and height calculated in viewStyles
   const width = reqPath(['views', [c.sankey], 'style', 'width'], props);
   const height = reqPath(['views', [c.sankey], 'style', 'height'], props);
   const left = -Math.min(width, height) / 2;
@@ -240,8 +240,8 @@ Sankey.renderData = ({views}) => {
   /* We additionally give Mapbox the container width and height so the map can track changes to these
    We have to apply the width and height fractions of this container to them.
    */
-  const props = R.flip(propsFor)(views);
-  const propsSansClass = R.flip(propsForSansClass)(views);
+  const props = propsFor(views);
+  const propsSansClass = propsForSansClass(views);
   const linkProps = itemizeProps(props(c.sankeySvgLink));
   const nodeProps = itemizeProps(props(c.sankeySvgNode));
   const nodeRectProps = itemizeProps(props(c.sankeySvgNodeRect));
@@ -258,7 +258,7 @@ Sankey.renderData = ({views}) => {
             redraw: opt => {
               // Update props that are dependent on the opt.project method
               const {views: projectedViews} = Sankey.viewPropsAtRender({views, opt});
-              const projectedProps = R.flip(propsFor)(projectedViews);
+              const projectedProps = propsFor(projectedViews);
               // Separate out our links and nodes, which are for iterating, from the container props
               const {links, ...linksProps} = projectedProps(c.sankeySvgLinks);
               const {nodes, ...nodesProps} = projectedProps(c.sankeySvgNodes);
@@ -308,14 +308,14 @@ const SankeySvgLink = (props) => {
 
 
 /**
- * Adds to props.views for each component configured in viewActions, viewProps, and getStyles
+ * Adds to props.views for each component configured in viewActions, viewProps, and viewStyles
  * @param {Object} props this.props or equivalent for testing
  * @returns {Object} modified props
  */
 Sankey.views = composeViews(
   Sankey.viewActions(),
   Sankey.viewProps,
-  Sankey.getStyles
+  Sankey.viewStyles
 );
 
 /**

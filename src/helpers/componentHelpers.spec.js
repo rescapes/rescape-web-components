@@ -14,7 +14,8 @@ import {
   renderChoicepoint, joinComponents, loadingCompleteStatus, makeApolloTestPropsFunction, mergePropsForViews,
   mergeStylesIntoViews,
   nameLookup, propsFor,
-  propsForSansClass, strPath, itemizeProps, applyToIfFunction, keyWith, propsForItem, applyIfFunction
+  propsForSansClass, strPath, itemizeProps, applyToIfFunction, keyWith, propsForItem, applyIfFunction, composeViews,
+  composeViewsFromStruct, whenProp
 } from 'helpers/componentHelpers';
 import {throwing, hasStrPath} from 'rescape-ramda';
 
@@ -328,7 +329,7 @@ describe('componentHelpers', () => {
         bar: 1
       }
     };
-    expect(propsFor('fooProps', viewProps)).toEqual(
+    expect(propsFor(viewProps, 'fooProps')).toEqual(
       {
         className: 'foo-props',
         style: {
@@ -337,7 +338,7 @@ describe('componentHelpers', () => {
         bar: 1
       }
     );
-    expect(propsFor('bermudaProps', viewProps)).toEqual(
+    expect(propsFor(viewProps, 'bermudaProps')).toEqual(
       {className: 'bermuda-props'}
     );
   });
@@ -351,7 +352,7 @@ describe('componentHelpers', () => {
         bar: 1
       }
     };
-    expect(propsForSansClass('fooProps', viewProps)).toEqual(
+    expect(propsForSansClass(viewProps, 'fooProps')).toEqual(
       {
         style: {
           color: 'red'
@@ -359,7 +360,7 @@ describe('componentHelpers', () => {
         bar: 1
       }
     );
-    expect(propsForSansClass('bermudaProps', viewProps)).toEqual(
+    expect(propsForSansClass(viewProps, 'bermudaProps')).toEqual(
       {}
     );
   });
@@ -478,4 +479,99 @@ describe('componentHelpers', () => {
     });
   });
 
+  test('composeViews', () => {
+    expect(
+      composeViews(
+        ({
+          aView: ['someAction']
+        }),
+        props => ({
+          aView: {
+            someProp: 'foo',
+            parentProp: reqStrPath('data.parentProp')
+          },
+          bView: p => ({
+            parentProp: reqStrPath('data.parentProp', p)
+          })
+        }),
+        props => ({
+          aView: {
+            someStyle: 'foo'
+          }
+        }),
+        {
+          someAction: 'someAction',
+          data: {
+            parentProp: 1
+          }
+        }
+      )
+    ).toEqual({
+      someAction: 'someAction',
+      data: {
+        parentProp: 1
+      },
+      views: {
+        aView: {
+          someAction: 'someAction',
+          someProp: 'foo',
+          parentProp: 1,
+          style: {
+            someStyle: 'foo'
+          }
+        },
+        bView: {
+          parentProp: 1
+        }
+      }
+    });
+  });
+
+  test('composeViewsFromStruct', () => {
+    expect(
+      composeViewsFromStruct({
+          actions: {
+            aView: ['someAction']
+          },
+          props: props => ({
+            aView: {
+              someProp: 'foo',
+              parentProp: reqStrPath('data.parentProp')
+            },
+            bView: p => ({
+              parentProp: reqStrPath('data.parentProp', p)
+            })
+          }),
+          styles: props => ({
+            aView: {
+              someStyle: 'foo'
+            }
+          })
+        },
+        {
+          someAction: 'someAction',
+          data: {
+            parentProp: 1
+          }
+        })
+    ).toEqual({
+      someAction: 'someAction',
+      data: {
+        parentProp: 1
+      },
+      views: {
+        aView: {
+          someAction: 'someAction',
+          someProp: 'foo',
+          parentProp: 1,
+          style: {
+            someStyle: 'foo'
+          }
+        },
+        bView: {
+          parentProp: 1
+        }
+      }
+    });
+  });
 });

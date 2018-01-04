@@ -37,13 +37,13 @@ export const c = nameLookup({
 class Mapbox extends Component {
   render() {
     const props = Mapbox.views(this.props);
-    return Div(propsFor(c.mapbox, props.views),
+    return Div(propsFor(props.views, c.mapbox),
         Mapbox.choicepoint(props)
     );
   }
 }
 
-Mapbox.getStyles = ({style}) => {
+Mapbox.viewStyles = ({style}) => {
   return {
     [c.mapbox]: mergeAndApplyMatchingStyles(style, {
       position: 'absolute',
@@ -62,7 +62,7 @@ Mapbox.viewProps = (props) => {
   return {
     [c.mapboxReactMapGl]: R.mergeAll([
       {
-        // Width and height are calculated in getStyles
+        // Width and height are calculated in viewStyles
         width: reqPath(['views', [c.mapboxReactMapGl], 'style', 'width']),
         height: reqPath(['views', [c.mapboxReactMapGl], 'style', 'height'])
       },
@@ -85,8 +85,8 @@ Mapbox.renderData = ({views}) => {
   /* We additionally give Mapbox the container width and height so the map can track changes to these
    We have to apply the width and height fractions of this container to them.
    */
-  const props = R.flip(propsFor)(views);
-  const propsSansClass = R.flip(propsForSansClass)(views);
+  const props = propsFor(views);
+  const propsSansClass = propsForSansClass(views);
 
   return Div(props(c.mapboxMapReactGlOuter),
     ReactMapGl(propsSansClass(c.mapboxReactMapGl))
@@ -94,14 +94,14 @@ Mapbox.renderData = ({views}) => {
 };
 
 /**
- * Adds to props.views for each component configured in viewActions, viewProps, and getStyles
+ * Adds to props.views for each component configured in viewActions, viewProps, and viewStyles
  * @param {Object} props this.props or equivalent for testing
  * @returns {Object} modified props
  */
 Mapbox.views = composeViews(
   Mapbox.viewActions(),
   Mapbox.viewProps,
-  Mapbox.getStyles
+  Mapbox.viewStyles
 );
 
 /**

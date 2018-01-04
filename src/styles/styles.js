@@ -61,7 +61,6 @@ export const defaultStyles = {
   fontFamily: 'inherit',
   fontSize: 'inherit',
   textDecoration: 'none',
-  display: 'inline-block',
   margin: 0,
   paddingTop: 8,
   paddingBottom: 8,

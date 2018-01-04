@@ -90,9 +90,10 @@ export const renderChoicepoint = R.curry((onError, onLoading, onData, props) =>
  * Also removes ownProps from the return value since we already incorporated theses into stateProps
  * @props {Object} viewToActionNames An object keyed by view that is in stateProps.views and valued by
  * an array of action names.
+ * @props {Object} props Props from a parent component
  * @returns {Function} A mergeProps function that expects props (e.g. A merge stateProps and dispatchProps)
  */
-export const mergeActionsForViews = (viewToActionNames) => (props) => {
+export const mergeActionsForViews = R.curry((viewToActionNames, props) => {
   return R.over(
     R.lensProp('views'),
     views =>
@@ -101,7 +102,7 @@ export const mergeActionsForViews = (viewToActionNames) => (props) => {
         views,
         // Map each propPath to the value in props or undefined
         // This transforms {viewName: {propName: 'pathInPropsToPropName (e.g. store.propName)', ...}
-        // This results in {viewName: {propName: propValue, ...}
+        // This results in {viewName: {propName: propValue, ...}}
         R.map(
           actionNames =>
             R.fromPairs(R.map(
@@ -113,12 +114,12 @@ export const mergeActionsForViews = (viewToActionNames) => (props) => {
               // Within each view, map each actinoName
               actionNames)),
           // Map each view
-          viewToActionNames
+          applyToIfFunction(props, viewToActionNames)
         )
       ),
     props
   );
-};
+});
 
 /**
  * Given a mapping from view names to an array of prop values or functions,
@@ -420,7 +421,7 @@ export const liftAndExtractItems = (component, propsWithItems) => {
 };
 
 /**
- * Given a getStyles function that expects props and returns styles keyed by view, merges those
+ * Given a viewStyles function that expects props and returns styles keyed by view, merges those
  * view values into the views of the props.
  * @param {Function|Object} viewStyles Either an object mapping of view names to styles, or a function that expects
  * props and returns that object. viewStyles often merge props or apply them to functions.
@@ -482,11 +483,11 @@ export const mergeStylesIntoViews = R.curry((viewStyles, props) => {
  *  }
  * }
  *
- * @param name
  * @param views
+ * @param name
  * @return {*}
  */
-export const propsFor = v((name, views) => {
+export const propsFor = v((views, name) => {
     const propsForView = R.defaultTo({}, R.view(R.lensProp(name), views));
     const classAndStyle = getClassAndStyle(
       name,
@@ -501,17 +502,17 @@ export const propsFor = v((name, views) => {
     )(propsForView);
   },
   [
-    ['name', PropTypes.string.isRequired],
-    ['views', PropTypes.shape().isRequired]
+    ['views', PropTypes.shape().isRequired],
+    ['name', PropTypes.string.isRequired]
   ], 'propsFor');
 
 /**
  * Like propsFor but doesn't generate a className since non-trivial components ignore it
- * @param name
  * @param views
+ * @param name
  * @return {*}
  */
-export const propsForSansClass = v((name, views) => {
+export const propsForSansClass = v((views, name) => {
     const propsForView = R.defaultTo({}, R.view(R.lensProp(name), views));
     return R.merge(
       propsForView,
@@ -519,8 +520,8 @@ export const propsForSansClass = v((name, views) => {
     );
   },
   [
-    ['name', PropTypes.string.isRequired],
-    ['views', PropTypes.shape().isRequired]
+    ['views', PropTypes.shape().isRequired],
+    ['name', PropTypes.string.isRequired]
   ], 'propsForSansClass');
 
 export const propsAndStyle = (name, viewProps) => R.merge(
@@ -531,6 +532,7 @@ export const propsAndStyle = (name, viewProps) => R.merge(
 /**
  * Applies an item to props that have unary functional values.
  * Also applies an item to props.styles keys if they are functions.
+ * TODO consider making this recursive rather than targeting styles
  * @param {Object|Function} propsOrFunc The props to which to apply the item. This can also be a function
  * expecing the item
  * @param item The item to which to call on properties that are function
@@ -567,11 +569,11 @@ export const itemizeProps = R.curry((propsOrFunc, item) => {
  * @param {Object} item The item to call on any functions in the resolved props and props.styles
  * @returns {Object} Fully resolved props for the particular item
  */
-export const propsForItem = R.curry((views, name, item) => itemizeProps(propsFor(name, views), item));
+export const propsForItem = R.curry((views, name, item) => itemizeProps(propsFor(views, name), item));
 
 /**
  * Creates {name1: name1, name2: name2} from a list of names
- * @param {Array} names A list of names to be constants
+ * @param {Object} nameObj A list of names to be constants
  */
 export const nameLookup = nameObj =>
   R.mapObjIndexed(
@@ -582,8 +584,8 @@ export const nameLookup = nameObj =>
 /**
  * Convenience method to call mergeActionsForView, mergePropsForView, and mergeStylesIntoViews
  * @param {Object} viewActions Argument to mergeActionsForView. See mergeActionsForViews
- * @param {Object} viewProps Argument to mergePropsForViews. See mergePropsForViews
- * @param {Object|Function} getStyles Argument to mergeStylesIntoViews. See mergeStylesIntoViews
+ * @param {Object|Function} viewProps Argument to mergePropsForViews. See mergePropsForViews
+ * @param {Object|Function} viewStyles Argument to mergeStylesIntoViews. See mergeStylesIntoViews
  * @param {Object} props Props that are used for the composition. Each of the three functions
  * is called with the props.
  * Styles is computed first in case viewProps need to access a computed style value, namely with and height.
@@ -591,13 +593,30 @@ export const nameLookup = nameObj =>
  * each contribute to the returned props.views
  * @return {Function} The modified props with view properties added by each of the three functions
  */
-export const composeViews = R.curry((viewActions, viewProps, getStyles, props) => R.compose(
+export const composeViews = R.curry((viewActions, viewProps, viewStyles, props) => R.compose(
   mergeActionsForViews(viewActions),
   mergePropsForViews(viewProps),
-  mergeStylesIntoViews(getStyles)
+  mergeStylesIntoViews(viewStyles)
   )(props)
 );
 
+/**
+ * Like composeViews but takes a viewStruct as input for smaller component
+ * @param {Object} viewStruct
+ * @param {Object} viewStruct.actions Optional. Maps actions to views
+ * @param {Object} viewStruct.props Optional. Maps props to views
+ * @param {Object} viewStruct.style Optional. Maps styles and className to views
+ * @return {Function} The modified props with view properties added by each of the three functions
+ */
+export const composeViewsFromStruct = R.curry((viewStruct, props) => {
+    const propFor = R.prop(R.__, viewStruct)
+    return R.compose(
+      R.when(R.always(propFor('actions')), mergeActionsForViews(propFor('actions'))),
+      R.when(R.always(propFor('props')), mergePropsForViews(propFor('props'))),
+      R.when(R.always(propFor('styles')), mergeStylesIntoViews(propFor('styles')))
+    )(props);
+  }
+);
 
 /**
  * Joins React components with a separatorComponent between each
@@ -630,7 +649,7 @@ export const joinComponents = (separatorComponent, components) =>
  */
 export const renderLoadingDefault = (viewName) => ({views}) => {
   const [Div] = eMap(['div']);
-  const props = R.flip(propsFor)(views);
+  const props = propsFor(views);
   return Div(props(viewName));
 };
 
@@ -641,7 +660,7 @@ export const renderLoadingDefault = (viewName) => ({views}) => {
  */
 export const renderErrorDefault = viewName => ({data, views}) => {
   const [Div] = eMap(['div']);
-  const props = R.flip(propsFor)(views);
+  const props = propsFor(views);
   return Div(props(viewName), `Error: ${data.error.message}\nTrace: ${data.error.stack}`);
 };
 

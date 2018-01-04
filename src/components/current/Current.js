@@ -33,7 +33,7 @@ export const c = nameLookup({
 class Current extends React.Component {
   render() {
     const props = Current.views(this.props);
-    return Div(propsFor(c.current, props.views),
+    return Div(propsFor(props.views, c.current),
       Current.choicepoint(props)
     );
   }
@@ -49,7 +49,7 @@ class Current extends React.Component {
  *  ...
  * }
  */
-Current.getStyles = ({style}) => {
+Current.viewStyles = ({style}) => {
   return {
     [c.current]: mergeAndApplyMatchingStyles(style, {
       position: 'absolute',
@@ -82,7 +82,7 @@ Current.viewActions = () => {
 };
 
 Current.renderData = ({views}) => {
-  const props = R.flip(propsFor)(views);
+  const props = propsFor(views);
 
   return Region(
     props(c.currentRegion)
@@ -99,14 +99,14 @@ Current.renderError = (error) => {
 
 
 /**
- * Adds to props.views for each component configured in viewActions, viewProps, and getStyles
+ * Adds to props.views for each component configured in viewActions, viewProps, and viewStyles
  * @param {Object} props this.props or equivalent for testing
  * @returns {Object} modified props
  */
 Current.views = composeViews(
   Current.viewActions(),
   Current.viewProps(),
-  Current.getStyles
+  Current.viewStyles
 );
 
 /**

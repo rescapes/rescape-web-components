@@ -42,7 +42,7 @@ export const c = nameLookup({
 export default class Region extends Component {
   render() {
     const props = Region.views(this.props);
-    return Div(propsFor(c.region, props.views),
+    return Div(propsFor(props.views, c.region),
       Region.choicepoint(props)
     );
   }
@@ -52,7 +52,7 @@ export default class Region extends Component {
  * Merges parent and state styles into component styles
  * @param style
  */
-Region.getStyles = ({style}) => {
+Region.viewStyles = ({style}) => {
   return {
     [c.region]: mergeAndApplyMatchingStyles(style, {
       position: 'absolute',
@@ -110,8 +110,8 @@ Region.viewActions = () => {
 };
 
 Region.renderData = ({views}) => {
-  const props = R.flip(propsFor)(views);
-  const propsSansClass = R.flip(propsForSansClass)(views);
+  const props = propsFor(views);
+  const propsSansClass = propsForSansClass(views);
 
   return [
     Div(props(c.regionMapboxOuter),
@@ -130,14 +130,14 @@ Region.renderData = ({views}) => {
 
 
 /**
- * Adds to props.views for each component configured in viewActions, viewProps, and getStyles
+ * Adds to props.views for each component configured in viewActions, viewProps, and viewStyles
  * @param {Object} props this.props or equivalent for testing
  * @returns {Object} modified props
  */
 Region.views = composeViews(
   Region.viewActions(),
   Region.viewProps(),
-  Region.getStyles
+  Region.viewStyles
 );
 
 /**
