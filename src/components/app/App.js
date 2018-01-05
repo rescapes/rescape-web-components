@@ -35,11 +35,13 @@ class App extends Component {
 }
 
 App.viewStyles = ({style}) => {
-  const headerHeight = 200
+  const headerHeight = 100
   return {
     [c.appHeader]: mergeAndApplyMatchingStyles(style, {
       width: R.identity,
-      height: headerHeight
+      height: headerHeight,
+      paddingLeft: 50,
+      paddingRight: 50
     }),
     [c.appBody]: mergeAndApplyMatchingStyles(style, {
       width: R.identity,

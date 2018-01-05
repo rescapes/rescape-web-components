@@ -15,7 +15,7 @@ import * as R from 'ramda';
 import {throwing} from 'rescape-ramda';
 
 const {reqStrPath} = throwing;
-const [Box, Flex, Image] = eMap([box, flex, image]);
+const [Div, Box, Flex, Image] = eMap(['div', box, flex, image]);
 
 // Adapted from http://jxnblk.com/writing/posts/patterns-for-style-composition-in-react/
 
@@ -25,13 +25,11 @@ const [Box, Flex, Image] = eMap([box, flex, image]);
  * @constructor
  */
 export const Grid = props =>
-  Box(R.merge(props, {
+  Div(R.merge(props, {
       style: {
         display: 'inline-block',
         verticalAlign: 'top'
       },
-      // (padding left & right)
-      px: 2
     })
   );
 
@@ -102,7 +100,8 @@ export const Logo = props => {
 
       styles: {
         //[c.logo]: {},
-        //[c.logoImage]: {}
+        [c.logoImage]: {
+        }
       }
     }, props).views
   );

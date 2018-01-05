@@ -11,6 +11,12 @@
 
 // import chroma from 'chroma-js';
 import {createScaledPropertyGetter} from 'helpers/styleHelpers';
+import { injectGlobal } from 'styled-components'
+
+injectGlobal`
+  * { box-sizing: border-box; }
+  body { margin: 0; }
+`
 
 const white = '#fff';
 const black = '#111';

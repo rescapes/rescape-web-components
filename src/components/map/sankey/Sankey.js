@@ -171,7 +171,7 @@ Sankey.viewProps = (props) => {
         R.always('start'),
         R.always('end')
       )(_, d)),
-      text: R.curry((_, d) => d.name),
+      children: R.curry((_, d) => d.name),
 
       height: R.curry((_, d) => R.subtract(d.y1, d.y0)),
       width: R.curry((_, d) => R.subtract(d.x1, d.x0)),
@@ -181,7 +181,7 @@ Sankey.viewProps = (props) => {
 
     [c.sankeySvgNodeTitle]: {
       key: 'svgNodeTitle',
-      text: R.curry((_, d) => `${d.name}\n${format(d.value)}`)
+      children: R.curry((_, d) => `${d.name}\n${format(d.value)}`)
     },
 
     [c.sankeySvgLinks]: {
@@ -292,13 +292,10 @@ Sankey.renderData = ({views}) => {
 
 
 const SankeySvgNode = ({node, rect, text, title}) => {
-  // Extract text element from props
-  const {text: textText, ...textProps} = text;
-  const {text: titleText, ...titleProps} = title;
   return G(node,
     Rect(rect),
-    Text(textProps, textText),
-    Title(titleProps, titleText)
+    Text(text),
+    Title(title)
   );
 };
 
