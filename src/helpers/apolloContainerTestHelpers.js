@@ -17,6 +17,10 @@ import {
 import {getClass} from 'helpers/styleHelpers';
 import * as R from 'ramda';
 import * as Either from 'data.either';
+import {theme} from 'styles/styles';
+import {Provider as provider} from 'rebass';
+import {eMap} from 'helpers/componentHelpers';
+const [Provider] = eMap([provider])
 
 /**
  * Runs tests on an apollo React container with the * given config.
@@ -113,7 +117,7 @@ export const apolloContainerTests = (config) => {
       // Wrap the component in mock Apollo and Redux providers.
       // If the compoent doesn't use Apollo it just means that it will render its children synchronously,
       // rather than asynchronously
-      const wrapper = wrapWithMockGraphqlAndStore(Container(parentProps));
+      const wrapper = wrapWithMockGraphqlAndStore(Provider({theme}, Container(parentProps)));
       // Find the top-level component. This is always rendered in any Apollo status (loading, error, store data)
       const component = wrapper.find(componentName);
       // Make sure the component props are consistent since the last test run

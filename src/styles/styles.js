@@ -67,12 +67,6 @@ export const defaultStyles = {
   fontFamily: 'inherit',
   fontSize: 'inherit',
   textDecoration: 'none',
-  margin: 0,
-  paddingTop: 8,
-  paddingBottom: 8,
-  paddingLeft: 16,
-  paddingRight: 16,
-  border: 0,
   color: 'black',
   WebkitAppearance: 'none',
   MozAppearance: 'none'

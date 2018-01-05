@@ -1,5 +1,5 @@
 import {styleMultiplier, createScaledPropertyGetter, getClass} from './styleHelpers';
-import {applyStyleFunctionOrDefault, getClassAndStyle, getStyleObj} from 'helpers/styleHelpers';
+import {applyStyleFunctionOrDefault, getClassAndStyle, getStyleObj, styleArithmetic} from 'helpers/styleHelpers';
 import * as R from 'ramda';
 
 describe('styles', () => {
@@ -41,6 +41,11 @@ describe('styles', () => {
     });
     expect(getStyleObj('sheepGotoHeaven', viewObj)).toEqual({
     });
+  });
+
+  test('styleArithmetic', () => {
+    expect(styleArithmetic(R.multiply, 0.25, 100)).toEqual(25);
+    expect(styleArithmetic(R.add, 0.25, '100 em')).toEqual('100.25 em');
   });
 
   test('styleMultiplier', () => {

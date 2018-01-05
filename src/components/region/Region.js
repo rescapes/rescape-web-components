@@ -20,8 +20,9 @@ import {
 } from 'helpers/componentHelpers';
 import {mergeDeep, strPath, throwing} from 'rescape-ramda';
 import * as R from 'ramda';
-import {Component} from 'react'
-const {reqPath} = throwing
+import {Component} from 'react';
+
+const {reqPath} = throwing;
 
 const [Mapbox, Sankey, MarkerList, Div] = eMap([mapbox, sankey, markerList, 'div']);
 export const c = nameLookup({
@@ -55,32 +56,24 @@ export default class Region extends Component {
 Region.viewStyles = ({style}) => {
   return {
     [c.region]: mergeAndApplyMatchingStyles(style, {
-      position: 'absolute',
+      width: '100%',
+      height: '100%'
+    }),
+
+    [c.regionMapboxOuter]: applyMatchingStyles(style, {
+      width: '100%',
+      height: '100%'
+    }),
+
+    [c.regionMapbox]: applyMatchingStyles(style, {
       width: styleMultiplier(1),
       height: styleMultiplier(1)
     }),
 
-    [c.regionMapboxOuter]: applyMatchingStyles(style, {
-      position: 'absolute',
-      width: styleMultiplier(.5),
+    [c.regionSankey]: applyMatchingStyles(style, {
+      width: styleMultiplier(1),
       height: styleMultiplier(1)
     }),
-
-    [c.regionMapbox]: R.merge(
-      // Pass width and height to Mapbox component
-      R.pick(['width', 'height'], style),
-      {
-        // Other styles to pass to component (unlikely)
-      }
-    ),
-
-    [c.regionSankey]: R.merge(
-      // Pass width and height to Mapbox component
-      R.pick(['width', 'height'], style),
-      {
-        // Other styles to pass to component (unlikely)
-      }
-    ),
 
     [c.regionLocationsOuter]: {
       position: 'absolute',
@@ -88,7 +81,7 @@ Region.viewStyles = ({style}) => {
       left: .55,
       right: .05
     }
-  }
+  };
 };
 
 Region.viewProps = () => {
@@ -121,7 +114,7 @@ Region.renderData = ({views}) => {
       Sankey(
         propsSansClass(c.regionSankey)
       )
-    ),
+    )
     //Div(props(c.regionLocationsOuter),
     //  MarkerList(propsSansClass(c.regionLocations))
     //)

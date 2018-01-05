@@ -52,6 +52,8 @@ export const linkPosition = link => ({
  * @returns {null}
  */
 export const sankeyGenerator = asUnaryMemoize(({width, height}, sankeyData) => {
+    // d3 mutates the data
+    const data = R.clone(sankeyData)
     // Create a sankey generator
     const sankeyGenerator = sankey()
     // TODO pass from parent
@@ -92,7 +94,7 @@ export const sankeyGenerator = asUnaryMemoize(({width, height}, sankeyData) => {
           },
           id: 'node/27233097'
         }),
-      sankeyData.nodes);
+      data.nodes);
 
     // Create an svg.g element (headerLink) and select all paths
     // Our links our drawn as paths
@@ -130,11 +132,11 @@ export const sankeyGenerator = asUnaryMemoize(({width, height}, sankeyData) => {
     // The y0 and y1 are some portion of the vertical service of the two nodes (I think),
     // although there must be more to it since they have to attach to two nodes at different y positions
     // It also gives each headerLink an index
-    const update = {links: sankeyData.links, nodes: features};
+    const update = {links: data.links, nodes: features};
     sankeyGenerator(update);
 
     // nodes in the right place on the map
-    //const positionedNodes = R.zipWith(nodePosition, sankeyData.nodes, R.map(R.prop('geometry'), features));
+    //const positionedNodes = R.zipWith(nodePosition, data.nodes, R.map(R.prop('geometry'), features));
 
     // This could be used to create react object from the features
     //const reactSvgs = resolveSvgReact(opt, features);

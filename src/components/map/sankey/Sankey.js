@@ -94,7 +94,6 @@ Sankey.viewStyles = ({style}) => {
 
   return {
     [c.sankey]: mergeAndApplyMatchingStyles(parentStyle, {
-      position: 'absolute',
       width: styleMultiplier(1),
       height: styleMultiplier(1)
     }),
@@ -132,7 +131,7 @@ Sankey.viewProps = (props) => {
     ]),
 
     [c.sankeySvgOverlay]: {
-      viewBox: `0 0 ${width / 2} ${height / 2}`
+      viewBox: `0 0 ${width} ${height}`
     },
 
     [c.sankeySvgNodes]: {

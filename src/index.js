@@ -12,11 +12,15 @@ import {getCurrentConfig} from 'data/current/currentConfig';
 import {eMap} from 'helpers/componentHelpers';
 import * as R from 'ramda';
 import {mockApolloClientWithSamples} from 'helpers/testHelpers';
+import {calculateResponsiveState} from 'redux-responsive';
 
 const [BrowserRouter, ApolloProvider, Provider, App] = eMap([browserRouter, apolloProvider, provider, app]);
 
 // Create a store based on the configured environment (development, production, test)
 const store = storeCreator(getCurrentConfig());
+window.addEventListener('resize', () => store.dispatch(calculateResponsiveState(window)))
+// Initialize
+store.dispatch(calculateResponsiveState(window))
 
 // Set the client to the mockApolloClient for testingj
 const client = R.cond([

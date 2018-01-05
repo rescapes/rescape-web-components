@@ -24,7 +24,6 @@ import makeSchema from 'schema/schema';
 import {createSelectorCreator, defaultMemoize} from 'reselect';
 import {compact} from 'enzyme-to-json';
 
-
 const {reqPath} = throwing;
 
 /**
@@ -608,7 +607,7 @@ export const composeViews = R.curry((viewActions, viewProps, viewStyles, props) 
  * @return {Function} The modified props with view properties added by each of the three functions
  */
 export const composeViewsFromStruct = R.curry((viewStruct, props) => {
-    const propFor = R.prop(R.__, viewStruct)
+    const propFor = R.prop(R.__, viewStruct);
     return R.compose(
       R.when(R.always(propFor('actions')), mergeActionsForViews(propFor('actions'))),
       R.when(R.always(propFor('props')), mergePropsForViews(propFor('props'))),

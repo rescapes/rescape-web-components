@@ -34,10 +34,29 @@ class App extends Component {
   }
 }
 
+
+App.renderData = ({views}) => {
+  const props = propsFor(views);
+  const propsSansClass = propsForSansClass(views);
+
+  return Provider(props(c.provider),
+    Div(props(c.app),
+      Header(props(c.appHeader)),
+      Grid(props(c.appBody),
+        Switch({}, [
+          Route({key: '/', exact: true, path: '/', component: Main}),
+          Route({key: '/login', exact: true, path: '/login', component: Login})
+        ])
+      )
+    )
+  );
+};
+
 App.viewStyles = ({style}) => {
   const headerHeight = 100
   return {
     [c.appHeader]: mergeAndApplyMatchingStyles(style, {
+      // Use the browser width
       width: R.identity,
       height: headerHeight,
       paddingLeft: 50,
@@ -62,22 +81,6 @@ App.viewActions = () => {
   return {};
 };
 
-App.renderData = ({views}) => {
-  const props = propsFor(views);
-  const propsSansClass = propsForSansClass(views);
-
-  return Provider(props(c.provider),
-    Div(props(c.app),
-      Header(props(c.appHeader)),
-      Grid(props(c.appBody),
-        Switch({}, [
-          Route({key: '/', exact: true, path: '/', component: Main}),
-          Route({key: '/login', exact: true, path: '/login', component: Login})
-        ])
-      )
-    )
-  );
-};
 
 /**
  * Adds to props.views for each component configured in viewActions, viewProps, and viewStyles

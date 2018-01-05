@@ -75,33 +75,32 @@ export const getStyleObj = (name, views) => compact({
   style: R.view(R.lensPath(R.concat([name], ['style'])), views)
 });
 
-
-/***
- * Creates a function that multiplies a numeric value of a style by a fraction
- * This is used to map a container style numeric value to a proportional numeric value in the child component
- * when the child component's style must be specified as an absolute value rather than a fraction of the parent
- *
- * @param {Number} scaleValue The value to scale the styleValue
+/**
+ * Does arithmetic on the styleValue, preserving px, etc
+ * @param {Function} operator takes two args, the first is styleValue and the second operand
+ * @param {Number} operand The second value of the arithmetic function
  * @param {String|Number} styleValue The local style value. This can be a number
  * or any supported css string. Strings will parse out the the number, scale, and
  * then put it back in a string
- * @sig Number -> Number -> Object
- * @return {Function} A function that accepts two objects. The first object must have a
- * fraction value for the given prop. The second object must have a numeric value
+ * @sig Func -> Number -> Number -> Object
+ * @return {String|Number} The result of the operation
  */
-export const styleMultiplier = v(R.curry((scaleValue, styleValue) =>
+export const styleArithmetic = v(R.curry((operator, operand, styleValue) =>
   R.ifElse(
     R.is(Number),
-    value => scaleValue * value,
+    value => operator(value, operand),
     value => {
       const [_, val, rest] = value.match(/(\d+)([^\d]+)/)
-      return `${val * scaleValue}${rest}`
+      return `${operator(val, operand)}${rest}`
     }
   )(styleValue)
 ), [
-  ['caleValue', PropTypes.number.isRequired],
-  ['styleValue', PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired]
+  ['operator', PropTypes.func.isRequired],
+  ['operand', PropTypes.number.isRequired],
+  ['subtractValue', PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired]
 ], 'styleMultiplier');
+
+export const styleMultiplier = styleArithmetic(R.multiply)
 
 /**
  * Scaled value function creator

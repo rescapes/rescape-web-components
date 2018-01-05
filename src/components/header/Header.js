@@ -14,12 +14,13 @@ import {
 import {util} from 'rebass'
 import logoImage from 'media/urbinsight_logo_website.png'
 
+// Override Group to be vertical instead of horizontal
 const verticalGroup = createComponent({
   name: 'VerticalGroup',
   type: 'Group',
   props: {},
   style: props => {
-    const R = util.px(props.R || props.theme.radius || 4)
+    const R = util.px(props.theme.radius || 4)
     return {
       '& > *': {
         borderRadius: 0
@@ -34,16 +35,6 @@ const verticalGroup = createComponent({
     }
   }
 })
-/*
-const verticalGroup = styled(group)`
-  & > *:first-child {
-    border-radius: ${({R}) => `${R}px ${R}px 0 0`};
-  }
-  & > *:last-child {
-    border-radius: ${({R}) => `0 0 ${R}px ${R}px`};
-  }
-`
-*/
 
 const
   [Div, Link, Grid, Flex, Box, Logo, Button, ButtonOutline, Group, VerticalGroup] = eMap(
@@ -163,7 +154,7 @@ Header.viewProps = () => {
 
     [c.headerAccountGroup]: {
       // Radius used by Group & Vertical group
-      R: 10
+      theme: {radius: 10}
     },
     [c.headerAccountButton]: R.curry((_, d) => keyWith('children', d))
   };
@@ -185,7 +176,9 @@ Header.viewStyles = ({style}) => {
 
     [c.headerLinkHolder]: {
       width: '100%',
-      alignItems: 'center'
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      margin: '0 20px 0 20px'
     },
 
     [c.headerLink]: {
@@ -196,7 +189,6 @@ Header.viewStyles = ({style}) => {
 
     [c.headerButtonHolder]: {
       flexDirection: 'column',
-      justifyContent: 'space-between'
     },
 
     [c.headerLanguageChooser]: {

@@ -15,7 +15,7 @@ import {composeViews, eMap, renderChoicepoint, nameLookup, propsFor} from 'helpe
 import {throwing} from 'rescape-ramda'
 import * as R from 'ramda';
 import {mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
-import {styleMultiplier} from 'helpers/styleHelpers';
+import {styleArithmetic, styleMultiplier} from 'helpers/styleHelpers';
 const {reqStrPath} = throwing
 
 const [Div, Region] =
@@ -52,19 +52,15 @@ class Current extends React.Component {
 Current.viewStyles = ({style}) => {
   return {
     [c.current]: mergeAndApplyMatchingStyles(style, {
-      position: 'absolute',
-      width: styleMultiplier(1),
-      height: styleMultiplier(1)
+      // TODO need to compute parent padding
+      width: '100%',
+      height: '100%',
     }),
 
-    [c.currentRegion]: R.merge(
-      // Pass width and height to Region component
-      // TODO this probably won't stand, but it's more of a proof of concept now
-      R.pick(['width', 'height'], style),
-      {
-        // Other styles to pass to component (unlikely)
-      }
-    )
+    [c.currentRegion]: mergeAndApplyMatchingStyles(style, {
+      width: styleArithmetic(R.subtract, 32),
+      height: styleArithmetic(R.subtract, 32),
+    })
   };
 };
 

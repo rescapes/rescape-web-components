@@ -16,7 +16,6 @@ import {
 } from 'helpers/componentHelpers';
 import current from 'components/current';
 import {Component} from 'react'
-import * as R from 'ramda';
 import PropTypes from 'prop-types'
 import {mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
 const [Div, Current] = eMap(['div', current]);
@@ -43,8 +42,13 @@ class Main extends Component {
 Main.viewStyles = ({style}) => {
   return {
     [c.main]: mergeAndApplyMatchingStyles(style, {
+      // Use pixel-based width and height all the way down to Mapbox
       width: styleMultiplier(1),
-      height: styleMultiplier(1)
+      height: styleMultiplier(1),
+      paddingTop: 8,
+      paddingBottom: 8,
+      paddingLeft: 16,
+      paddingRight: 16
     }),
 
     [c.mainCurrent]: {}
