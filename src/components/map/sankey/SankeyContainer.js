@@ -22,7 +22,8 @@ import Sankey from './Sankey';
 import * as R from 'ramda';
 import {graphql} from 'react-apollo';
 import {gql} from 'apollo-client-preset';
-const {reqStrPath} = throwing
+
+const {reqStrPath} = throwing;
 
 /**
  * Selects the current user from state
@@ -54,11 +55,23 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
   return bindActionCreators({
     // react-map-gl renamed this, redux-map-gl did not
     // add the region to the payload so the reducer knows what region we are
-    onViewportChange: mapState => onChangeViewport(
-      R.set(R.lensProp('region'), reqStrPath('region', ownProps), mapState)
-    )
-  //hoverMarker,
-  //selectMarker
+    onViewportChange: mapState => {
+      // Debounce to reduce actions
+      return R.set(
+        R.lensProp('meta'),
+        {
+          debounce: {
+            key: 'map/CHANGE_VIEWPORT',
+            time: 10
+          }
+        },
+        onChangeViewport(
+          R.set(R.lensProp('region'), reqStrPath('region', ownProps), mapState)
+        )
+      );
+    }
+    //hoverMarker,
+    //selectMarker
   }, dispatch);
 };
 

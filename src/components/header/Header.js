@@ -10,9 +10,10 @@ import * as R from 'ramda';
 import {Grid as grid, Logo as logo} from 'components/atoms';
 import {
   Box as box, Flex as flex, Button as button, ButtonOutline as buttonOutline, Group as group, createComponent
-} from 'rebass'
-import {util} from 'rebass'
-import logoImage from 'media/urbinsight_logo_website.png'
+} from 'rebass';
+import {util} from 'rebass';
+import logoImage from 'media/urbinsight_logo_website.png';
+import {mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
 
 // Override Group to be vertical instead of horizontal
 const verticalGroup = createComponent({
@@ -20,26 +21,30 @@ const verticalGroup = createComponent({
   type: 'Group',
   props: {},
   style: props => {
-    const R = util.px(props.theme.radius || 4)
+    const R = util.px(props.theme.radius || 4);
     return {
       '& > *': {
         borderRadius: 0
       },
       '& > *:first-child': {
         borderRadius: `${R} ${R} 0 0`,
+        // Force overlap with bottom button
+        marginBottom: '-1px'
       },
       '& > *:last-child': {
         borderRadius: `0 0 ${R} ${R}`,
-        borderTopWidth: 0
+        borderTopWidth: 0,
+        // Force overlap with top button
+        marginTop: '-1px'
       }
-    }
+    };
   }
-})
+});
 
 const
   [Div, Link, Grid, Flex, Box, Logo, Button, ButtonOutline, Group, VerticalGroup] = eMap(
-  ['div', link, grid, flex, box, logo, button, buttonOutline, group, verticalGroup]
-);
+    ['div', link, grid, flex, box, logo, button, buttonOutline, group, verticalGroup]
+  );
 
 
 const links = [
@@ -69,22 +74,26 @@ const accountButtons = [
   {
     children: 'Sign-up',
     value: 'Create an account',
-    onClick: () => {return null}//window.location.href='/signup'}
+    onClick: () => {
+      return null;
+    }//window.location.href='/signup'}
   },
   {
     children: 'Log in',
     value: 'Log into account',
-    onClick: () => {return null}//window.location.href='/login'}
+    onClick: () => {
+      return null;
+    }//window.location.href='/login'}
   }
-]
+];
 
 const styles = {
   headerLinkColor: '#C1C1C1',
   headerLinkFontFamily: 'sans-serif',
   accountButtonColor: '#C1C1C1',
   languageChooserBackgroundColor: '#999999',
-  languageChooserColor: 'white',
-}
+  languageChooserColor: 'white'
+};
 
 export const c = nameLookup({
   header: true,
@@ -113,14 +122,14 @@ class Header extends Component {
 
 Header.renderData = ({views}) => {
   const props = propsFor(views);
-  const linkPropsForItem = propsForItem(views, c.headerLink)
+  const linkPropsForItem = propsForItem(views, c.headerLink);
   const mapLinks = R.map(
     item => Link(linkPropsForItem(item))
   );
-  const accountButtonPropsForItem = propsForItem(views, c.headerAccountButton)
+  const accountButtonPropsForItem = propsForItem(views, c.headerAccountButton);
   const mapAccountButtons = R.map(
     item => ButtonOutline(accountButtonPropsForItem(item))
-  )
+  );
 
   return [
     Logo(props(c.headerLogo)),
@@ -134,7 +143,7 @@ Header.renderData = ({views}) => {
       )
     )
   ];
-}
+};
 
 Header.viewProps = () => {
   return {
@@ -156,7 +165,12 @@ Header.viewProps = () => {
       // Radius used by Group & Vertical group
       theme: {radius: 10}
     },
-    [c.headerAccountButton]: R.curry((_, d) => keyWith('children', d))
+
+    [c.headerAccountButton]: R.curry((_, d) => keyWith('children', d)),
+
+    [c.headerLanguageChooser]: {
+      children: 'Language',
+    }
   };
 };
 
@@ -166,18 +180,20 @@ Header.viewProps = () => {
 */
 Header.viewStyles = ({style}) => {
   return {
-    [c.header]: {
-      style
-    },
+    [c.header]: mergeAndApplyMatchingStyles(style, {
+      // Ignore the absolute width
+      width: '100%'
+    }),
 
     [c.headerLogo]: {
       width: 300,
+      minWidth: 300
     },
 
     [c.headerLinkHolder]: {
       width: '100%',
       alignItems: 'center',
-      justifyContent: 'space-between',
+      justifyContent: 'flex-end',
       margin: '0 20px 0 20px'
     },
 
@@ -185,21 +201,37 @@ Header.viewStyles = ({style}) => {
       color: styles.headerLinkColor,
       textDecorationLine: 'none',
       fontFamily: styles.headerLinkFontFamily,
+      margin: '0 20px 0 20px'
     },
 
     [c.headerButtonHolder]: {
       flexDirection: 'column',
+      justifyContent: 'space-between',
+      margin: '10px 0 10px 0',
+      width: '100px',
+      fontFamily: styles.headerLinkFontFamily
     },
 
     [c.headerLanguageChooser]: {
       backgroundColor: styles.languageChooserBackgroundColor,
-      color: styles.languageChooserBackgroundColor,
+      color: styles.languageChooserColor,
+      borderRadius: '5px',
+      margin: '0 5px 0 5px',
+      padding: '2px 2px 2px 2px',
+      height: '20px',
+      fontSize: '11px'
+    },
+
+    [c.headerAccountGroup]: {
+      height: '50px'
     },
 
     [c.headerAccountButton]: {
       color: styles.accountButtonColor,
       borderColor: styles.accountButtonColor,
-      width: '100%'
+      width: '100%',
+      padding: '5px 2px 5px 2px',
+      fontSize: '12px'
     }
   };
 };

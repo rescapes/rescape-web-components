@@ -54,7 +54,6 @@ const [ReactMapGl, SVGOverlay, DeckGL, Svg, G, Rect, Text, Title, Path, Div] =
 
 export const c = nameLookup({
   sankey: true,
-  sankeyReactMapGlOuter: true,
   sankeyReactMapGl: true,
   sankeySvgOverlay: true,
   sankeySvg: true,
@@ -217,7 +216,7 @@ Sankey.viewPropsAtRender = ({views, opt}) => {
   // TODO these should be the SVG width/height
   const width = reqPath([[c.sankeyReactMapGl], 'width'], views);
   const height = reqPath([[c.sankeyReactMapGl], 'height'], views);
-  const {links, nodes} = sankeyGenerator({width, height}, sample);
+  const {links, nodes} = sankeyGenerator({width, height, opt}, sample);
   return mergePropsForViews({
     [c.sankeySvgLinks]: {
       links
@@ -247,43 +246,41 @@ Sankey.renderData = ({views}) => {
   const nodeTextProps = itemizeProps(props(c.sankeySvgNodeText));
   const nodeTitleProps = itemizeProps(props(c.sankeySvgNodeTitle));
 
-  return Div(props(c.sankeyReactMapGlOuter),
-    ReactMapGl(propsSansClass(c.sankeyReactMapGl),
-      SVGOverlay(
-        R.merge(
-          props(c.sankeySvgOverlay),
-          {
-            // The redraw property of SVGOverlay
-            redraw: opt => {
-              // Update props that are dependent on the opt.project method
-              const {views: projectedViews} = Sankey.viewPropsAtRender({views, opt});
-              const projectedProps = propsFor(projectedViews);
-              // Separate out our links and nodes, which are for iterating, from the container props
-              const {links, ...linksProps} = projectedProps(c.sankeySvgLinks);
-              const {nodes, ...nodesProps} = projectedProps(c.sankeySvgNodes);
+  return ReactMapGl(propsSansClass(c.sankeyReactMapGl),
+    SVGOverlay(
+      R.merge(
+        props(c.sankeySvgOverlay),
+        {
+          // The redraw property of SVGOverlay
+          redraw: opt => {
+            // Update props that are dependent on the opt.project method
+            const {views: projectedViews} = Sankey.viewPropsAtRender({views, opt});
+            const projectedProps = propsFor(projectedViews);
+            // Separate out our links and nodes, which are for iterating, from the container props
+            const {links, ...linksProps} = projectedProps(c.sankeySvgLinks);
+            const {nodes, ...nodesProps} = projectedProps(c.sankeySvgNodes);
 
-              return [
-                G(linksProps,
-                  R.map(
-                    d => SankeySvgLink(linkProps(d)),
-                    links
-                  )
-                ),
-                G(nodesProps,
-                  R.map(
-                    d => SankeySvgNode({
-                      node: nodeProps(d),
-                      rect: nodeRectProps(d),
-                      text: nodeTextProps(d),
-                      title: nodeTitleProps(d)
-                    }),
-                    nodes
-                  )
+            return [
+              G(linksProps,
+                R.map(
+                  d => SankeySvgLink(linkProps(d)),
+                  links
                 )
-              ];
-            }
+              ),
+              G(nodesProps,
+                R.map(
+                  d => SankeySvgNode({
+                    node: nodeProps(d),
+                    rect: nodeRectProps(d),
+                    text: nodeTextProps(d),
+                    title: nodeTitleProps(d)
+                  }),
+                  nodes
+                )
+              )
+            ];
           }
-        )
+        }
       )
     )
   );

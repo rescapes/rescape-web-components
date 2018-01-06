@@ -482,11 +482,6 @@ module.exports = {
     source: 46,
     target: 15,
     value: 19.013
-  },
-  {
-    source: 47,
-    target: 15,
-    value: 289.366
   }
 ]
 };

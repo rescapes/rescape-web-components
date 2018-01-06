@@ -12,8 +12,10 @@
 import * as R from 'ramda';
 import {sankey} from 'd3-sankey';
 import {resolveSvgPoints} from 'helpers/svgHelpers';
-import {resolveSvgReact} from 'helpers/svgHelpers';
 import {asUnaryMemoize} from 'selectors/selectorHelpers';
+import {BART_SAMPLE} from 'data/samples/oakland-sample/oaklandLocations.sample';
+import {mergeDeep} from 'rescape-ramda';
+import {Point} from '@turf/helpers'
 
 const round = x => Math.round(x * 10) / 10;
 
@@ -24,20 +26,33 @@ const round = x => Math.round(x * 10) / 10;
  * @param point
  * @return {{x: *, dx: *, y: *, dy: *}}
  */
-export const nodePosition = (node, point) => ({
-  x: round(point.x),
-  dx: round(node.x1 - node.x0),
-  y: round(point.y),
-  dy: round(node.y1 - node.y0)
-});
+export const nodeProjected = (opt, node) => {
+  // Find the center of the node
+  const centerPoint = Point(
+    R.map((_1, _2) => R.divide(R.subtract(R.prop(_2, node), R.prop(_1, node)), 2))[['x1', 'x2'], ['y1', 'y2']]
+  )
+  // Transform the node points to that
+  const points = resolveSvgPoints(opt, node).points
+  const [x,y] = node.points[0]
+  const point = {x, y}
+  R.merge(
+    node,
+    {
+      x: round(point.x),
+      dx: round(node.x1 - node.x0),
+      y: round(point.y),
+      dy: round(node.y1 - node.y0)
+    }
+  );
+}
 
-export const linkPosition = link => ({
-  source: nodePosition(link.source),
-  target: nodePosition(link.target),
+export const linkProjected = R.curry((opt, link) => ({
+  source: nodeProjected(opt, link.source),
+  target: nodeProjected(opt, link.target),
   dy: round(link.width),
   sy: round(link.y0 - link.source.y0 - link.width / 2),
   ty: round(link.y1 - link.target.y0 - link.width / 2)
-});
+}));
 
 
 /**
@@ -51,94 +66,62 @@ export const linkPosition = link => ({
  * nodes array and must have a value indicating the weight of the headerLink
  * @returns {null}
  */
-export const sankeyGenerator = asUnaryMemoize(({width, height}, sankeyData) => {
-    // d3 mutates the data
-    const data = R.clone(sankeyData)
-    // Create a sankey generator
-    const sankeyGenerator = sankey()
-    // TODO pass from parent
-      .nodeWidth(15)
-      .nodePadding(10)
-      // TODO. I don't know if the max extent is pixels or 1
-      .extent([[1, 1], [width, height]]);
+export const sankeyGenerator = asUnaryMemoize(({width, height, opt}, sankeyData) => {
+  // d3 mutates the data
+  const data = R.clone(sankeyData);
+  // Create a sankey generator
+  const sankeyGenerator = sankey()
+  // TODO pass from parent
+    .nodeWidth(15)
+    .nodePadding(10)
+    // unproject from pixes to lat/lon
+    .extent([opt.unproject([1, 1]), opt.unproject([width, height])]);
 
-    // Map sample nodes to sample features
-    const features = R.map(node =>
-        ({
-          type: 'Feature',
-          name: node.name,
+  // Map sample nodes to sample features
+  const features = R.zipWith((node, feature) =>
+      mergeDeep(
+        feature,
+        {
+          name: feature.properties.name || node.name,
           properties: {
-            '@id': 'node/27233097',
-            'STIF:zone': '3',
-            name: node.name,
-            official_name: 'ASNIERES SUR SEINE',
-            operator: 'SNCF',
-            railway: 'station',
-            'ref:SNCF': 'Transilien',
-            'ref:SNCF:Transilien': 'J;L',
-            source: 'survey',
-            uic_ref: '8738113',
-            wikipedia: 'fr:Gare d\'Asnières-sur-Seine',
-            '@timestamp': '2016-05-27T08:20:46Z',
-            '@version': '11',
-            '@changeset': '39597830',
-            '@user': 'overflorian',
-            '@uid': '125897'
+            name: feature.properties.name || node.name
           },
-          geometry: {
-            type: 'Point',
-            coordinates: [
-              2.2834758,
-              48.905901
-            ]
-          },
-          id: 'node/27233097'
-        }),
-      data.nodes);
+        }
+      ),
+    data.nodes,
+    R.uniqBy(feature => feature.properties.name, BART_SAMPLE.features)
+  );
 
-    // Create an svg.g element (headerLink) and select all paths
-    // Our links our drawn as paths
-    /*
-    let headerLink = svg.append("g")
-      .attr("class", "links")
-      .attr("fill", "none")
-      .attr("stroke", "#000")
-      .attr("stroke-opacity", 0.2)
-      .selectAll("path");
-    */
+  // Create an svg.g element (headerLink) and select all paths
+  // Our links our drawn as paths
+  /*
+  let headerLink = svg.append("g")
+    .attr("class", "links")
+    .attr("fill", "none")
+    .attr("stroke", "#000")
+    .attr("stroke-opacity", 0.2)
+    .selectAll("path");
+  */
 
-    // Create an svg.g element (node) and select all svg.g (node) g elements
-    // Our links our drawn as individual g tags
-    /*
-    const node = svg.append("g")
-      .attr("class", "nodes")
-      .attr("font-family", "sans-serif")
-      .attr("font-size", 10)
-      .selectAll("g");
-    */
+  // Call the generator with the features as nodes and the original links
+  // This updates the links and nodes.
+  //
+  // It gives each node a sourceLinks array  and a targetLinks array that reference the links. It also gives each node
+  // an x0, y0, x1, y2 to indicate its rectangular bounds. It also gives an index, depth, and value (not sure what
+  // depth and value are for yet. value is calculate from the headerLink values)
 
-    // Create the points needed to render the shape of each feature
-    //const pointsOfFeatures = R.map(resolveSvgPoints(opt), features);
+  // It gives each a source and target reference to its nodes as well as
+  // a y0, y1, and width to indicate its start y and end y and width of the path
+  // The y0 and y1 are some portion of the vertical service of the two nodes (I think),
+  // although there must be more to it since they have to attach to two nodes at different y positions
+  // It also gives each headerLink an index
+  const update = {links: data.links, nodes: features};
+  sankeyGenerator(update);
 
-    // Call the generator with the features as nodes and the original links
-    // This updates the links and nodes.
-    //
-    // It gives each node a sourceLinks array  and a targetLinks array that reference the links. It also gives each node
-    // an x0, y0, x1, y2 to indicate its rectangular bounds. It also gives an index, depth, and value (not sure what
-    // depth and value are for yet. value is calculate from the headerLink values)
+  // nodes in the right place on the map
+  //const positionedNodes = R.zipWith(nodeProjected, data.nodes, R.map(R.prop('geometry'), features));
 
-    // It gives each a source and target reference to its nodes as well as
-    // a y0, y1, and width to indicate its start y and end y and width of the path
-    // The y0 and y1 are some portion of the vertical service of the two nodes (I think),
-    // although there must be more to it since they have to attach to two nodes at different y positions
-    // It also gives each headerLink an index
-    const update = {links: data.links, nodes: features};
-    sankeyGenerator(update);
-
-    // nodes in the right place on the map
-    //const positionedNodes = R.zipWith(nodePosition, data.nodes, R.map(R.prop('geometry'), features));
-
-    // This could be used to create react object from the features
-    //const reactSvgs = resolveSvgReact(opt, features);
-    return update;
-  })
+  // This could be used to create react object from the features
+  //const reactSvgs = resolveSvgReact(opt, features);
+  return update;
+});

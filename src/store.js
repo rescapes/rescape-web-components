@@ -14,6 +14,7 @@ import {applyMiddleware, compose, createStore} from 'redux';
 import rootReducer from 'reducers';
 import initialStateCreator from 'data/initialState';
 import {composeWithDevTools} from 'redux-devtools-extension';
+import createDebounce from 'redux-debounced';
 
 const loggerMiddleware = createLogger();
 
@@ -28,7 +29,7 @@ export default (config, testEnhancers = []) => {
   // this prevents running Apollo's client.middleware() in node tests
   const composedEnhancers = testEnhancers.length ?
     compose(...testEnhancers) :
-    composeWithDevTools(applyMiddleware(thunk, loggerMiddleware))
+    composeWithDevTools(applyMiddleware(createDebounce(), thunk, loggerMiddleware))
 
   return createStore(
     rootReducer(),

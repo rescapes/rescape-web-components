@@ -45,10 +45,6 @@ Main.viewStyles = ({style}) => {
       // Use pixel-based width and height all the way down to Mapbox
       width: styleMultiplier(1),
       height: styleMultiplier(1),
-      paddingTop: 8,
-      paddingBottom: 8,
-      paddingLeft: 16,
-      paddingRight: 16
     }),
 
     [c.mainCurrent]: {}

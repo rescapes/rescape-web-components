@@ -99,7 +99,7 @@ export const Logo = props => {
       },
 
       styles: {
-        //[c.logo]: {},
+        [c.logo]: props.style,
         [c.logoImage]: {
         }
       }

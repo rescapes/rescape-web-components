@@ -481,19 +481,12 @@ Object {
   "style": Object {
     "MozAppearance": "none",
     "WebkitAppearance": "none",
-    "border": 0,
     "color": "black",
-    "display": "inline-block",
     "fontFamily": "inherit",
     "fontSize": "inherit",
-    "height": 720,
-    "margin": 0,
-    "paddingBottom": 8,
-    "paddingLeft": 16,
-    "paddingRight": 16,
-    "paddingTop": 8,
+    "height": 688,
     "textDecoration": "none",
-    "width": 1080,
+    "width": 1048,
   },
 }
 `;
@@ -1036,100 +1029,29 @@ Object {
   "style": Object {
     "MozAppearance": "none",
     "WebkitAppearance": "none",
-    "border": 0,
     "color": "black",
-    "display": "inline-block",
     "fontFamily": "inherit",
     "fontSize": "inherit",
-    "height": 720,
-    "margin": 0,
-    "paddingBottom": 8,
-    "paddingLeft": 16,
-    "paddingRight": 16,
-    "paddingTop": 8,
+    "height": 688,
     "textDecoration": "none",
-    "width": 1080,
+    "width": 1048,
   },
 }
 `;
 
 exports[`SankeyContainer render 2`] = `
 Object {
-  "children": <InteractiveMap
-    altitude={1.5}
-    attributionControl={true}
-    bearing={0}
-    clickRadius={0}
-    doubleClickZoom={true}
-    dragPan={true}
-    dragRotate={true}
-    getCursor={[Function]}
-    height={720}
-    hoverMarker={undefined}
-    iconAtlas="data/location-icon-atlas.png"
-    isDragging={false}
-    latitude={37}
-    longitude={-119}
-    mapStyle="mapbox://styles/mapbox/light-v8"
-    mapboxApiAccessToken="pk.eyJ1IjoiY2Fsb2NhbiIsImEiOiJjaXl1aXkxZjkwMG15MndxbmkxMHczNG50In0.07Zu3XXYijL6GJMuxFtvQg"
-    maxLatitude={85.05113}
-    maxPitch={60}
-    maxZoom={20}
-    minLatitude={-85.05113}
-    minPitch={0}
-    minZoom={0}
-    onClick={null}
-    onError={[Function]}
-    onHover={null}
-    onLoad={[Function]}
-    onViewportChange={[Function]}
-    pitch={40}
-    preserveDrawingBuffer={false}
-    preventStyleDiffing={false}
-    reuseMaps={false}
-    scrollZoom={true}
-    selectMarker={undefined}
-    showCluster="true"
-    showZoomControls={true}
-    startDragLngLat={null}
-    style={
-      Object {
-        "height": 720,
-        "width": 1080,
-      }
-    }
-    touchZoomRotate={true}
-    visibilityConstraints={
-      Object {
-        "maxLatitude": 85.05113,
-        "maxPitch": 60,
-        "maxZoom": 20,
-        "minLatitude": -85.05113,
-        "minPitch": 0,
-        "minZoom": 0,
-      }
-    }
-    visible={true}
-    width={1080}
-    zoom={5}
-  >
-    <SVGOverlay
-      captureClick={false}
-      captureDoubleClick={false}
-      captureDrag={false}
-      captureScroll={false}
-      className="sankey-svg-overlay"
-      redraw={[Function]}
-      style={
-        Object {
-          "height": 720,
-          "width": 1080,
-        }
-      }
-      viewBox="0 0 540 360"
-    />
-  </InteractiveMap>,
-  "className": "sankey-react-map-gl-outer",
+  "captureClick": false,
+  "captureDoubleClick": false,
+  "captureDrag": false,
+  "captureScroll": false,
+  "className": "sankey-svg-overlay",
+  "redraw": [Function],
+  "style": Object {
+    "height": 688,
+    "width": 1048,
+  },
+  "viewBox": "0 0 1048 688",
 }
 `;
 

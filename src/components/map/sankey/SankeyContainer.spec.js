@@ -16,7 +16,7 @@ const [Container] = eMap([SankeyContainer]);
 // Find this React component
 const componentName = 'Sankey';
 // Find this class in the data renderer
-const childClassDataName = c.sankeyReactMapGlOuter;
+const childClassDataName = c.sankeySvgOverlay;
 // Find this class in the loading renderer
 const childClassLoadingName = c.sankeyLoading;
 // Find this class in the error renderer

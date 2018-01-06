@@ -11,7 +11,7 @@ import * as R from 'ramda';
 import {Provider as provider} from 'rebass';
 import {theme} from 'styles/styles';
 import {withRouter} from 'react-router';
-import {Grid as grid} from 'components/atoms'
+import {Grid as grid} from 'components/atoms';
 import {mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
 
 const [Provider, Div, Header, Switch, Route, Grid] = eMap([provider, 'div', header, switchy, route, grid]);
@@ -28,39 +28,43 @@ export const c = nameLookup({
 class App extends Component {
   render() {
     const props = App.views(this.props);
-    return Div(propsFor(props.views, c.app),
-      App.choicepoint(props)
+    const propsOf = propsFor(props.views);
+    return Provider(propsOf(c.provider),
+      Div(propsOf(c.app),
+        App.choicepoint(props)
+      )
     );
   }
 }
-
 
 App.renderData = ({views}) => {
   const props = propsFor(views);
   const propsSansClass = propsForSansClass(views);
 
-  return Provider(props(c.provider),
-    Div(props(c.app),
-      Header(props(c.appHeader)),
-      Grid(props(c.appBody),
-        Switch({}, [
-          Route({key: '/', exact: true, path: '/', component: Main}),
-          Route({key: '/login', exact: true, path: '/login', component: Login})
-        ])
-      )
+  return [
+    Header(props(c.appHeader)),
+    Grid(props(c.appBody),
+      Switch({}, [
+        Route({key: '/', exact: true, path: '/', component: Main}),
+        Route({key: '/login', exact: true, path: '/login', component: Login})
+      ])
     )
-  );
-};
+  ]
+}
 
 App.viewStyles = ({style}) => {
-  const headerHeight = 100
+  const headerHeight = 100;
   return {
+    [c.app]: mergeAndApplyMatchingStyles(style, {
+      paddingTop: 8,
+      paddingBottom: 8,
+      paddingLeft: 16,
+      paddingRight: 16
+    }),
     [c.appHeader]: mergeAndApplyMatchingStyles(style, {
       // Use the browser width
       width: R.identity,
-      height: headerHeight,
-      paddingLeft: 50,
-      paddingRight: 50
+      height: headerHeight
     }),
     [c.appBody]: mergeAndApplyMatchingStyles(style, {
       width: R.identity,
@@ -102,4 +106,4 @@ App.choicepoint = renderChoicepoint(
   App.renderData
 );
 
-export default withRouter(App)
+export default withRouter(App);

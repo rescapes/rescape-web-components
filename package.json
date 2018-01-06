@@ -80,6 +80,7 @@
     "react-scrollbar": "^0.5.1",
     "rebass": "^1.0.4",
     "redux": "^3.7.2",
+    "redux-debounced": "^0.4.0",
     "redux-logger": "^3.0.6",
     "redux-map-gl": "^0.1.0",
     "redux-mock-provider": "^1.0.0",
@@ -149,8 +150,7 @@
       "[/\\\\]node_modules[/\\\\].+\\.(js|jsx|mjs)$"
     ],
     "moduleNameMapper": {
-      "^react-native$": "react-native-web",
-      "mapbox-gl$": "<rootDir>/node_modules/mapbot-gl/dist/mapbox-gl.js"
+      "^react-native$": "react-native-web"
     },
     "moduleFileExtensions": [
       "web.js",
