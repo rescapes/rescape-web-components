@@ -89,7 +89,7 @@ module.exports = {
       // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
       'react-native': 'react-native-web',
        'mapbox-gl$': path.resolve('./node_modules/mapbox-gl/dist/mapbox-gl.js'),
-      '@mapbox/mapbox-gl-draw': path.resolve(root, 'node_modules/@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.js'),
+      '@mapbox/mapbox-gl-draw': path.resolve('./node_modules/@mapbox/mapbox-gl-draw/dist/mapbox-gl-draw.js')
     },
     plugins: [
       // Prevents users from importing files from outside of src/ (or node_modules/).

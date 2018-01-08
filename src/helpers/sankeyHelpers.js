@@ -11,71 +11,32 @@
 
 import * as R from 'ramda';
 import {sankey} from 'd3-sankey';
-import {resolveSvgPoints} from 'helpers/svgHelpers';
 import {asUnaryMemoize} from 'selectors/selectorHelpers';
 import {BART_SAMPLE} from 'data/samples/oakland-sample/oaklandLocations.sample';
 import {mergeDeep} from 'rescape-ramda';
-import {Point} from '@turf/helpers'
-
-const round = x => Math.round(x * 10) / 10;
-
-/**
- * Calculates teh x, y, dx, and dy representing a node based on the
- * x, y, x1, y1 of the geographic point representing the node
- * @param node
- * @param point
- * @return {{x: *, dx: *, y: *, dy: *}}
- */
-export const nodeProjected = (opt, node) => {
-  // Find the center of the node
-  const centerPoint = Point(
-    R.map((_1, _2) => R.divide(R.subtract(R.prop(_2, node), R.prop(_1, node)), 2))[['x1', 'x2'], ['y1', 'y2']]
-  )
-  // Transform the node points to that
-  const points = resolveSvgPoints(opt, node).points
-  const [x,y] = node.points[0]
-  const point = {x, y}
-  R.merge(
-    node,
-    {
-      x: round(point.x),
-      dx: round(node.x1 - node.x0),
-      y: round(point.y),
-      dy: round(node.y1 - node.y0)
-    }
-  );
-}
-
-export const linkProjected = R.curry((opt, link) => ({
-  source: nodeProjected(opt, link.source),
-  target: nodeProjected(opt, link.target),
-  dy: round(link.width),
-  sy: round(link.y0 - link.source.y0 - link.width / 2),
-  ty: round(link.y1 - link.target.y0 - link.width / 2)
-}));
-
 
 /**
  * This needs to be debugged
- * @param opt
- * @param opt.width The width of the containing svg element
- * @param opt.height The height of the containing svg element
+ * @param {Number} width The width of the containing svg element
+ * @param {Number} height The height of the containing svg element
  * @param {Object} sankeyData. An object with a nodes key and links key
  * @param {[Object]} sankeyData.nodes A list of objects that must have a name at a minimum
  * @param {[Object]} sankeyData.links A list of objects that must have a source and target index into the
  * nodes array and must have a value indicating the weight of the headerLink
  * @returns {null}
  */
-export const sankeyGenerator = asUnaryMemoize(({width, height, opt}, sankeyData) => {
+export const sankeyGenerator = asUnaryMemoize(({width, height}, sankeyData) => {
   // d3 mutates the data
   const data = R.clone(sankeyData);
+  const nodeWidth = 15;
+  const nodePadding = 15;
+
   // Create a sankey generator
   const sankeyGenerator = sankey()
   // TODO pass from parent
-    .nodeWidth(15)
-    .nodePadding(10)
-    // unproject from pixes to lat/lon
-    .extent([opt.unproject([1, 1]), opt.unproject([width, height])]);
+    .nodeWidth(nodeWidth)
+    .nodePadding(nodePadding)
+    .extent([[1, 1], [width, height]]);
 
   // Map sample nodes to sample features
   const features = R.zipWith((node, feature) =>
@@ -85,23 +46,12 @@ export const sankeyGenerator = asUnaryMemoize(({width, height, opt}, sankeyData)
           name: feature.properties.name || node.name,
           properties: {
             name: feature.properties.name || node.name
-          },
+          }
         }
       ),
     data.nodes,
     R.uniqBy(feature => feature.properties.name, BART_SAMPLE.features)
   );
-
-  // Create an svg.g element (headerLink) and select all paths
-  // Our links our drawn as paths
-  /*
-  let headerLink = svg.append("g")
-    .attr("class", "links")
-    .attr("fill", "none")
-    .attr("stroke", "#000")
-    .attr("stroke-opacity", 0.2)
-    .selectAll("path");
-  */
 
   // Call the generator with the features as nodes and the original links
   // This updates the links and nodes.
@@ -117,11 +67,13 @@ export const sankeyGenerator = asUnaryMemoize(({width, height, opt}, sankeyData)
   // It also gives each headerLink an index
   const update = {links: data.links, nodes: features};
   sankeyGenerator(update);
-
-  // nodes in the right place on the map
-  //const positionedNodes = R.zipWith(nodeProjected, data.nodes, R.map(R.prop('geometry'), features));
-
-  // This could be used to create react object from the features
-  //const reactSvgs = resolveSvgReact(opt, features);
   return update;
 });
+
+/***
+ * Mutates the nodes' x0, y0, x1, and y1 by unprojecting from pixels to lat/lon
+ * @param node
+ */
+export const unprojectNode = R.curry((opt, node) => R.forEach(
+  dim => [node[dim[0]], node[dim[1]]] = opt.unproject([node[dim[0]], node[dim[1]]]),
+  [['x0', 'y0'], ['x1', 'y1']]));

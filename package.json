@@ -150,7 +150,8 @@
       "[/\\\\]node_modules[/\\\\].+\\.(js|jsx|mjs)$"
     ],
     "moduleNameMapper": {
-      "^react-native$": "react-native-web"
+      "^react-native$": "react-native-web",
+      "mapbox-gl$": "<rootDir>/node_modules/mapbox-gl/dist/mapbox-gl.js"
     },
     "moduleFileExtensions": [
       "web.js",

@@ -48,6 +48,8 @@ global.navigator = {
   userAgent: 'node.js'
 };
 copyProps(window, global);
+window.URL = window.URL || {}
+window.URL.createObjectURL = () => {}
 
 Error.stackTraceLimit = Infinity;
 // Have exceptions traces traverse async processes

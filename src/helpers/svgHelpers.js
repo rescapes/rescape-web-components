@@ -10,7 +10,8 @@
  */
 import * as R from 'ramda';
 import {eMap} from 'helpers/componentHelpers';
-const {circle, polygon, polyline, g} = eMap(['circle', 'polygon', 'polyline', 'g']);
+
+const [Circle, Polygon, Polyline, G] = eMap(['circle', 'polygon', 'polyline', 'g']);
 
 /**
  * Inspects a feature and returns its type and projected point representation
@@ -19,70 +20,71 @@ const {circle, polygon, polyline, g} = eMap(['circle', 'polygon', 'polyline', 'g
  * @return {Object} An object with the geometry type and points
  */
 export const resolveSvgPoints = R.curry((opt, feature) => {
-    switch (feature.geometry.type) {
-        case 'Point':
-            return {
-                type: feature.geometry.type,
-                points: [opt.project(feature.geometry.coordinates)]
-            };
-        case 'LineString':
-            return {
-                type: feature.geometry.type,
-                points: feature.geometry.coordinates.map(coordinate => opt.project(coordinate))
-            };
-        case 'Polygon':
-            return {
-                type: feature.geometry.type,
-                points: feature.geometry.coordinates[0].map(coordinate => opt.project(coordinate))
-            };
-        default:
-            throw new Error(`Unexpected geometry type ${feature.geometry.type}`);
-    }
+  switch (feature.geometry.type) {
+    case 'Point':
+      return {
+        type: feature.geometry.type,
+        points: [opt.project(feature.geometry.coordinates)]
+      };
+    case 'LineString':
+      return {
+        type: feature.geometry.type,
+        points: feature.geometry.coordinates.map(coordinate => opt.project(coordinate))
+      };
+    case 'Polygon':
+      return {
+        type: feature.geometry.type,
+        // TODO assume single hape polgon for now.
+        // We can easily handle multi-polygons here in the future
+        points: R.head(feature.geometry.coordinates).map(coordinate => opt.project(coordinate))
+      };
+    default:
+      throw new Error(`Unexpected geometry type ${feature.geometry.type}`);
+  }
 });
 
 /**
- * Inspects a feature and returns its type and projected point representation
- * @param {Object} opt Options sent by the SvgOverlayObject from react-map-gl
- * @param {[Object]} features geojson features for which to resolve SVG shapes
- * @returns {ReactElement<P>|CElement<P, T>|ReactSVGElement|DOMElement<P, T>|CElement<P, ClassicComponent<P, ComponentState>>|DetailedReactHTMLElement<P, T>|any} React SVG elements
+ * Inspects pointData and render the appropriate React Svg Component
+ * @param {Object} props Props to pass to the Svg React component besides the point data (e.g. fill, stroke, strokeWidth)
+ * Sensible defaults are supplied for fill, stroke, and strokeWidth if not supplied
+ * @param {Object} pointData
+ * @param {String} pointData.type 'Polygon', 'LineString', or 'Point'
+ * @param {[Point]} pointData.points Array of lat/lon points arrays
+ * @returns {Object} React component
  */
-export const resolveSvgReact = (opt, features) => {
-    const pointData = R.map(
-        feature => {
-            return {
-                key: feature.id,
-                pointData: resolveSvgPoints(opt, feature)
-            };
-        },
-        features);
+export const resolveSvgReact = (props, pointData) => {
+  switch (pointData.type) {
+    case 'Point':
+      const [cx, cy] = R.head(pointData.points);
+      return Circle({cx, cy, ...R.merge({r: '10', fill: 'white', stroke: 'black', strokeWidth: '1'}, props)});
+    case 'LineString':
+      return Polyline({
+        points: pointData.points.map(point => point.join(',')).join(' '),
+        ...R.merge({fill: 'none', stroke: 'blue', strokeWidth: '10'}, props)
+      });
+    case 'Polygon':
+      // TODO might need to remove a last redundant point here
+      return Polygon({
+        points: pointData.points.map(point => point.join(',')).join(' '),
+        ...R.merge({fill: 'white', stroke: 'black', strokeWidth: '10'}, props)
+      });
+    default:
+      throw new Error(`Unexpected type ${pointData.type}`);
+  }
+}
 
-    const paths = R.map(({key, thePointData}) => {
-        switch (thePointData.type) {
-            case 'Point':
-                const [cx, cy] = R.head(thePointData.points);
-                return circle({key, cx, cy, r: '10', fill: 'red', stroke: 'blue', strokeWidth: '1' });
-            case 'LineString':
-                return polyline({key, fill: 'none', stroke: 'blue', strokeWidth: '10',
-                    points: thePointData.points.map(point => point.join(',')).join(' ')});
-            case 'Polygon':
-                // TODO might need to remove a last redundant point here
-                return polygon({ key, fill: 'red', stroke: 'blue', strokeWidth: '10',
-                    points: thePointData.points.map(point => point.join(',')).join(' ')});
-            default:
-                throw new Error(`Unexpected type ${thePointData.type}`);
-        }
-    },
-    /*
-            // I was using this for lines and polygons before. Hopefully the svg shapes work just as well
-            // for mapbox
-            <path
-                key={key}
-                style={ {stroke: '#1FBAD6', strokeWidth: 2, fill: 'none'} }
-                d={ `M${pointString}` }/>,
-        */
-    pointData);
 
-    return g(
-        paths
-    );
+/**
+ * Resolves an extent into a rectangular polygon
+ * @param {[Number]} minLatLon 2 element array. The minimum lat/lon
+ * @param {[Number]} maxLatLon 2 element array. The maximum lat/lon
+ */
+export const resolveFeatureFromExtent = (minLatLon, maxLatLon) => {
+  return {
+    "type": "Feature",
+    "geometry": {
+      "type": "Polygon",
+      "coordinates": [[minLatLon, [R.head(maxLatLon), R.last(minLatLon)], maxLatLon, [R.head(minLatLon), R.last(maxLatLon)], minLatLon]]
+    }
+  };
 };

@@ -10,7 +10,7 @@
  */
 
 
-import {sankeyGenerator} from 'helpers/sankeyHelpers';
+import {sankeyGenerator, unprojectNode} from 'helpers/sankeyHelpers';
 import sankeyData from 'data/sankey.sample';
 import * as R from 'ramda';
 import NamedTupleMap from 'namedtuplemap';
@@ -37,4 +37,11 @@ describe('sankeyHelpers', () => {
     const c = sankeyGenerator({width: 480, height: 640}, newSankeyData)
     expect(c === b).toBe(false)
   })
+
+  /*
+  test('unprojectNode', () => {
+    expect(unprojectNode({project: function() }, {x0: 1, x1: 16, y0: 198.0375, y1: 218.4247})).toMatchSnapshot()
+  })
+  */
 });
+
