@@ -8,18 +8,6 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-//import {resolveSvgReact} from 'helpers/svgHelpers';
-
-/**
- * Created by Andy Likuski on 2017.02.16
- * Copyright (c) 2017 Andy Likuski
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the 'Software'), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
 
 import reactMapGl, {SVGOverlay as svgOverlay} from 'react-map-gl';
 import {throwing} from 'rescape-ramda';
@@ -31,20 +19,15 @@ import * as R from 'ramda';
 import {styleMultiplier} from 'helpers/styleHelpers';
 import {applyMatchingStyles, mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
 import {Component} from 'react';
-import deckGL, {OrthographicViewport} from 'deck.gl';
-import {sankeyGenerator} from 'helpers/sankeyHelpers';
+import { sankeyGenerator, sankeyTranslate, unprojectNode, updateNodeToTranslatedPoints } from 'helpers/sankeyHelpers';
 import sample from 'data/sankey.sample';
 import PropTypes from 'prop-types';
-import {geoMercator, geoPath} from 'd3-geo';
 import {sankeyLinkHorizontal} from 'd3-sankey';
 import {format as d3Format} from 'd3-format';
 import {scaleOrdinal, schemeCategory10} from 'd3-scale';
-import {resolveFeatureFromExtent, resolveSvgPoints, resolveSvgReact} from 'helpers/svgHelpers';
+import { resolveSvgReact, } from 'helpers/svgHelpers';
 import {asUnaryMemoize} from 'selectors/selectorHelpers';
-import center from '@turf/center'
-import rhumbDistance from '@turf/rhumb-distance'
 
-const projection = geoMercator();
 const formatNumber = d3Format(",.0f");
 const format = function (d) {
   return formatNumber(d) + " TWh";
@@ -52,8 +35,8 @@ const format = function (d) {
 const {reqPath, reqStrPath} = throwing;
 const color = scaleOrdinal(schemeCategory10);
 
-const [ReactMapGl, SVGOverlay, DeckGL, Svg, G, Rect, Text, Title, Path, Div] =
-  eMap([reactMapGl, svgOverlay, deckGL, 'svg', 'g', 'rect', 'text', 'title', 'path', 'div']);
+const [ReactMapGl, SVGOverlay, G,  Text, Title, Path, Div] =
+  eMap([reactMapGl, svgOverlay, 'g', 'text', 'title', 'path', 'div']);
 
 export const c = nameLookup({
   sankey: true,
@@ -168,6 +151,7 @@ Sankey.viewProps = (props) => {
 Sankey.viewPropsAtRender = ({views, opt}) => {
   // Change the text position if the following is true
   const nodeTextCond = (_, d) => d.x0 < width / 2;
+  const unproject = unprojectNode(opt);
 
   // Since both node and links need projected node coordinate, memoize the node projection
   const projectNode = asUnaryMemoize(node => {
@@ -176,46 +160,29 @@ Sankey.viewPropsAtRender = ({views, opt}) => {
     return {x0, y0, x1, y1};
   });
 
-  //resolveSvgReact(opt, this.props.geojson.features);
-  // TODO these should be the SVG width/height
+  // Retrieve the width and height that was already calculated
   const width = reqPath([[c.sankeyReactMapGl], 'width'], views);
   const height = reqPath([[c.sankeyReactMapGl], 'height'], views);
+  // Generate the sankey diagram at default distributed positions across the map view
   const {links, nodes} = sankeyGenerator({width, height, opt}, sample);
+  // Create translated features of that represent each node shape translated to the node's feature center
+  // (Since the node is itself a feature)
+  const translatedFeatures = R.map(sankeyTranslate(opt), nodes)
+  // Create an updated version of the nodes based on these features (update the node's x0, y0, x1, y1)
+  const updateNode = updateNodeToTranslatedPoints(opt)
+  const updatedNodes = R.zipWith(updateNode, nodes, translatedFeatures)
+
   return mergePropsForViews({
     [c.sankeySvgLinks]: {
       links
     },
     [c.sankeySvgNodes]: {
-      nodes
+      nodes: updatedNodes
     },
 
     [c.sankeySvgNodeShape]: {
-      feature: R.curry((_, d) => {
-
-        // Unproject each node to from pixels to lat/lon
-        // The links don't have their own coordinates, they rely on the nodes
-        // This mutates the nodes
-        R.forEach(unprojectNode(opt), update.nodes);
-        // Add a feature to the node
-        R.forEach(node => {
-            // The shape generated by sankeyd3 as a polygon feature
-            const feature = resolveFeatureFromExtent(
-              R.map(reqStrPath(R.__, d), ['x0', 'y0']),
-              R.map(reqStrPath(R.__, d), ['x1', 'y1'])
-            );
-            // Translate its position to the node.feature point
-            const moveFromCenterPoint = center(feature);
-            const moveToCenterPoint = node.feature.geometry.coordinates;
-            const distance = rhumbDistance(moveFromCenterPoint, moveFromCenterPoint);
-            return resolveSvgPoints(
-              opt
-            );
-          },
-          update.nodes
-        );
-
-      }),
-      key: 'svgNodeRect',
+      key: c.sankeySvgNodeShape,
+      pointData: R.curry((_, d) => d.pointData),
       // Random fill generator
       fill: R.curry((_, d) => color(d.name.replace(/ .*/, ''))),
       stroke: '#000',
@@ -228,7 +195,7 @@ Sankey.viewPropsAtRender = ({views, opt}) => {
       const [x1, y1] = opt.project([d.x1, d.y1]);
       const projected = {x0, y0, x1, y1};
       return {
-        key: 'svgNodeText',
+        key: c.sankeySvgNodeText,
         x: R.ifElse(
           // Position text based on the condition
           nodeTextCond,
@@ -308,6 +275,7 @@ Sankey.renderData = ({views}) => {
             // Separate out our links and nodes, which are for iterating, from the container props
             const {links, ...linksProps} = projectedProps(c.sankeySvgLinks);
             const {nodes, ...nodesProps} = projectedProps(c.sankeySvgNodes);
+
             // These run per item (per node or link) and need access to the opt in order to project the points
             const nodeShapeProps = itemizeProps(projectedProps(c.sankeySvgNodeShape));
             const nodeTextProps = itemizeProps(projectedProps(c.sankeySvgNodeText));
@@ -342,7 +310,7 @@ Sankey.renderData = ({views}) => {
 
 const SankeySvgNode = ({node, shape, text, title}) => {
   return G(node,
-    resolveSvgReact(shape, shape.feature),
+    resolveSvgReact(shape),
     Text(text),
     Title(title)
   );

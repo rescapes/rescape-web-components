@@ -14,6 +14,8 @@ import {sankey} from 'd3-sankey';
 import {asUnaryMemoize} from 'selectors/selectorHelpers';
 import {BART_SAMPLE} from 'data/samples/oakland-sample/oaklandLocations.sample';
 import {mergeDeep} from 'rescape-ramda';
+import {nodeToFeature, resolveSvgPoints, translateNodeFeature} from 'helpers/svgHelpers';
+import bbox from '@turf/bbox'
 
 /**
  * This needs to be debugged
@@ -71,9 +73,54 @@ export const sankeyGenerator = asUnaryMemoize(({width, height}, sankeyData) => {
 });
 
 /***
- * Mutates the nodes' x0, y0, x1, and y1 by unprojecting from pixels to lat/lon
- * @param node
+ * Unprojects a node's x0, y0, x1, and y1 by unprojecting from pixels to lat/lon
+ * @param {Object} opt
+ * @param {Function} opt.unproject unprojects screen coords to lat/lon coords
+ * @param {Object} node The node to unproject points for
+ * @param {Number} node.x0
+ * @param {Number} node.y0
+ * @param {Number} node.x1
+ * @param {Number} node.y1
+ *
  */
-export const unprojectNode = R.curry((opt, node) => R.forEach(
-  dim => [node[dim[0]], node[dim[1]]] = opt.unproject([node[dim[0]], node[dim[1]]]),
-  [['x0', 'y0'], ['x1', 'y1']]));
+export const unprojectNode = R.curry((opt, node) => {
+  const nodeProp = R.prop(R.__, node);
+  const [[x0, y0], [x1, y1]] = R.map(
+    ([x, y]) => opt.unproject([nodeProp(x), nodeProp(y)]),
+    [['x0', 'y0'], ['x1', 'y1']]
+  );
+  return R.merge(node, {x0, y0, x1, y1});
+});
+
+/**
+ * Translates the given Sankey node to the position of its geometry.
+ * @param {Object} opt Mapbox projection object that contains the unproject function
+ * @param {Object} featureNode The sankey node that is also a Feature (has geometry.coordinates)
+ * @returns {Object} The translated feature based on the x0, y0, x1, y1 and the node Feature center point
+ * The feature has unproject lan/lon coordinates
+ */
+export const sankeyTranslate = R.curry((opt, featureNode) => R.compose(
+    // Translate the feature to the center of the node's coordinates (because the node itself is a feature)
+    translateNodeFeature(featureNode),
+    // Next generate a feature from the lat/lon rectangle of the nodes
+    nodeToFeature,
+    // First unproject the node from pixels to lat/lon
+    unprojectNode(opt)
+  )(featureNode)
+);
+
+/**
+ * Applies the projected bounding box of the feature to the x0, y0 x1, y1 values of the sankey node
+ * @param {Object} opt Mapbox projection object that contains the unproject function
+ * @param featureNode
+ * @param feature
+ * @return {*} The node updated with the projected x0, y0, x1, y1 from the feature. A pointData property
+ * is also put on the node so the feature points can be rendered instead of the node's bbox. These
+ * are currently one in the same but the feature might be more complicated than a rectangle some day
+ */
+export const updateNodeToTranslatedPoints = R.curry((opt, featureNode, feature) => {
+    const [_x0, _y0, _x1, _y1] = bbox(feature);
+    const [[x0, y0], [x1, y1]] = [opt.project([_x0, _y0]), opt.project([_x1, _y1])];
+    return R.merge(featureNode, {x0, y0, x1, y1, pointData: resolveSvgPoints(opt, feature)})
+  }
+);

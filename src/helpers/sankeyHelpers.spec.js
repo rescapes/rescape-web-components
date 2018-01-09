@@ -14,6 +14,8 @@ import {sankeyGenerator, unprojectNode} from 'helpers/sankeyHelpers';
 import sankeyData from 'data/sankey.sample';
 import * as R from 'ramda';
 import NamedTupleMap from 'namedtuplemap';
+import {geoMercator} from 'd3-geo';
+const projection = geoMercator();
 
 describe('sankeyHelpers', () => {
   test('sankeyGenerator', () => {
@@ -38,9 +40,10 @@ describe('sankeyHelpers', () => {
     expect(c === b).toBe(false)
   })
 
+
   /*
   test('unprojectNode', () => {
-    expect(unprojectNode({project: function() }, {x0: 1, x1: 16, y0: 198.0375, y1: 218.4247})).toMatchSnapshot()
+    expect(unprojectNode(projection, {x0: 1, x1: 16, y0: 198.0375, y1: 218.4247})).toMatchSnapshot()
   })
   */
 });
