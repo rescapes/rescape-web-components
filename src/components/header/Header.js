@@ -155,7 +155,7 @@ Header.viewProps = () => {
       key: c.headerLinkHolder
     },
     // Pass the datum properties to make each link and add a key using the text attribute
-    [c.headerLink]: R.curry((_, d) => keyWith('children', d)),
+    [c.headerLink]: R.always(d => keyWith('children', d)),
 
     [c.headerButtonHolder]: {
       key: c.headerButtonHolder
@@ -166,7 +166,7 @@ Header.viewProps = () => {
       theme: {radius: 10}
     },
 
-    [c.headerAccountButton]: R.curry((_, d) => keyWith('children', d)),
+    [c.headerAccountButton]: R.always(d => keyWith('children', d)),
 
     [c.headerLanguageChooser]: {
       children: 'Language',

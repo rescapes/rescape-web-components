@@ -16,26 +16,31 @@ import {
   propsForSansClass, renderErrorDefault, renderLoadingDefault, keyWith
 } from 'helpers/componentHelpers';
 import * as R from 'ramda';
-import {styleMultiplier} from 'helpers/styleHelpers';
 import {applyMatchingStyles, mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
 import {Component} from 'react';
-import { sankeyGenerator, sankeyTranslate, unprojectNode, updateNodeToTranslatedPoints } from 'helpers/sankeyHelpers';
+import {sankeyGenerator, sankeyGeospatialTranslate} from 'helpers/sankeyHelpers';
 import sample from 'data/sankey.sample';
 import PropTypes from 'prop-types';
 import {sankeyLinkHorizontal} from 'd3-sankey';
 import {format as d3Format} from 'd3-format';
 import {scaleOrdinal, schemeCategory10} from 'd3-scale';
-import { resolveSvgReact, } from 'helpers/svgHelpers';
-import {asUnaryMemoize} from 'selectors/selectorHelpers';
+import {resolveSvgReact} from 'helpers/svgHelpers';
+
+// Sankey settings. These should be moved to style
+const nodeWidth = 15;
+const nodePadding = 15;
 
 const formatNumber = d3Format(",.0f");
 const format = function (d) {
   return formatNumber(d) + " TWh";
 };
 const {reqPath, reqStrPath} = throwing;
+// Creates colors to use for the nodes
 const color = scaleOrdinal(schemeCategory10);
+// This creates the positioning for each Sankey Link.
+const linkHorizontal = sankeyLinkHorizontal();
 
-const [ReactMapGl, SVGOverlay, G,  Text, Title, Path, Div] =
+const [ReactMapGl, SVGOverlay, G, Text, Title, Path, Div] =
   eMap([reactMapGl, svgOverlay, 'g', 'text', 'title', 'path', 'div']);
 
 export const c = nameLookup({
@@ -68,39 +73,19 @@ class Sankey extends Component {
 
 Sankey.viewStyles = ({style}) => {
 
-  const parentStyle = R.merge(
-    {
-      // default these parent styles
-      width: '100%',
-      height: '100%'
-    },
-    style
-  );
-
   return {
-    [c.sankey]: mergeAndApplyMatchingStyles(parentStyle, {
-      width: styleMultiplier(1),
-      height: styleMultiplier(1)
-    }),
+    [c.sankey]: mergeAndApplyMatchingStyles(style, {}),
 
-    [c.sankeyReactMapGl]: applyMatchingStyles(parentStyle, {
-      width: styleMultiplier(1),
-      height: styleMultiplier(1)
-    }),
+    [c.sankeyReactMapGl]: applyMatchingStyles(style, {}),
 
-    [c.sankeySvgOverlay]: applyMatchingStyles(parentStyle, {
-      width: styleMultiplier(1),
-      height: styleMultiplier(1)
-    })
+    [c.sankeySvgOverlay]: applyMatchingStyles(style, {})
   };
 };
 
-Sankey.viewProps = (props) => {
+Sankey.viewProps = props => {
   // Rely on the width and height calculated in viewStyles
-  const width = reqPath(['views', [c.sankey], 'style', 'width'], props);
-  const height = reqPath(['views', [c.sankey], 'style', 'height'], props);
-  const left = -Math.min(width, height) / 2;
-  const top = -Math.min(width, height) / 2;
+  const width = reqStrPath(`views.${c.sankey}.style.width`, props);
+  const height = reqStrPath(`views.${c.sankey}.style.height`, props);
   return {
     [c.sankeyReactMapGl]: R.mergeAll([
       {
@@ -124,12 +109,12 @@ Sankey.viewProps = (props) => {
     },
 
     [c.sankeySvgNode]: {
-      key: R.curry((_, d) => d.name)
+      key: R.always(reqStrPath('name'))
     },
 
     [c.sankeySvgNodeTitle]: {
       key: 'svgNodeTitle',
-      children: R.curry((_, d) => `${d.name}\n${format(d.value)}`)
+      children: R.always(d => `${d.name}\n${format(d.value)}`)
     },
 
     [c.sankeySvgLinks]: {
@@ -137,7 +122,6 @@ Sankey.viewProps = (props) => {
       fontFamily: 'sans-serif',
       fontSize: 10
     }
-
   };
 };
 
@@ -150,69 +134,55 @@ Sankey.viewProps = (props) => {
  */
 Sankey.viewPropsAtRender = ({views, opt}) => {
   // Change the text position if the following is true
-  const nodeTextCond = (_, d) => d.x0 < width / 2;
-  const unproject = unprojectNode(opt);
+  const nodeTextCond = d => d.x0 < width / 2;
 
-  // Since both node and links need projected node coordinate, memoize the node projection
-  const projectNode = asUnaryMemoize(node => {
-    const [x0, y0] = opt.project([node.x0, node.y0]);
-    const [x1, y1] = opt.project([node.x1, node.y1]);
-    return {x0, y0, x1, y1};
-  });
-
-  // Retrieve the width and height that was already calculated
-  const width = reqPath([[c.sankeyReactMapGl], 'width'], views);
-  const height = reqPath([[c.sankeyReactMapGl], 'height'], views);
-  // Generate the sankey diagram at default distributed positions across the map view
-  const {links, nodes} = sankeyGenerator({width, height, opt}, sample);
-  // Create translated features of that represent each node shape translated to the node's feature center
+  // opt contains the viewport width and height
+  const {width, height} = opt
+  // Tranlate's a node's position (x0, y0, x1, y1) to that of the node's feature geometry
   // (Since the node is itself a feature)
-  const translatedFeatures = R.map(sankeyTranslate(opt), nodes)
-  // Create an updated version of the nodes based on these features (update the node's x0, y0, x1, y1)
-  const updateNode = updateNodeToTranslatedPoints(opt)
-  const updatedNodes = R.zipWith(updateNode, nodes, translatedFeatures)
+  const geospatialPositioner = sankeyGeospatialTranslate(opt)
+  // Generate the sankey diagram at default distributed positions across the map view
+  const {links, nodes} = sankeyGenerator({width, height, nodeWidth, nodePadding, geospatialPositioner}, sample);
 
   return mergePropsForViews({
     [c.sankeySvgLinks]: {
       links
     },
     [c.sankeySvgNodes]: {
-      nodes: updatedNodes
+      nodes
     },
 
     [c.sankeySvgNodeShape]: {
       key: c.sankeySvgNodeShape,
-      pointData: R.curry((_, d) => d.pointData),
+      pointData: R.always(d => d.pointData.bbox),
       // Random fill generator
-      fill: R.curry((_, d) => color(d.name.replace(/ .*/, ''))),
+      fill: R.always(d => color(d.name.replace(/ .*/, ''))),
       stroke: '#000',
       strokeWidth: '1'
     },
 
-    [c.sankeySvgNodeText]: R.curry((_, d) => {
-      // Project from lat/lon to mapbox viewport coordinates
-      const [x0, y0] = opt.project([d.x0, d.y0]);
-      const [x1, y1] = opt.project([d.x1, d.y1]);
-      const projected = {x0, y0, x1, y1};
+    // Make this whole thing a function that ignores props and expects the datum, since we combine
+    // properties of the datum to make new properties (e.g. x0 and x1 to make x)
+    [c.sankeySvgNodeText]: R.always(d => {
       return {
         key: c.sankeySvgNodeText,
         x: R.ifElse(
           // Position text based on the condition
           nodeTextCond,
-          (_, d) => R.add(d.x1, 6),
-          (_, d) => R.subtract(d.x0, 6)
-        )(_, projected),
-        y: R.divide(R.add(y1, y0), 2),
+          d => R.add(d.x1, 6),
+          d => R.subtract(d.x0, 6)
+        )(d),
+        y: R.divide(R.add(d.y1, d.y0), 2),
         dy: '0.35em',
         // Anchor text based on the condition
         textAnchor: R.ifElse(
           nodeTextCond,
           R.always('start'),
           R.always('end')
-        )(_, projected),
+        )(d),
         children: d.name,
-        height: R.subtract(y1, y0),
-        width: R.subtract(x1, x0),
+        height: R.subtract(d.y1, d.y0),
+        width: R.subtract(d.x1, d.x0),
         // Random color based on name
         fill: color(d.name.replace(/ .*/, '')),
         stroke: '#000'
@@ -224,23 +194,14 @@ Sankey.viewPropsAtRender = ({views, opt}) => {
       stroke: '#000',
       strokeOpacity: 0.2,
       // The d element of the svg path is produced by sankeyLinkHorizontal
-      // Well call the result of sankeyLinkHorizontal on each datum
-      d: _ => {
-        const dFunc = sankeyLinkHorizontal();
-        return d =>
-          dFunc(R.merge(d,
-            {
-              // project source as target nodes, overwriting x0, y0, x1, and y1 for source and target
-              source: R.merge(d.source, projectNode(d.source)),
-              target: R.merge(d.target, projectNode(d.target))
-            }
-          ));
-      },
+      // Well call the result of sankeyLinkHorizontal(), which expects a datum and assigns
+      // it y0, y1, and width
+      d: R.always(d => linkHorizontal(d)),
       // The stroke is based on the item, so return a unary function
       // The stroke width must be at least 1 pixel
-      strokeWidth: R.curry((_, d) => Math.max(1, d.width)),
+      strokeWidth: R.always(d => Math.max(1, reqStrPath('width', d))),
       // The title is based on the item, so return a unary function
-      title: R.curry((_, d) => `${d.source.name} →  ${d.target.name} \n ${format(d.value)}`)
+      title: R.always(d => `${d.source.name} →  ${d.target.name} \n ${format(d.value)}`)
     })
 
   }, {views});
@@ -272,14 +233,16 @@ Sankey.renderData = ({views}) => {
             // Update props that are dependent on the opt.project method
             const {views: projectedViews} = Sankey.viewPropsAtRender({views, opt});
             const projectedProps = propsFor(projectedViews);
+
             // Separate out our links and nodes, which are for iterating, from the container props
             const {links, ...linksProps} = projectedProps(c.sankeySvgLinks);
             const {nodes, ...nodesProps} = projectedProps(c.sankeySvgNodes);
 
             // These run per item (per node or link) and need access to the opt in order to project the points
-            const nodeShapeProps = itemizeProps(projectedProps(c.sankeySvgNodeShape));
-            const nodeTextProps = itemizeProps(projectedProps(c.sankeySvgNodeText));
-            const linkProps = itemizeProps(projectedProps(c.sankeySvgLink));
+            const itemizeProjectedProps = R.compose(itemizeProps, projectedProps);
+            const nodeShapeProps = itemizeProjectedProps(c.sankeySvgNodeShape);
+            const nodeTextProps = itemizeProjectedProps(c.sankeySvgNodeText);
+            const linkProps = itemizeProjectedProps(c.sankeySvgLink);
 
             return [
               G(linksProps,

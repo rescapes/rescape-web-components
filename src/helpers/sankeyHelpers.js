@@ -13,31 +13,47 @@ import * as R from 'ramda';
 import {sankey} from 'd3-sankey';
 import {asUnaryMemoize} from 'selectors/selectorHelpers';
 import {BART_SAMPLE} from 'data/samples/oakland-sample/oaklandLocations.sample';
-import {mergeDeep} from 'rescape-ramda';
-import {nodeToFeature, resolveSvgPoints, translateNodeFeature} from 'helpers/svgHelpers';
-import bbox from '@turf/bbox'
+import {mergeDeep, throwing} from 'rescape-ramda';
+import {resolveFeatureFromExtent, resolveSvgPoints} from 'helpers/svgHelpers';
+import bbox from '@turf/bbox';
+import bboxPolygon from '@turf/bbox-polygon';
+import center from '@turf/center';
+import rhumbDistance from '@turf/rhumb-distance';
+import rhumbBearing from '@turf/rhumb-bearing';
+import transformTranslate from '@turf/transform-translate'
+import {scaleLinear} from 'd3-scale'
+const {reqStrPath} = throwing
 
 /**
  * This needs to be debugged
+ * @param {Object} opt Mapbox object that has project function
  * @param {Number} width The width of the containing svg element
  * @param {Number} height The height of the containing svg element
+ * @param {Number} nodeWidth
+ * @param {Number} nodePadding
+ * @param {Boolean} [geospatial] Default to true. If true use geospatial positions for the nodes, otherwise use
+ * columns
  * @param {Object} sankeyData. An object with a nodes key and links key
  * @param {[Object]} sankeyData.nodes A list of objects that must have a name at a minimum
  * @param {[Object]} sankeyData.links A list of objects that must have a source and target index into the
  * nodes array and must have a value indicating the weight of the headerLink
  * @returns {null}
  */
-export const sankeyGenerator = asUnaryMemoize(({width, height}, sankeyData) => {
+export const sankeyGenerator = asUnaryMemoize(({width, height, nodeWidth, nodePadding, geospatialPositioner}, sankeyData) => {
   // d3 mutates the data
   const data = R.clone(sankeyData);
-  const nodeWidth = 15;
-  const nodePadding = 15;
+  // Normalize heights to range from 10 pixes to 100 pixels independent of the zoom
+  const heightNormalizer = ({minValue, maxValue}, node) => scaleLinear()
+    .domain([minValue, maxValue])
+    .range([10, 100])(node);
 
   // Create a sankey generator
   const sankeyGenerator = sankey()
   // TODO pass from parent
     .nodeWidth(nodeWidth)
     .nodePadding(nodePadding)
+    .geospatialPositioner(R.defaultTo(null, geospatialPositioner))
+    .heightNormalizer(heightNormalizer)
     .extent([[1, 1], [width, height]]);
 
   // Map sample nodes to sample features
@@ -99,28 +115,80 @@ export const unprojectNode = R.curry((opt, node) => {
  * @returns {Object} The translated feature based on the x0, y0, x1, y1 and the node Feature center point
  * The feature has unproject lan/lon coordinates
  */
-export const sankeyTranslate = R.curry((opt, featureNode) => R.compose(
-    // Translate the feature to the center of the node's coordinates (because the node itself is a feature)
-    translateNodeFeature(featureNode),
-    // Next generate a feature from the lat/lon rectangle of the nodes
-    nodeToFeature,
-    // First unproject the node from pixels to lat/lon
-    unprojectNode(opt)
-  )(featureNode)
+export const sankeyGeospatialTranslate = R.curry((opt, {minValue, maxValue}, featureNode) => {
+    const feature = R.compose(
+      // Translate the feature to the center of the node's coordinates (because the node itself is a feature)
+      translateNodeFeature(R.__, featureNode),
+      // Next generate a feature from the lat/lon rectangle of the nodes
+      nodeToFeature,
+      // First unproject the node from pixels to lat/lon
+      unprojectNode(opt),
+    )(featureNode)
+
+    const boundingBox = bbox(feature)
+    // Project it to two x,y coordinates
+    const bounds = projectBoundingBox(opt, boundingBox)
+
+    return {
+      // Provide various ways to render the node
+      pointData: {
+        feature: resolveSvgPoints(opt, feature),
+        bbox: resolveSvgPoints(opt, bboxPolygon(boundingBox)),
+        center: resolveSvgPoints(center(feature)),
+      },
+      // x0, y0, x1, y1
+      ...bounds
+    }
+  }
 );
 
 /**
- * Applies the projected bounding box of the feature to the x0, y0 x1, y1 values of the sankey node
- * @param {Object} opt Mapbox projection object that contains the unproject function
- * @param featureNode
- * @param feature
- * @return {*} The node updated with the projected x0, y0, x1, y1 from the feature. A pointData property
- * is also put on the node so the feature points can be rendered instead of the node's bbox. These
- * are currently one in the same but the feature might be more complicated than a rectangle some day
+ * Calculate the projected value of the bounding box points and return Sankey Node friendly
+ * x0, y0, x1, y1
+ * @param {Object} opt
+ * @param {object} bbox
+ * @return {*[]}
  */
-export const updateNodeToTranslatedPoints = R.curry((opt, featureNode, feature) => {
-    const [_x0, _y0, _x1, _y1] = bbox(feature);
-    const [[x0, y0], [x1, y1]] = [opt.project([_x0, _y0]), opt.project([_x1, _y1])];
-    return R.merge(featureNode, {x0, y0, x1, y1, pointData: resolveSvgPoints(opt, feature)})
-  }
-);
+export const projectBoundingBox = R.curry((opt, bbox) => {
+  // Get the bounding box of the feature
+  const [_x0, _y0, _x1, _y1] = bbox;
+  const [[x0, y0], [x1, y1]] = [opt.project([_x0, _y0]), opt.project([_x1, _y1])];
+  return {x0, y0, x1, y1}
+});
+
+/**
+ * Translates a d3 Sankey node to a feature that is a polygon around the node's bounding box (x0, y0 to x1, y1)
+ * The node would typically have unprojected coordinates that this point
+ * @param {Object} node Node with x0, y0, x1, y2, typically as lat/lon pairs
+ * @return {Object} A Feature with a geometry containing the type (Polygon) and coordinates
+ */
+export const nodeToFeature = node =>
+  // Add a feature to the node
+  // The shape generated by sankeyd3 as a polygon feature
+  resolveFeatureFromExtent(
+    R.map(reqStrPath(R.__, node), ['x0', 'y0']),
+    R.map(reqStrPath(R.__, node), ['x1', 'y1'])
+  )
+
+/**
+ * Given a d3 Sankey node and its feature representation (as created by nodeToFeature) transform
+ * the feature coordinates to the the coordinates stored with the node
+ * This assumes that the node has a node.geometry.coordinates (i.e. the node itself is also a feature)
+ * Thanks the center of node.geometry.coordinates and translates the given feature from its own center
+ * to that of node.geometry.coordinates.
+ *
+ * The purpose of this function is to calculate spatial coordinates for a sankey node that was dynamically
+ * calculated by d3 sankey to layout relative to other nodes. We need to reposition it on the map
+ * @param {Object} node d3 Sankey node
+ * @param {Object} feature geojson Feature that is a polygon representing the node's x0, y0 and x1, y1 bounding box
+ * @returns {Object} A new feature with the translated position
+ */
+export const translateNodeFeature = R.curry((sourceFeature, targetFeature) => {
+  // Translate from the feature center
+  const moveFromCenterPoint = center(sourceFeature)
+  // Translate its position to here
+  const moveToCenterPoint = center(targetFeature)
+  const distance = rhumbDistance(moveFromCenterPoint, moveToCenterPoint)
+  const bearing = rhumbBearing(moveFromCenterPoint, moveToCenterPoint)
+  return transformTranslate(sourceFeature, distance, bearing)
+});

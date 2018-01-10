@@ -1047,10 +1047,7 @@ Object {
   "captureScroll": false,
   "className": "sankey-svg-overlay",
   "redraw": [Function],
-  "style": Object {
-    "height": 688,
-    "width": 1048,
-  },
+  "style": Object {},
   "viewBox": "0 0 1048 688",
 }
 `;
