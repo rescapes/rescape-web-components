@@ -45,7 +45,7 @@ export const sankeyGenerator = asUnaryMemoize(({width, height, nodeWidth, nodePa
   // Normalize heights to range from 10 pixes to 100 pixels independent of the zoom
   const heightNormalizer = ({minValue, maxValue}, node) => scaleLinear()
     .domain([minValue, maxValue])
-    .range([10, 100])(node);
+    .range([10, 100])(node.value);
 
   // Create a sankey generator
   const sankeyGenerator = sankey()
@@ -112,10 +112,14 @@ export const unprojectNode = R.curry((opt, node) => {
  * Translates the given Sankey node to the position of its geometry.
  * @param {Object} opt Mapbox projection object that contains the unproject function
  * @param {Object} featureNode The sankey node that is also a Feature (has geometry.coordinates)
- * @returns {Object} The translated feature based on the x0, y0, x1, y1 and the node Feature center point
- * The feature has unproject lan/lon coordinates
+ * @returns {Object} x0, y0, x1, y1 cooridinates to assign the node as well as an object pointData
+ * that contains different point representations:
+ * pointData.feature is the projected SVG shape of the geometry of the featureNode. This could be a point, polygon, etc
+ * pointData.bbox is a polygon of the bounding box of the node's original x0, y0, x1, y1 translated around the center
+ * of the geometry of the feature node.
+ * pointData.center is the center point of the geometry of the featureNode
  */
-export const sankeyGeospatialTranslate = R.curry((opt, {minValue, maxValue}, featureNode) => {
+export const sankeyGeospatialTranslate = R.curry((opt, featureNode) => {
     const feature = R.compose(
       // Translate the feature to the center of the node's coordinates (because the node itself is a feature)
       translateNodeFeature(R.__, featureNode),
@@ -153,7 +157,9 @@ export const projectBoundingBox = R.curry((opt, bbox) => {
   // Get the bounding box of the feature
   const [_x0, _y0, _x1, _y1] = bbox;
   const [[x0, y0], [x1, y1]] = [opt.project([_x0, _y0]), opt.project([_x1, _y1])];
-  return {x0, y0, x1, y1}
+  // Flip the ys. bbox geospatially will have y0 < y1 (geospatial increases up (north),
+  // but as pixels increase from top to bottom of the screen
+  return {x0, y0: y1, x1, y1: y0}
 });
 
 /**

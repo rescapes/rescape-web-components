@@ -3405,6 +3405,7 @@ d3-sankey@../d3-sankey/:
   dependencies:
     d3-array "1"
     d3-collection "1"
+    d3-scale "^1.0.7"
     d3-shape "^1.2.0"
 
 d3-scale@^1.0.7:
@@ -8605,8 +8606,8 @@ rescape-ramda@^1.1.0:
     ramda-maybe "^0.18.0"
 
 rescape-ramda@^1.2.8:
-  version "1.2.9"
-  resolved "https://registry.yarnpkg.com/rescape-ramda/-/rescape-ramda-1.2.9.tgz#915d021c3f9b12ec449852e30fd4f9b25f53238e"
+  version "1.2.10"
+  resolved "https://registry.yarnpkg.com/rescape-ramda/-/rescape-ramda-1.2.10.tgz#1527561150fcdb139b63a2ec4490d598857c0c88"
   dependencies:
     data.maybe "^1.2.2"
     data.task "^3.1.1"
