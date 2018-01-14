@@ -127,7 +127,7 @@ describe('styleSelectors', () => {
       cow: 2,
       width: styleMultiplier(2),
       height: styleMultiplier(3)
-    })).toEqual({
+    }, [c.sankeyLinkLegendItem])).toEqual({
       position: 'absolute',
       cow: 2,
       width: 4,

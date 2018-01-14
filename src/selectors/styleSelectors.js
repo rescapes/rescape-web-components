@@ -84,7 +84,7 @@ export const mergeAndApplyMatchingStyles = (parentStyle, style) => mergeDeepWith
  * @param style
  * @return {*}
  */
-export const applyMatchingStyles = (parentStyle, style) => {
+export const applyMatchingStyles = (parentStyle, style, p) => {
   // If any value in style is a function and doesn't have a corresponding key
   // in parentStyle, throw an error. There must be a value in parent in order to resolve the function
   const badKeyValues = filterWithKeys((value, key) =>

@@ -21,19 +21,17 @@ import {
   mergeAndSankeyLinkLegendlyMatchingStyles
 } from 'selectors/styleSelectors';
 import {Component} from 'react';
-import {sankeyGenerator, sankeyGeospatialTranslate} from 'helpers/sankeyHelpers';
-import sample, {resolveLinkStage, stages} from 'data/belgium/brusselsSankeySample';
-import PropTypes from 'prop-types';
-import {sankeyLinkHorizontal} from 'd3-sankey';
-import {format as d3Format} from 'd3-format';
-import {scaleOrdinal, schemeCategory10} from 'd3-scale';
-import {resolveSvgReact} from 'helpers/svgHelpers';
+import {Flex as flex} from 'rebass';
 import {Grid as grid} from 'components/atoms';
-const [Div, Grid] = eMap(['div', grid])
+import {throwing} from 'rescape-ramda'
+const {reqStrPath} = throwing
+
+const [Div, Grid, Flex] = eMap(['div', grid, flex]);
 
 export const c = nameLookup({
   sankeyLinkLegend: true,
   sankeyLinkLegendBox: true,
+  sankeyLinkLegendItems: true,
   sankeyLinkLegendItem: true,
   sankeyLinkLegendIcon: true,
   sankeyLinkLegendText: true,
@@ -41,19 +39,17 @@ export const c = nameLookup({
   sankeyError: true
 });
 
-
 /**
  * The View for a Sankey on a Map
  */
 class SankeyLinkLegend extends Component {
   render() {
-    const props = Sankey.views(this.props);
-    return Div(propsFor(props.views, c.sankey),
+    const props = SankeyLinkLegend.views(this.props);
+    return Flex(propsFor(props.views, c.sankeyLinkLegend),
       Sankey.choicepoint(props)
     );
   }
 }
-
 
 SankeyLinkLegend.renderData = ({views}) => {
   /* We additionally give Mapbox the container width and height so the map can track changes to these
@@ -61,34 +57,56 @@ SankeyLinkLegend.renderData = ({views}) => {
    */
   const props = propsFor(views);
   const propsSansClass = propsForSansClass(views);
-  const nodeProps = itemizeProps(props(c.sankeySvgNode));
-  const nodeTitleProps = itemizeProps(props(c.sankeySvgNodeTitle));
-}
+  const sankeyLinkLegendItemsProps = itemizeProps(c.sankeyLinkLegendItem)
+  const sankeyLinkLegendItemProps = itemizeProps(c.sankeyLinkLegendItem)
+  return [
+    Flex(props(c.sankeyLinkLegendItems),
+      R.map(
+        d => SankeyLinkLegendItem(sankeyLinkLegendItemProps(d)),
+        sankeyLinkLegendItemsProps
+      )
+    )
+  ];
+};
+
+const SankeyLinkLegendItem = (views) => {
+  const props = propsFor(views);
+  return Div(props(c.sankeyLinkLegendItem), [
+    Div(props(c.sankeyLinkLegendIcon)),
+    Div(props(c.sankeyLinkLegendText)),
+  ])
+};
 
 SankeyLinkLegend.viewStyles = ({style}) => {
   return {
-    [c.sankeyLinkLegend]: mergeAndApplyMatchingStyles(style, {}),
-    [c.sankeyLinkLegendBox]: {},
-    [c.sankeyLinkLegendItem]: {},
-    [c.sankeyLinkLegendIcon]: {},
-    [c.sankeyLinkLegendText]: {}
-  };
-}
-
-SankeyLinkLegend.viewProps = props => {
-  return {
-    [c.sankeyLinkLegend]: {
+    [c.sankeyLinkLegend]: mergeAndApplyMatchingStyles(style, {
       paddingTop: 8,
       paddingBottom: 8,
       paddingLeft: 16,
       paddingRight: 16
-    },
+    }),
     [c.sankeyLinkLegendBox]: {},
+    [c.sankeyLinkLegendItems]: applyMatchingStyles(style, {
+      justifyContent: 'space-between'
+    }),
     [c.sankeyLinkLegendItem]: {},
     [c.sankeyLinkLegendIcon]: {},
     [c.sankeyLinkLegendText]: {}
   };
-}
+};
+
+SankeyLinkLegend.viewProps = props => {
+  return {
+    [c.sankeyLinkLegend]: {},
+    [c.sankeyLinkLegendBox]: {},
+    [c.sankeyLinkLegendItems]: {
+      items: reqStrPath('items', props)
+    },
+    [c.sankeyLinkLegendItem]: {},
+    [c.sankeyLinkLegendIcon]: {},
+    [c.sankeyLinkLegendText]: {}
+  };
+};
 
 SankeyLinkLegend.viewActions = () => {
   return {};

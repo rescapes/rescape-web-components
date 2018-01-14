@@ -26,6 +26,8 @@ import {format as d3Format} from 'd3-format';
 import {scaleOrdinal, schemeCategory10} from 'd3-scale';
 import {resolveSvgReact} from 'helpers/svgHelpers';
 import {Flex as flex} from 'rebass';
+import sankeyNodeLegend from './SankeyNodeLegend'
+import sankeyLinkLegend from './SankeyLinkLegend'
 
 // Sankey settings. These should be moved to style
 const nodeWidth = 15;
@@ -42,8 +44,8 @@ const color = scaleOrdinal(schemeCategory10);
 const linkHorizontal = sankeyLinkHorizontal();
 
 
-const [ReactMapGl, SVGOverlay, G, Text, Title, Path, Div, Flex] =
-  eMap([reactMapGl, svgOverlay, 'g', 'text', 'title', 'path', 'div', flex]);
+const [ReactMapGl, SVGOverlay, G, Text, Title, Path, Div, Flex, SankeyNodeLegend, SankeyLinkLegend] =
+  eMap([reactMapGl, svgOverlay, 'g', 'text', 'title', 'path', 'div', flex, sankeyNodeLegend, sankeyLinkLegend]);
 
 const styles = {
   sankeyLegendsFontFamily: 'sans-serif'
@@ -135,7 +137,10 @@ Sankey.renderData = ({views}) => {
         )
       )
     ),
-    Flex(propsSansClass(c.sankeyLegends))
+    Flex(props(c.sankeyLegends), [
+      SankeySvgNodeLegend(propsSansClass(c.sankeyNodeLegend)),
+      SankeySvgLink(propsSansClass(c.sankeyLinkLegend)),
+    ])
   ];
 };
 
@@ -144,9 +149,9 @@ Sankey.viewStyles = ({style}) => {
   return {
     [c.sankey]: mergeAndApplyMatchingStyles(style, {}),
 
-    [c.sankeyReactMapGl]: applyMatchingStyles(style, {}),
+    [c.sankeyReactMapGl]: applyMatchingStyles(style, {}, [c.sankeyLinkLegendItem]),
 
-    [c.sankeySvgOverlay]: applyMatchingStyles(style, {}),
+    [c.sankeySvgOverlay]: applyMatchingStyles(style, {}, [c.sankeyLinkLegendItem]),
 
     [c.sankeyLegends]: applyMatchingStyles(style, {
       position: 'absolute',
@@ -158,10 +163,11 @@ Sankey.viewStyles = ({style}) => {
       justifyContent: 'space-between',
       margin: '10px 0 10px 0',
       fontFamily: styles.sankeyLegendsFontFamily
-    }),
+    }, [c.sankeyLinkLegendItem]),
 
-    [c.sankeyNodeLegend]: applyMatchingStyles(style, {
-    })
+    [c.sankeyNodeLegend]: applyMatchingStyles(style, {}, [c.sankeyLinkLegendItem]),
+
+    [c.sankeyLinkLegend]: applyMatchingStyles(style, {}, [c.sankeyLinkLegendItem]),
   };
 };
 
