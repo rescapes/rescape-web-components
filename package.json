@@ -48,6 +48,8 @@
     "extract-text-webpack-plugin": "3.0.2",
     "file-loader": "1.1.5",
     "fs-extra": "3.0.1",
+    "google-spreadsheets": "^0.5.1",
+    "googleapis": "^24.0.0",
     "graphql": "^0.11.7",
     "graphql-geojson": "^1.0.0",
     "graphql-tag": "^2.5.0",

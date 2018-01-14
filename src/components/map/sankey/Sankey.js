@@ -19,7 +19,7 @@ import * as R from 'ramda';
 import {applyMatchingStyles, mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
 import {Component} from 'react';
 import {sankeyGenerator, sankeyGeospatialTranslate} from 'helpers/sankeyHelpers';
-import sample from 'data/sankey.sample';
+import sample from 'data/belgium/brusselsSankeySample';
 import PropTypes from 'prop-types';
 import {sankeyLinkHorizontal} from 'd3-sankey';
 import {format as d3Format} from 'd3-format';

@@ -12,7 +12,7 @@
 import * as R from 'ramda';
 import {sankey} from 'd3-sankey';
 import {asUnaryMemoize} from 'selectors/selectorHelpers';
-import {BART_SAMPLE} from 'data/samples/oakland-sample/oaklandLocations.sample';
+//import {BART_SAMPLE} from 'data/samples/oakland-sample/oaklandLocations.sample';
 import {mergeDeep, throwing} from 'rescape-ramda';
 import {resolveFeatureFromExtent, resolveSvgPoints} from 'helpers/svgHelpers';
 import bbox from '@turf/bbox';
@@ -57,6 +57,7 @@ export const sankeyGenerator = asUnaryMemoize(({width, height, nodeWidth, nodePa
     .extent([[1, 1], [width, height]]);
 
   // Map sample nodes to sample features
+  /*
   const features = R.zipWith((node, feature) =>
       mergeDeep(
         feature,
@@ -69,7 +70,7 @@ export const sankeyGenerator = asUnaryMemoize(({width, height, nodeWidth, nodePa
       ),
     data.nodes,
     R.uniqBy(feature => feature.properties.name, BART_SAMPLE.features)
-  );
+  );*/
 
   // Call the generator with the features as nodes and the original links
   // This updates the links and nodes.
@@ -83,7 +84,7 @@ export const sankeyGenerator = asUnaryMemoize(({width, height, nodeWidth, nodePa
   // The y0 and y1 are some portion of the vertical service of the two nodes (I think),
   // although there must be more to it since they have to attach to two nodes at different y positions
   // It also gives each headerLink an index
-  const update = {links: data.links, nodes: features};
+  const update = {links: data.links, nodes: data.nodes};
   sankeyGenerator(update);
   return update;
 });
