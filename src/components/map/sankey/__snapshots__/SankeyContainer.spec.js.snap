@@ -13,15 +13,15 @@ Object {
       "showZoomControls": true,
     },
     "region": Object {
-      "id": "oakland",
+      "id": "belgium",
       "mapbox": Object {
         "viewport": Object {
-          "latitude": 37,
-          "longitude": -119,
+          "latitude": 50.5915,
+          "longitude": 2.0165,
           "zoom": 5,
         },
       },
-      "name": "Oakland",
+      "name": "Belgium",
     },
     "settings": Object {
       "api": Object {
@@ -450,19 +450,19 @@ Object {
             ],
           },
         },
-        "id": "oakland",
+        "id": "belgium",
       },
     },
     "user": Object {
-      "id": "californiaManager",
+      "id": "belgiumManager",
       "isActive": true,
-      "name": "Jerry Brown",
+      "name": "Belgium Manager",
       "permissions": Array [
         "manage",
       ],
       "regions": Array [
         Object {
-          "id": "oakland",
+          "id": "belgium",
           "isSelected": true,
         },
       ],
@@ -470,8 +470,8 @@ Object {
     "viewport": Object {
       "bearing": 0,
       "isDragging": false,
-      "latitude": 37,
-      "longitude": -119,
+      "latitude": 50.5915,
+      "longitude": 2.0165,
       "pitch": 40,
       "startDragLngLat": null,
       "zoom": 5,
@@ -484,9 +484,9 @@ Object {
     "color": "black",
     "fontFamily": "inherit",
     "fontSize": "inherit",
-    "height": 688,
+    "height": -32,
     "textDecoration": "none",
-    "width": 1048,
+    "width": -32,
   },
 }
 `;
@@ -919,12 +919,12 @@ Object {
                 Symbol(id): "geojsonFeature:node/3809893083",
               },
             ],
-            Symbol(id): "$Region:oakland.geojson.osm",
+            Symbol(id): "$Region:belgium.geojson.osm",
           },
-          Symbol(id): "$Region:oakland.geojson",
+          Symbol(id): "$Region:belgium.geojson",
         },
-        "id": "oakland",
-        Symbol(id): "Region:oakland",
+        "id": "belgium",
+        Symbol(id): "Region:belgium",
       },
       Symbol(id): "$ROOT_QUERY.store",
     },
@@ -952,15 +952,15 @@ Object {
     "networkStatus": 1,
     "refetch": [Function],
     "region": Object {
-      "id": "oakland",
+      "id": "belgium",
       "mapbox": Object {
         "viewport": Object {
-          "latitude": 37,
-          "longitude": -119,
+          "latitude": 50.5915,
+          "longitude": 2.0165,
           "zoom": 5,
         },
       },
-      "name": "Oakland",
+      "name": "Belgium",
     },
     "settings": Object {
       "api": Object {
@@ -999,27 +999,27 @@ Object {
     "subscribeToMore": [Function],
     "updateQuery": [Function],
     "user": Object {
-      "id": "californiaManager",
+      "id": "belgiumManager",
       "isActive": true,
-      "name": "Jerry Brown",
+      "name": "Belgium Manager",
       "permissions": Array [
         "manage",
       ],
       "regions": Array [
         Object {
-          "id": "oakland",
+          "id": "belgium",
           "isSelected": true,
         },
       ],
     },
     "variables": Object {
-      "regionId": "oakland",
+      "regionId": "belgium",
     },
     "viewport": Object {
       "bearing": 0,
       "isDragging": false,
-      "latitude": 37,
-      "longitude": -119,
+      "latitude": 50.5915,
+      "longitude": 2.0165,
       "pitch": 40,
       "startDragLngLat": null,
       "zoom": 5,
@@ -1032,9 +1032,9 @@ Object {
     "color": "black",
     "fontFamily": "inherit",
     "fontSize": "inherit",
-    "height": 688,
+    "height": -32,
     "textDecoration": "none",
-    "width": 1048,
+    "width": -32,
   },
 }
 `;

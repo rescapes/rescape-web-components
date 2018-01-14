@@ -11,7 +11,7 @@
 
 
 import {taskToPromise, mergeDeep} from 'rescape-ramda';
-import {sampleConfig} from 'data/samples/sampleConfig';
+import {getCurrentConfig} from 'data/current/currentConfig'
 import initialState from 'data/initialState';
 import configureStore from 'redux-mock-store';
 import thunk from 'redux-thunk';
@@ -27,6 +27,7 @@ import {createWaitForElement} from 'enzyme-wait';
 import {getClass} from 'helpers/styleHelpers';
 import {onError} from "apollo-link-error";
 import prettyFormat from 'pretty-format';
+const sampleConfig = getCurrentConfig()
 
 const middlewares = [thunk];
 

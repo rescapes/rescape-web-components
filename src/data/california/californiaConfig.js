@@ -21,7 +21,7 @@ import {applyRegionsToUsers, firstUserLens} from 'data/configHelpers';
  */
 
 const config = R.merge(defaultConfig, {
-  region: regions,
+  regions,
   users: applyRegionsToUsers(regions, users)
 })
 

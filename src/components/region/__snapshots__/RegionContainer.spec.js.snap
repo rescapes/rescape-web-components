@@ -6,41 +6,32 @@ Object {
     "error": false,
     "loading": false,
     "region": Object {
-      "id": "oakland",
+      "id": "belgium",
       "isSelected": true,
     },
     "store": Object {
       "region": Object {
-        "id": "oakland",
+        "id": "belgium",
         "mapbox": Object {
           "viewport": Object {
-            "latitude": 37,
-            "longitude": -119,
+            "latitude": 4.033,
+            "longitude": 2.183,
             "zoom": 5,
           },
         },
-        "name": "Oakland",
+        "name": "Belgium",
       },
     },
   },
   "style": Object {
     "MozAppearance": "none",
     "WebkitAppearance": "none",
-    "backgroundColor": "blue",
-    "border": 0,
-    "color": "white",
-    "display": "inline-block",
+    "color": "black",
     "fontFamily": "inherit",
     "fontSize": "inherit",
-    "fontWeight": "bold",
-    "height": 720,
-    "margin": 0,
-    "paddingBottom": 8,
-    "paddingLeft": 16,
-    "paddingRight": 16,
-    "paddingTop": 8,
+    "height": -32,
     "textDecoration": "none",
-    "width": 1080,
+    "width": -32,
   },
 }
 `;
@@ -52,20 +43,20 @@ Object {
       "__typename": "Store",
       "region": Object {
         "__typename": "Region",
-        "id": "oakland",
+        "id": "belgium",
         "mapbox": Object {
           "__typename": "Mapbox",
           "viewport": Object {
             "__typename": "Viewport",
-            "latitude": 37,
-            "longitude": -119,
+            "latitude": 4.033,
+            "longitude": 2.183,
             "zoom": 5,
-            Symbol(id): "$Region:oakland.mapbox.viewport",
+            Symbol(id): "$Region:belgium.mapbox.viewport",
           },
-          Symbol(id): "$Region:oakland.mapbox",
+          Symbol(id): "$Region:belgium.mapbox",
         },
-        "name": "Oakland",
-        Symbol(id): "Region:oakland",
+        "name": "Belgium",
+        Symbol(id): "Region:belgium",
       },
       Symbol(id): "$ROOT_QUERY.store",
     },
@@ -86,7 +77,7 @@ Object {
     "networkStatus": 1,
     "refetch": [Function],
     "region": Object {
-      "id": "oakland",
+      "id": "belgium",
       "isSelected": true,
     },
     "startPolling": [Function],
@@ -94,27 +85,55 @@ Object {
     "subscribeToMore": [Function],
     "updateQuery": [Function],
     "variables": Object {
-      "regionId": "oakland",
+      "regionId": "belgium",
     },
   },
   "style": Object {
     "MozAppearance": "none",
     "WebkitAppearance": "none",
-    "backgroundColor": "blue",
-    "border": 0,
-    "color": "white",
-    "display": "inline-block",
+    "color": "black",
     "fontFamily": "inherit",
     "fontSize": "inherit",
-    "fontWeight": "bold",
-    "height": 720,
-    "margin": 0,
-    "paddingBottom": 8,
-    "paddingLeft": 16,
-    "paddingRight": 16,
-    "paddingTop": 8,
+    "height": -32,
     "textDecoration": "none",
-    "width": 1080,
+    "width": -32,
+  },
+}
+`;
+
+exports[`RegionContainer render 2`] = `
+Object {
+  "children": <Connect(Apollo(Sankey))
+    region={
+      Object {
+        "__typename": "Region",
+        "id": "belgium",
+        "mapbox": Object {
+          "__typename": "Mapbox",
+          "viewport": Object {
+            "__typename": "Viewport",
+            "latitude": 4.033,
+            "longitude": 2.183,
+            "zoom": 5,
+            Symbol(id): "$Region:belgium.mapbox.viewport",
+          },
+          Symbol(id): "$Region:belgium.mapbox",
+        },
+        "name": "Belgium",
+        Symbol(id): "Region:belgium",
+      }
+    }
+    style={
+      Object {
+        "height": -32,
+        "width": -32,
+      }
+    }
+  />,
+  "className": "region-mapbox-outer",
+  "style": Object {
+    "height": "100%",
+    "width": "100%",
   },
 }
 `;
@@ -142,21 +161,12 @@ Object {
   "style": Object {
     "MozAppearance": "none",
     "WebkitAppearance": "none",
-    "backgroundColor": "blue",
-    "border": 0,
-    "color": "white",
-    "display": "inline-block",
+    "color": "black",
     "fontFamily": "inherit",
     "fontSize": "inherit",
-    "fontWeight": "bold",
-    "height": 720,
-    "margin": 0,
-    "paddingBottom": 8,
-    "paddingLeft": 16,
-    "paddingRight": 16,
-    "paddingTop": 8,
+    "height": -32,
     "textDecoration": "none",
-    "width": 1080,
+    "width": -32,
   },
 }
 `;

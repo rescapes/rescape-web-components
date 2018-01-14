@@ -1,4 +1,5 @@
 import * as R from 'ramda';
+import {mapPropValueAsIndex} from 'rescape-ramda';
 
 const columns = [
   'Site Name',
@@ -7,7 +8,7 @@ const columns = [
   'Junction Stage',
   'Annual tonnage (2011-2012)'
 ];
-const stages = [
+export const stages = [
   {key: 'source', name: 'Source'},
   {key: 'conversion', name: 'Conversion'},
   {key: 'junction_conversion_demand', name: "Junction between 'conversion' and 'demand'"},
@@ -15,8 +16,11 @@ const stages = [
   {key: 'reconversion', name: 'Reconversion'},
   {key: 'sink', name: 'Sink'}
 ];
+const stageByName = mapPropValueAsIndex('name', stages)
+export const resolveLinkStage = d => d.source['Junction Stage']
 
 const BRUSSELS_LOCATION = [4.3517, 50.8503];
+const aberrateBrusselsLocation = index => R.addIndex(R.map)((coord, j) => coord + .1 * (index % 2 ? -index : index) * (j || -1), BRUSSELS_LOCATION)
 
 /**
  * Creates a Sankey node from ; separated strings
@@ -91,8 +95,8 @@ const groups = [
  * @param {String} coordinates comma separated lon/lat. We flip this since the software wants [lat, lon]
  * @return [Float] lat/lon array
  */
-const resolveLocation = coordinates =>
-  R.ifElse(R.equals('NA'), R.always(BRUSSELS_LOCATION), coord => R.reverse(R.map(parseFloat, R.split(',', coord))))(coordinates)
+const resolveLocation = (coordinates, i) =>
+  R.ifElse(R.equals('NA'), R.always(aberrateBrusselsLocation(i)), coord => R.reverse(R.map(parseFloat, R.split(',', coord))))(coordinates)
 
 /**
  * Creates Sankey Links for the given ordered stages for the given nodes by stage
@@ -109,12 +113,12 @@ const createLinks = (stages, nodesByStages) => R.addIndex(R.chain)(
     // Iterate through the stages until one with nodes is found
     const targetStage = R.find(
       stage => nodesByStages[stage.key],
-      R.slice(i + 1, R.length(columns), columns)
+      R.slice(i + 1, R.length(stages), stages)
     );
     // If no more stages contain nodes, we're done
     if (!targetStage)
       return [];
-    const targets = nodesByStages[targetStage];
+    const targets = nodesByStages[targetStage.key];
     return R.chain(
       source => R.map(
         target => ({
@@ -135,12 +139,12 @@ const groupToNodesAndLinks = (accumulatedGraph, group) => {
   // Accumulate nodes for each stage
   const nodesByStages = R.addIndex(R.reduce)(
     (accum, node, i) => {
-      const location = resolveLocation(node.Coordinates);
+      const location = resolveLocation(node.Coordinates, i);
       return R.mergeWith(
         (l, r) => R.concat(l, r),
         accum,
         {
-          [node[keyBy]]: [
+          [stageByName[node[keyBy]].key]: [
             R.merge(
               node,
               {

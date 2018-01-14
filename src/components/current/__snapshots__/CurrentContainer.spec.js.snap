@@ -6,7 +6,7 @@ Object {
     "error": false,
     "loading": false,
     "region": Object {
-      "id": "oakland",
+      "id": "belgium",
       "isSelected": true,
     },
     "settings": Object {
@@ -31,7 +31,6 @@ Object {
       "mapbox": Object {
         "iconAtlas": "data/location-icon-atlas.png",
         "mapboxApiAccessToken": "pk.eyJ1IjoiY2Fsb2NhbiIsImEiOiJjaXl1aXkxZjkwMG15MndxbmkxMHczNG50In0.07Zu3XXYijL6GJMuxFtvQg",
-        "perspectiveEnabled": true,
         "preventStyleDiffing": false,
         "showCluster": "true",
         "showZoomControls": true,
@@ -44,15 +43,15 @@ Object {
     },
     "store": Object {},
     "user": Object {
-      "id": "californiaManager",
+      "id": "belgiumManager",
       "isActive": true,
-      "name": "Jerry Brown",
+      "name": "Belgium Manager",
       "permissions": Array [
         "manage",
       ],
       "regions": Array [
         Object {
-          "id": "oakland",
+          "id": "belgium",
           "isSelected": true,
         },
       ],
@@ -61,21 +60,12 @@ Object {
   "style": Object {
     "MozAppearance": "none",
     "WebkitAppearance": "none",
-    "backgroundColor": "blue",
-    "border": 0,
-    "color": "white",
-    "display": "inline-block",
+    "color": "black",
     "fontFamily": "inherit",
     "fontSize": "inherit",
-    "fontWeight": "bold",
-    "height": 720,
-    "margin": 0,
-    "paddingBottom": 8,
-    "paddingLeft": 16,
-    "paddingRight": 16,
-    "paddingTop": 8,
+    "height": 0,
     "textDecoration": "none",
-    "width": 1080,
+    "width": 0,
   },
 }
 `;
@@ -86,7 +76,7 @@ Object {
     "error": false,
     "loading": false,
     "region": Object {
-      "id": "oakland",
+      "id": "belgium",
       "isSelected": true,
     },
     "settings": Object {
@@ -111,7 +101,6 @@ Object {
       "mapbox": Object {
         "iconAtlas": "data/location-icon-atlas.png",
         "mapboxApiAccessToken": "pk.eyJ1IjoiY2Fsb2NhbiIsImEiOiJjaXl1aXkxZjkwMG15MndxbmkxMHczNG50In0.07Zu3XXYijL6GJMuxFtvQg",
-        "perspectiveEnabled": true,
         "preventStyleDiffing": false,
         "showCluster": "true",
         "showZoomControls": true,
@@ -124,15 +113,15 @@ Object {
     },
     "store": Object {},
     "user": Object {
-      "id": "californiaManager",
+      "id": "belgiumManager",
       "isActive": true,
-      "name": "Jerry Brown",
+      "name": "Belgium Manager",
       "permissions": Array [
         "manage",
       ],
       "regions": Array [
         Object {
-          "id": "oakland",
+          "id": "belgium",
           "isSelected": true,
         },
       ],
@@ -141,21 +130,12 @@ Object {
   "style": Object {
     "MozAppearance": "none",
     "WebkitAppearance": "none",
-    "backgroundColor": "blue",
-    "border": 0,
-    "color": "white",
-    "display": "inline-block",
+    "color": "black",
     "fontFamily": "inherit",
     "fontSize": "inherit",
-    "fontWeight": "bold",
-    "height": 720,
-    "margin": 0,
-    "paddingBottom": 8,
-    "paddingLeft": 16,
-    "paddingRight": 16,
-    "paddingTop": 8,
+    "height": 0,
     "textDecoration": "none",
-    "width": 1080,
+    "width": 0,
   },
 }
 `;

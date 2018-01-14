@@ -16,9 +16,7 @@ import {throwing} from 'rescape-ramda'
 import { activeUserSelectedRegionsSelector, regionSelector} from 'selectors/regionSelectors';
 import { settingsSelector} from 'selectors/settingsSelectors';
 import {activeUsersSelector, userSelector} from 'selectors/userSelectors';
-import {mapboxSelector, viewportSelector} from 'selectors/mapboxSelectors';
-import prettyFormat from 'pretty-format'
-import {fromImmutable} from 'helpers/immutableHelpers';
+import {mapboxSelector} from 'selectors/mapboxSelectors';
 
 const {reqPath} = throwing
 // Trivial resolver for our dataSource, just strips object keys and returns values

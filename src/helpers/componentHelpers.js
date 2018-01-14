@@ -19,10 +19,12 @@ import {getClassAndStyle, getStyleObj} from 'helpers/styleHelpers';
 import prettyFormat from 'pretty-format';
 import {graphql} from 'graphql';
 import {createSelectorResolvedSchema} from 'schema/selectorResolvers';
-import {sampleConfig} from 'data/samples/sampleConfig';
+import {getCurrentConfig} from 'data/current/currentConfig';
 import makeSchema from 'schema/schema';
 import {createSelectorCreator, defaultMemoize} from 'reselect';
 import {compact} from 'enzyme-to-json';
+
+const sampleConfig = getCurrentConfig();
 
 const {reqPath} = throwing;
 
@@ -659,6 +661,14 @@ export const renderLoadingDefault = (viewName) => ({views}) => {
 export const renderErrorDefault = viewName => ({data, views}) => {
   const [Div] = eMap(['div']);
   const props = propsFor(views);
-  return Div(props(viewName), `Error: ${data.error.message}\nTrace: ${data.error.stack}`);
+  const errors = data.error.graphQLErrors;
+  return Div(props(viewName),
+    R.join('\n\n',
+      R.map(
+        error => `Original Error: ${error.originalError.message}\nOriginal Trace ${error.originalError.stack}\nError: ${data.error.message}\nTrace: ${data.error.stack}`,
+        errors
+      )
+    )
+  );
 };
 

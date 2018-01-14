@@ -11,11 +11,12 @@
 
 import {userTemplateKeys} from 'data/default';
 import {mapDefaultUsers} from 'data/configHelpers';
+import * as R from 'ramda';
 const {REGION_MANAGER, REGION_USER, REGION_VISITOR} = userTemplateKeys;
 
 // Create three users
 // rename the user templates to match our users
-export default mapDefaultUsers(
+export default R.mergeAll(R.values(mapDefaultUsers(
   {
     [REGION_MANAGER]: {
       californiaManager: {
@@ -36,4 +37,4 @@ export default mapDefaultUsers(
       }
     }
   }
-);
+)));

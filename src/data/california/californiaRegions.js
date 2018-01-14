@@ -16,6 +16,9 @@ import * as routeTypes from 'data/default/routeTypes';
 import {applyDefaultRegion} from 'data/configHelpers';
 import trips from './californiaTrips'
 import stops from './californiaStops'
+import osm from './californiaOsm'
+import {throwing} from 'rescape-ramda'
+const {reqPath} = throwing
 
 export const NORTH_BAY = 'North-Bay';
 export const ALTAMONT = 'Altamont';
@@ -27,6 +30,12 @@ export default applyDefaultRegion({
     id: 'california',
     name: 'California',
     description: 'Poppy golden poppy',
+
+    geojson: {
+      osm,
+      // Make these the osm features for now
+      locations: reqPath(['features'], osm)
+    },
 
     gtfs: {
       routes,

@@ -16,10 +16,9 @@ import * as routeTypes from 'data/default/routeTypes';
 import {applyDefaultRegion} from 'data/configHelpers';
 import trips from './belgiumTrips'
 import stops from './belgiumStops'
-
-export const NORTH_BAY = 'North-Bay';
-export const ALTAMONT = 'Altamont';
-export const EAST_BAY = 'East-Bay';
+import osm from './belgiumOsm'
+import {throwing} from 'rescape-ramda'
+const {reqPath} = throwing
 
 // merge the default region template with our region(s)
 export default applyDefaultRegion({
@@ -27,6 +26,12 @@ export default applyDefaultRegion({
     id: 'belgium',
     name: 'Belgium',
     description: 'Country of Belgium',
+
+    geojson: {
+      osm,
+      // Make these the osm features for now
+      locations: reqPath(['features'], osm)
+    },
 
     gtfs: {
       routes,
@@ -46,8 +51,8 @@ export default applyDefaultRegion({
 
     mapbox: {
       viewport: {
-        latitude: 4.033,
-        longitude: 2.183,
+        latitude: 50.5915,
+        longitude: 2.0165,
         zoom: 5
       }
     }

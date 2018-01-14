@@ -39,7 +39,6 @@ class App extends Component {
 
 App.renderData = ({views}) => {
   const props = propsFor(views);
-  const propsSansClass = propsForSansClass(views);
 
   return [
     Header(props(c.appHeader)),
@@ -77,6 +76,12 @@ App.viewProps = () => {
   return {
     [c.provider]: {
       theme
+    },
+    [c.appHeader]: {
+      key: c.appHeader
+    },
+    [c.appBody]: {
+      key: c.appBody
     }
   };
 };

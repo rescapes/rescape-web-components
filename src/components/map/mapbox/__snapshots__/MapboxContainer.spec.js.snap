@@ -8,21 +8,20 @@ Object {
     "mapbox": Object {
       "iconAtlas": "data/location-icon-atlas.png",
       "mapboxApiAccessToken": "pk.eyJ1IjoiY2Fsb2NhbiIsImEiOiJjaXl1aXkxZjkwMG15MndxbmkxMHczNG50In0.07Zu3XXYijL6GJMuxFtvQg",
-      "perspectiveEnabled": true,
       "preventStyleDiffing": false,
       "showCluster": "true",
       "showZoomControls": true,
     },
     "region": Object {
-      "id": "oakland",
+      "id": "belgium",
       "mapbox": Object {
         "viewport": Object {
-          "latitude": 37,
-          "longitude": -119,
+          "latitude": 50.5915,
+          "longitude": 2.0165,
           "zoom": 5,
         },
       },
-      "name": "Oakland",
+      "name": "Belgium",
     },
     "settings": Object {
       "api": Object {
@@ -46,7 +45,6 @@ Object {
       "mapbox": Object {
         "iconAtlas": "data/location-icon-atlas.png",
         "mapboxApiAccessToken": "pk.eyJ1IjoiY2Fsb2NhbiIsImEiOiJjaXl1aXkxZjkwMG15MndxbmkxMHczNG50In0.07Zu3XXYijL6GJMuxFtvQg",
-        "perspectiveEnabled": true,
         "preventStyleDiffing": false,
         "showCluster": "true",
         "showZoomControls": true,
@@ -452,47 +450,42 @@ Object {
             ],
           },
         },
-        "id": "oakland",
+        "id": "belgium",
       },
     },
     "user": Object {
-      "id": "californiaManager",
+      "id": "belgiumManager",
       "isActive": true,
-      "name": "Jerry Brown",
+      "name": "Belgium Manager",
       "permissions": Array [
         "manage",
       ],
       "regions": Array [
         Object {
-          "id": "oakland",
+          "id": "belgium",
           "isSelected": true,
         },
       ],
     },
     "viewport": Object {
-      "latitude": 37,
-      "longitude": -119,
+      "bearing": 0,
+      "isDragging": false,
+      "latitude": 50.5915,
+      "longitude": 2.0165,
+      "pitch": 40,
+      "startDragLngLat": null,
       "zoom": 5,
     },
   },
   "style": Object {
     "MozAppearance": "none",
     "WebkitAppearance": "none",
-    "backgroundColor": "blue",
-    "border": 0,
-    "color": "white",
-    "display": "inline-block",
+    "color": "black",
     "fontFamily": "inherit",
     "fontSize": "inherit",
-    "fontWeight": "bold",
-    "height": 720,
-    "margin": 0,
-    "paddingBottom": 8,
-    "paddingLeft": 16,
-    "paddingRight": 16,
-    "paddingTop": 8,
+    "height": -32,
     "textDecoration": "none",
-    "width": 1080,
+    "width": -32,
   },
 }
 `;
@@ -925,12 +918,12 @@ Object {
                 Symbol(id): "geojsonFeature:node/3809893083",
               },
             ],
-            Symbol(id): "$Region:oakland.geojson.osm",
+            Symbol(id): "$Region:belgium.geojson.osm",
           },
-          Symbol(id): "$Region:oakland.geojson",
+          Symbol(id): "$Region:belgium.geojson",
         },
-        "id": "oakland",
-        Symbol(id): "Region:oakland",
+        "id": "belgium",
+        Symbol(id): "Region:belgium",
       },
       Symbol(id): "$ROOT_QUERY.store",
     },
@@ -951,7 +944,6 @@ Object {
     "mapbox": Object {
       "iconAtlas": "data/location-icon-atlas.png",
       "mapboxApiAccessToken": "pk.eyJ1IjoiY2Fsb2NhbiIsImEiOiJjaXl1aXkxZjkwMG15MndxbmkxMHczNG50In0.07Zu3XXYijL6GJMuxFtvQg",
-      "perspectiveEnabled": true,
       "preventStyleDiffing": false,
       "showCluster": "true",
       "showZoomControls": true,
@@ -959,15 +951,15 @@ Object {
     "networkStatus": 1,
     "refetch": [Function],
     "region": Object {
-      "id": "oakland",
+      "id": "belgium",
       "mapbox": Object {
         "viewport": Object {
-          "latitude": 37,
-          "longitude": -119,
+          "latitude": 50.5915,
+          "longitude": 2.0165,
           "zoom": 5,
         },
       },
-      "name": "Oakland",
+      "name": "Belgium",
     },
     "settings": Object {
       "api": Object {
@@ -991,7 +983,6 @@ Object {
       "mapbox": Object {
         "iconAtlas": "data/location-icon-atlas.png",
         "mapboxApiAccessToken": "pk.eyJ1IjoiY2Fsb2NhbiIsImEiOiJjaXl1aXkxZjkwMG15MndxbmkxMHczNG50In0.07Zu3XXYijL6GJMuxFtvQg",
-        "perspectiveEnabled": true,
         "preventStyleDiffing": false,
         "showCluster": "true",
         "showZoomControls": true,
@@ -1007,47 +998,106 @@ Object {
     "subscribeToMore": [Function],
     "updateQuery": [Function],
     "user": Object {
-      "id": "californiaManager",
+      "id": "belgiumManager",
       "isActive": true,
-      "name": "Jerry Brown",
+      "name": "Belgium Manager",
       "permissions": Array [
         "manage",
       ],
       "regions": Array [
         Object {
-          "id": "oakland",
+          "id": "belgium",
           "isSelected": true,
         },
       ],
     },
     "variables": Object {
-      "regionId": "oakland",
+      "regionId": "belgium",
     },
     "viewport": Object {
-      "latitude": 37,
-      "longitude": -119,
+      "bearing": 0,
+      "isDragging": false,
+      "latitude": 50.5915,
+      "longitude": 2.0165,
+      "pitch": 40,
+      "startDragLngLat": null,
       "zoom": 5,
     },
   },
   "style": Object {
     "MozAppearance": "none",
     "WebkitAppearance": "none",
-    "backgroundColor": "blue",
-    "border": 0,
-    "color": "white",
-    "display": "inline-block",
+    "color": "black",
     "fontFamily": "inherit",
     "fontSize": "inherit",
-    "fontWeight": "bold",
-    "height": 720,
-    "margin": 0,
-    "paddingBottom": 8,
-    "paddingLeft": 16,
-    "paddingRight": 16,
-    "paddingTop": 8,
+    "height": -32,
     "textDecoration": "none",
-    "width": 1080,
+    "width": -32,
   },
+}
+`;
+
+exports[`MapboxContainer render 2`] = `
+Object {
+  "children": <InteractiveMap
+    altitude={1.5}
+    attributionControl={true}
+    bearing={0}
+    clickRadius={0}
+    doubleClickZoom={true}
+    dragPan={true}
+    dragRotate={true}
+    getCursor={[Function]}
+    height={-32}
+    hoverMarker={undefined}
+    iconAtlas="data/location-icon-atlas.png"
+    isDragging={false}
+    latitude={50.5915}
+    longitude={2.0165}
+    mapStyle="mapbox://styles/mapbox/light-v8"
+    mapboxApiAccessToken="pk.eyJ1IjoiY2Fsb2NhbiIsImEiOiJjaXl1aXkxZjkwMG15MndxbmkxMHczNG50In0.07Zu3XXYijL6GJMuxFtvQg"
+    maxLatitude={85.05113}
+    maxPitch={60}
+    maxZoom={20}
+    minLatitude={-85.05113}
+    minPitch={0}
+    minZoom={0}
+    onClick={null}
+    onError={[Function]}
+    onHover={null}
+    onLoad={[Function]}
+    onViewportChange={null}
+    pitch={40}
+    preserveDrawingBuffer={false}
+    preventStyleDiffing={false}
+    reuseMaps={false}
+    scrollZoom={true}
+    selectMarker={undefined}
+    showCluster="true"
+    showZoomControls={true}
+    startDragLngLat={null}
+    style={
+      Object {
+        "height": -32,
+        "width": -32,
+      }
+    }
+    touchZoomRotate={true}
+    visibilityConstraints={
+      Object {
+        "maxLatitude": 85.05113,
+        "maxPitch": 60,
+        "maxZoom": 20,
+        "minLatitude": -85.05113,
+        "minPitch": 0,
+        "minZoom": 0,
+      }
+    }
+    visible={true}
+    width={-32}
+    zoom={5}
+  />,
+  "className": "mapbox-map-react-gl-outer",
 }
 `;
 
