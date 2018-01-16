@@ -8,7 +8,8 @@
     "build": "node scripts/build.js",
     "test": "node scripts/test.js --env=jsdom",
     "build-publish-patch": "npm run build && npm version patch && npm publish",
-    "build-publish-minor": "npm run build && npm version minor && npm publish"
+    "build-publish-minor": "npm run build && npm version minor && npm publish",
+    "publish-patch": "npm version patch && npm publish"
   },
   "dependencies": {
     "@turf/bbox-polygon": "^5.1.5",
