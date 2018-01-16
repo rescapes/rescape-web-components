@@ -22,6 +22,7 @@ import Sankey from './Sankey';
 import * as R from 'ramda';
 import {graphql} from 'react-apollo';
 import {gql} from 'apollo-client-preset';
+import {activeUserSelectedRegionSelector} from 'selectors/userSelectors';
 
 const {reqStrPath} = throwing;
 
@@ -38,16 +39,22 @@ export const mapStateToProps = (state, props) => {
       makeMergeDefaultStyleWithProps(),
       mapboxSelector
     ],
-    (userAndSettings, defaultStyle, {viewport, ...mapbox}) => ({
-      data: R.mergeAll([
-        userAndSettings,
-        // Mapbox is selected separately to combine region.mapbox with settings.mapbox
-        // Viewport is combined with other properties in the react-map-gl component, hence separated here
-        {viewport, mapbox},
-        data,
-      ]),
-      style: R.merge(defaultStyle, style)
-    })
+    (userAndSettings, defaultStyle, {viewport, ...mapbox}) => {
+
+      return {
+        data: R.mergeAll([
+          userAndSettings,
+          // Mapbox is selected separately to combine region.mapbox with settings.mapbox
+          // Viewport is combined with other properties in the react-map-gl component, hence separated here
+          {
+            viewport,
+            mapbox
+          },
+          data
+        ]),
+        style: R.merge(defaultStyle, style)
+      };
+    }
   )(state, props);
 };
 
@@ -69,10 +76,12 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
           R.set(R.lensProp('region'), reqStrPath('region', ownProps), mapState)
         )
       );
-    },
-    onSankeyFilterChange: e => {
-      return e
     }
+    /*
+    onSankeyFilterChange: e => {
+      return e;
+    }
+    */
     //hoverMarker,
     //selectMarker
   }, dispatch);
@@ -115,6 +124,7 @@ const geojsonQuery = `
                               annualTonnage
                               index
                               material
+                              isGeneralized
                               type
                               geometry {
                                 type
@@ -135,6 +145,14 @@ const geojsonQuery = `
     }
 `;
 
+const filterSankeyNodesMutation = `
+    mutation filterSankeyNodes($filterNodeCategory: String!, $filterNodeValue: Boolean!) {
+        filterSankeyNodes(filterNodeCategory: $filterNodeCategory, filterNodeValue: $filterNodeValue) {
+          material
+        }
+    }
+`;
+
 /**
  * All queries used by the container
  */
@@ -151,19 +169,64 @@ export const queries = {
         },
         errorPolicy: 'none'
       }),
-      props: ({data, ownProps}) => mergeDeep(
-        ownProps,
-        {data}
-      )
+      props: ({data, ownProps}) => {
+        let filteredData = data;
+        if (data.store) {
+          const userRegion = R.find(R.eqProps('id', ownProps.data.region), ownProps.data.user.regions);
+          const selectedSankeyNodeCategories =
+            R.filter(
+              R.identity,
+              R.defaultTo({}, R.view(R.lensPath(['geojson', 'sankey', 'selected']), userRegion)));
+
+          filteredData = R.length(selectedSankeyNodeCategories) ?
+            R.over(
+              R.lensPath(['store', 'region', 'geojson', 'sankey', 'graph', 'nodes']),
+              nodes => R.map(node => R.merge(
+                node,
+                {
+                  isVisible: R.either(
+                    // Not there
+                    R.compose(R.isNil, R.prop(node.material))(selectedSankeyNodeCategories),
+                    // There and true
+                    R.contains(node.material, R.keys(selectedSankeyNodeCategories))
+                  )
+                }
+              ), nodes || []),
+              data
+            ) : data;
+        }
+        return mergeDeep(
+          ownProps,
+          {data: filteredData}
+        );
+      }
+    }
+  },
+  filterSankeyNodes: {
+    query: filterSankeyNodesMutation,
+    args: {
+      options: {
+        errorPolicy: 'none'
+      },
+      props: ({mutate}) => ({
+        onSankeyFilterChange:
+          (filterNodeCategory, filterNodeValue) => mutate({variables: {filterNodeCategory, filterNodeValue}})
+      })
     }
   }
 };
 
 // Create the GraphQL Container.
 // TODO We should handle all queries in queries here
-const ContainerWithData = graphql(
-  gql`${queries.geojson.query}`,
-  queries.geojson.args
+const ContainerWithData = R.compose(
+  graphql(
+    gql`${queries.geojson.query}`,
+    queries.geojson.args
+  ),
+  graphql(
+    gql`${queries.filterSankeyNodes.query}`,
+    queries.filterSankeyNodes.args
+  )
 )
 (Sankey);
 

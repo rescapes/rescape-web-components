@@ -117,6 +117,7 @@ SankeyNodeLegend.viewStyles = ({style}) => {
       padding: '2px'
     },
     [c.sankeyNodeLegendIcon]: {
+      key: c.sankeyNodeLegendIcon,
       width: '30px',
       minWidth: '30px',
       marginLeft: '2px',
@@ -124,6 +125,7 @@ SankeyNodeLegend.viewStyles = ({style}) => {
       backgroundColor: reqStrPath('color')
     },
     [c.sankeyNodeLegendText]: {
+      key: c.sankeyNodeLegendText,
     }
   };
 };
@@ -132,7 +134,7 @@ SankeyNodeLegend.viewProps = props => {
   return {
     [c.sankeyNodeLegend]: {},
     [c.sankeyNodeLegendTitle]: {
-      children: 'Nodes',
+      children: 'Stages',
       fontSize: '12px',
       fontWeight: 'bold'
     },

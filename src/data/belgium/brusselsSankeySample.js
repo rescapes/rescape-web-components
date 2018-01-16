@@ -32,7 +32,9 @@ const stageByName = mapPropValueAsIndex('name', stages);
 const stageKey = 'junctionStage';
 export const resolveLinkStage = d => d.target[stageKey];
 export const resolveNodeStage = d => d[stageKey];
-export const resolveNodeName = d => d.siteName
+// If the location of the node ahs been generalized add it to the name so users know
+// it isn't in an exact location
+export const resolveNodeName = d => `${d.siteName} ${d.isGeneralized ? ' (general location)' : ''}`
 // Used for node and link values
 const valueKey = 'annualTonnage'
 
@@ -56,7 +58,6 @@ const createNodes = R.map(
 );
 
 const groups = [
-  /*
   {
     material: 'Minerals',
     nodes: createNodes([
@@ -88,7 +89,6 @@ const groups = [
     ])
   },
 
- */
   {
     material: 'Wood',
     nodes: createNodes([

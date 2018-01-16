@@ -66,10 +66,9 @@ SankeyFilterer.renderData = ({views}) => {
     Flex(sankeyLinkLegendItemsProps,
       R.map(
         d => {
-          const checkBoxProps =  sankeyLinkLegendCheckboxProps(d)
           return SankeyFiltererItem({
             [c.sankeyFiltererItem]: sankeyLinkLegendItemProps(d),
-            [c.sankeyFiltererCheckbox]: R.merge(checkBoxProps, {onChange: checkBoxProps.onSankeyFilterChange}),
+            [c.sankeyFiltererCheckbox]: sankeyLinkLegendCheckboxProps(d),
             [c.sankeyFiltererText]: sankeyLinkLegendTextProps(d)
           })
         },
@@ -81,8 +80,9 @@ SankeyFilterer.renderData = ({views}) => {
 
 const SankeyFiltererItem = (views) => {
   const props = R.prop(R.__, views);
+  const checkboxProps = props(c.sankeyFiltererCheckbox)
   return Group(props(c.sankeyFiltererItem), [
-    Checkbox(props(c.sankeyFiltererCheckbox)),
+    Checkbox(R.merge(checkboxProps, {onChange: e => checkboxProps.onSankeyFilterChange(e.target.name, R.equals('on', e.target.value))})),
     Grid(props(c.sankeyFiltererText))
   ]);
 };
@@ -152,6 +152,7 @@ SankeyFilterer.viewProps = props => {
     },
     [c.sankeyFiltererCheckbox]: {
       defaultChecked: true,
+      name: R.always(reqStrPath('material'))
     },
     [c.sankeyFiltererText]: {
       children: R.always(reqStrPath('material'))

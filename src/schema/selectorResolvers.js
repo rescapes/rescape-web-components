@@ -13,9 +13,12 @@ import {makeGeojsonSelector} from 'selectors/geojsonSelectors';
 import {addResolveFunctionsToSchema} from 'graphql-tools';
 import * as R from 'ramda'
 import {throwing} from 'rescape-ramda'
-import { activeUserSelectedRegionsSelector, regionSelector} from 'selectors/regionSelectors';
+import {activeUserSelectedRegionsSelector, regionSelector} from 'selectors/regionSelectors';
 import { settingsSelector} from 'selectors/settingsSelectors';
-import {activeUsersSelector, userSelector} from 'selectors/userSelectors';
+import {
+  activeUserSelectedRegionSelector, activeUsersSelector, userSelectedRegionSelector,
+  userSelector
+} from 'selectors/userSelectors';
 import {mapboxSelector} from 'selectors/mapboxSelectors';
 
 const {reqPath} = throwing
@@ -113,18 +116,14 @@ const makeSelectorResolvers = data => ({
     },
   },
 
-  /*
   Mutation: {
-    upvotePost(_, { postId }) {
-      const post = find(posts, { id: postId });
-      if (!post) {
-        throw new Error(`Couldn't find post with id ${postId}`);
-      }
-      post.votes += 1;
-      return post;
+    filterSankeyNodes(_, { filterNodeCategory, filterNodeValue }, {options: {dataSource}}) {
+      const region = activeUserSelectedRegionSelector(dataSource)
+      region.geojson = region.geojson || {}
+      region.geojson.sankey = region.geojson.sankey || {}
+      region.geojson.sankey.selected = R.merge(region.geojson.sankey.selected, {[filterNodeCategory]: filterNodeValue})
     },
   },
-  */
 });
 
 /**

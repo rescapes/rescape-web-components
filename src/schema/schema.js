@@ -127,6 +127,7 @@ const SankeyNodeType = new GraphQLObjectType({
     'siteName': {type: GraphQLString},
     'location': {type: GraphQLString},
     'coordinates': {type: GraphQLString},
+    'isGeneralized': {type: GraphQLBoolean},
     'junctionStage': {type: GraphQLString},
     'annualTonnage': {type: GraphQLString},
     index: {type: GraphQLInt},
@@ -335,18 +336,24 @@ const QueryType = new GraphQLObjectType({
   }
 });
 
-/*
 const MutationType = new GraphQLObjectType({
   name: 'Mutation',
   fields: {
+    filterSankeyNodes: {
+      type: SankeyNodeType,
+      args: {
+        filterNodeCategory: { type: new GraphQLNonNull(GraphQLString) },
+        filterNodeValue: { type: new GraphQLNonNull(GraphQLBoolean) }
+      },
+    }
+
   }
 })
-*/
 
 /***
  * Returns a GraphQLSchema instance
  */
 export default () => new GraphQLSchema({
-  query: QueryType
-  //mutation: MutationType
+  query: QueryType,
+  mutation: MutationType
 })

@@ -191,9 +191,15 @@ Sankey.viewProps = props => {
   // Rely on the width and height calculated in viewStyles
   const width = reqStrPath(`views.${c.sankey}.style.width`, props);
   const height = reqStrPath(`views.${c.sankey}.style.height`, props);
+  const graph = R.defaultTo({}, strPath('data.store.region.geojson.sankey.graph', props))
+  const nodes = R.defaultTo([], R.prop('nodes', graph))
+  const links = R.defaultTo([], R.prop('links', graph))
   return {
     [c.sankey]: {
-      graph: strPath('data.store.region.geojson.sankey.graph', props)
+      graph: {
+        nodes: R.filter(R.either(R.compose(R.isNil, R.prop('isVisible')), R.prop('isVisible')), nodes),
+        links
+      }
     },
     [c.sankeyReactMapGl]: R.mergeAll([
       {
@@ -312,7 +318,7 @@ Sankey.viewPropsAtRender = ({views, opt}) => {
           R.always('start'),
           R.always('end')
         )(d),
-        children: resolveNodeName(d.name),
+        children: resolveNodeName(d),
         height: R.subtract(d.y1, d.y0),
         width: R.subtract(d.x1, d.x0),
         fill: color(resolveNodeStage(d)),
