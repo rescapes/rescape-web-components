@@ -2,6 +2,7 @@
   "name": "rescape-web",
   "version": "0.1.4",
   "private": false,
+  "main": "dist/index.js",
   "scripts": {
     "start": "node scripts/start.js",
     "startTest": "NODE_ENV=test node scripts/start.js",
