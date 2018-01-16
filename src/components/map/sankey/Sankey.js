@@ -29,6 +29,7 @@ import {Flex as flex} from 'rebass';
 import sankeyNodeLegend from './SankeyNodeLegend'
 import sankeyLinkLegend from './SankeyLinkLegend'
 import sankeyFilterer from './SankeyFilterer';
+import {styleArithmetic} from 'helpers/styleHelpers';
 
 // Sankey settings. These should be moved to style
 const nodeWidth = 15;
@@ -45,8 +46,8 @@ const color = scaleOrdinal(schemeCategory10);
 const linkHorizontal = sankeyLinkHorizontal();
 
 
-const [ReactMapGl, SVGOverlay, G, Text, Title, Path, Div, Flex, SankeyNodeLegend, SankeyLinkLegend, SankeyFilterer] =
-  eMap([reactMapGl, svgOverlay, 'g', 'text', 'title', 'path', 'div', flex, sankeyNodeLegend, sankeyLinkLegend, sankeyFilterer]);
+const [ReactMapGl, SVGOverlay, G, Text, TSpan, Title, Path, Div, Flex, SankeyNodeLegend, SankeyLinkLegend, SankeyFilterer] =
+  eMap([reactMapGl, svgOverlay, 'g', 'text', 'tspan', 'title', 'path', 'div', flex, sankeyNodeLegend, sankeyLinkLegend, sankeyFilterer]);
 
 const styles = {
   sankeyLegendsFontFamily: 'sans-serif'
@@ -355,7 +356,10 @@ Sankey.viewActions = () => {
 const SankeySvgNode = ({node, shape, text, title}) => {
   return G(node,
     resolveSvgReact(shape),
-    Text(text),
+    Text(R.omit(['children'], text),
+      // Split text by new line, adding index * 1.2em to the dy each line
+      R.addIndex(R.map)((segment, index) => TSpan({x: text.x, dy: styleArithmetic(R.add, index*1.2, text.dy)}, segment), R.split('\n', text.children))
+    ),
     Title(title)
   );
 };

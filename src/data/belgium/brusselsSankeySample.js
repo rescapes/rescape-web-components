@@ -10,12 +10,12 @@ const columns = [
   'annualTonnage'
 ];
 export const stages = [
-  {key: 'source', name: 'Source'},
-  {key: 'conversion', name: 'Conversion'},
-  {key: 'distribution', name: 'Distribution'},
-  {key: 'demand', name: 'Demand'},
-  {key: 'reconversion', name: 'Reconversion'},
-  {key: 'sink', name: 'Sink'}
+  {key: 'source', name: 'Source', targets:['conversion']},
+  {key: 'conversion', name: 'Conversion', targets: ['distribution']},
+  {key: 'distribution', name: 'Distribution', targets: ['demand']},
+  {key: 'demand', name: 'Demand', targets: ['reconversion', 'sink']},
+  {key: 'reconversion', name: 'Reconversion', targets: ['demand']},
+  {key: 'sink', name: 'Sink', targets: []}
 ];
 export const linkStages = R.zipWith(
   (source, target) => ({
@@ -34,13 +34,13 @@ export const resolveLinkStage = d => d.target[stageKey];
 export const resolveNodeStage = d => d[stageKey];
 // If the location of the node ahs been generalized add it to the name so users know
 // it isn't in an exact location
-export const resolveNodeName = d => `${d.siteName} ${d.isGeneralized ? ' (general location)' : ''}`
+export const resolveNodeName = d => `${d.siteName} ${d.isGeneralized ? ' (general location)' : ''}\n${d.annualTonnage} t`
 // Used for node and link values
 const valueKey = 'annualTonnage'
 
 const BRUSSELS_LOCATION = [4.3517, 50.8503];
 // Minutely move locations so they don't overlap
-const aberrateLocation = (index, location, factor=.1) =>
+const aberrateLocation = (index, location, factor=.005) =>
   R.addIndex(R.map)((coord, j) => coord + factor * (index % 2 ? -index : index) * (j || -1))(location)
 const aberrateBrusselsLocation = index => aberrateLocation(index, BRUSSELS_LOCATION);
 
@@ -73,7 +73,7 @@ const groups = [
       'RecyPark Nord;Rue du Rupel, 1000 Bruxelles, Belgium;50.880181, 4.377136;Sink;1,162'
     ])
   },
-
+/*
   {
     material: 'Metals',
     nodes: createNodes([
@@ -110,6 +110,7 @@ const groups = [
       "RecyPark Nord;Rue du Rupel, 1000 Bruxelles, Belgium;50.880181, 4.377136;Sink;445"
     ])
   }
+  */
 ];
 
 /**

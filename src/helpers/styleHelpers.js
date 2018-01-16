@@ -90,15 +90,15 @@ export const styleArithmetic = v(R.curry((operator, operand, styleValue) =>
     R.is(Number),
     value => operator(value, operand),
     value => {
-      const [_, val, rest] = value.match(/(\d+)([^\d]+)/)
+      const [_, val, rest] = value.match(/([\d\.]+)([^\d]+)/)
       return `${operator(val, operand)}${rest}`
     }
   )(styleValue)
 ), [
   ['operator', PropTypes.func.isRequired],
   ['operand', PropTypes.number.isRequired],
-  ['subtractValue', PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired]
-], 'styleMultiplier');
+  ['styleValue', PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired]
+], 'styleArithmetic');
 
 export const styleMultiplier = styleArithmetic(R.multiply)
 
