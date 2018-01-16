@@ -184,7 +184,7 @@ export const queries = {
               nodes => R.map(node => R.merge(
                 node,
                 {
-                  isVisible: R.either(
+                  isVisible: R.or(
                     // Not there
                     R.compose(R.isNil, R.prop(node.material))(selectedSankeyNodeCategories),
                     // There and true
