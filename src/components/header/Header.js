@@ -12,7 +12,7 @@ import {
   Box as box, Flex as flex, Button as button, ButtonOutline as buttonOutline, Group as group, createComponent
 } from 'rebass';
 import {util} from 'rebass';
-import logoImage from 'media/urbinsight_logo_website.png';
+import logoImage from 'media/sampleLogo.png';
 import {mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
 
 // Override Group to be vertical instead of horizontal
@@ -49,24 +49,16 @@ const
 
 const links = [
   {
-    children: 'Tour',
-    to: '/tour'
+    children: 'My Projects',
+    to: '/projects'
   },
   {
-    children: 'Features',
-    to: '/features'
+    children: 'Feedback',
+    to: '/feedback'
   },
   {
-    children: 'Partner Cities',
-    to: '/partnerCities'
-  },
-  {
-    children: 'EcoCompass',
-    to: '/ecoCompass'
-  },
-  {
-    children: 'About',
-    to: '/about'
+    children: 'Help',
+    to: '/help'
   }
 ];
 
@@ -187,7 +179,6 @@ Header.viewStyles = ({style}) => {
 
     [c.headerLogo]: {
       width: 300,
-      minWidth: 300
     },
 
     [c.headerLinkHolder]: {

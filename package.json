@@ -1,7 +1,15 @@
 {
-  "name": "Urbinsight",
+  "name": "Rescape-Web",
   "version": "0.1.0",
-  "private": true,
+  "private": false,
+  "scripts": {
+    "start": "node scripts/start.js",
+    "startTest": "NODE_ENV=test node scripts/start.js",
+    "build": "node scripts/build.js",
+    "test": "node scripts/test.js --env=jsdom",
+    "build-publish-patch": "npm run build && npm run test && npm version patch && npm publish",
+    "build-publish-minor": "npm run build && npm run test && npm version minor && npm publish"
+  },
   "dependencies": {
     "@turf/bbox-polygon": "^5.1.5",
     "@turf/turf": "^5.0.4",
@@ -107,12 +115,6 @@
     "webpack-dev-server": "2.9.4",
     "webpack-manifest-plugin": "1.3.2",
     "whatwg-fetch": "2.0.3"
-  },
-  "scripts": {
-    "start": "node scripts/start.js",
-    "startTest": "NODE_ENV=test node scripts/start.js",
-    "build": "node scripts/build.js",
-    "test": "node scripts/test.js --env=jsdom"
   },
   "devDependencies": {
     "apollo-test-utils": "^0.3.2",

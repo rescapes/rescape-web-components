@@ -13,11 +13,18 @@ import {Box as box, Flex as flex, Image as image} from 'rebass';
 import {composeViewsFromStruct, eMap, nameLookup, propsFor} from 'helpers/componentHelpers';
 import * as R from 'ramda';
 import {throwing} from 'rescape-ramda';
+import styled from 'styled-components';
 
 const {reqStrPath} = throwing;
-const [Div, Box, Flex, Image] = eMap(['div', box, flex, image]);
 
 // Adapted from http://jxnblk.com/writing/posts/patterns-for-style-composition-in-react/
+
+export const maxedImage = styled(image)`
+  max-width: 100%;
+  max-height: 100%;
+`
+
+const [Div, Box, Flex, Image] = eMap(['div', box, flex, maxedImage]);
 
 /**
  * Creates a full size Box
@@ -107,6 +114,8 @@ export const Logo = props => {
       styles: {
         [c.logo]: props.style,
         [c.logoImage]: {
+          maxWidth: '100%',
+          maxheight: '100%'
         }
       }
     }, props).views
