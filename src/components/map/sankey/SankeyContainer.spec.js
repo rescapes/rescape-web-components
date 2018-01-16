@@ -32,7 +32,7 @@ const errorMaker = parentProps => R.set(R.lensPath(['region', 'id']), 'foo', par
 
 // Use this to get properties from parent containers to test our container
 // This returns a promise for consistency across tests. Some parent test props are async
-const asyncParentProps = () => {
+export const asyncParentPropsForSankey = () => {
   // Build up the correct parent props from Current and Region
   const currentProps = propsFromSampleStateAndContainer(currentPropsMaker, {});
   const currentViews = Current.views(currentProps).views;
@@ -49,7 +49,7 @@ describe('SankeyContainer', () => apolloContainerTests({
     childClassLoadingName,
     childClassErrorName,
     testPropsMaker,
-    asyncParentProps,
+    asyncParentProps: asyncParentPropsForSankey,
     query,
     queryVariables,
     errorMaker

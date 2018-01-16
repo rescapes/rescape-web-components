@@ -1,12 +1,13 @@
 import * as R from 'ramda';
 import {mapPropValueAsIndex} from 'rescape-ramda';
+import numeral from 'numeral';
 
 const columns = [
-  'Site Name',
-  'Location',
-  'Coordinates',
-  'Junction Stage',
-  'Annual tonnage (2011-2012)'
+  'siteName',
+  'location',
+  'coordinates',
+  'junctionStage',
+  'annualTonnage2011-2012'
 ];
 export const stages = [
   {key: 'source', name: 'Source'},
@@ -16,11 +17,28 @@ export const stages = [
   {key: 'reconversion', name: 'Reconversion'},
   {key: 'sink', name: 'Sink'}
 ];
-const stageByName = mapPropValueAsIndex('name', stages)
-export const resolveLinkStage = d => d.source['Junction Stage']
+export const linkStages = R.zipWith(
+  (source, target) => ({
+    key: R.join('-', R.map(R.prop('key'), [source, target])),
+    name: R.join(' -> ', R.map(R.prop('name'), [source, target])),
+    source,
+    target
+  }),
+  R.slice(0, -1, stages), R.slice(1, Infinity, stages)
+);
+
+
+const stageByName = mapPropValueAsIndex('name', stages);
+const stageKey = 'junctionStage';
+export const resolveLinkStage = d => d.target[stageKey];
+export const resolveNodeStage = d => d[stageKey];
+// Used for node and link values
+const valueKey = 'annualTonnage2011-2012'
 
 const BRUSSELS_LOCATION = [4.3517, 50.8503];
-const aberrateBrusselsLocation = index => R.addIndex(R.map)((coord, j) => coord + .1 * (index % 2 ? -index : index) * (j || -1), BRUSSELS_LOCATION)
+// Minutely move locations so they don't overlap
+const aberrateLocation = (index, location) => R.addIndex(R.map)((coord, j) => coord + .1 * (index % 2 ? -index : index) * (j || -1))(location)
+const aberrateBrusselsLocation = index => aberrateLocation(index, BRUSSELS_LOCATION);
 
 /**
  * Creates a Sankey node from ; separated strings
@@ -33,7 +51,7 @@ const createNodes = R.map(
       R.split(';', line)
     )
   )
-)
+);
 
 const groups = [
   {
@@ -96,7 +114,11 @@ const groups = [
  * @return [Float] lat/lon array
  */
 const resolveLocation = (coordinates, i) =>
-  R.ifElse(R.equals('NA'), R.always(aberrateBrusselsLocation(i)), coord => R.reverse(R.map(parseFloat, R.split(',', coord))))(coordinates)
+  R.ifElse(
+    R.equals('NA'),
+    R.always(aberrateBrusselsLocation(i)),
+    coord => aberrateLocation(i, R.reverse(R.map(parseFloat, R.split(',', coord))))
+  )(coordinates);
 
 /**
  * Creates Sankey Links for the given ordered stages for the given nodes by stage
@@ -124,39 +146,38 @@ const createLinks = (stages, nodesByStages) => R.addIndex(R.chain)(
         target => ({
           source: source.index,
           target: target.index,
-          value: 100
+          value: numeral(R.prop(valueKey, source)).value()
         }),
         targets),
       sources
     );
   },
   stages
-)
+);
 
 const groupToNodesAndLinks = (accumulatedGraph, group) => {
-  const keyBy = 'Junction Stage';
   const nodeCount = R.length(accumulatedGraph.nodes || 0);
   // Accumulate nodes for each stage
   const nodesByStages = R.addIndex(R.reduce)(
     (accum, node, i) => {
-      const location = resolveLocation(node.Coordinates, i);
+      const location = resolveLocation(node.coordinates, i);
       return R.mergeWith(
         (l, r) => R.concat(l, r),
         accum,
         {
-          [stageByName[node[keyBy]].key]: [
+          [stageByName[node[stageKey]].key]: [
             R.merge(
               node,
               {
                 index: i + nodeCount,
+                material: group.material,
                 type: 'Feature',
                 geometry: {
                   type: 'Point',
                   coordinates: location
                 },
-                name: node['Site Name'],
-                properties: {
-                }
+                name: node['siteName'],
+                properties: {}
               }
             )
           ]

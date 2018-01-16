@@ -18,6 +18,7 @@ import trips from './belgiumTrips'
 import stops from './belgiumStops'
 import osm from './belgiumOsm'
 import {throwing} from 'rescape-ramda'
+import graph from 'data/belgium/brusselsSankeySample';
 const {reqPath} = throwing
 
 // merge the default region template with our region(s)
@@ -30,7 +31,10 @@ export default applyDefaultRegion({
     geojson: {
       osm,
       // Make these the osm features for now
-      locations: reqPath(['features'], osm)
+      locations: reqPath(['features'], osm),
+      sankey: {
+        graph
+      }
     },
 
     gtfs: {
@@ -51,10 +55,12 @@ export default applyDefaultRegion({
 
     mapbox: {
       viewport: {
+
         latitude: 50.5915,
         longitude: 2.0165,
-        zoom: 5
+        zoom: 7
       }
-    }
+    },
+
   }
 });

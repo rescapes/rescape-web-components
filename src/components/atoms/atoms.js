@@ -25,7 +25,7 @@ const [Div, Box, Flex, Image] = eMap(['div', box, flex, image]);
  * @constructor
  */
 export const Grid = props =>
-  Div(R.merge(props, {
+  Box(R.merge(props, {
       style: {
         display: 'inline-block',
         verticalAlign: 'top'
@@ -66,7 +66,13 @@ export const Third = props =>
  */
 export const Quarter = props =>
   Grid(R.merge(props, {
-      width: 1 / 4
+      w: 1 / 4
+    })
+  );
+
+export const ThreeQuarters = props =>
+  Grid(R.merge(props, {
+      w: 3 / 4
     })
   );
 

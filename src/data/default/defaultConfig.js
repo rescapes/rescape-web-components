@@ -37,7 +37,7 @@ export const defaultConfig = mergeDeep(environmentConfig, {
       mapbox: {
         mapStyle: 'mapbox://styles/mapbox/streets-v8',
         viewport: {
-          pitch: 40,
+          pitch: 0,
           bearing: 0,
           startDragLngLat: null,
           isDragging: false,

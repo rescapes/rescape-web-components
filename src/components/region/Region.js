@@ -63,17 +63,17 @@ Region.viewStyles = ({style}) => {
     [c.regionMapboxOuter]: applyMatchingStyles(style, {
       width: '100%',
       height: '100%'
-    }, [c.sankeyLinkLegendItem]),
+    }, [c.sankeyFiltererItem]),
 
     [c.regionMapbox]: applyMatchingStyles(style, {
       width: styleMultiplier(1),
       height: styleMultiplier(1)
-    }, [c.sankeyLinkLegendItem]),
+    }, [c.sankeyFiltererItem]),
 
     [c.regionSankey]: applyMatchingStyles(style, {
       width: styleMultiplier(1),
       height: styleMultiplier(1)
-    }, [c.sankeyLinkLegendItem]),
+    }, [c.sankeyFiltererItem]),
 
     [c.regionLocationsOuter]: {
       position: 'absolute',

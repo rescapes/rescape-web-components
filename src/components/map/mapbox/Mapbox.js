@@ -54,7 +54,7 @@ Mapbox.viewStyles = ({style}) => {
     [c.mapboxReactMapGl]: applyMatchingStyles(style, {
       width: styleMultiplier(1),
       height: styleMultiplier(1)
-    }, [c.sankeyLinkLegendItem])
+    }, [c.sankeyFiltererItem])
   };
 };
 

@@ -121,11 +121,43 @@ const LocationType = new GraphQLObjectType({
   }
 });
 
+const SankeyNodeType = new GraphQLObjectType({
+  name: 'SankeyNode',
+  fields: {
+    'siteName': {type: GraphQLString},
+    'location': {type: GraphQLString},
+    'coordinates': {type: GraphQLString},
+    'junctionStage': {type: GraphQLString},
+    'annualTonnage2011-2012': {type: GraphQLString},
+    index: {type: GraphQLInt},
+    material: {type: GraphQLString},
+    type: {type: GraphQLString}
+  }
+});
+
+const SankeyLinkType = new GraphQLObjectType({
+  name: 'SankeyLink',
+  fields: {
+    source: SankeyNodeType,
+    target: SankeyNodeType,
+    value: {type: GraphQLFloat},
+  }
+});
+
+const SankeyType = new GraphQLObjectType({
+  name: 'Sankey',
+  fields: {
+    nodes: {type: new GraphQLList(SankeyNodeType)},
+    links: {type: new GraphQLList(SankeyLinkType)}
+  }
+});
+
 const GeojsonType = new GraphQLObjectType({
   name: 'Geojson',
   fields: {
     osm: {type: OpenStreetMapType},
-    locations: {type: new GraphQLList(LocationType)}
+    locations: {type: new GraphQLList(LocationType)},
+    sankey: {type: new GraphQLList(SankeyType)}
   }
 });
 

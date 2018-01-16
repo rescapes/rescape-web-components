@@ -59,7 +59,8 @@ Current.viewStyles = ({style}) => {
 
     [c.currentRegion]: mergeAndApplyMatchingStyles(style, {
       width: styleArithmetic(R.subtract, 32),
-      height: styleArithmetic(R.subtract, 32),
+      // TODO Header height plus a bit more
+      height: styleArithmetic(R.subtract, 100 + 30),
     })
   };
 };

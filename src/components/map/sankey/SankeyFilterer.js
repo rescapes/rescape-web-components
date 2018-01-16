@@ -10,22 +10,22 @@
  */
 
 import {
-  composeViews, eMap, renderChoicepoint, itemizeProps, mergePropsForViews, nameLookup, propsFor,
-  propsForSansClass, renderErrorDefault, renderLoadingDefault, keyWith
+  composeViews, eMap, renderChoicepoint, itemizeProps, nameLookup, propsFor,
+  propsForSansClass, renderErrorDefault, renderLoadingDefault
 } from 'helpers/componentHelpers';
 import * as R from 'ramda';
 import {
   applyMatchingStyles, mergeAndApplyMatchingStyles,
-  mergeAndSankeyLinkLegendlyMatchingStyles
+  mergeAndSankeyFiltererlyMatchingStyles
 } from 'selectors/styleSelectors';
 import {Component} from 'react';
-import {Flex as flex} from 'rebass';
-import {Quarter as quarter, ThreeQuarters as threeQuarters} from 'components/atoms';
+import {Flex as flex, Checkbox as checkbox, Group as group} from 'rebass';
 import {throwing} from 'rescape-ramda';
+import {Grid as grid} from 'components/atoms';
 
 const {reqStrPath} = throwing;
 
-const [Div, Quarter, ThreeQuarters, Flex] = eMap(['div', quarter, threeQuarters, flex]);
+const [Div, Flex, Checkbox, Group, Grid] = eMap(['div', flex, checkbox, group, grid]);
 
 export const c = nameLookup({
   sankeyFilterer: true,
@@ -33,7 +33,7 @@ export const c = nameLookup({
   sankeyFiltererTitle: true,
   sankeyFiltererItems: true,
   sankeyFiltererItem: true,
-  sankeyLinkLegendIcon: true,
+  sankeyFiltererCheckbox: true,
   sankeyFiltererText: true,
   sankeyFiltererLoading: true,
   sankeyFiltererError: true
@@ -42,16 +42,16 @@ export const c = nameLookup({
 /**
  * The View for a Sankey on a Map
  */
-class SankeyLinkLegend extends Component {
+class SankeyFilterer extends Component {
   render() {
-    const props = SankeyLinkLegend.views(this.props);
+    const props = SankeyFilterer.views(this.props);
     return Div(propsFor(props.views, c.sankeyFilterer),
-      SankeyLinkLegend.choicepoint(props)
+      SankeyFilterer.choicepoint(props)
     );
   }
 }
 
-SankeyLinkLegend.renderData = ({views}) => {
+SankeyFilterer.renderData = ({views}) => {
   /* We additionally give Mapbox the container width and height so the map can track changes to these
    We have to apply the width and height fractions of this container to them.
    */
@@ -59,15 +59,15 @@ SankeyLinkLegend.renderData = ({views}) => {
   const propsSansClass = propsForSansClass(views);
   const {items, ...sankeyLinkLegendItemsProps} = props(c.sankeyFiltererItems);
   const sankeyLinkLegendItemProps = itemizeProps(props(c.sankeyFiltererItem));
-  const sankeyLinkLegendIconProps = itemizeProps(props(c.sankeyLinkLegendIcon));
+  const sankeyLinkLegendCheckboxProps = itemizeProps(props(c.sankeyFiltererCheckbox));
   const sankeyLinkLegendTextProps = itemizeProps(props(c.sankeyFiltererText));
   return Div(props(c.sankeyFiltererBox), [
     Div(props(c.sankeyFiltererTitle)),
     Flex(sankeyLinkLegendItemsProps,
       R.map(
-        d => SankeyLinkLegendItem({
+        d => SankeyFiltererItem({
           [c.sankeyFiltererItem]: sankeyLinkLegendItemProps(d),
-          [c.sankeyLinkLegendIcon]: sankeyLinkLegendIconProps(d),
+          [c.sankeyFiltererCheckbox]: sankeyLinkLegendCheckboxProps(d),
           [c.sankeyFiltererText]: sankeyLinkLegendTextProps(d)
         }),
         items
@@ -76,39 +76,41 @@ SankeyLinkLegend.renderData = ({views}) => {
   ]);
 };
 
-const SankeyLinkLegendItem = (views) => {
+const SankeyFiltererItem = (views) => {
   const props = R.prop(R.__, views);
-  return Flex(props(c.sankeyFiltererItem), [
-    Div(props(c.sankeyLinkLegendIcon)),
-    Div(props(c.sankeyFiltererText))
+  return Group(props(c.sankeyFiltererItem), [
+    Checkbox(props(c.sankeyFiltererCheckbox)),
+    Grid(props(c.sankeyFiltererText))
   ]);
 };
 
-SankeyLinkLegend.viewStyles = ({style}) => {
+SankeyFilterer.viewStyles = ({style}) => {
   return {
     [c.sankeyFilterer]: mergeAndApplyMatchingStyles(style, {
       paddingTop: 4,
       paddingBottom: 4,
-      paddingLeft: 16,
-      paddingRight: 16
     }),
+
     [c.sankeyFiltererBox]: {
       backgroundColor: 'rgba(255, 255, 255, 0.3)',
       borderRadius: '5px',
-      padding: '2px'
+      padding: '2px',
+      fontFamily: 'sans-serif'
     },
+
     [c.sankeyFiltererTitle]: {
       top: 0,
       height: '20px',
       marginBottom: '5px'
     },
+
     [c.sankeyFiltererItems]: applyMatchingStyles(style, {
       fontSize: '10px',
-      fontFamily: 'sans-serif',
       width: '100%',
       flexDirection: 'column',
       justifyContent: 'space-between'
     }),
+
     [c.sankeyFiltererItem]: {
       marginTop: '2px',
       marginBottom: '2px',
@@ -116,24 +118,25 @@ SankeyLinkLegend.viewStyles = ({style}) => {
       height: '20px',
       padding: '2px'
     },
-    [c.sankeyLinkLegendIcon]: {
-      width: '30px',
-      minWidth: '30px',
-      marginLeft: '2px',
-      marginRight: '4px',
-      backgroundColor: reqStrPath('color')
+
+    [c.sankeyFiltererCheckbox]: {
+      style: {},
+      ml: '2px',
+      mr: '4px'
     },
+
     [c.sankeyFiltererText]: {
     }
   };
 };
 
-SankeyLinkLegend.viewProps = props => {
+SankeyFilterer.viewProps = props => {
   return {
     [c.sankeyFilterer]: {},
     [c.sankeyFiltererTitle]: {
-      children: 'Links',
+      children: 'Filter by Material',
       fontSize: '12px',
+      fontFamily: 'sans-serif',
       fontWeight: 'bold'
     },
     [c.sankeyFiltererBox]: {},
@@ -142,18 +145,23 @@ SankeyLinkLegend.viewProps = props => {
     },
     [c.sankeyFiltererItem]: {
       px: 2,
-      key: R.always(reqStrPath('key'))
+      key: R.always(reqStrPath('material'))
     },
-    [c.sankeyLinkLegendIcon]: {
+    [c.sankeyFiltererCheckbox]: {
+      defaultChecked: true,
     },
     [c.sankeyFiltererText]: {
-      children: R.always(reqStrPath('name'))
+      children: R.always(reqStrPath('material'))
     }
   };
 };
 
-SankeyLinkLegend.viewActions = () => {
-  return {};
+SankeyFilterer.viewActions = () => {
+  return {
+    [c.sankeyFiltererCheckbox]: [
+      'filterSankey'
+    ]
+  };
 };
 
 
@@ -162,19 +170,19 @@ SankeyLinkLegend.viewActions = () => {
  * @param {Object} props this.props or equivalent for testing
  * @returns {Object} modified props
  */
-SankeyLinkLegend.views = composeViews(
-  SankeyLinkLegend.viewActions(),
-  SankeyLinkLegend.viewProps,
-  SankeyLinkLegend.viewStyles
+SankeyFilterer.views = composeViews(
+  SankeyFilterer.viewActions(),
+  SankeyFilterer.viewProps,
+  SankeyFilterer.viewStyles
 );
 
 /**
  * Loading, Error, or Data based on the props
  */
-SankeyLinkLegend.choicepoint = renderChoicepoint(
+SankeyFilterer.choicepoint = renderChoicepoint(
   renderErrorDefault(c.sankeyFiltererError),
   renderLoadingDefault(c.sankeyFiltererLoading),
-  SankeyLinkLegend.renderData
+  SankeyFilterer.renderData
 );
 
-export default SankeyLinkLegend;
+export default SankeyFilterer;

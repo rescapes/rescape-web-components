@@ -64,6 +64,7 @@
     "morgan": "^1.9.0",
     "namedtuplemap": "^1.0.0",
     "node-fetch": "^1.7.3",
+    "numeral": "^2.0.6",
     "object-assign": "4.1.1",
     "postcss-flexbugs-fixes": "3.2.0",
     "postcss-loader": "2.0.8",

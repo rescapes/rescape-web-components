@@ -17,7 +17,7 @@ import {
 import current from 'components/current';
 import {Component} from 'react'
 import PropTypes from 'prop-types'
-import {mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
+import {applyMatchingStyles, mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
 const [Div, Current] = eMap(['div', current]);
 
 export const c = nameLookup({
@@ -42,12 +42,17 @@ class Main extends Component {
 Main.viewStyles = ({style}) => {
   return {
     [c.main]: mergeAndApplyMatchingStyles(style, {
-      // Use pixel-based width and height all the way down to Mapbox
-      width: styleMultiplier(1),
-      height: styleMultiplier(1),
+      width: '100%',
+      height: '100%'
     }),
 
-    [c.mainCurrent]: {}
+    [c.mainCurrent]: applyMatchingStyles(style, {
+      // Use pixel-based width and height all the way down to Mapbox
+      // TODO This is the padding from App, I need to maintain 100% width put in pixel
+      width: styleMultiplier(1),
+      // TODO This is the header height and padding
+      height: styleMultiplier(1)
+    })
   };
 };
 

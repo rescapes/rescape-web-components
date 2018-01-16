@@ -19,7 +19,7 @@ import * as R from 'ramda';
 import {applyMatchingStyles, mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
 import {Component} from 'react';
 import {sankeyGenerator, sankeyGeospatialTranslate} from 'helpers/sankeyHelpers';
-import sample, {resolveLinkStage, stages} from 'data/belgium/brusselsSankeySample';
+import graph, {linkStages, resolveLinkStage, resolveNodeStage, stages} from 'data/belgium/brusselsSankeySample';
 import PropTypes from 'prop-types';
 import {sankeyLinkHorizontal} from 'd3-sankey';
 import {format as d3Format} from 'd3-format';
@@ -28,6 +28,7 @@ import {resolveSvgReact} from 'helpers/svgHelpers';
 import {Flex as flex} from 'rebass';
 import sankeyNodeLegend from './SankeyNodeLegend'
 import sankeyLinkLegend from './SankeyLinkLegend'
+import sankeyFilterer from './SankeyFilterer';
 
 // Sankey settings. These should be moved to style
 const nodeWidth = 15;
@@ -44,8 +45,8 @@ const color = scaleOrdinal(schemeCategory10);
 const linkHorizontal = sankeyLinkHorizontal();
 
 
-const [ReactMapGl, SVGOverlay, G, Text, Title, Path, Div, Flex, SankeyNodeLegend, SankeyLinkLegend] =
-  eMap([reactMapGl, svgOverlay, 'g', 'text', 'title', 'path', 'div', flex, sankeyNodeLegend, sankeyLinkLegend]);
+const [ReactMapGl, SVGOverlay, G, Text, Title, Path, Div, Flex, SankeyNodeLegend, SankeyLinkLegend, SankeyFilterer] =
+  eMap([reactMapGl, svgOverlay, 'g', 'text', 'title', 'path', 'div', flex, sankeyNodeLegend, sankeyLinkLegend, sankeyFilterer]);
 
 const styles = {
   sankeyLegendsFontFamily: 'sans-serif'
@@ -63,9 +64,10 @@ export const c = nameLookup({
   sankeySvgNodeShape: true,
   sankeySvgNodeText: true,
   sankeySvgNodeTitle: true,
+  sankeyFilterer: true,
   sankeyLegends: true,
-  sankeyNodeLegend: true,
-  sankeyLinkLegend: true,
+  sankeyLegendNode: true,
+  sankeyLegendLink: true,
   sankeyLoading: true,
   sankeyError: true
 });
@@ -137,9 +139,10 @@ Sankey.renderData = ({views}) => {
         )
       )
     ),
+    SankeyFilterer(propsSansClass(c.sankeyFilterer)),
     Flex(props(c.sankeyLegends), [
-      SankeySvgNodeLegend(propsSansClass(c.sankeyNodeLegend)),
-      SankeySvgLink(propsSansClass(c.sankeyLinkLegend)),
+      SankeyNodeLegend(propsSansClass(c.sankeyLegendNode)),
+      SankeyLinkLegend(propsSansClass(c.sankeyLegendLink)),
     ])
   ];
 };
@@ -147,27 +150,40 @@ Sankey.renderData = ({views}) => {
 Sankey.viewStyles = ({style}) => {
 
   return {
-    [c.sankey]: mergeAndApplyMatchingStyles(style, {}),
+    [c.sankey]: mergeAndApplyMatchingStyles(style, {
+      position: 'relative'
+    }),
 
-    [c.sankeyReactMapGl]: applyMatchingStyles(style, {}, [c.sankeyLinkLegendItem]),
+    [c.sankeyReactMapGl]: applyMatchingStyles(style, {}),
 
-    [c.sankeySvgOverlay]: applyMatchingStyles(style, {}, [c.sankeyLinkLegendItem]),
+    [c.sankeySvgOverlay]: applyMatchingStyles(style, {}),
 
     [c.sankeyLegends]: applyMatchingStyles(style, {
       position: 'absolute',
       bottom: 0,
-      height: '300px',
+      height: '350px',
       left: 0,
-      width: '200px',
+      width: '300px',
       flexDirection: 'column',
       justifyContent: 'space-between',
       margin: '10px 0 10px 0',
       fontFamily: styles.sankeyLegendsFontFamily
-    }, [c.sankeyLinkLegendItem]),
+    }),
 
-    [c.sankeyNodeLegend]: applyMatchingStyles(style, {}, [c.sankeyLinkLegendItem]),
+    [c.sankeyLegendNode]: applyMatchingStyles(style, {
+      height: '200px'
+    }),
 
-    [c.sankeyLinkLegend]: applyMatchingStyles(style, {}, [c.sankeyLinkLegendItem]),
+    [c.sankeyLegendLink]: applyMatchingStyles(style, {
+      height: '140px'
+    }),
+
+    [c.sankeyFilterer]: applyMatchingStyles(style, {
+      position: 'absolute',
+      top: 0,
+      margin: '10px',
+      height: '140px'
+    })
   };
 };
 
@@ -176,6 +192,9 @@ Sankey.viewProps = props => {
   const width = reqStrPath(`views.${c.sankey}.style.width`, props);
   const height = reqStrPath(`views.${c.sankey}.style.height`, props);
   return {
+    [c.sankey]: {
+      graph: props.data.graph
+    },
     [c.sankeyReactMapGl]: R.mergeAll([
       {
         width,
@@ -198,7 +217,7 @@ Sankey.viewProps = props => {
     },
 
     [c.sankeySvgNode]: {
-      key: R.always(reqStrPath('name'))
+      key: R.always(R.join('-', [reqStrPath('material'), reqStrPath('name')]))
     },
 
     [c.sankeySvgNodeTitle]: {
@@ -210,6 +229,24 @@ Sankey.viewProps = props => {
       key: 'svgLinks',
       fontFamily: 'sans-serif',
       fontSize: 10
+    },
+
+    [c.sankeyLegendNode]: {
+      items: R.map(stage => R.merge(stage, {color: color(stage.name)}), stages),
+      // Pass on Apollo status indicator
+      data: props.data
+    },
+
+    [c.sankeyLegendLink]: {
+      items: R.map(linkStage => R.merge(linkStage, {color: color(linkStage.target.name)}), linkStages),
+      // Pass on Apollo status indicator
+      data: props.data
+    },
+
+    [c.sankeyFilterer]: {
+      items: R.map(node => ({material: node.material}), R.uniqBy(R.prop('material'), reqStrPath('graph.nodes', props))),
+      // Pass on Apollo status indicator
+      data: props.data
     }
   };
 };
@@ -231,7 +268,7 @@ Sankey.viewPropsAtRender = ({views, opt}) => {
   // (Since the node is itself a feature)
   const geospatialPositioner = sankeyGeospatialTranslate(opt);
   // Generate the sankey diagram at default distributed positions across the map view
-  const {links, nodes} = sankeyGenerator({width, height, nodeWidth, nodePadding, geospatialPositioner}, sample);
+  const {links, nodes} = sankeyGenerator({width, height, nodeWidth, nodePadding, geospatialPositioner}, reqStrPath('graph', propsFor(c.sankey)));
 
   return mergePropsForViews({
     [c.sankeySvgLinks]: {
@@ -244,8 +281,7 @@ Sankey.viewPropsAtRender = ({views, opt}) => {
     [c.sankeySvgNodeShape]: {
       key: c.sankeySvgNodeShape,
       pointData: R.always(d => d.pointData.bbox),
-      // Random fill generator
-      fill: R.always(d => color(d.name.replace(/ .*/, ''))),
+      fill: R.always(d => color(resolveNodeStage(d))),
       stroke: '#000',
       strokeWidth: '1'
     },
@@ -272,15 +308,14 @@ Sankey.viewPropsAtRender = ({views, opt}) => {
         children: d.name,
         height: R.subtract(d.y1, d.y0),
         width: R.subtract(d.x1, d.x0),
-        // Random color based on name
-        fill: color(d.name.replace(/ .*/, '')),
+        fill: color(resolveNodeStage(d)),
         stroke: '#000'
       };
     }),
 
     [c.sankeySvgLink]: keyWith('title', {
       fill: 'none',
-      stroke: R.always(d => color(resolveLinkStage(d).replace(/ .*/, ''))),
+      stroke: R.always(d => color(resolveLinkStage(d))),
       strokeOpacity: 0.2,
       // The d element of the svg path is produced by sankeyLinkHorizontal
       // Well call the result of sankeyLinkHorizontal(), which expects a datum and assigns

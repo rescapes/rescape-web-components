@@ -69,6 +69,9 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
           R.set(R.lensProp('region'), reqStrPath('region', ownProps), mapState)
         )
       );
+    },
+    onSankeyFilterChange: e => {
+      return e
     }
     //hoverMarker,
     //selectMarker
@@ -100,6 +103,12 @@ const geojsonQuery = `
                                 coordinates
                             }
                             properties
+                        }
+                    }
+                    sankey {
+                        graph {
+                            nodes
+                            links
                         }
                     }
                 }

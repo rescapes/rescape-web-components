@@ -12,7 +12,7 @@ import {Provider as provider} from 'rebass';
 import {theme} from 'styles/styles';
 import {withRouter} from 'react-router';
 import {Grid as grid} from 'components/atoms';
-import {mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
+import {applyMatchingStyles, mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
 
 const [Provider, Div, Header, Switch, Route, Grid] = eMap([provider, 'div', header, switchy, route, grid]);
 
@@ -65,8 +65,8 @@ App.viewStyles = ({style}) => {
       width: R.identity,
       height: headerHeight
     }),
-    [c.appBody]: mergeAndApplyMatchingStyles(style, {
-      width: R.identity,
+    [c.appBody]: applyMatchingStyles(style, {
+      width: '100%',
       height: R.flip(R.subtract)(headerHeight)
     })
   };

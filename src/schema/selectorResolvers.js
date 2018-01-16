@@ -48,6 +48,9 @@ const makeSelectorResolvers = data => ({
   Location: {
     features: objectValues('features')
   },
+  Sankey: {
+  },
+
   Geojson: {
 
   },

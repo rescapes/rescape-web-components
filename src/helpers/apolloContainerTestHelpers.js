@@ -62,6 +62,7 @@ export const apolloContainerTests = (config) => {
       childClassLoadingName,
       // Optional, the class name if the component has an Apollo-based error state
       childClassErrorName,
+      // Optional, if not specified then no container props are needed
       testPropsMaker,
       // Optional, must return parent props as a Promise
       asyncParentProps,
@@ -79,7 +80,7 @@ export const apolloContainerTests = (config) => {
       asyncParentProps ?
         asyncParentProps()
           .then(parentProps => {
-            const result = propsFromSampleStateAndContainer(testPropsMaker, parentProps);
+            const result = testPropsMaker ? propsFromSampleStateAndContainer(testPropsMaker, parentProps) : parentProps;
             return R.unless(
               R.is(Promise),
               res => Promise.resolve(Either.Right(res))

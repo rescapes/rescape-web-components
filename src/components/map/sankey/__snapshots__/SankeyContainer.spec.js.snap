@@ -18,7 +18,7 @@ Object {
         "viewport": Object {
           "latitude": 50.5915,
           "longitude": 2.0165,
-          "zoom": 5,
+          "zoom": 7,
         },
       },
       "name": "Belgium",
@@ -472,11 +472,12 @@ Object {
       "isDragging": false,
       "latitude": 50.5915,
       "longitude": 2.0165,
-      "pitch": 40,
+      "pitch": 0,
       "startDragLngLat": null,
-      "zoom": 5,
+      "zoom": 7,
     },
   },
+  "onSankeyFilterChange": [Function],
   "onViewportChange": [Function],
   "style": Object {
     "MozAppearance": "none",
@@ -484,7 +485,7 @@ Object {
     "color": "black",
     "fontFamily": "inherit",
     "fontSize": "inherit",
-    "height": -32,
+    "height": -130,
     "textDecoration": "none",
     "width": -32,
   },
@@ -957,7 +958,7 @@ Object {
         "viewport": Object {
           "latitude": 50.5915,
           "longitude": 2.0165,
-          "zoom": 5,
+          "zoom": 7,
         },
       },
       "name": "Belgium",
@@ -1020,9 +1021,9 @@ Object {
       "isDragging": false,
       "latitude": 50.5915,
       "longitude": 2.0165,
-      "pitch": 40,
+      "pitch": 0,
       "startDragLngLat": null,
-      "zoom": 5,
+      "zoom": 7,
     },
   },
   "onViewportChange": [Function],
@@ -1048,7 +1049,7 @@ Object {
   "className": "sankey-svg-overlay",
   "redraw": [Function],
   "style": Object {},
-  "viewBox": "0 0 1048 688",
+  "viewBox": "0 0 -32 -32",
 }
 `;
 

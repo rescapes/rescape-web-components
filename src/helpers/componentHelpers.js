@@ -542,17 +542,17 @@ export const itemizeProps = R.curry((propsOrFunc, item) => {
     R.when(
       R.is(Function),
       // Apply the prop function to item (i.e. call the function with item)
-      R.applyTo(item)
+      f => R.applyTo(item, f)
     )
   );
 
   return R.compose(
     // Repeat for style props
     R.when(
-      R.has('styles'),
+      R.has('style'),
       R.over(
-        R.lensProp('styles'),
-        mapApplyToItem
+        R.lensProp('style'),
+        style => mapApplyToItem(style)
       )
     ),
     // For any prop that has a function, call it with item

@@ -24,7 +24,6 @@ export const mapStateToProps = (state, props) => {
         // It might turn out that Current doesn't need anything because it simply renders child containers
         // Merge the browser dimensions with the props
         // props from the parent contain style instructions
-        // TODO we need to set width and height proportional to the browser dimensions, not equal to
         data: R.mergeAll([stateData, loadingCompleteStatus, data]),
         style: R.mergeAll([defaultStyle, browserProportionalStyle, style])
       })
