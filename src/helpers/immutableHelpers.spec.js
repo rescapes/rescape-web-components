@@ -10,14 +10,8 @@
  */
 import ImMap from 'immutable';
 import f from './immutableHelpers';
-import Task from 'data.task';
 import {immutableMemoize, memoizeCall, toImmutable, toSingleArgMemoize} from 'helpers/immutableHelpers';
 import {taskToPromise} from 'rescape-ramda';
-import moment from 'moment';
-import WeakTupleMap from 'weaktuplemap';
-import NamedTupleMap from 'namedtuplemap'
-import * as R from 'ramda';
-import memoize from 'memoize-immutable';
 
 describe('immutablHelperFunctions', () => {
   test('Should be an Immutable Map', () => {
