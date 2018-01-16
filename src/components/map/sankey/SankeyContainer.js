@@ -44,7 +44,7 @@ export const mapStateToProps = (state, props) => {
         // Mapbox is selected separately to combine region.mapbox with settings.mapbox
         // Viewport is combined with other properties in the react-map-gl component, hence separated here
         {viewport, mapbox},
-        data
+        data,
       ]),
       style: R.merge(defaultStyle, style)
     })
@@ -106,10 +106,28 @@ const geojsonQuery = `
                         }
                     }
                     sankey {
-                        graph {
-                            nodes
-                            links
-                        }
+                      graph {
+                          nodes {
+                              siteName
+                              location
+                              coordinates
+                              junctionStage
+                              annualTonnage
+                              index
+                              material
+                              type
+                              geometry {
+                                type
+                                coordinates
+                              }
+                          }
+                          links {
+                            source 
+                            target 
+                            value
+                          }
+                      }
+                          
                     }
                 }
             },

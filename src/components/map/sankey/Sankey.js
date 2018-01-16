@@ -10,7 +10,7 @@
  */
 
 import reactMapGl, {SVGOverlay as svgOverlay} from 'react-map-gl';
-import {throwing} from 'rescape-ramda';
+import {strPath, throwing} from 'rescape-ramda';
 import {
   composeViews, eMap, renderChoicepoint, itemizeProps, mergePropsForViews, nameLookup, propsFor,
   propsForSansClass, renderErrorDefault, renderLoadingDefault, keyWith
@@ -19,7 +19,7 @@ import * as R from 'ramda';
 import {applyMatchingStyles, mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
 import {Component} from 'react';
 import {sankeyGenerator, sankeyGeospatialTranslate} from 'helpers/sankeyHelpers';
-import graph, {linkStages, resolveLinkStage, resolveNodeStage, stages} from 'data/belgium/brusselsSankeySample';
+import {linkStages, resolveLinkStage, resolveNodeStage, resolveNodeName, stages} from 'data/belgium/brusselsSankeySample';
 import PropTypes from 'prop-types';
 import {sankeyLinkHorizontal} from 'd3-sankey';
 import {format as d3Format} from 'd3-format';
@@ -142,7 +142,7 @@ Sankey.renderData = ({views}) => {
     SankeyFilterer(propsSansClass(c.sankeyFilterer)),
     Flex(props(c.sankeyLegends), [
       SankeyNodeLegend(propsSansClass(c.sankeyLegendNode)),
-      SankeyLinkLegend(propsSansClass(c.sankeyLegendLink)),
+      //SankeyLinkLegend(propsSansClass(c.sankeyLegendLink)),
     ])
   ];
 };
@@ -161,11 +161,11 @@ Sankey.viewStyles = ({style}) => {
     [c.sankeyLegends]: applyMatchingStyles(style, {
       position: 'absolute',
       bottom: 0,
-      height: '350px',
+      height: '200px',
       left: 0,
       width: '300px',
       flexDirection: 'column',
-      justifyContent: 'space-between',
+      justifyContent: 'flex-start',
       margin: '10px 0 10px 0',
       fontFamily: styles.sankeyLegendsFontFamily
     }),
@@ -193,7 +193,7 @@ Sankey.viewProps = props => {
   const height = reqStrPath(`views.${c.sankey}.style.height`, props);
   return {
     [c.sankey]: {
-      graph: props.data.graph
+      graph: strPath('data.store.region.geojson.sankey.graph', props)
     },
     [c.sankeyReactMapGl]: R.mergeAll([
       {
@@ -244,7 +244,13 @@ Sankey.viewProps = props => {
     },
 
     [c.sankeyFilterer]: {
-      items: R.map(node => ({material: node.material}), R.uniqBy(R.prop('material'), reqStrPath('graph.nodes', props))),
+      items: R.map(
+        node => ({material: node.material}),
+        R.uniqBy(
+          R.prop('material'),
+          R.defaultTo([], strPath('data.store.region.geojson.sankey.graph.nodes', props))
+        )
+      ),
       // Pass on Apollo status indicator
       data: props.data
     }
@@ -268,7 +274,8 @@ Sankey.viewPropsAtRender = ({views, opt}) => {
   // (Since the node is itself a feature)
   const geospatialPositioner = sankeyGeospatialTranslate(opt);
   // Generate the sankey diagram at default distributed positions across the map view
-  const {links, nodes} = sankeyGenerator({width, height, nodeWidth, nodePadding, geospatialPositioner}, reqStrPath('graph', propsFor(c.sankey)));
+  const {links, nodes} = sankeyGenerator({width, height, nodeWidth, nodePadding, geospatialPositioner},
+    reqStrPath('graph', propsFor(views, c.sankey)));
 
   return mergePropsForViews({
     [c.sankeySvgLinks]: {
@@ -305,7 +312,7 @@ Sankey.viewPropsAtRender = ({views, opt}) => {
           R.always('start'),
           R.always('end')
         )(d),
-        children: d.name,
+        children: resolveNodeName(d.name),
         height: R.subtract(d.y1, d.y0),
         width: R.subtract(d.x1, d.x0),
         fill: color(resolveNodeStage(d)),
@@ -333,7 +340,8 @@ Sankey.viewPropsAtRender = ({views, opt}) => {
 
 Sankey.viewActions = () => {
   return {
-    [c.sankeyReactMapGl]: ['onViewportChange', 'hoverMarker', 'selectMarker']
+    [c.sankeyReactMapGl]: ['onViewportChange', 'hoverMarker', 'selectMarker'],
+    [c.sankeyFilterer]: ['onSankeyFilterChange']
   };
 };
 

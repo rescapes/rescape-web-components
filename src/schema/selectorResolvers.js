@@ -51,6 +51,12 @@ const makeSelectorResolvers = data => ({
   Sankey: {
   },
 
+  SankeyGraph: {
+  },
+
+  SankeyLink: {
+  },
+
   Geojson: {
 
   },

@@ -538,12 +538,13 @@ export const propsAndStyle = (name, viewProps) => R.merge(
  * @param item The item to which to call on properties that are function
  */
 export const itemizeProps = R.curry((propsOrFunc, item) => {
-  const mapApplyToItem = R.map(
+  const mapApplyToItem = R.mapObjIndexed((value, key) =>
     R.when(
-      R.is(Function),
+      // TODO hack don't allow on... methods. These are actions. Actions should really be in actions: {}
+      R.both(R.is(Function), () => R.complement(R.startsWith('on'))(key)),
       // Apply the prop function to item (i.e. call the function with item)
       f => R.applyTo(item, f)
-    )
+    )(value)
   );
 
   return R.compose(

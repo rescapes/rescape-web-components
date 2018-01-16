@@ -7,12 +7,12 @@ const columns = [
   'location',
   'coordinates',
   'junctionStage',
-  'annualTonnage2011-2012'
+  'annualTonnage'
 ];
 export const stages = [
   {key: 'source', name: 'Source'},
   {key: 'conversion', name: 'Conversion'},
-  {key: 'junction_conversion_demand', name: "Junction between 'conversion' and 'demand'"},
+  {key: 'distribution', name: 'Distribution'},
   {key: 'demand', name: 'Demand'},
   {key: 'reconversion', name: 'Reconversion'},
   {key: 'sink', name: 'Sink'}
@@ -32,12 +32,14 @@ const stageByName = mapPropValueAsIndex('name', stages);
 const stageKey = 'junctionStage';
 export const resolveLinkStage = d => d.target[stageKey];
 export const resolveNodeStage = d => d[stageKey];
+export const resolveNodeName = d => d.siteName
 // Used for node and link values
-const valueKey = 'annualTonnage2011-2012'
+const valueKey = 'annualTonnage'
 
 const BRUSSELS_LOCATION = [4.3517, 50.8503];
 // Minutely move locations so they don't overlap
-const aberrateLocation = (index, location) => R.addIndex(R.map)((coord, j) => coord + .1 * (index % 2 ? -index : index) * (j || -1))(location)
+const aberrateLocation = (index, location, factor=.1) =>
+  R.addIndex(R.map)((coord, j) => coord + factor * (index % 2 ? -index : index) * (j || -1))(location)
 const aberrateBrusselsLocation = index => aberrateLocation(index, BRUSSELS_LOCATION);
 
 /**
@@ -54,12 +56,13 @@ const createNodes = R.map(
 );
 
 const groups = [
+  /*
   {
     material: 'Minerals',
     nodes: createNodes([
       'Other Global Imports;Shipments, location generalized;51.309933, 3.055030;Source;22,469,843',
       'Knauf (Danilith) BE;Waregemseweg 156-142 9790 Wortegem-Petegem, Belgium;50.864762, 3.479308;Conversion;657,245',
-      "MPRO Bruxelles;Avenue du Port 67 1000 Bruxelles, Belgium;50.867486, 4.352543;Junction between 'conversion' and 'demand';18,632",
+      "MPRO Bruxelles;Avenue du Port 67 1000 Bruxelles, Belgium;50.867486, 4.352543;Distribution;18,632",
       'Residential Buildings (all typologies);Everywhere in Brussels;NA;Demand;3,882,735',
       'Duplex House Typology;Everywhere in Brussels;NA;Demand;13,544',
       'Apartment Building Typology;Everywhere in Brussels;NA;Demand;34,643',
@@ -85,6 +88,7 @@ const groups = [
     ])
   },
 
+ */
   {
     material: 'Wood',
     nodes: createNodes([
@@ -93,7 +97,7 @@ const groups = [
       'Netherlands Imports;Netherlans, nearest point;51.467197, 4.609125;Source;52,352',
       'Other Global Imports;Shipments, location generalized;51.309933, 3.055030;Source;323,384',
       'Barthel Pauls Sawmill;Pôle Ardenne Bois 1, 6671 Bovigny, Belgium;50.259872, 5.933474;Conversion;200,430',
-      "Lochten & Germeau;Bd de l’Humanité, 51, 1190 Vorst, Belgium;50.820974, 4.314469;Junction between 'conversion' and 'demand'; NA, only for directional/path",
+      "Lochten & Germeau;Bd de l’Humanité, 51, 1190 Vorst, Belgium;50.820974, 4.314469;Distribution; NA, only for directional/path",
       'Duplex House Typology;Everywhere in Brussels;NA;Demand;1,955',
       'Apartment Building Typology;Everywhere in Brussels;NA;Demand;11,250',
       'Residential Buildings (all typologies);Everywhere in Brussels;NA;Demand;45,659',
@@ -116,8 +120,14 @@ const groups = [
 const resolveLocation = (coordinates, i) =>
   R.ifElse(
     R.equals('NA'),
-    R.always(aberrateBrusselsLocation(i)),
-    coord => aberrateLocation(i, R.reverse(R.map(parseFloat, R.split(',', coord))))
+    R.always({
+      isGeneralized: true,
+      location: aberrateBrusselsLocation(i)
+    }),
+    coord => ({
+      isGeneralized: false,
+      location: aberrateLocation(i, R.reverse(R.map(parseFloat, R.split(',', coord))), 0)
+    })
   )(coordinates);
 
 /**
@@ -160,7 +170,7 @@ const groupToNodesAndLinks = (accumulatedGraph, group) => {
   // Accumulate nodes for each stage
   const nodesByStages = R.addIndex(R.reduce)(
     (accum, node, i) => {
-      const location = resolveLocation(node.coordinates, i);
+      const {location, isGeneralized} = resolveLocation(node.coordinates, i);
       return R.mergeWith(
         (l, r) => R.concat(l, r),
         accum,
@@ -177,6 +187,7 @@ const groupToNodesAndLinks = (accumulatedGraph, group) => {
                   coordinates: location
                 },
                 name: node['siteName'],
+                isGeneralized,
                 properties: {}
               }
             )

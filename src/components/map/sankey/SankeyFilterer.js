@@ -65,11 +65,14 @@ SankeyFilterer.renderData = ({views}) => {
     Div(props(c.sankeyFiltererTitle)),
     Flex(sankeyLinkLegendItemsProps,
       R.map(
-        d => SankeyFiltererItem({
-          [c.sankeyFiltererItem]: sankeyLinkLegendItemProps(d),
-          [c.sankeyFiltererCheckbox]: sankeyLinkLegendCheckboxProps(d),
-          [c.sankeyFiltererText]: sankeyLinkLegendTextProps(d)
-        }),
+        d => {
+          const checkBoxProps =  sankeyLinkLegendCheckboxProps(d)
+          return SankeyFiltererItem({
+            [c.sankeyFiltererItem]: sankeyLinkLegendItemProps(d),
+            [c.sankeyFiltererCheckbox]: R.merge(checkBoxProps, {onChange: checkBoxProps.onSankeyFilterChange}),
+            [c.sankeyFiltererText]: sankeyLinkLegendTextProps(d)
+          })
+        },
         items
       )
     )
@@ -159,7 +162,7 @@ SankeyFilterer.viewProps = props => {
 SankeyFilterer.viewActions = () => {
   return {
     [c.sankeyFiltererCheckbox]: [
-      'filterSankey'
+      'onSankeyFilterChange'
     ]
   };
 };
