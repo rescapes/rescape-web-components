@@ -144,7 +144,6 @@ module.exports = {
             },
           },
           // Process JS with Babel.
-          /*
           {
             test: /\.(js|jsx|mjs)$/,
             include: paths.appSrc,
@@ -154,7 +153,6 @@ module.exports = {
               compact: true,
             },
           },
-          */
           // The notation here is somewhat confusing.
           // "postcss" loader applies autoprefixer to our CSS.
           // "css" loader resolves paths in CSS and adds assets as dependencies.
@@ -246,6 +244,7 @@ module.exports = {
     new HtmlWebpackPlugin({
       inject: true,
       template: paths.appHtml,
+      /*
       minify: {
         removeComments: true,
         collapseWhitespace: true,
@@ -258,6 +257,7 @@ module.exports = {
         minifyCSS: true,
         minifyURLs: true,
       },
+      */
     }),
     // Makes some environment variables available to the JS code, for example:
     // if (process.env.NODE_ENV === 'production') { ... }. See `./env.js`.
@@ -265,6 +265,7 @@ module.exports = {
     // Otherwise React will be compiled in the very slow development mode.
     new webpack.DefinePlugin(env.stringified),
     // Minify the code.
+    /*
     new webpack.optimize.UglifyJsPlugin({
       compress: {
         warnings: false,
@@ -285,6 +286,7 @@ module.exports = {
       },
       sourceMap: shouldUseSourceMap,
     }),
+    */
     // Note: this won't work without ExtractTextPlugin.extract(..) in `loaders`.
     new ExtractTextPlugin({
       filename: cssFilename,
@@ -316,7 +318,7 @@ module.exports = {
         }
         console.log(message);
       },
-      minify: true,
+      //minify: true,
       // For unknown URLs, fallback to the index page
       navigateFallback: publicUrl + '/index.html',
       // Ignores URLs starting from /__ (useful for Firebase):

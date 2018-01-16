@@ -7,12 +7,13 @@
     "startTest": "NODE_ENV=test node scripts/start.js",
     "build": "node scripts/build.js",
     "test": "node scripts/test.js --env=jsdom",
-    "build-publish-patch": "npm run build && npm run test && npm version patch && npm publish",
-    "build-publish-minor": "npm run build && npm run test && npm version minor && npm publish"
+    "build-publish-patch": "npm run build && npm version patch && npm publish",
+    "build-publish-minor": "npm run build && npm version minor && npm publish"
   },
   "dependencies": {
     "@turf/bbox-polygon": "^5.1.5",
     "@turf/turf": "^5.0.4",
+    "ansi-styles": "^3.2.0",
     "apollo": "^0.2.2",
     "apollo-client-preset": "^1.0.1",
     "apollo-link": "^1.0.5",
@@ -43,7 +44,6 @@
     "data.maybe": "^1.2.2",
     "data.task": "^3.1.1",
     "decamelize": "^1.2.0",
-    "deck.gl": "^4.1.6",
     "dotenv": "4.0.0",
     "eslint": "^4.12.0",
     "eslint-config-react-app": "^2.0.1",
@@ -108,6 +108,7 @@
     "style-loader": "0.19.0",
     "styled-components": "^2.4.0",
     "styled-system": "^1.1.1",
+    "subscriptions-transport-ws": "^0.9.5",
     "sw-precache-webpack-plugin": "0.11.4",
     "url-loader": "0.6.2",
     "weaktuplemap": "^1.0.0",
