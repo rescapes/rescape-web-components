@@ -9,11 +9,11 @@
  * THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import {styleMultiplier} from 'helpers/styleHelpers';
+import {styleMultiplier} from 'rescape-helpers';
 import {
   composeViews, eMap, renderChoicepoint, nameLookup, propsFor,
   propsForSansClass
-} from 'helpers/componentHelpers';
+} from 'rescape-helpers';
 import current from 'components/current';
 import {Component} from 'react'
 import PropTypes from 'prop-types'

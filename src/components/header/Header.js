@@ -3,9 +3,10 @@ import {Link as link} from 'react-router-dom';
 import {withRouter} from 'react-router';
 import {throwing} from 'rescape-ramda';
 import {
-  composeViews, eMap, renderChoicepoint, nameLookup, propsFor,
+  composeViews, renderChoicepoint, nameLookup, propsFor,
   renderErrorDefault, renderLoadingDefault, keyWith, propsForItem
-} from 'helpers/componentHelpers';
+} from 'rescape-helpers';
+import {eMap} from 'rescape-helpers-component'
 import * as R from 'ramda';
 import {Grid as grid, Logo as logo} from 'components/atoms';
 import {

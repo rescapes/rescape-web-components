@@ -11,7 +11,7 @@
 
 import * as R from 'ramda';
 import { makeFeaturesByTypeSelector, makeMarkersByTypeSelector, makeGeojsonSelector } from './geojsonSelectors'
-import {STATUS} from './selectorHelpers';
+import {STATUS} from 'rescape-helpers'
 const {IS_SELECTED, IS_ACTIVE} = STATUS;
 
 describe('geojsonSelectors', () => {

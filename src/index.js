@@ -9,11 +9,12 @@ import createClient from './apolloClient';
 import {Provider as provider} from 'react-redux';
 import storeCreator from './store';
 import {getCurrentConfig} from 'data/current/currentConfig';
-import {eMap} from 'helpers/componentHelpers';
+import {eMap} from 'rescape-helpers-component';
 import * as R from 'ramda';
-import {mockApolloClientWithSamples} from 'helpers/testHelpers';
-import {calculateResponsiveState} from 'redux-responsive';
+import {mockApolloClientWithSamples} from 'rescape-helpers';
+import {resolvedSchema} from 'helpers/helpers'
 
+import {calculateResponsiveState} from 'redux-responsive';
 const [BrowserRouter, ApolloProvider, Provider, App] = eMap([browserRouter, apolloProvider, provider, app]);
 
 // Create a store based on the configured environment (development, production, test)
@@ -24,7 +25,7 @@ store.dispatch(calculateResponsiveState(window))
 
 // Set the client to the mockApolloClient for testingj
 const client = R.cond([
-  [R.equals('test'), () => mockApolloClientWithSamples()],
+  [R.equals('test'), () => mockApolloClientWithSamples(resolvedSchema)],
   [R.T, () => createClient()]
 ])(process.env.NODE_ENV);
 

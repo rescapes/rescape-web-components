@@ -11,15 +11,13 @@
 
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import {actionCreators} from 'src/redux/geojson/geojsonReducer';
+import {actionCreators} from 'reducers/geojsonReducer';
 import {onViewportChange} from 'redux-map-gl';
-import Mapbox from './Mapbox'
-const {hoverMarker, selectMarker} = actionCreators;
 import {v} from 'rescape-validate';
-import PropTypes from 'prop-types';
 import {createSelector} from 'reselect';
 import * as R from 'ramda';
 import {viewportSelector} from 'selectors/mapboxSelectors';
+const {hoverMarker, selectMarker} = actionCreators;
 
 /**
  * Uses props as state and makes convenience views

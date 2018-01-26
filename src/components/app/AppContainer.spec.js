@@ -1,10 +1,12 @@
 import appContainer, {testPropsMaker, queries} from 'components/app/AppContainer';
-import {eMap} from 'helpers/componentHelpers';
+import {eMap} from 'rescape-helpers-component';
 import * as R from 'ramda';
 import {c} from 'components/app/App';
 import {gql} from 'apollo-client-preset';
-import {apolloContainerTests} from 'helpers/apolloContainerTestHelpers';
+import {apolloContainerTests} from 'rescape-helpers';
 import {MemoryRouter as memoryRouter} from 'react-router-dom'
+import {makeSchema} from 'rescape-sample-data'
+const schema = makeSchema()
 
 const [AppContainer, MemoryRouter] = eMap([appContainer, memoryRouter]);
 // Test this container with a memory router so we can test the main route
@@ -32,6 +34,7 @@ const errorMaker = parentProps => R.set(R.lensPath(['user', 'id']), 'foo', paren
  * Nothing to do here, since App has no parent component
  */
 describe('AppContainer', () => apolloContainerTests({
+    schema,
     Container,
     componentName,
     childClassDataName,

@@ -3,10 +3,10 @@ import current from './Main'
 import {sampleConfig} from 'data/samples/sampleConfig';
 import initialState from 'data/initialState'
 import * as R from 'ramda';
-import {reqPath} from 'rescape-ramda'.throwing;
-import {eMap} from 'helpers/componentHelpers';
+import {throwing as rt} from 'rescape-ramda';
+import {eMap} from 'rescape-helpers-component';
 import {mapStateToProps} from './MainContainer';
-import {propsFromSampleStateAndContainer, shallowWrap} from 'helpers/testHelpers';
+import {propsFromSampleStateAndContainer, shallowWrap} from 'rescape-helpers';
 import main from 'components/main/Main';
 const [Main] = eMap([main]);
 

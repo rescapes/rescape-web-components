@@ -43,7 +43,8 @@ export default () => {
   const httpLinkWithAuthToken = middlewareAuthLink.concat(httpLink);
 
   // Create a WebSocketLink to handle subscriptions from our subscription URI
-  const wsLink = new WebSocketLink({
+  // null out for node
+  const wsLink = process.browser ? new WebSocketLink({
     uri: `wss://subscriptions.graph.cool/v1/${serviceIdKey}`,
     options: {
       reconnect: true,
@@ -51,10 +52,10 @@ export default () => {
         authToken: localStorage.getItem(authTokenKey)
       }
     }
-  });
+  }) : null;
 
   // Split queries between HTTP for Queries/Mutations and Websockets for Subscriptions.
-  const link = split(
+  const link =  process.browser ? split(
     // query is the Operation
     ({query}) => {
       const {kind, operation} = getMainDefinition(query);
@@ -64,7 +65,7 @@ export default () => {
     wsLink,
     // Else use HttpLink with auth token
     httpLinkWithAuthToken
-  )
+  ) : httpLinkWithAuthToken
 
   /*
   const errorLink = onError(({ graphQLErrors, networkError }) => {
@@ -81,7 +82,7 @@ export default () => {
   // Create the ApolloClient using the following ApolloClientOptions
   return new ApolloClient({
     // Ths split Link
-    headerLink: link,
+    link: link,
     // Use InMemoryCache
     cache: new InMemoryCache()
   });

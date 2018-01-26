@@ -8,7 +8,7 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import {styleMultiplier} from 'helpers/styleHelpers';
+import {styleMultiplier} from 'rescape-helpers';
 import mapbox from 'components/map/mapbox/MapboxContainer';
 import sankey from 'components/map/sankey/SankeyContainer';
 import markerList from 'components/map/marker/MarkerListContainer';
@@ -17,7 +17,7 @@ import {applyMatchingStyles, mergeAndApplyMatchingStyles} from 'selectors/styleS
 import {
   nameLookup, eMap, propsFor, renderChoicepoint, composeViews,
   propsForSansClass, renderLoadingDefault, renderErrorDefault
-} from 'helpers/componentHelpers';
+} from 'rescape-helpers';
 import {mergeDeep, strPath, throwing} from 'rescape-ramda';
 import * as R from 'ramda';
 import {Component} from 'react';

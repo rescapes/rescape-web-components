@@ -16,12 +16,13 @@ import {makeMergeDefaultStyleWithProps} from 'selectors/styleSelectors';
 import {mapboxSelector, viewportSelector} from 'selectors/mapboxSelectors';
 import {makeActiveUserAndSettingsSelector} from 'selectors/storeSelectors';
 import {createSelector} from 'reselect';
-import {makeApolloTestPropsFunction} from 'helpers/componentHelpers';
+import {makeApolloTestPropsFunction} from 'rescape-helpers';
 import {mergeDeep, throwing} from 'rescape-ramda';
 import Mapbox from './Mapbox';
 import * as R from 'ramda';
 import {graphql} from 'react-apollo';
 import {gql} from 'apollo-client-preset';
+import {apolloTestPropsFunction} from 'helpers/helpers';
 
 /**
  * Selects the current user from state
@@ -124,7 +125,7 @@ const ContainerWithData = graphql(
 (Mapbox);
 
 // Returns a function that expects state and ownProps for testing
-export const testPropsMaker = makeApolloTestPropsFunction(mapStateToProps, mapDispatchToProps, queries.geojson);
+export const testPropsMaker = apolloTestPropsFunction(mapStateToProps, mapDispatchToProps, queries.geojson);
 
 // Using R.merge to ignore ownProps, which were already merged by mapStateToProps
 export default connect(mapStateToProps, mapDispatchToProps, R.merge)(ContainerWithData);

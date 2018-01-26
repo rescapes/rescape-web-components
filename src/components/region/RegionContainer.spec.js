@@ -1,14 +1,16 @@
 import {
   propsFromSampleStateAndContainer
-} from 'helpers/testHelpers';
+} from 'rescape-helpers';
 import RegionContainer, {testPropsMaker, queries} from 'components/region/RegionContainer';
 import {testPropsMaker as currentPropsMaker} from 'components/current/CurrentContainer';
-import {eMap} from 'helpers/componentHelpers';
+import {eMap} from 'rescape-helpers-component';
 import * as R from 'ramda';
 import Current, {c as cCurrent} from 'components/current/Current';
 import {c} from 'components/region/Region';
 import {gql} from 'apollo-client-preset';
-import {apolloContainerTests} from 'helpers/apolloContainerTestHelpers';
+import {apolloContainerTests} from 'rescape-helpers';
+import {makeSchema} from 'rescape-sample-data'
+const schema = makeSchema()
 
 // Test this container
 const [Container] = eMap([RegionContainer]);
@@ -36,6 +38,7 @@ const asyncParentProps = () => new Promise((resolve) => {
 });
 
 describe('RegionContainer', () => apolloContainerTests({
+    schema,
     Container,
     componentName,
     childClassDataName,

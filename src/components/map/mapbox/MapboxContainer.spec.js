@@ -1,15 +1,18 @@
-import {asyncPropsFromSampleStateAndContainer, propsFromSampleStateAndContainer} from 'helpers/testHelpers';
+import {asyncPropsFromSampleStateAndContainer, propsFromSampleStateAndContainer} from 'rescape-helpers';
 import {queries, testPropsMaker} from 'components/map/mapbox/MapboxContainer';
 import {testPropsMaker as currentPropsMaker} from 'components/current/CurrentContainer';
 import {testPropsMaker as regionPropsMaker} from 'components/region/RegionContainer';
-import {eMap} from 'helpers/componentHelpers';
+import {eMap} from 'rescape-helpers-component';
 import MapboxContainer from 'components/map/mapbox/MapboxContainer';
 import * as R from 'ramda';
 import Current, {c as cCurrent} from 'components/current/Current';
 import Region, {c as cRegion} from 'components/region/Region';
 import Mapbox, {c} from 'components/map/mapbox/Mapbox';
 import {gql} from 'apollo-client-preset';
-import {apolloContainerTests} from 'helpers/apolloContainerTestHelpers';
+import {apolloContainerTests} from 'rescape-helpers';
+import {makeSchema} from 'rescape-sample-data';
+
+const schema = makeSchema();
 
 // Test this container
 const [Container] = eMap([MapboxContainer]);
@@ -53,6 +56,7 @@ const asyncParentProps = () => {
 };
 
 describe('MapboxContainer', () => apolloContainerTests({
+    schema,
     Container,
     componentName,
     childClassDataName,

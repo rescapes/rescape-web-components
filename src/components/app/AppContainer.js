@@ -7,7 +7,7 @@ import {createSelector} from 'reselect';
 import {makeActiveUserRegionsAndSettingsSelector} from 'selectors/storeSelectors';
 import {makeBrowserProportionalDimensionsSelector} from 'selectors/styleSelectors';
 import {mergeDeep} from 'rescape-ramda';
-import {makeApolloTestPropsFunction} from 'helpers/componentHelpers';
+import {makeApolloTestPropsFunction} from 'rescape-helpers';
 
 
 /**
@@ -102,7 +102,7 @@ const ContainerWithData = graphql(
   queries.userRegions.args)(App)
 
 // Returns a function that expects state and ownProps for testing
-export const testPropsMaker = makeApolloTestPropsFunction(mapStateToProps, mapDispatchToProps, queries.userRegions);
+export const testPropsMaker = apolloTestPropsFunction(mapStateToProps, mapDispatchToProps, queries.userRegions);
 
 // Using R.merge to ignore ownProps, which were already merged by mapStateToProps
 export default connect(mapStateToProps, mapDispatchToProps, R.merge)(ContainerWithData);

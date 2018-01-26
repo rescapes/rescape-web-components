@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {mergeDeep, throwing} from 'rescape-ramda';
-import {loadingCompleteStatus, makeTestPropsFunction, mergeActionsForViews} from 'helpers/componentHelpers';
+import {loadingCompleteStatus, makeTestPropsFunction, mergeActionsForViews} from 'rescape-helpers';
 import {makeMergeDefaultStyleWithProps} from 'selectors/styleSelectors';
 import {createSelector} from 'reselect';
 import {connect} from 'react-redux';

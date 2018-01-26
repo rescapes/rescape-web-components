@@ -11,7 +11,7 @@
 
 import React from 'react';
 import {DraggablePointsOverlay, SVGOverlay} from 'react-map-gl';
-import {resolveSvgReact} from 'helpers/svgHelpers';
+import {resolveSvgReact} from 'rescape-helpers';
 import {LineLayer} from 'deck.gl';
 import PropTypes from 'prop-types';
 import * as R from 'ramda';

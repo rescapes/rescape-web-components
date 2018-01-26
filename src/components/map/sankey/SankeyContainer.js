@@ -16,7 +16,7 @@ import {makeMergeDefaultStyleWithProps} from 'selectors/styleSelectors';
 import {mapboxSelector} from 'selectors/mapboxSelectors';
 import {makeActiveUserAndSettingsSelector} from 'selectors/storeSelectors';
 import {createSelector} from 'reselect';
-import {makeApolloTestPropsFunction} from 'helpers/componentHelpers';
+import {makeApolloTestPropsFunction} from 'rescape-helpers';
 import {mergeDeep, throwing} from 'rescape-ramda';
 import Sankey from './Sankey';
 import * as R from 'ramda';
@@ -231,7 +231,7 @@ const ContainerWithData = R.compose(
 (Sankey);
 
 // Returns a function that expects state and ownProps for testing
-export const testPropsMaker = makeApolloTestPropsFunction(mapStateToProps, mapDispatchToProps, queries.geojson);
+export const testPropsMaker = apolloTestPropsFunction(mapStateToProps, mapDispatchToProps, queries.geojson);
 
 // Using R.merge to ignore ownProps, which were already merged by mapStateToProps
 export default connect(mapStateToProps, mapDispatchToProps, R.merge)(ContainerWithData);

@@ -1,8 +1,8 @@
 import React from 'react';
 
-import {propsFromSampleStateAndContainer, shallowWrap} from 'helpers/testHelpers';
+import {propsFromSampleStateAndContainer, shallowWrap} from 'rescape-helpers';
 import header from './Header'
-import {eMap} from 'helpers/componentHelpers';
+import {eMap} from 'rescape-helpers-component';
 import {testPropsMaker} from 'components/header/headerContainer';
 const [Header] = eMap([header]);
 

@@ -11,7 +11,7 @@
 
 import {fetchTransit} from './overpassIO';
 import {removeDuplicateObjectsByProp} from 'rescape-ramda';
-import {expectTask} from 'helpers/testHelpers';
+import {expectTask} from 'rescape-helpers';
 import fs from 'fs';
 import {LA_SAMPLE, LA_BOUNDS} from 'async/queryOverpass.sample';
 

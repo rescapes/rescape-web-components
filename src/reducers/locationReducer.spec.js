@@ -11,7 +11,7 @@
 
 import {actionTypes} from './geojsonReducer';
 import {setState} from './fullStateReducer';
-import {expectTask} from 'helpers/jestHelpers';
+import {expectTask} from 'rescape-helpers';
 import {LA_SAMPLE} from 'data/samples/oakland-sample/oaklandLocations.sample';
 import {ROOT} from './geojsonConfig';
 import {ACTION_ROOT} from 'locationActions';
@@ -19,10 +19,11 @@ import {asyncActionCreators} from 'redux/actionHelpers';
 import Task from 'data.task';
 import thunk from 'redux-thunk'
 import {LA_BOUNDS} from 'async/queryOverpass.sample';
-import {makeSampleStore} from 'helpers/testHelpers');
+import {makeSampleStore} from 'rescape-helpers-component';
+import configureStore from 'redux-mock-store';
 
 const middlewares = [ thunk ];
-const mockStore = configureMockStore(middlewares);
+const mockStore = configureStore(middlewares);
 // Mock the asynchronous actionCreator
 const {fetchLocationsData} = asyncActionCreators(ROOT, ACTION_ROOT, 'FETCH', () => Task.of(LA_SAMPLE));
 const {removeLocationsData} = asyncActionCreators(ROOT, ACTION_ROOT, 'REMOVE', () => Task.of(LA_SAMPLE));

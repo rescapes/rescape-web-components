@@ -11,16 +11,18 @@
 
 import {
   asyncPropsFromSampleStateAndContainer,
-} from 'helpers/testHelpers';
+} from 'rescape-helpers';
 import headerContainer, {testPropsMaker, queries} from 'components/header/HeaderContainer';
 import {testPropsMaker as appPropsMaker} from 'components/app/AppContainer';
-import {eMap, withRebassProvider} from 'helpers/componentHelpers';
+import {eMap, withRebassProvider} from 'rescape-helpers-component';
 import App, {c as cApp} from 'components/app/App';
 import {c} from 'components/header/Header';
-import {apolloContainerTests} from 'helpers/apolloContainerTestHelpers';
+import {apolloContainerTests} from 'rescape-helpers';
 import mockRouter from 'react-mock-router'
 import * as R from 'ramda'
 import {Provider as provider} from 'rebass'
+import {makeSchema} from 'rescape-sample-data'
+const schema = makeSchema()
 
 // Test this container
 const [HeaderContainer, MockRouter, Provider] = eMap([headerContainer, mockRouter, provider]);
@@ -44,6 +46,7 @@ const asyncParentProps = () =>
     });
 
 describe('HeaderContainer', () => apolloContainerTests({
+    schema,
     Container,
     componentName,
     childClassDataName,

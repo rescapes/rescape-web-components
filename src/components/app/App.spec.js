@@ -2,7 +2,7 @@ import {shallow} from 'enzyme';
 import app from './App'
 import {sampleConfig} from 'data/samples/sampleConfig';
 import initialState from 'data/initialState'
-import {eMap} from 'helpers/componentHelpers';
+import {eMap} from 'rescape-helpers-component';
 const [App] = eMap([app]);
 import {mapStateToProps} from './AppContainer';
 

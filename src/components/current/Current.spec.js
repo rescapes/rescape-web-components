@@ -1,8 +1,8 @@
 jest.dontMock('./Current');
 import current from './Current'
-import {eMap} from 'helpers/componentHelpers';
+import {eMap} from 'rescape-helpers-component';
 import {testPropsMaker} from 'components/current/CurrentContainer';
-import {propsFromSampleStateAndContainer, shallowWrap} from 'helpers/testHelpers';
+import {propsFromSampleStateAndContainer, shallowWrap} from 'rescape-helpers';
 const [Current] = eMap([current]);
 
 describe('The current application', () => {

@@ -15,7 +15,7 @@ import rbush from 'rbush';
 import * as R from 'ramda';
 import locationIconMapping from './locationIconMapping'
 import PropTypes from 'prop-types';
-import {eMap} from 'helpers/componentHelpers';
+import {eMap} from 'rescape-helpers-component';
 const e = React.createElement;
 const [DeckGL] =
   eMap([deckGL]);

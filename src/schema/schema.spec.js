@@ -10,12 +10,12 @@
  */
 import {graphql} from 'graphql';
 import {addMockFunctionsToSchema} from 'graphql-tools';
-import schema from './schema';
+import createSchema from './schema';
 
 describe('schema', () => {
   test('Can process schema', () => {
     // Add mocks, modifies schema in place
-    addMockFunctionsToSchema({schema});
+    addMockFunctionsToSchema({schema: createSchema()});
 
     const query = `
         query tasksForUser {
@@ -27,6 +27,6 @@ describe('schema', () => {
         }
     `;
 
-    graphql(schema, query).then((result) => console.log('Got result', result));
+    graphql(createSchema(), query).then((result) => console.log('Got result', result));
   });
 });

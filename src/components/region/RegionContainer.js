@@ -2,7 +2,7 @@ import {connect} from 'react-redux';
 import {makeMergeDefaultStyleWithProps} from 'selectors/styleSelectors';
 import {gql} from 'apollo-client-preset';
 import {graphql} from 'react-apollo';
-import {makeApolloTestPropsFunction} from 'helpers/componentHelpers';
+import {makeApolloTestPropsFunction} from 'rescape-helpers';
 import {mergeDeep, throwing} from 'rescape-ramda';
 import React from 'react';
 import * as R from 'ramda';
@@ -108,7 +108,7 @@ const ContainerWithData = graphql(
 (Region);
 
 // Returns a function that expects state and ownProps for testing
-export const testPropsMaker = makeApolloTestPropsFunction(mapStateToProps, mapDispatchToProps, queries.region);
+export const testPropsMaker = apolloTestPropsFunction(mapStateToProps, mapDispatchToProps, queries.region);
 
 // Using R.merge to ignore ownProps, which were already merged by mapStateToProps
 export default connect(mapStateToProps, mapDispatchToProps, R.merge)(ContainerWithData);

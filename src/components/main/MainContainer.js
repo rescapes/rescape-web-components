@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import * as R from 'ramda';
 import {makeActiveUserRegionsAndSettingsSelector} from 'selectors/storeSelectors';
 import {makeBrowserProportionalDimensionsSelector, makeMergeDefaultStyleWithProps} from 'selectors/styleSelectors';
-import {loadingCompleteStatus, makeApolloTestPropsFunction} from 'helpers/componentHelpers';
+import {loadingCompleteStatus, makeApolloTestPropsFunction} from 'rescape-helpers';
 import Main from 'components/main/Main';
 import {gql} from 'apollo-client-preset';
 import {createSelector} from 'reselect';
@@ -93,7 +93,7 @@ const ContainerWithData = graphql(
 (Main);
 
 // Returns a function that expects state and ownProps for testing
-export const testPropsMaker = makeApolloTestPropsFunction(mapStateToProps, mapDispatchToProps, queries.allUserRegions);
+export const testPropsMaker = apolloTestPropsFunction(mapStateToProps, mapDispatchToProps, queries.allUserRegions);
 
 // Using R.merge to ignore ownProps, which were already merged by mapStateToProps
 export default connect(mapStateToProps, mapDispatchToProps, R.merge)(ContainerWithData);

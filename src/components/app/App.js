@@ -2,10 +2,10 @@ import React, {Component} from 'react';
 import Login from 'components/login';
 import Main from 'components/main';
 import {Switch as switchy, Route as route} from 'react-router-dom';
-import {
-  eMap, renderChoicepoint, nameLookup, propsFor, propsForSansClass,
-  renderErrorDefault, renderLoadingDefault, composeViews
-} from 'helpers/componentHelpers';
+import { renderChoicepoint, nameLookup, propsFor, propsForSansClass, renderErrorDefault, renderLoadingDefault,
+  composeViews
+} from 'rescape-helpers';
+import { eMap } from 'rescape-helpers-component'
 import header from 'components/header';
 import * as R from 'ramda';
 import {Provider as provider} from 'rebass';

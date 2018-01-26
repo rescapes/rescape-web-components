@@ -14,9 +14,9 @@ import {throwing} from 'rescape-ramda';
 import {
   composeViews, eMap, renderChoicepoint, nameLookup, propsFor,
   propsForSansClass, renderErrorDefault, renderLoadingDefault
-} from 'helpers/componentHelpers';
+} from 'rescape-helpers';
 import * as R from 'ramda';
-import {styleMultiplier} from 'helpers/styleHelpers';
+import {styleMultiplier} from 'rescape-helpers';
 import {applyMatchingStyles, mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
 import {Component} from 'react'
 import PropTypes from 'prop-types';

@@ -10,7 +10,8 @@
  */
 
 import * as atoms from './atoms'
-import {eMap} from 'helpers/componentHelpers';
+import {eMap} from 'rescape-helpers-component';
+import {mount} from 'enzyme'
 const [Logo] = eMap([atoms.Logo])
 
 describe('atoms', () => {

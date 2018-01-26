@@ -16,8 +16,7 @@ import {throwing} from 'rescape-ramda'
 import {activeUserSelectedRegionsSelector, regionSelector} from 'selectors/regionSelectors';
 import { settingsSelector} from 'selectors/settingsSelectors';
 import {
-  activeUserSelectedRegionSelector, activeUsersSelector, userSelectedRegionSelector,
-  userSelector
+  activeUserSelectedRegionSelector, activeUsersSelector, userSelector
 } from 'selectors/userSelectors';
 import {mapboxSelector} from 'selectors/mapboxSelectors';
 

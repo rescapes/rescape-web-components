@@ -13,7 +13,7 @@ import {mergeDeepAll, throwing} from 'rescape-ramda';
 import {createSelector} from 'reselect';
 import * as R from 'ramda';
 import {mapboxSettingsSelector} from 'selectors/settingsSelectors';
-import {fromImmutable, toImmutable} from 'helpers/immutableHelpers';
+import {fromImmutable, toImmutable} from 'rescape-helpers';
 const {reqPath, reqStrPath} = throwing;
 
 /**

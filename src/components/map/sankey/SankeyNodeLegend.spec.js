@@ -9,12 +9,14 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import {eMap} from 'helpers/componentHelpers';
+import {eMap} from 'rescape-helpers-component';
 import Sankey, {c as cSankey} from 'components/map/sankey/Sankey'
 import SankeyNodeLegend, {c} from 'components/map/sankey/SankeyNodeLegend';
-import {apolloContainerTests} from 'helpers/apolloContainerTestHelpers';
+import {apolloContainerTests} from 'rescape-helpers';
 import {asyncParentPropsForSankey} from 'components/map/sankey/SankeyContainer.spec';
 import {testPropsMaker} from 'components/map/sankey/SankeyContainer';
+import {makeSchema} from 'rescape-sample-data'
+const schema = makeSchema()
 
 // Test this container
 const [Container] = eMap([SankeyNodeLegend]);
@@ -37,6 +39,7 @@ const asyncParentPropsForSankeyNodeLegend = async () => {
 };
 
 describe('SankeyNodeLegend', () => apolloContainerTests({
+    schema,
     Container,
     componentName,
     childClassDataName,

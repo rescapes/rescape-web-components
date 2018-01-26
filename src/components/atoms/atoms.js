@@ -10,7 +10,8 @@
  */
 
 import {Box as box, Flex as flex, Image as image} from 'rebass';
-import {composeViewsFromStruct, eMap, nameLookup, propsFor} from 'helpers/componentHelpers';
+import {composeViewsFromStruct, nameLookup, propsFor} from 'rescape-helpers';
+import {eMap} from 'rescape-helpers-component'
 import * as R from 'ramda';
 import {throwing} from 'rescape-ramda';
 import styled from 'styled-components';

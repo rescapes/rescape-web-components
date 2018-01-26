@@ -1,8 +1,8 @@
 import React from 'react';
 
-import {propsFromSampleStateAndContainer, shallowWrap} from 'helpers/testHelpers';
+import {propsFromSampleStateAndContainer, shallowWrap} from 'rescape-helpers';
 import region from './Region'
-import {eMap} from 'helpers/componentHelpers';
+import {eMap} from 'rescape-helpers-component';
 import {testPropsMaker} from 'components/current/CurrentContainer';
 const [Region] = eMap([region]);
 

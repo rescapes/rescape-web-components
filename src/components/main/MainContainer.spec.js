@@ -4,11 +4,13 @@ import {
   makeSampleInitialState,
   mockApolloClientWithSamples,
   propsFromSampleStateAndContainer, wrapWithMockGraphqlAndStore
-} from 'helpers/testHelpers';
+} from 'rescape-helpers';
 import MainContainer, {testPropsMaker, queries} from 'components/main/MainContainer';
-import {eMap} from 'helpers/componentHelpers';
+import {eMap} from 'rescape-helpers-component';
 import {createWaitForElement} from 'enzyme-wait';
 import {gql} from 'apollo-client-preset';
+
+import {resolvedSchema} from 'helpers/helpers'
 
 describe('MainContainer', () => {
   const parentProps = {
@@ -26,7 +28,7 @@ describe('MainContainer', () => {
 
   test('query', async () => {
     const props = await propsFromSampleStateAndContainer(testPropsMaker, parentProps).then(eitherToPromise)
-    const data = await mockApolloClientWithSamples().query({
+    const data = await mockApolloClientWithSamples(resolvedSchema).query({
       query: gql`${queries.allUserRegions.query}`,
       variables: {
         userId: props.data.user.id

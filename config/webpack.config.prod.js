@@ -244,7 +244,6 @@ module.exports = {
     new HtmlWebpackPlugin({
       inject: true,
       template: paths.appHtml,
-      /*
       minify: {
         removeComments: true,
         collapseWhitespace: true,
@@ -257,7 +256,6 @@ module.exports = {
         minifyCSS: true,
         minifyURLs: true,
       },
-      */
     }),
     // Makes some environment variables available to the JS code, for example:
     // if (process.env.NODE_ENV === 'production') { ... }. See `./env.js`.
@@ -265,8 +263,8 @@ module.exports = {
     // Otherwise React will be compiled in the very slow development mode.
     new webpack.DefinePlugin(env.stringified),
     // Minify the code.
-    /*
     new webpack.optimize.UglifyJsPlugin({
+      exclude: /ansi-styles/gi,
       compress: {
         warnings: false,
         // Disabled because of an issue with Uglify breaking seemingly valid code:
@@ -286,7 +284,6 @@ module.exports = {
       },
       sourceMap: shouldUseSourceMap,
     }),
-    */
     // Note: this won't work without ExtractTextPlugin.extract(..) in `loaders`.
     new ExtractTextPlugin({
       filename: cssFilename,
