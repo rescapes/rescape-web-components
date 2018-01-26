@@ -15,7 +15,7 @@ import {composeViews, eMap, renderChoicepoint, nameLookup, propsFor} from 'resca
 import {throwing} from 'rescape-ramda'
 import * as R from 'ramda';
 import {mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
-import {styleArithmetic} from 'rescape-helpers';
+import {styleArithmetic} from 'rescape-helpers-component';
 const {reqStrPath} = throwing
 
 const [Div, Region] =

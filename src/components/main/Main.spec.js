@@ -6,7 +6,7 @@ import * as R from 'ramda';
 import {throwing as rt} from 'rescape-ramda';
 import {eMap} from 'rescape-helpers-component';
 import {mapStateToProps} from './MainContainer';
-import {propsFromSampleStateAndContainer, shallowWrap} from 'rescape-helpers';
+import {propsFromSampleStateAndContainer, shallowWrap} from 'rescape-helpers-component';
 import main from 'components/main/Main';
 const [Main] = eMap([main]);
 

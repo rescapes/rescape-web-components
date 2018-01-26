@@ -11,7 +11,7 @@ import storeCreator from './store';
 import {getCurrentConfig} from 'data/current/currentConfig';
 import {eMap} from 'rescape-helpers-component';
 import * as R from 'ramda';
-import {mockApolloClientWithSamples} from 'rescape-helpers';
+import {mockApolloClientWithSamples} from 'rescape-helpers-component';
 import {resolvedSchema} from 'helpers/helpers'
 
 import {calculateResponsiveState} from 'redux-responsive';

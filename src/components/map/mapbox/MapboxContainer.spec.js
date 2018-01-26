@@ -1,4 +1,4 @@
-import {asyncPropsFromSampleStateAndContainer, propsFromSampleStateAndContainer} from 'rescape-helpers';
+import {asyncPropsFromSampleStateAndContainer, propsFromSampleStateAndContainer} from 'rescape-helpers-component';
 import {queries, testPropsMaker} from 'components/map/mapbox/MapboxContainer';
 import {testPropsMaker as currentPropsMaker} from 'components/current/CurrentContainer';
 import {testPropsMaker as regionPropsMaker} from 'components/region/RegionContainer';
@@ -9,7 +9,7 @@ import Current, {c as cCurrent} from 'components/current/Current';
 import Region, {c as cRegion} from 'components/region/Region';
 import Mapbox, {c} from 'components/map/mapbox/Mapbox';
 import {gql} from 'apollo-client-preset';
-import {apolloContainerTests} from 'rescape-helpers';
+import {apolloContainerTests} from 'rescape-helpers-component';
 import {makeSchema} from 'rescape-sample-data';
 
 const schema = makeSchema();

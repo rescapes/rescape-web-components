@@ -13,7 +13,7 @@ import {DraggablePointsOverlay, SVGOverlay} from 'react-map-gl';
 import PropTypes from 'prop-types';
 import React from 'react';
 import * as R from 'ramda';
-import {resolveSvgReact} from 'rescape-helpers';
+import {resolveSvgReact} from 'rescape-helpers-component';
 const e = React.createElement;
 const ENTER_KEY = 13;
 const LIGHT_SETTINGS = {

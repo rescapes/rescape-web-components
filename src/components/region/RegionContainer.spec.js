@@ -1,6 +1,6 @@
 import {
   propsFromSampleStateAndContainer
-} from 'rescape-helpers';
+} from 'rescape-helpers-component';
 import RegionContainer, {testPropsMaker, queries} from 'components/region/RegionContainer';
 import {testPropsMaker as currentPropsMaker} from 'components/current/CurrentContainer';
 import {eMap} from 'rescape-helpers-component';
@@ -8,7 +8,7 @@ import * as R from 'ramda';
 import Current, {c as cCurrent} from 'components/current/Current';
 import {c} from 'components/region/Region';
 import {gql} from 'apollo-client-preset';
-import {apolloContainerTests} from 'rescape-helpers';
+import {apolloContainerTests} from 'rescape-helpers-component';
 import {makeSchema} from 'rescape-sample-data'
 const schema = makeSchema()
 

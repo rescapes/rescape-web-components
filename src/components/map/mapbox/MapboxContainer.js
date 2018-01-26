@@ -16,7 +16,7 @@ import {makeMergeDefaultStyleWithProps} from 'selectors/styleSelectors';
 import {mapboxSelector, viewportSelector} from 'selectors/mapboxSelectors';
 import {makeActiveUserAndSettingsSelector} from 'selectors/storeSelectors';
 import {createSelector} from 'reselect';
-import {makeApolloTestPropsFunction} from 'rescape-helpers';
+import {makeApolloTestPropsFunction} from 'rescape-helpers-component';
 import {mergeDeep, throwing} from 'rescape-ramda';
 import Mapbox from './Mapbox';
 import * as R from 'ramda';

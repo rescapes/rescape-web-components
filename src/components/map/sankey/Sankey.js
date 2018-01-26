@@ -15,22 +15,22 @@ import {strPath, throwing} from 'rescape-ramda';
 import {
   composeViews, eMap, renderChoicepoint, itemizeProps, mergePropsForViews, nameLookup, propsFor,
   propsForSansClass, renderErrorDefault, renderLoadingDefault, keyWith
-} from 'rescape-helpers';
+} from 'rescape-helpers-component';
 import * as R from 'ramda';
 import {applyMatchingStyles, mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
 import {Component} from 'react';
-import {sankeyGenerator, sankeyGeospatialTranslate} from 'rescape-helpers';
+import {sankeyGenerator, sankeyGeospatialTranslate} from 'rescape-helpers-component';
 import {linkStages, resolveLinkStage, resolveNodeStage, resolveNodeName, stages} from 'data/belgium/brusselsSankeySample';
 import PropTypes from 'prop-types';
 import {sankeyLinkHorizontal} from 'd3-sankey';
 import {format as d3Format} from 'd3-format';
 import {scaleOrdinal, schemeCategory10} from 'd3-scale';
-import {resolveSvgReact} from 'rescape-helpers';
+import {resolveSvgReact} from 'rescape-helpers-component';
 import {Flex as flex} from 'rebass';
 import sankeyNodeLegend from './SankeyNodeLegend'
 import sankeyLinkLegend from './SankeyLinkLegend'
 import sankeyFilterer from './SankeyFilterer';
-import {styleArithmetic} from 'rescape-helpers';
+import {styleArithmetic} from 'rescape-helpers-component';
 
 // Sankey settings. These should be moved to style
 const nodeWidth = 15;

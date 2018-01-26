@@ -12,7 +12,7 @@
 import {
   composeViews, eMap, renderChoicepoint, itemizeProps, nameLookup, propsFor,
   propsForSansClass, renderErrorDefault, renderLoadingDefault
-} from 'rescape-helpers';
+} from 'rescape-helpers-component';
 import * as R from 'ramda';
 import {
   applyMatchingStyles, mergeAndApplyMatchingStyles,

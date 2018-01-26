@@ -8,7 +8,7 @@ import {
 } from 'selectors/storeSelectors';
 import {makeBrowserProportionalDimensionsSelector, makeMergeDefaultStyleWithProps} from 'selectors/styleSelectors';
 import {mergeDeep, throwing} from 'rescape-ramda';
-import {loadingCompleteStatus, makeTestPropsFunction} from 'rescape-helpers';
+import {loadingCompleteStatus, makeTestPropsFunction} from 'rescape-helpers-component';
 import {bindActionCreators} from 'redux';
 
 /**

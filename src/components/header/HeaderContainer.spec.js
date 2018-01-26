@@ -11,13 +11,13 @@
 
 import {
   asyncPropsFromSampleStateAndContainer,
-} from 'rescape-helpers';
+} from 'rescape-helpers-component';
 import headerContainer, {testPropsMaker, queries} from 'components/header/HeaderContainer';
 import {testPropsMaker as appPropsMaker} from 'components/app/AppContainer';
 import {eMap, withRebassProvider} from 'rescape-helpers-component';
 import App, {c as cApp} from 'components/app/App';
 import {c} from 'components/header/Header';
-import {apolloContainerTests} from 'rescape-helpers';
+import {apolloContainerTests} from 'rescape-helpers-component';
 import mockRouter from 'react-mock-router'
 import * as R from 'ramda'
 import {Provider as provider} from 'rebass'

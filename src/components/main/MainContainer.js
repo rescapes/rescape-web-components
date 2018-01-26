@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import * as R from 'ramda';
 import {makeActiveUserRegionsAndSettingsSelector} from 'selectors/storeSelectors';
 import {makeBrowserProportionalDimensionsSelector, makeMergeDefaultStyleWithProps} from 'selectors/styleSelectors';
-import {loadingCompleteStatus, makeApolloTestPropsFunction} from 'rescape-helpers';
+import {loadingCompleteStatus, makeApolloTestPropsFunction} from 'rescape-helpers-component';
 import Main from 'components/main/Main';
 import {gql} from 'apollo-client-preset';
 import {createSelector} from 'reselect';

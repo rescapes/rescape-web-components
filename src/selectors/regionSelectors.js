@@ -12,10 +12,9 @@
 import {mapped} from 'ramda-lens';
 import {activeUsersSelector} from 'selectors/userSelectors';
 import * as R from 'ramda';
-import {STATUS, status, makeInnerJoinByLensThenFilterSelector, findOneValueByParams} from './selectorHelpers';
+import {STATUS, status, makeInnerJoinByLensThenFilterSelector} from 'rescape-helpers';
 import {throwing} from 'rescape-ramda'
-
-const {reqPath, onlyOneValue} = throwing
+const {reqPath, onlyOneValue, findOneValueByParams} = throwing
 const {IS_SELECTED} = STATUS
 
 /**

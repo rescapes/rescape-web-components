@@ -4,7 +4,7 @@ import {
   makeSampleInitialState,
   mockApolloClientWithSamples,
   propsFromSampleStateAndContainer, wrapWithMockGraphqlAndStore
-} from 'rescape-helpers';
+} from 'rescape-helpers-component';
 import MainContainer, {testPropsMaker, queries} from 'components/main/MainContainer';
 import {eMap} from 'rescape-helpers-component';
 import {createWaitForElement} from 'enzyme-wait';

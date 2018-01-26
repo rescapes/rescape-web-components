@@ -12,11 +12,12 @@
 import reactMapGl from 'react-map-gl';
 import {throwing} from 'rescape-ramda';
 import {
-  composeViews, eMap, renderChoicepoint, nameLookup, propsFor,
+  composeViews, renderChoicepoint, propsFor,
   propsForSansClass, renderErrorDefault, renderLoadingDefault
-} from 'rescape-helpers';
+} from 'rescape-helpers-component';
+import {eMap, nameLookup} from 'rescape-helpers-component'
 import * as R from 'ramda';
-import {styleMultiplier} from 'rescape-helpers';
+import {styleMultiplier} from 'rescape-helpers-component';
 import {applyMatchingStyles, mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
 import {Component} from 'react'
 import PropTypes from 'prop-types';

@@ -10,7 +10,7 @@
  */
 
 // import chroma from 'chroma-js';
-import {createScaledPropertyGetter} from 'rescape-helpers';
+import {createScaledPropertyGetter} from 'rescape-helpers-component';
 import { injectGlobal } from 'styled-components'
 
 injectGlobal`

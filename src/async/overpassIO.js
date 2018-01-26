@@ -16,7 +16,7 @@ import {mergeAllWithKey, removeDuplicateObjectsByProp} from 'rescape-ramda';
 import os from 'os';
 import squareGrid from '@turf/square-grid';
 import bbox from '@turf/bbox';
-import {concatFeatures} from 'rescape-helpers';
+import {concatFeatures} from 'rescape-helpers-component';
 
 /**
  * fetches transit data from OpenStreetMap using the Overpass API.

@@ -11,7 +11,7 @@
 
 import * as R from 'ramda';
 import {throwing} from 'rescape-ramda';
-import {STATUS, status} from 'rescape-helpers'
+import {STATUS, status} from 'rescape-helpers-component'
 import {createSelector} from 'reselect';
 
 const {findOne, reqPath, onlyOneValue} = throwing;

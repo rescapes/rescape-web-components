@@ -10,9 +10,9 @@
  */
 import {mapPropValueAsIndex, throwing} from 'rescape-ramda';
 import * as R from 'ramda';
-import {makeGeojsonsSelector} from 'rescape-helpers';
+import {makeGeojsonsSelector} from 'rescape-helpers-component';
 import reducer from 'r./geojson/geojsonReducer';
-import {makeSampleInitialState} from 'rescape-helpers';
+import {makeSampleInitialState} from 'rescape-helpers-component';
 
 const toObjectKeyedById = mapPropValueAsIndex('id');
 const {onlyOneValue} = throwing

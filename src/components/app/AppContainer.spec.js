@@ -3,7 +3,7 @@ import {eMap} from 'rescape-helpers-component';
 import * as R from 'ramda';
 import {c} from 'components/app/App';
 import {gql} from 'apollo-client-preset';
-import {apolloContainerTests} from 'rescape-helpers';
+import {apolloContainerTests} from 'rescape-helpers-component';
 import {MemoryRouter as memoryRouter} from 'react-router-dom'
 import {makeSchema} from 'rescape-sample-data'
 const schema = makeSchema()

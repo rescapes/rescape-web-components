@@ -16,7 +16,7 @@ import {
 } from 'selectors/styleSelectors';
 import {makeMergeDefaultStyleWithProps} from 'selectors/styleSelectors';
 import * as R from 'ramda';
-import {styleMultiplier} from 'rescape-helpers';
+import {styleMultiplier} from 'rescape-helpers-component';
 
 describe('styleSelectors', () => {
   test('makeMergeDefaultStyleWithProps', () => {

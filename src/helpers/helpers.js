@@ -10,7 +10,7 @@
  */
 
 import {createSchema, getCurrentConfig} from 'rescape-sample-data';
-import {makeApolloTestPropsFunction} from 'rescape-helpers'
+import {makeApolloTestPropsFunction} from 'rescape-helpers-component'
 import {createSelectorResolvedSchema} from 'schema/selectorResolvers';
 import sampleConfig from 'rescape-sample-data'
 export const resolvedSchema = createSelectorResolvedSchema(createSchema(), getCurrentConfig())

@@ -8842,8 +8842,8 @@ rescape-helpers-component@^1.4.1:
     rescape-ramda "^1.4.8"
 
 rescape-helpers@^1.1.15, rescape-helpers@^1.1.7:
-  version "1.1.17"
-  resolved "https://registry.yarnpkg.com/rescape-helpers/-/rescape-helpers-1.1.17.tgz#d54d8e9f0503c40a54909398892a20a65722baa0"
+  version "1.1.18"
+  resolved "https://registry.yarnpkg.com/rescape-helpers/-/rescape-helpers-1.1.18.tgz#1ec1644d99854f12243fa594bddd42fa6ad3ca04"
   dependencies:
     "@turf/bbox" "^5.1.5"
     "@turf/bbox-polygon" "^5.1.5"
@@ -8901,8 +8901,8 @@ rescape-ramda@^1.2.8, rescape-ramda@^1.4.0, rescape-ramda@^1.4.7, rescape-ramda@
     util "^0.10.3"
 
 rescape-sample-data@^1.1.1:
-  version "1.2.0"
-  resolved "https://registry.yarnpkg.com/rescape-sample-data/-/rescape-sample-data-1.2.0.tgz#7de624276d57875245f8ec1c77e676f6cbcf2eaf"
+  version "1.2.1"
+  resolved "https://registry.yarnpkg.com/rescape-sample-data/-/rescape-sample-data-1.2.1.tgz#65d5628dccf2471a028a3128a0fbcee0089b566c"
   dependencies:
     graphql "git://github.com/graphql/graphql-js.git#npm"
     graphql-geojson "^1.0.0"
@@ -8914,7 +8914,6 @@ rescape-sample-data@^1.1.1:
     ramda-lens "^0.1.2"
     rescape-helpers "^1.1.7"
     rescape-ramda "^1.4.0"
-    styled-components "^2.4.0"
 
 rescape-validate@^1.2.3:
   version "1.2.3"

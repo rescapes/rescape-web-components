@@ -11,7 +11,7 @@
 
 import {createSelector} from 'reselect';
 import * as R from 'ramda';
-import {geojsonByType} from 'rescape-helpers';
+import {geojsonByType} from 'rescape-helpers-component';
 import {mergeDeep, throwing} from 'rescape-ramda'
 const {reqPath} = throwing
 

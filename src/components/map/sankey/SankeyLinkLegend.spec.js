@@ -12,7 +12,7 @@
 import {eMap} from 'rescape-helpers-component';
 import Sankey, {c as cSankey} from 'components/map/sankey/Sankey'
 import SankeyLinkLegend, {c} from 'components/map/sankey/SankeyLinkLegend';
-import {apolloContainerTests} from 'rescape-helpers';
+import {apolloContainerTests} from 'rescape-helpers-component';
 import {asyncParentPropsForSankey} from 'components/map/sankey/SankeyContainer.spec';
 import {testPropsMaker} from 'components/map/sankey/SankeyContainer';
 import {makeSchema} from 'rescape-sample-data'

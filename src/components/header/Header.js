@@ -5,7 +5,7 @@ import {throwing} from 'rescape-ramda';
 import {
   composeViews, renderChoicepoint, nameLookup, propsFor,
   renderErrorDefault, renderLoadingDefault, keyWith, propsForItem
-} from 'rescape-helpers';
+} from 'rescape-helpers-component';
 import {eMap} from 'rescape-helpers-component'
 import * as R from 'ramda';
 import {Grid as grid, Logo as logo} from 'components/atoms';

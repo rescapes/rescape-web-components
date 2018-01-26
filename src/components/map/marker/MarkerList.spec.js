@@ -2,7 +2,7 @@ import React from 'react';
 import {shallow} from 'enzyme';
 import {reqPath} from 'rescape-ramda'.throwing;
 import {mapStateToProps} from './MarkerListContainer';
-import {geojsonByType} from 'rescape-helpers';
+import {geojsonByType} from 'rescape-helpers-component';
 
 import {sampleConfig} from 'data/samples/sampleConfig';
 import initialState from 'data/initialState'

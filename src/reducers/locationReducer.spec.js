@@ -11,7 +11,7 @@
 
 import {actionTypes} from './geojsonReducer';
 import {setState} from './fullStateReducer';
-import {expectTask} from 'rescape-helpers';
+import {expectTask} from 'rescape-helpers-component';
 import {LA_SAMPLE} from 'data/samples/oakland-sample/oaklandLocations.sample';
 import {ROOT} from './geojsonConfig';
 import {ACTION_ROOT} from 'locationActions';
