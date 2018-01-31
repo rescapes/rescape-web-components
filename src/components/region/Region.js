@@ -18,11 +18,9 @@ import {
   nameLookup, eMap, propsFor, renderChoicepoint, composeViews,
   propsForSansClass, renderLoadingDefault, renderErrorDefault
 } from 'rescape-helpers-component';
-import {mergeDeep, strPath, throwing} from 'rescape-ramda';
+import {mergeDeep, strPathThrowing} from 'rescape-ramda';
 import * as R from 'ramda';
 import {Component} from 'react';
-
-const {reqPath} = throwing;
 
 const [Mapbox, Sankey, MarkerList, Div] = eMap([mapbox, sankey, markerList, 'div']);
 export const c = nameLookup({
@@ -86,7 +84,7 @@ Region.viewStyles = ({style}) => {
 
 Region.viewProps = () => {
   // region is expected from the query result
-  const region = strPath('data.store.region');
+  const region = strPathThrowing('data.store.region');
   return {
     [c.region]: {region},
     [c.regionMapbox]: {region},

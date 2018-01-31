@@ -13,10 +13,8 @@ import {Box as box, Flex as flex, Image as image} from 'rebass';
 import {composeViewsFromStruct, nameLookup, propsFor} from 'rescape-helpers-component';
 import {eMap} from 'rescape-helpers-component'
 import * as R from 'ramda';
-import {throwing} from 'rescape-ramda';
+import {reqStrPathThrowing} from 'rescape-ramda';
 import styled from 'styled-components';
-
-const {reqStrPath} = throwing;
 
 // Adapted from http://jxnblk.com/writing/posts/patterns-for-style-composition-in-react/
 
@@ -108,7 +106,7 @@ export const Logo = props => {
       props: {
         [c.logo]: {},
         [c.logoImage]: {
-          src: reqStrPath('logoSrc')
+          src: reqStrPathThrowing('logoSrc')
         }
       },
 

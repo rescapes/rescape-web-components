@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import {mergeDeep, throwing} from 'rescape-ramda';
+import {mergeDeep} from 'rescape-ramda';
 import {loadingCompleteStatus, makeTestPropsFunction, mergeActionsForViews} from 'rescape-helpers-component';
 import {makeMergeDefaultStyleWithProps} from 'selectors/styleSelectors';
 import {createSelector} from 'reselect';

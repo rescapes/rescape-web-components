@@ -12,11 +12,10 @@
 import region from 'components/region/RegionContainer';
 import React from 'react';
 import {composeViews, eMap, renderChoicepoint, nameLookup, propsFor} from 'rescape-helpers-component';
-import {throwing} from 'rescape-ramda'
+import {reqStrPathThrowing} from 'rescape-ramda'
 import * as R from 'ramda';
 import {mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
 import {styleArithmetic} from 'rescape-helpers-component';
-const {reqStrPath} = throwing
 
 const [Div, Region] =
   eMap(['div', region]);
@@ -67,7 +66,7 @@ Current.viewStyles = ({style}) => {
 
 Current.viewProps = () => {
   return {
-    [c.currentRegion]: {region: reqStrPath('data.region')}
+    [c.currentRegion]: {region: reqStrPathThrowing('data.region')}
   };
 };
 

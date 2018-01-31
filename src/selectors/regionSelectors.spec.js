@@ -15,9 +15,8 @@ import {
   activeUserSelectedRegionsSelector, activeUserRegionsSelector,
   regionsSelector,  regionIdsSelector
 } from './regionSelectors';
-import {mergeDeep, throwing} from 'rescape-ramda';
+import {mergeDeep, onlyOneValueThrowing} from 'rescape-ramda';
 const  {IS_ACTIVE, IS_SELECTED} = STATUS
-const {onlyOneValue} = throwing
 
 describe('regionSelectors', () => {
 
@@ -80,6 +79,6 @@ describe('regionSelectors', () => {
         'oakland': {id: 'oakland', name: 'Oakland'}
       }
     }
-    expect(onlyOneValue(regionIdsSelector(state))).toEqual('oakland')
+    expect(onlyOneValueThrowing(regionIdsSelector(state))).toEqual('oakland')
   })
 });

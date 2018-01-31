@@ -10,7 +10,7 @@
  */
 
 import {createSimpleResolvedSchema, createSelectorResolvedSchema} from './simpleResolvers';
-import {sampleConfig} from 'data/samples/sampleConfig';
+import {sampleConfig} from 'rescape-sample-data'
 import makeSchema from './schema';
 import {graphql} from 'graphql';
 import * as R from 'ramda';

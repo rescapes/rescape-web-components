@@ -1,7 +1,6 @@
 import React, {Component} from 'react';
 import {Link as link} from 'react-router-dom';
 import {withRouter} from 'react-router';
-import {throwing} from 'rescape-ramda';
 import {
   composeViews, renderChoicepoint, nameLookup, propsFor,
   renderErrorDefault, renderLoadingDefault, keyWith, propsForItem

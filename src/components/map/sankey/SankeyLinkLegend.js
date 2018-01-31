@@ -21,9 +21,7 @@ import {
 import {Component} from 'react';
 import {Flex as flex} from 'rebass';
 import {Quarter as quarter, ThreeQuarters as threeQuarters} from 'components/atoms';
-import {throwing} from 'rescape-ramda';
-
-const {reqStrPath} = throwing;
+import {reqStrPathThrowing} from 'rescape-ramda';
 
 const [Div, Quarter, ThreeQuarters, Flex] = eMap(['div', quarter, threeQuarters, flex]);
 
@@ -121,7 +119,7 @@ SankeyLinkLegend.viewStyles = ({style}) => {
       minWidth: '30px',
       marginLeft: '2px',
       marginRight: '4px',
-      backgroundColor: reqStrPath('color')
+      backgroundColor: reqStrPathThrowing('color')
     },
     [c.sankeyFiltererText]: {
     }
@@ -138,16 +136,16 @@ SankeyLinkLegend.viewProps = props => {
     },
     [c.sankeyFiltererBox]: {},
     [c.sankeyFiltererItems]: {
-      items: reqStrPath('items', props)
+      items: reqStrPathThrowing('items', props)
     },
     [c.sankeyFiltererItem]: {
       px: 2,
-      key: R.always(reqStrPath('key'))
+      key: R.always(reqStrPathThrowing('key'))
     },
     [c.sankeyLinkLegendIcon]: {
     },
     [c.sankeyFiltererText]: {
-      children: R.always(reqStrPath('name'))
+      children: R.always(reqStrPathThrowing('name'))
     }
   };
 };

@@ -3,7 +3,7 @@ import {makeMergeDefaultStyleWithProps} from 'selectors/styleSelectors';
 import {gql} from 'apollo-client-preset';
 import {graphql} from 'react-apollo';
 import {makeApolloTestPropsFunction} from 'rescape-helpers-component';
-import {mergeDeep, throwing} from 'rescape-ramda';
+import {mergeDeep} from 'rescape-ramda';
 import React from 'react';
 import * as R from 'ramda';
 import {createSelector} from 'reselect';

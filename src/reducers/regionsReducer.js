@@ -14,8 +14,7 @@ import {combineReducers} from 'redux';
 import {createViewportReducer} from 'redux-map-gl';
 import * as R from 'ramda';
 import {SET_STATE} from './fullStateReducer';
-import {throwing, hasStrPath} from 'rescape-ramda'
-const {reqStrPath} = throwing
+import {reqStrPathThrowing, hasStrPath} from 'rescape-ramda'
 
 /**
  * Only allow the region reducer to be created once for each Region
@@ -86,7 +85,7 @@ export default (regionsState = {}, action = {}) => {
       return R.merge(regionsState, action.state.regions || {});
     default:
       if (hasStrPath('payload.mapState.region', action)) {
-        const region = reqStrPath('payload.mapState.region', action)
+        const region = reqStrPathThrowing('payload.mapState.region', action)
         // Delegate all other actionTypes to the current Region's reducer
         // This lens points to the state of the current Region
         const regionLens = R.lensProp(region.id)

@@ -10,11 +10,9 @@
  */
 
 import * as R from 'ramda';
-import {throwing} from 'rescape-ramda';
-import {STATUS, status} from 'rescape-helpers-component'
+import {findOneThrowing, reqPathThrowing, onlyOneValueThrowing, findOneValueByParamsThrowing} from 'rescape-ramda';
+import {STATUS, status} from 'rescape-helpers'
 import {createSelector} from 'reselect';
-
-const {findOne, reqPath, onlyOneValue} = throwing;
 
 /**
  * Simply resolves the user's regions, which are just ids and status flags, not full regions
@@ -23,7 +21,7 @@ const {findOne, reqPath, onlyOneValue} = throwing;
  * @returns {Array} The list of region identifier objects
  */
 export const userRegionsSelector = (state, {user}) => {
-  return R.values(reqPath(['regions'], user));
+  return R.values(reqPathThrowing(['regions'], user));
 };
 
 /**
@@ -44,7 +42,7 @@ export const userResolvedRegionsSelector = (state, {user}) => {
  * @param state
  * @returns {Object|Array} The container of users
  */
-export const usersSelector = reqPath(['users']);
+export const usersSelector = reqPathThrowing(['users']);
 
 /**
  * Select the user that matches the params
@@ -52,7 +50,7 @@ export const usersSelector = reqPath(['users']);
  * @param {Object} params Object of properties and value to match on
  */
 export const userSelector = (state, {params}) => {
-  return findOneValueByParams(params, reqPath(['users'], state))
+  return findOneValueByParams(params, reqPathThrowing(['users'], state))
 }
 
 /**
@@ -62,9 +60,9 @@ export const userSelector = (state, {params}) => {
  * @returns {Object|Array} The active user as one key object or single item array
  */
 export const activeUsersSelector = state => {
-  return findOne(
+  return findOneThrowing(
     status[STATUS.IS_ACTIVE],
-    reqPath(['users'], state)
+    reqPathThrowing(['users'], state)
   );
 }
 
@@ -74,7 +72,7 @@ export const activeUsersSelector = state => {
  */
 export const activeUserValueSelector = createSelector(
   [activeUsersSelector],
-  onlyOneValue
+  onlyOneValueThrowing
 );
 
 /**
@@ -82,7 +80,7 @@ export const activeUserValueSelector = createSelector(
  * @param state
  */
 export const activeUserSelectedRegionSelector = state => createSelector(
-  [R.compose(onlyOneValue, activeUsersSelector)],
+  [R.compose(onlyOneValueThrowing, activeUsersSelector)],
   user => userSelectedRegionSelector(state, {user})
 )(state);
 
@@ -92,7 +90,7 @@ export const activeUserSelectedRegionSelector = state => createSelector(
  * @param user
  */
 export const userSelectedRegionSelector = (state, {user}) =>
-  findOneValueByParams(
+  findOneValueByParamsThrowing(
     {[STATUS.IS_SELECTED]: true},
     userRegionsSelector(state, {user})
   );

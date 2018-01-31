@@ -10,7 +10,7 @@
  */
 
 import reactMapGl from 'react-map-gl';
-import {throwing} from 'rescape-ramda';
+import {reqPathThrowing, reqStrPathThrowing} from 'rescape-ramda';
 import {
   composeViews, renderChoicepoint, propsFor,
   propsForSansClass, renderErrorDefault, renderLoadingDefault
@@ -21,7 +21,6 @@ import {styleMultiplier} from 'rescape-helpers-component';
 import {applyMatchingStyles, mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
 import {Component} from 'react'
 import PropTypes from 'prop-types';
-const {reqPath, reqStrPath} = throwing;
 
 const [Div, ReactMapGl] = eMap(['div', reactMapGl]);
 export const c = nameLookup({
@@ -64,13 +63,13 @@ Mapbox.viewProps = (props) => {
     [c.mapboxReactMapGl]: R.mergeAll([
       {
         // Width and height are calculated in viewStyles
-        width: reqPath(['views', [c.mapboxReactMapGl], 'style', 'width']),
-        height: reqPath(['views', [c.mapboxReactMapGl], 'style', 'height'])
+        width: reqPathThrowing(['views', [c.mapboxReactMapGl], 'style', 'width']),
+        height: reqPathThrowing(['views', [c.mapboxReactMapGl], 'style', 'height'])
       },
       // Pass anything in mapbox
-      reqStrPath('data.mapbox', props),
+      reqStrPathThrowing('data.mapbox', props),
       // Pass anything in viewport
-      reqStrPath('data.viewport', props)
+      reqStrPathThrowing('data.viewport', props)
     ])
     //osm: 'store.region.geojson.osm'
   };

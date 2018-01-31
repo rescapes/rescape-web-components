@@ -13,9 +13,9 @@ import thunk from 'redux-thunk'
 import {mapStateToProps} from 'components/map/marker/MarkerListContainer';
 import configureStore from 'redux-mock-store';
 
-import {sampleConfig} from 'data/samples/sampleConfig';
+import {sampleConfig} from 'rescape-sample-data'
 import initialState from 'data/initialState'
-import {reqPath} from 'rescape-ramda'.throwing;
+import {reqPathThrowing} from 'rescape-ramda'
 
 const middlewares = [thunk];
 const mockStore = configureStore(middlewares);
@@ -26,7 +26,7 @@ describe('MarkerListContainer', () => {
         const state = store.getState();
 
         const ownProps = {
-            region: reqPath(['regions', reqPath(['regions', 'currentKey'], state)], state)
+            region: reqPathThrowing(['regions', reqPathThrowing(['regions', 'currentKey'], state)], state)
         };
 
         expect(mapStateToProps(store.getState(), ownProps)).toMatchSnapshot();

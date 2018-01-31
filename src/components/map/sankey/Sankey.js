@@ -11,7 +11,7 @@
 
 import 'mapbox-gl/dist/mapbox-gl.css'
 import reactMapGl, {SVGOverlay as svgOverlay} from 'react-map-gl';
-import {strPath, throwing} from 'rescape-ramda';
+import {strPath, reqStrPathThrowing} from 'rescape-ramda';
 import {
   composeViews, eMap, renderChoicepoint, itemizeProps, mergePropsForViews, nameLookup, propsFor,
   propsForSansClass, renderErrorDefault, renderLoadingDefault, keyWith
@@ -40,7 +40,6 @@ const formatNumber = d3Format(",.0f");
 const format = function (d) {
   return formatNumber(d) + " TWh";
 };
-const {reqPath, reqStrPath} = throwing;
 // Creates colors to use for the nodes
 const color = scaleOrdinal(schemeCategory10);
 // This creates the positioning for each Sankey Link.
@@ -191,8 +190,8 @@ Sankey.viewStyles = ({style}) => {
 
 Sankey.viewProps = props => {
   // Rely on the width and height calculated in viewStyles
-  const width = reqStrPath(`views.${c.sankey}.style.width`, props);
-  const height = reqStrPath(`views.${c.sankey}.style.height`, props);
+  const width = reqStrPathThrowing(`views.${c.sankey}.style.width`, props);
+  const height = reqStrPathThrowing(`views.${c.sankey}.style.height`, props);
   const graph = R.defaultTo({}, strPath('data.store.region.geojson.sankey.graph', props))
   const nodes = R.defaultTo([], R.prop('nodes', graph))
   const links = R.defaultTo([], R.prop('links', graph))
@@ -209,9 +208,9 @@ Sankey.viewProps = props => {
         height
       },
       // Pass anything in mapbox
-      reqStrPath('data.mapbox', props),
+      reqStrPathThrowing('data.mapbox', props),
       // Pass anything in viewport
-      reqStrPath('data.viewport', props)
+      reqStrPathThrowing('data.viewport', props)
     ]),
 
     [c.sankeySvgOverlay]: {
@@ -225,7 +224,7 @@ Sankey.viewProps = props => {
     },
 
     [c.sankeySvgNode]: {
-      key: R.always(R.join('-', [reqStrPath('material'), reqStrPath('name')]))
+      key: R.always(R.join('-', [reqStrPathThrowing('material'), reqStrPathThrowing('name')]))
     },
 
     [c.sankeySvgNodeTitle]: {
@@ -283,7 +282,7 @@ Sankey.viewPropsAtRender = ({views, opt}) => {
   const geospatialPositioner = sankeyGeospatialTranslate(opt);
   // Generate the sankey diagram at default distributed positions across the map view
   const {links, nodes} = sankeyGenerator({width, height, nodeWidth, nodePadding, geospatialPositioner},
-    reqStrPath('graph', propsFor(views, c.sankey)));
+    reqStrPathThrowing('graph', propsFor(views, c.sankey)));
 
   return mergePropsForViews({
     [c.sankeySvgLinks]: {
@@ -338,7 +337,7 @@ Sankey.viewPropsAtRender = ({views, opt}) => {
       d: R.always(d => linkHorizontal(d)),
       // The stroke is based on the item, so return a unary function
       // The stroke width must be at least 1 pixel
-      strokeWidth: R.always(d => Math.max(1, reqStrPath('width', d))),
+      strokeWidth: R.always(d => Math.max(1, reqStrPathThrowing('width', d))),
       // The title is based on the item, so return a unary function
       title: R.always(d => `${d.source.name} →  ${d.target.name} \n ${format(d.value)}`)
     })

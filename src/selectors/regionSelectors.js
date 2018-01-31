@@ -13,8 +13,7 @@ import {mapped} from 'ramda-lens';
 import {activeUsersSelector} from 'selectors/userSelectors';
 import * as R from 'ramda';
 import {STATUS, status, makeInnerJoinByLensThenFilterSelector} from 'rescape-helpers';
-import {throwing} from 'rescape-ramda'
-const {reqPath, onlyOneValue, findOneValueByParams} = throwing
+import {reqPathThrowing, onlyOneValueThrowing, findOneValueByParamsThrowing} from 'rescape-ramda'
 const {IS_SELECTED} = STATUS
 
 /**
@@ -29,7 +28,7 @@ export const regionsSelector = state => state.regions
  * @param {Object} params Object of properties and value to match on
  */
 export const regionSelector = (state, {params}) => {
-  return findOneValueByParams(params, reqPath(['regions'], state))
+  return findOneValueByParamsThrowing(params, reqPathThrowing(['regions'], state))
 }
 
 /**
@@ -52,7 +51,7 @@ const makeActiveUserRegionsSelector = (predicate) => state =>
       // The state
       state,
       // Props are the active user
-      {user: onlyOneValue(activeUsersSelector(state))}
+      {user: onlyOneValueThrowing(activeUsersSelector(state))}
     )
   )(state)
 

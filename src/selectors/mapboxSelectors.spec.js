@@ -10,13 +10,13 @@
  */
 
 import {mapboxSelector, viewportSelector} from 'selectors/mapboxSelectors';
-import {throwing} from 'rescape-ramda';
+import {reqPathThrowing} from 'rescape-ramda';
 
-const {reqPath} = throwing;
 import * as R from 'ramda';
 
 describe('mapboxSelectors', () => {
   const oakland = {
+    id: 'oakland',
     mapbox: {
       viewport: {
         zoom: 5
@@ -24,6 +24,7 @@ describe('mapboxSelectors', () => {
     }
   };
   const paris = {
+    id: 'paris',
     mapbox: {
       viewport: {
         zoom: 4
@@ -48,7 +49,7 @@ describe('mapboxSelectors', () => {
         mapboxApiAccessToken: 'secret',
         viewport: R.merge(
           {foo: 1},
-          reqPath(['mapbox', 'viewport'], oakland))
+          reqPathThrowing(['mapbox', 'viewport'], oakland))
       }
     );
   });
@@ -57,7 +58,7 @@ describe('mapboxSelectors', () => {
     expect(viewportSelector(state, {region: oakland})).toEqual(
       R.merge(
         {foo: 1},
-        reqPath(['mapbox', 'viewport'], oakland))
+        reqPathThrowing(['mapbox', 'viewport'], oakland))
     );
   });
 });

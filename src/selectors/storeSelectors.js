@@ -12,10 +12,8 @@
 import {settingsSelector} from 'selectors/settingsSelectors';
 import {activeUsersSelector} from 'selectors/userSelectors';
 import {createSelector, createStructuredSelector} from 'reselect';
-import {throwing} from 'rescape-ramda';
+import {onlyOneValueThrowing, reqPathThrowing} from 'rescape-ramda';
 import * as R from 'ramda';
-
-const {onlyOneValue, reqPath} = throwing;
 
 /**
  * This selector creates a state that narrows down the state to the active user and their regions
@@ -26,12 +24,12 @@ const {onlyOneValue, reqPath} = throwing;
  * an object containing settings, user, and regions
  */
 export const makeActiveUserRegionsAndSettingsSelector = () => createSelector(
-  [settingsSelector, R.compose(onlyOneValue, activeUsersSelector)],
+  [settingsSelector, R.compose(onlyOneValueThrowing, activeUsersSelector)],
   (settings, user) => ({
     settings,
     user,
     // Select user.regions, grab values if an obj, and select the one and only one value
-    regions: R.compose(R.values, reqPath(['regions']))(user)
+    regions: R.compose(R.values, reqPathThrowing(['regions']))(user)
   })
 );
 
@@ -43,12 +41,12 @@ export const makeActiveUserRegionsAndSettingsSelector = () => createSelector(
  * an object containing settings, user, and region
  */
 export const makeActiveUserSelectedRegionAndSettingsSelector = () => createSelector(
-  [settingsSelector, R.compose(onlyOneValue, activeUsersSelector)],
+  [settingsSelector, R.compose(onlyOneValueThrowing, activeUsersSelector)],
   (settings, user) => ({
     settings,
     user,
     // Select user.regions, grab values if an object, and select the one and only one value
-    region: R.compose(onlyOneValue, R.values, reqPath(['regions']))(user)
+    region: R.compose(onlyOneValueThrowing, R.values, reqPathThrowing(['regions']))(user)
   })
 )
 

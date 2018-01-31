@@ -8,19 +8,18 @@
  *
  * THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import {mapPropValueAsIndex, throwing} from 'rescape-ramda';
+import {mapPropValueAsIndex, onlyOneValueThrowing} from 'rescape-ramda';
 import * as R from 'ramda';
 import {makeGeojsonsSelector} from 'rescape-helpers-component';
 import reducer from 'r./geojson/geojsonReducer';
 import {makeSampleInitialState} from 'rescape-helpers-component';
 
 const toObjectKeyedById = mapPropValueAsIndex('id');
-const {onlyOneValue} = throwing
 
 describe('geojson reducer', () => {
   const state = makeSampleInitialState();
   // Find the geojson of the active region. Only expect one and extract it from its container
-  const geojson = R.compose(onlyOneValue, makeGeojsonsSelector())(state);
+  const geojson = R.compose(onlyOneValueThrowing, makeGeojsonsSelector())(state);
   test('should return the initial state', () => {
     expect(
       reducer(geojson)

@@ -1,13 +1,9 @@
 import {shallow} from 'enzyme';
-import current from './Main'
-import {sampleConfig} from 'data/samples/sampleConfig';
-import initialState from 'data/initialState'
-import * as R from 'ramda';
-import {throwing as rt} from 'rescape-ramda';
+import {sampleConfig} from 'rescape-sample-data'
 import {eMap} from 'rescape-helpers-component';
-import {mapStateToProps} from './MainContainer';
 import {propsFromSampleStateAndContainer, shallowWrap} from 'rescape-helpers-component';
 import main from 'components/main/Main';
+import {testPropsMaker} from 'components/main/MainContainer';
 const [Main] = eMap([main]);
 
 describe('Main', () => {

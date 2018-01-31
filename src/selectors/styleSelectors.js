@@ -10,10 +10,9 @@
  */
 
 import {createSelector} from 'reselect';
-import {filterWithKeys, throwing} from 'rescape-ramda';
+import {filterWithKeys, reqPathThrowing} from 'rescape-ramda';
 import * as R from 'ramda';
 import prettyFormat from 'pretty-format'
-const {reqPath} = throwing;
 
 /**
  * Extracts the browser window dimensions from the state to pass to props
@@ -25,7 +24,7 @@ export const browserDimensionsSelector = createSelector(
       R.pick(['width', 'height']),
       // Default each to 0
       R.merge({width: 0, height: 0}),
-      reqPath(['browser'])
+      reqPathThrowing(['browser'])
     )
   ],
   R.identity
@@ -48,7 +47,7 @@ export const makeBrowserProportionalDimensionsSelector = () => (state, props) =>
 )(state, props);
 
 const defaultStyleSelector = (state) =>
-  reqPath(['styles', 'default'], state);
+  reqPathThrowing(['styles', 'default'], state);
 
 const mergeDeepWith = R.curry((fn, left, right) => R.mergeWith((l, r) => {
   // If either (hopefully both) items are arrays or not both objects
@@ -142,7 +141,7 @@ export const makeMergeDefaultStyleWithProps = () => (state, props) => createSele
  */
 export const makeMergeContainerStyleProps = () => (containerProps, style) => createSelector(
   [
-    containerProps => reqPath(['views'], containerProps),
+    containerProps => reqPathThrowing(['views'], containerProps),
     (_, props) => R.defaultTo({}, props)
   ],
   mergeAndApplyMatchingStyles

@@ -20,10 +20,8 @@ import {
 } from 'selectors/styleSelectors';
 import {Component} from 'react';
 import {Flex as flex, Checkbox as checkbox, Group as group} from 'rebass';
-import {throwing} from 'rescape-ramda';
+import {reqStrPathThrowing} from 'rescape-ramda';
 import {Grid as grid} from 'components/atoms';
-
-const {reqStrPath} = throwing;
 
 const [Div, Flex, Checkbox, Group, Grid] = eMap(['div', flex, checkbox, group, grid]);
 

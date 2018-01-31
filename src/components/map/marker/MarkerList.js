@@ -10,7 +10,7 @@
  */
 
 import React from 'react';
-import {throwing} from 'rescape-ramda'
+import {reqPathThrowing} from 'rescape-ramda'
 import {AddMarkerItem, MarkerItem} from './MarkerItem';
 import * as R from 'ramda';
 import styles from './MarkerList.style'
@@ -18,7 +18,6 @@ import Geocode from 'components/geocode/Geocode'
 import ScrollArea from 'react-scrollbar';
 import PropTypes from 'prop-types';
 const e = React.createElement;
-const {reqPath} = throwing
 
 class MarkerList extends React.Component {
     constructor(props) {
@@ -53,7 +52,7 @@ class MarkerList extends React.Component {
     }
 
     render() {
-        const markers = reqPath(['state', 'markers'], this) || [];
+        const markers = reqPathThrowing(['state', 'markers'], this) || [];
         const markerItems = R.map(
             marker => e(MarkerItem, {
                 regionId: this.props.id,

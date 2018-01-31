@@ -9,12 +9,11 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import {mergeDeepAll, throwing} from 'rescape-ramda';
+import {mergeDeepAll, reqPathThrowing, reqStrPathThrowing} from 'rescape-ramda';
 import {createSelector} from 'reselect';
 import * as R from 'ramda';
 import {mapboxSettingsSelector} from 'selectors/settingsSelectors';
 import {fromImmutable, toImmutable} from 'rescape-helpers';
-const {reqPath, reqStrPath} = throwing;
 
 /**
  * Selects mapbox properties
@@ -37,8 +36,8 @@ export const mapboxSelector = (state, {region, mapbox}) => {
         R.lensProp('viewport'),
         viewport,
         region ?
-          reqPath(['mapbox'], region) :
-          reqPath(['viewport'], mapbox)
+          reqPathThrowing(['mapbox'], region) :
+          reqPathThrowing(['viewport'], mapbox)
       )
     )
   )(state, {region});
@@ -61,12 +60,12 @@ export const viewportSelector = (state, {region, mapbox}) => {
       R.defaultTo({}, mapboxSettings.viewport),
       fromImmutable(
         region ?
-          reqStrPath('mapbox.viewport', region) :
-          reqStrPath('viewport', mapbox)
+          reqStrPathThrowing('mapbox.viewport', region) :
+          reqStrPathThrowing('viewport', mapbox)
       ),
       // Temporarily merge the updated viewport from the state, since we are updating it via redux
       fromImmutable(
-          reqPath(['regions', region.id, 'mapbox', 'viewport'], state)
+          reqPathThrowing(['regions', region.id, 'mapbox', 'viewport'], state)
       )
     ])
   )(state, {region});

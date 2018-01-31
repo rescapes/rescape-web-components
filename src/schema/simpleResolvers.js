@@ -10,9 +10,8 @@
  */
 import {addResolveFunctionsToSchema} from 'graphql-tools';
 import * as R from 'ramda'
-import {throwing} from 'rescape-ramda'
-const {reqPath} = throwing
-const objectValues = field => (obj) => R.values(reqPath([field], obj))
+import {reqPathThrowing} from 'rescape-ramda'
+const objectValues = field => (obj) => R.values(reqPathThrowing([field], obj))
 
 // Original example from: https://github.com/apollographql/graphql-tools
 const makeSimpleResolvers = data => ({

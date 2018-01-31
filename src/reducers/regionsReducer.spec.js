@@ -1,14 +1,12 @@
 import reducer from './regionsReducer';
 //import {actions} from './geojsonReducer'
 import {Map} from 'immutable';
-import {sampleConfig} from 'data/samples/sampleConfig';
+import {sampleConfig} from 'rescape-sample-data'
 import initialState from 'data/initialState';
-import {throwing} from 'rescape-ramda';
+import {reqPathThrowing} from 'rescape-ramda';
 import * as R from 'ramda';
 
-const {reqPath} = throwing;
-
-describe('mabpox reducer', () => {
+('mabpox reducer', () => {
   it('should return the initial state', () => {
     const state = initialState(sampleConfig);
     expect(
@@ -53,7 +51,7 @@ describe('mabpox reducer', () => {
       region
     };
     expect(
-      reqPath(
+      reqPathThrowing(
         [regionId, 'mapbox', 'viewport'],
         reducer(
           state.regions,

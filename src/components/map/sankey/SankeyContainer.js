@@ -17,14 +17,12 @@ import {mapboxSelector} from 'selectors/mapboxSelectors';
 import {makeActiveUserAndSettingsSelector} from 'selectors/storeSelectors';
 import {createSelector} from 'reselect';
 import {makeApolloTestPropsFunction} from 'rescape-helpers-component';
-import {mergeDeep, throwing} from 'rescape-ramda';
+import {mergeDeep, reqStrPathThrowing} from 'rescape-ramda';
 import Sankey from './Sankey';
 import * as R from 'ramda';
 import {graphql} from 'react-apollo';
 import {gql} from 'apollo-client-preset';
 import {activeUserSelectedRegionSelector} from 'selectors/userSelectors';
-
-const {reqStrPath} = throwing;
 
 /**
  * Selects the current user from state
@@ -73,7 +71,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
           }
         },
         onChangeViewport(
-          R.set(R.lensProp('region'), reqStrPath('region', ownProps), mapState)
+          R.set(R.lensProp('region'), reqStrPathThrowing('region', ownProps), mapState)
         )
       );
     }

@@ -12,7 +12,7 @@
 import {makeGeojsonSelector} from 'selectors/geojsonSelectors';
 import {addResolveFunctionsToSchema} from 'graphql-tools';
 import * as R from 'ramda'
-import {throwing} from 'rescape-ramda'
+import {reqPathThrowing} from 'rescape-ramda'
 import {activeUserSelectedRegionsSelector, regionSelector} from 'selectors/regionSelectors';
 import { settingsSelector} from 'selectors/settingsSelectors';
 import {
@@ -20,9 +20,8 @@ import {
 } from 'selectors/userSelectors';
 import {mapboxSelector} from 'selectors/mapboxSelectors';
 
-const {reqPath} = throwing
 // Trivial resolver for our dataSource, just strips object keys and returns values
-const objectValues = field => parent => R.values(reqPath([field], parent))
+const objectValues = field => parent => R.values(reqPathThrowing([field], parent))
 // Calls the given selector, treating the dataSource state and passing props through
 const selectorValues = selector => (parent, params, {options: {dataSource}}) => R.values(selector(dataSource, {params}))
 const selectorValue = selector => (parent, params, {options: {dataSource}}) => selector(dataSource, {params})

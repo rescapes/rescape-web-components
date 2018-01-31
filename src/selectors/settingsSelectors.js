@@ -11,8 +11,7 @@
 
 import {createSelector} from 'reselect';
 import * as R from 'ramda';
-import {throwing} from 'rescape-ramda'
-const {reqPath} = throwing
+import {reqPathThrowing} from 'rescape-ramda'
 
 /**
  * Default settings selector, which passes all settings through
@@ -27,7 +26,7 @@ export const settingsSelector = state => state.settings;
  */
 export const mapboxSettingsSelector = createSelector(
   [
-    state => reqPath(['settings', 'mapbox'], state)
+    state => reqPathThrowing(['settings', 'mapbox'], state)
   ],
   R.identity
 );

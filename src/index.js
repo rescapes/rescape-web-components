@@ -8,7 +8,7 @@ import {ApolloProvider as apolloProvider} from 'react-apollo';
 import createClient from './apolloClient';
 import {Provider as provider} from 'react-redux';
 import storeCreator from './store';
-import {getCurrentConfig} from 'data/current/currentConfig';
+import {getCurrentConfig} from 'rescape-sample-data';
 import {eMap} from 'rescape-helpers-component';
 import * as R from 'ramda';
 import {mockApolloClientWithSamples} from 'rescape-helpers-component';
