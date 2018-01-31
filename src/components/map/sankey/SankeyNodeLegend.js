@@ -10,20 +10,18 @@
  */
 
 import {
-  composeViews, eMap, renderChoicepoint, itemizeProps, mergePropsForViews, nameLookup, propsFor,
-  propsForSansClass, renderErrorDefault, renderLoadingDefault, keyWith
+  composeViews, eMap, renderChoicepoint, itemizeProps, nameLookup, propsFor,
+  propsForSansClass, renderErrorDefault, renderLoadingDefault
 } from 'rescape-helpers-component';
 import * as R from 'ramda';
 import {
   applyMatchingStyles, mergeAndApplyMatchingStyles,
-  mergeAndSankeyNodeLegendlyMatchingStyles
 } from 'selectors/styleSelectors';
 import {Component} from 'react';
 import {Flex as flex} from 'rebass';
-import {Quarter as quarter, ThreeQuarters as threeQuarters} from 'components/atoms';
 import {reqStrPathThrowing} from 'rescape-ramda';
 
-const [Div, Quarter, ThreeQuarters, Flex] = eMap(['div', quarter, threeQuarters, flex]);
+const [Div, Flex] = eMap(['div', flex]);
 
 export const c = nameLookup({
   sankeyNodeLegend: true,
@@ -54,7 +52,6 @@ SankeyNodeLegend.renderData = ({views}) => {
    We have to apply the width and height fractions of this container to them.
    */
   const props = propsFor(views);
-  const propsSansClass = propsForSansClass(views);
   const {items, ...sankeyNodeLegendItemsProps} = props(c.sankeyNodeLegendItems);
   const sankeyNodeLegendItemProps = itemizeProps(props(c.sankeyNodeLegendItem));
   const sankeyNodeLegendIconProps = itemizeProps(props(c.sankeyNodeLegendIcon));

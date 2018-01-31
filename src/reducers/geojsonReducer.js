@@ -11,7 +11,6 @@
 
 import * as R from 'ramda';
 import {combineReducers} from 'redux';
-import {mapDefaultAndPrefixOthers} from 'rescape-ramda';
 import locations, {locationActions, locationActionCreators} from './locationReducer'
 import openStreetMaps, {openStreetMapActions, openStreetMapActionCreators} from './openStreetMapReducer';
 import searches, {searchesActions, searchesActionCreators} from './searchReducer'

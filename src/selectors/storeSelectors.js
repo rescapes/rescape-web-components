@@ -58,5 +58,5 @@ export const makeActiveUserSelectedRegionAndSettingsSelector = () => createSelec
 export const makeActiveUserAndSettingsSelector = () =>
   createStructuredSelector({
     settings: settingsSelector,
-    user: R.compose(onlyOneValue, activeUsersSelector)
+    user: R.compose(onlyOneValueThrowing, activeUsersSelector)
   });

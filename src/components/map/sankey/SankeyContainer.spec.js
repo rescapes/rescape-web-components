@@ -7,7 +7,7 @@ import SankeyContainer from 'components/map/sankey/SankeyContainer';
 import * as R from 'ramda';
 import Current, {c as cCurrent} from 'components/current/Current';
 import Region, {c as cRegion} from 'components/region/Region';
-import Sankey, {c} from 'components/map/sankey/Sankey';
+import {c} from 'components/map/sankey/Sankey';
 import {gql} from 'apollo-client-preset';
 import {apolloContainerTests} from 'rescape-helpers-component';
 import {makeSchema} from 'rescape-sample-data'

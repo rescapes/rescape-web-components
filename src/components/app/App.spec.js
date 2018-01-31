@@ -2,8 +2,8 @@ import {shallow} from 'enzyme';
 import app from './App'
 import {createSampleConfig, initialState} from 'rescape-sample-data'
 import {eMap} from 'rescape-helpers-component';
-const [App] = eMap([app]);
 import {mapStateToProps} from './AppContainer';
+onst [App] = eMap([app]);
 
 describe('The current application', () => {
   const sampleConfig = createSampleConfig

@@ -94,6 +94,13 @@ export const FlexAuto = props =>
     })
   );
 
+/**
+ * Creates a logo component, simply a container and an image inside of it
+ * @param {Object} props
+ * @param {Object} props.logoSrc The URL of the logo
+ * @param {Object} props.style Style object
+ * @return {Object} A React component
+ */
 export const Logo = props => {
 
   const c = nameLookup({
@@ -111,7 +118,7 @@ export const Logo = props => {
       },
 
       styles: {
-        [c.logo]: props.style,
+        [c.logo]: R.defaultTo({}, props.style),
         [c.logoImage]: {
           maxWidth: '100%',
           maxheight: '100%'

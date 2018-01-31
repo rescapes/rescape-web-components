@@ -10,8 +10,9 @@
  */
 
 import * as R from 'ramda';
-import { makeFeaturesByTypeSelector, makeMarkersByTypeSelector, makeGeojsonSelector } from './geojsonSelectors'
-import {STATUS} from 'rescape-helpers'
+import {makeFeaturesByTypeSelector, makeMarkersByTypeSelector, makeGeojsonSelector} from './geojsonSelectors';
+import {STATUS} from 'rescape-helpers';
+
 const {IS_SELECTED, IS_ACTIVE} = STATUS;
 
 describe('geojsonSelectors', () => {
@@ -65,18 +66,15 @@ describe('geojsonSelectors', () => {
 
   test('makeGeojsonSelector', () => {
 
-    const region = state.regions.foo
-    const expected =
-      R.merge(region, {
-        geojson: {
-          osm: {
-            features,
-            featuresByType: makeFeaturesByTypeSelector()(state, {region}),
-            locationsByType: makeMarkersByTypeSelector()(state, {region})
-          },
-          locations
-        }
-      });
+    const region = state.regions.foo;
+    const expected = {
+      osm: {
+        features,
+        featuresByType: makeFeaturesByTypeSelector()(state, {region}),
+        locationsByType: makeMarkersByTypeSelector()(state, {region})
+      },
+      locations
+    };
     expect(makeGeojsonSelector()(state, {region})).toEqual(expected);
   });
 });

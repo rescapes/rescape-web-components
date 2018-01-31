@@ -10,8 +10,6 @@
  */
 
 const {asyncActionCreators, asyncActions, asyncActionsGenericKeys} = require('./actionHelpers');
-const Task = require('data.task');
-const {expectTask} = require('rescape-helpers');
 
 describe('actionHelpers', () => {
     test('asyncActionsGenericKeys', () => {

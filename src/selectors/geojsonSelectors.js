@@ -11,8 +11,8 @@
 
 import {createSelector} from 'reselect';
 import * as R from 'ramda';
-import {geojsonByType} from 'rescape-helpers-component';
-import {mergeDeep} from 'rescape-ramda'
+import {geojsonByType} from 'rescape-helpers';
+import {mergeDeep, reqPathThrowing} from 'rescape-ramda';
 
 /**
  * Resolves the openstreetmap features of a region and categorizes them by type (way, node, relation).
@@ -20,23 +20,29 @@ import {mergeDeep} from 'rescape-ramda'
  * simply by reference equality (why would the features reference change?)
  * @param {Object} state Should be the region with the
  */
-export const makeFeaturesByTypeSelector = () => (state, {region}) => createSelector(
-  [
-    (state, {region}) => R.view(R.lensPath(['geojson', 'osm']), region)
-  ],
-  geojsonByType
-)(state, {region});
+export const makeFeaturesByTypeSelector = () => (state, {region}) => {
+  return createSelector(
+    [
+      (state, {region}) => {
+        return R.view(R.lensPath(['geojson', 'osm']), region);
+      }
+    ],
+    geojsonByType
+  )(state, {region});
+};
 
 /**
  * Resolves the marker features of a region and categorizes them by type (way, node, relation)
  * @returns {Function} Selector that expects a state and props containing region
  */
-export const makeMarkersByTypeSelector = () => (state, {region}) => createSelector(
-  [
-    (state, {region}) => R.view(R.lensPath(['geojson', 'markers']), region)
-  ],
-  geojsonByType
-)(state, {region});
+export const makeMarkersByTypeSelector = () => (state, {region}) => {
+  return createSelector(
+    [
+      (state, {region}) => R.view(R.lensPath(['geojson', 'markers']), region)
+    ],
+    geojsonByType
+  )(state, {region});
+};
 
 /**
  * Selector for the geojson of a region that merges in derived data structures
@@ -51,13 +57,11 @@ export const makeGeojsonSelector = () => (state, {region}) => createSelector(
   ],
   (featuresByType, locationsByType) =>
     mergeDeep(
-      reqPath(['geojson'], region),
+      reqPathThrowing(['geojson'], region),
       {
-        geojson: {
-          osm: {
-            featuresByType,
-            locationsByType
-          }
+        osm: {
+          featuresByType,
+          locationsByType
         }
       })
 )(state, {region});

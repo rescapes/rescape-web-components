@@ -12,7 +12,7 @@
 import {
   applyMatchingStyles,
   browserDimensionsSelector, makeBrowserProportionalDimensionsSelector,
-  makeMergeContainerStyleProps, mergeAndApplyMatchingStyles
+  mergeAndApplyMatchingStyles
 } from 'selectors/styleSelectors';
 import {makeMergeDefaultStyleWithProps} from 'selectors/styleSelectors';
 import * as R from 'ramda';
@@ -76,27 +76,6 @@ describe('styleSelectors', () => {
     expect(makeBrowserProportionalDimensionsSelector()(state, props)).toEqual(expected);
   });
 
-  test('makeMergeContainerStyleProps', () => {
-    const containerProps = {
-      style: {
-        color: 'red',
-        margin: 2
-      }
-    };
-
-    const style = {
-      color: 'blue',
-      margin: R.multiply(2)
-    };
-
-    expect(makeMergeContainerStyleProps()(containerProps, style)).toEqual(
-      {
-        color: 'blue',
-        margin: 4
-      }
-    );
-  });
-
   test('mergeAndApplyMatchingStyles', () => {
     expect(mergeAndApplyMatchingStyles({
       cow: 1,
@@ -127,7 +106,7 @@ describe('styleSelectors', () => {
       cow: 2,
       width: styleMultiplier(2),
       height: styleMultiplier(3)
-    }, [c.sankeyFiltererItem])).toEqual({
+    }, ['sankeyFiltererItem'])).toEqual({
       position: 'absolute',
       cow: 2,
       width: 4,

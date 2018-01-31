@@ -15,12 +15,10 @@ import {
 } from 'rescape-helpers-component';
 import * as R from 'ramda';
 import {
-  applyMatchingStyles, mergeAndApplyMatchingStyles,
-  mergeAndSankeyFiltererlyMatchingStyles
+  applyMatchingStyles, mergeAndApplyMatchingStyles
 } from 'selectors/styleSelectors';
 import {Component} from 'react';
 import {Flex as flex, Checkbox as checkbox, Group as group} from 'rebass';
-import {reqStrPathThrowing} from 'rescape-ramda';
 import {Grid as grid} from 'components/atoms';
 
 const [Div, Flex, Checkbox, Group, Grid] = eMap(['div', flex, checkbox, group, grid]);
@@ -54,7 +52,6 @@ SankeyFilterer.renderData = ({views}) => {
    We have to apply the width and height fractions of this container to them.
    */
   const props = propsFor(views);
-  const propsSansClass = propsForSansClass(views);
   const {items, ...sankeyLinkLegendItemsProps} = props(c.sankeyFiltererItems);
   const sankeyLinkLegendItemProps = itemizeProps(props(c.sankeyFiltererItem));
   const sankeyLinkLegendCheckboxProps = itemizeProps(props(c.sankeyFiltererCheckbox));
@@ -142,18 +139,18 @@ SankeyFilterer.viewProps = props => {
     },
     [c.sankeyFiltererBox]: {},
     [c.sankeyFiltererItems]: {
-      items: reqStrPath('items', props)
+      items: reqStrPathThrowing('items', props)
     },
     [c.sankeyFiltererItem]: {
       px: 2,
-      key: R.always(reqStrPath('material'))
+      key: R.always(reqStrPathThrowing('material'))
     },
     [c.sankeyFiltererCheckbox]: {
       defaultChecked: true,
-      name: R.always(reqStrPath('material'))
+      name: R.always(reqStrPathThrowing('material'))
     },
     [c.sankeyFiltererText]: {
-      children: R.always(reqStrPath('material'))
+      children: R.always(reqStrPathThrowing('material'))
     }
   };
 };

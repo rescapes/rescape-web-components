@@ -1,4 +1,4 @@
-import React, {Component} from 'react';
+import {Component} from 'react';
 import Login from 'components/login';
 import Main from 'components/main';
 import {Switch as switchy, Route as route} from 'react-router-dom';

@@ -16,13 +16,12 @@ import {makeMergeDefaultStyleWithProps} from 'selectors/styleSelectors';
 import {mapboxSelector} from 'selectors/mapboxSelectors';
 import {makeActiveUserAndSettingsSelector} from 'selectors/storeSelectors';
 import {createSelector} from 'reselect';
-import {makeApolloTestPropsFunction} from 'rescape-helpers-component';
 import {mergeDeep, reqStrPathThrowing} from 'rescape-ramda';
 import Sankey from './Sankey';
 import * as R from 'ramda';
 import {graphql} from 'react-apollo';
 import {gql} from 'apollo-client-preset';
-import {activeUserSelectedRegionSelector} from 'selectors/userSelectors';
+import {apolloTestPropsFunction} from 'helpers/helpers';
 
 /**
  * Selects the current user from state
@@ -225,8 +224,7 @@ const ContainerWithData = R.compose(
     gql`${queries.filterSankeyNodes.query}`,
     queries.filterSankeyNodes.args
   )
-)
-(Sankey);
+)(Sankey);
 
 // Returns a function that expects state and ownProps for testing
 export const testPropsMaker = apolloTestPropsFunction(mapStateToProps, mapDispatchToProps, queries.geojson);

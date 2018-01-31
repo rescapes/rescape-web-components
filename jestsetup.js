@@ -18,7 +18,6 @@ import * as R from 'ramda'
 
 enzyme.configure({adapter: new Adapter()});
 
-import fs from 'fs';
 import {JSDOM} from 'jsdom';
 
 global.shallow = shallow;

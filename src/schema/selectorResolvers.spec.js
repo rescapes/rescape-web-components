@@ -17,8 +17,8 @@ import {graphql} from 'graphql';
 import * as R from 'ramda';
 import {mapped} from 'ramda-lens';
 import {activeUserSelectedRegionsSelector, regionSelector} from 'selectors/regionSelectors';
-const resolvedSchema = createSelectorResolvedSchema(makeSchema(), sampleConfig);
 import {mergeDeep} from 'rescape-ramda';
+const resolvedSchema = createSelectorResolvedSchema(makeSchema(), sampleConfig);
 
 describe('mockExecutableSchema', () => {
 

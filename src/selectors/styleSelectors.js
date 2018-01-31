@@ -128,21 +128,3 @@ export const makeMergeDefaultStyleWithProps = () => (state, props) => createSele
   [defaultStyleSelector],
   defaultStyle => mergeAndApplyMatchingStyles(defaultStyle, R.propOr({}, 'style', props))
 )(state, props);
-
-/**
- * Like makeMergeDefaultStyleWithProps but used to merge the container style props with the component style props
- * @param {Object} containerProps The props coming from the container, which themselves were merged with the
- * state styles and/or parent components
- * @param {Object} style The style object with simple values
- * @param {Object} [props] Optional The props The style object with simple values or
- * unary functions to transform the values from the containerProps (e.g. { margin: 2, color: 'red', border: scale(2) })
- * where scale(2) returns a function that transforms the border property from the containerProps
- * @returns {Object} The merged object
- */
-export const makeMergeContainerStyleProps = () => (containerProps, style) => createSelector(
-  [
-    containerProps => reqPathThrowing(['views'], containerProps),
-    (_, props) => R.defaultTo({}, props)
-  ],
-  mergeAndApplyMatchingStyles
-)(containerProps, style);

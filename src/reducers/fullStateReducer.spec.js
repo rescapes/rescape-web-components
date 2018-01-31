@@ -11,7 +11,7 @@
 
 import configureMockStore from 'redux-mock-store'
 import thunk from 'redux-thunk'
-import {SET_STATE, FETCH_FULL_STATE_REQUEST, FETCH_FULL_STATE_SUCCESS, setState, fetchFullState} from './fullStateReducer';
+import {SET_STATE, FETCH_FULL_STATE_REQUEST, FETCH_FULL_STATE_SUCCESS, setState} from './fullStateReducer';
 import nock from 'nock';
 
 const middlewares = [ thunk ];

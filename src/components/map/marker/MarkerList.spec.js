@@ -10,13 +10,13 @@ import MarkerList from './MarkerList'
 jest.mock('query-overpass');
 const state = initialState(config);
 const currentKey = reqPathThrowing(['regions', 'currentKey'], state);
-import geojson from 'queryOverpassResponse'.LA_SAMPLE;
+import {LA_SAMPLE} from 'rescape-sample-data';
 const e = React.createElement;
 
 const props = mapStateToProps(state, {
     region: R.set(
         R.lensProp('geojson'),
-        geojsonByType(geojson),
+        geojsonByType(LA_SAMPLE),
         reqPathThrowing(['regions', currentKey], state)
     )
 });

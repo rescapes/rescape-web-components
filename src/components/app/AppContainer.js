@@ -7,8 +7,7 @@ import {createSelector} from 'reselect';
 import {makeActiveUserRegionsAndSettingsSelector} from 'selectors/storeSelectors';
 import {makeBrowserProportionalDimensionsSelector} from 'selectors/styleSelectors';
 import {mergeDeep} from 'rescape-ramda';
-import {makeApolloTestPropsFunction} from 'rescape-helpers-component';
-
+import {apolloTestPropsFunction} from 'helpers/helpers';
 
 /**
  * Combined selector that:

@@ -76,7 +76,6 @@ function fetchFullStateFailure(ex) {
  * @return {Function} Dispatch
  */
 export const fetchFullState = function fetchFullState(host) {
-    const url = `${host}/settings`;
     return dispatch => {
         dispatch(fetchFullStateRequest());
         // TODO fetch is no longer around

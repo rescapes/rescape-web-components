@@ -14,7 +14,7 @@ import {shallow} from 'enzyme';
 import MapLines from './MapLines'
 
 jest.mock('query-overpass');
-import geojson from 'queryOverpassResponse'.LA_SAMPLE;
+import {LA_SAMPLE} from 'rescape-sample-data';
 const e = React.createElement;
 
 describe('MapLines', () => {

@@ -46,8 +46,8 @@ const color = scaleOrdinal(schemeCategory10);
 const linkHorizontal = sankeyLinkHorizontal();
 
 
-const [ReactMapGl, SVGOverlay, G, Text, TSpan, Title, Path, Div, Flex, SankeyNodeLegend, SankeyLinkLegend, SankeyFilterer] =
-  eMap([reactMapGl, svgOverlay, 'g', 'text', 'tspan', 'title', 'path', 'div', flex, sankeyNodeLegend, sankeyLinkLegend, sankeyFilterer]);
+const [ReactMapGl, SVGOverlay, G, Text, TSpan, Title, Path, Div, Flex, SankeyNodeLegend, SankeyFilterer] =
+  eMap([reactMapGl, svgOverlay, 'g', 'text', 'tspan', 'title', 'path', 'div', flex, sankeyNodeLegend, sankeyFilterer]);
 
 const styles = {
   sankeyLegendsFontFamily: 'sans-serif'

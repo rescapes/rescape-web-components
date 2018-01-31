@@ -2,12 +2,11 @@ import {connect} from 'react-redux';
 import {makeMergeDefaultStyleWithProps} from 'selectors/styleSelectors';
 import {gql} from 'apollo-client-preset';
 import {graphql} from 'react-apollo';
-import {makeApolloTestPropsFunction} from 'rescape-helpers-component';
 import {mergeDeep} from 'rescape-ramda';
-import React from 'react';
 import * as R from 'ramda';
 import {createSelector} from 'reselect';
 import Region from './Region';
+import {apolloTestPropsFunction} from 'helpers/helpers';
 
 /**
  * RegionContainer expects the state to contain the active user and that user's Regions
@@ -104,8 +103,7 @@ export const queries = {
 // TODO We should handle all queries in queries here
 const ContainerWithData = graphql(
   gql`${queries.region.query}`,
-  queries.region.args)
-(Region);
+  queries.region.args)(Region);
 
 // Returns a function that expects state and ownProps for testing
 export const testPropsMaker = apolloTestPropsFunction(mapStateToProps, mapDispatchToProps, queries.region);
