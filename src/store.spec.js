@@ -9,23 +9,25 @@
  * THE SOFTWARE IS PROVIDED 'AS IS', WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 import * as R from 'ramda';
-import {sampleConfig} from 'rescape-sample-data'
-import storeCreator from './store'
+import {createSampleConfig} from 'rescape-sample-data';
+import storeCreator from './store';
 import thunk from 'redux-thunk';
-import { createLogger } from 'redux-logger'
+import {createLogger} from 'redux-logger';
 import applyMiddleware, {compose} from 'redux';
+
 const loggerMiddleware = createLogger();
-const middlewares = [thunk, loggerMiddleware]
+const middlewares = [thunk, loggerMiddleware];
 const enhancers = compose(applyMiddleware(...middlewares));
+const sampleConfig = createSampleConfig();
 
 describe('store', () => {
   test('storeCreator', () => {
     const store = storeCreator(sampleConfig, enhancers);
-    const state = store.getState()
+    const state = store.getState();
     expect(
       R.map(R.always({}), state)
     ).toEqual(
-      { browser: {}, regions: {}, styles: {}, users: {}, settings: {} }
+      {browser: {}, regions: {}, styles: {}, users: {}, settings: {}}
     );
   });
 });

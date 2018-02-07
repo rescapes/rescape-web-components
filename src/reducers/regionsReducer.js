@@ -13,8 +13,8 @@ import {combineReducers} from 'redux';
 //import geojsonReducer from './geojsonReducer'
 import {createViewportReducer} from 'redux-map-gl';
 import * as R from 'ramda';
-import {SET_STATE} from './fullStateReducer';
-import {reqStrPathThrowing, hasStrPath} from 'rescape-ramda'
+//import {SET_STATE} from './fullStateReducer';
+import {reqStrPathThrowing, hasStrPath} from 'rescape-ramda';
 
 /**
  * Only allow the region reducer to be created once for each Region
@@ -80,29 +80,26 @@ const regionReducer = regionName => regionReducerOnce(regionName)(() =>
  * @return {Object} The reduced state
  */
 export default (regionsState = {}, action = {}) => {
-  switch (action.type) {
-    case SET_STATE:
-      return R.merge(regionsState, action.state.regions || {});
-    default:
-      if (hasStrPath('payload.mapState.region', action)) {
-        const region = reqStrPathThrowing('payload.mapState.region', action)
-        // Delegate all other actionTypes to the current Region's reducer
-        // This lens points to the state of the current Region
-        const regionLens = R.lensProp(region.id)
-        return R.set(
-          regionLens,
-          // Get or create the reducer for this region
-          regionReducer(region.id)(
-            // Only pass the region state keys that are handled by the regionReducer
-            R.view(regionLens, regionsState),
-            R.omit(['region'], action)
-          ),
-          // TODO we need to prevent R.set from overwriting the state object inner components
-          regionsState
-        )
-      }
-      else {
-        return regionsState
-      }
+  //case SET_STATE:
+  //  return R.merge(regionsState, action.state.regions || {});
+  if (hasStrPath('payload.mapState.region', action)) {
+    const region = reqStrPathThrowing('payload.mapState.region', action);
+    // Delegate all other actionTypes to the current Region's reducer
+    // This lens points to the state of the current Region
+    const regionLens = R.lensProp(region.id);
+    return R.set(
+      regionLens,
+      // Get or create the reducer for this region
+      regionReducer(region.id)(
+        // Only pass the region state keys that are handled by the regionReducer
+        R.view(regionLens, regionsState),
+        R.omit(['region'], action)
+      ),
+      // TODO we need to prevent R.set from overwriting the state object inner components
+      regionsState
+    );
+  }
+  else {
+    return regionsState;
   }
 };

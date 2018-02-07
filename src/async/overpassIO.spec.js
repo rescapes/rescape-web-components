@@ -25,6 +25,7 @@ describe('overpassHelpersUnmocked', () => {
     return;
   }
   const realBounds = [-118.24031352996826, 34.04298753935195, -118.21018695831297, 34.065209887879476];
+
   test('unmockedFetchTransit', async () => {
     expect.assertions(1);
     // Unmocked integration test
@@ -33,6 +34,7 @@ describe('overpassHelpersUnmocked', () => {
       fetchTransit({realBounds}, realBounds).map(response => response.features.length > 500)
     ).resolves.toBe(true);
   }, 1000000);
+
   test('unmockedFetchTransitCelled', async () => {
     expect.assertions(1);
     // Wrap the Task in a Promise for jest's sake

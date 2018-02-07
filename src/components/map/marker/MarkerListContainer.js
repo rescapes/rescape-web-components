@@ -17,15 +17,15 @@ import * as R from 'ramda';
 /**
  * Merges state.mapbox with ownProps, but raises level of state
  * @param {Object} state The Redux State
- * @param {Object} ownProps The props of the parent
+ * @param {Object} region The region object
  * @returns {Object} The props
  */
-export const mapStateToProps = (state, ownProps) => {
+export const mapStateToProps = (state, {region}) => {
     // include geojson data of the region
     return R.merge(
-        R.pick(['geojson', 'id'], ownProps.region),
+        R.pick(['geojson', 'id'], region),
         {
-            mapboxApiAccessToken: ownProps.region.mapbox.mapboxApiAccessToken
+            mapboxApiAccessToken: region.mapbox.mapboxApiAccessToken
         }
     );
 };

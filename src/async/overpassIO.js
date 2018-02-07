@@ -16,7 +16,7 @@ import {mergeAllWithKey, removeDuplicateObjectsByProp} from 'rescape-ramda';
 import os from 'os';
 import squareGrid from '@turf/square-grid';
 import bbox from '@turf/bbox';
-import {concatFeatures} from 'rescape-helpers-component';
+import {concatFeatures} from 'rescape-helpers';
 
 /**
  * fetches transit data from OpenStreetMap using the Overpass API.
@@ -109,7 +109,7 @@ const fetchTransitCelled = ({cellSize, sleepBetweenCalls, testBounds}, bounds) =
 
     // sequenced :: Task (Array Object)
     // const sequenced = R.sequence(Task.of, fetchTasks);
-    return chainedTasks.chain((results) =>
+    return chainedTasks.chain(results =>
         Task.of(
             R.pipe(
                 mergeAllWithKey(concatFeatures), // combine the results into one obj with concatinated features

@@ -11,7 +11,7 @@
 
 import * as R from 'ramda';
 
-import {STATUS} from './selectorHelpers';
+import {STATUS} from 'rescape-helpers'
 import {activeUsersSelector, userResolvedRegionsSelector} from './userSelectors';
 import {
   activeUserSelectedRegionSelector, activeUserValueSelector, userRegionsSelector,

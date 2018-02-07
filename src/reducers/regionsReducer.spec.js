@@ -1,10 +1,12 @@
 import reducer from './regionsReducer';
-import {actions} from './geojsonReducer'
+//import {actions} from './geojsonReducer'
 import {Map} from 'immutable';
-import {sampleConfig} from 'rescape-sample-data'
+import {createSampleConfig} from 'rescape-sample-data'
 import initialState from 'data/initialState';
 import {reqPathThrowing} from 'rescape-ramda';
 import * as R from 'ramda';
+
+const sampleConfig = createSampleConfig();
 
 describe('mabpox reducer', () => {
   it('should return the initial state', () => {

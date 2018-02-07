@@ -13,7 +13,6 @@ import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {actionCreators} from 'reducers/geojsonReducer';
 import {onViewportChange} from 'redux-map-gl';
-import {v} from 'rescape-validate';
 import {createSelector} from 'reselect';
 import * as R from 'ramda';
 import {viewportSelector} from 'selectors/mapboxSelectors';

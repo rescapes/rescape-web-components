@@ -1,5 +1,3 @@
-import {shallow} from 'enzyme';
-import {sampleConfig} from 'rescape-sample-data'
 import {eMap} from 'rescape-helpers-component';
 import {propsFromSampleStateAndContainer, shallowWrap} from 'rescape-helpers-component';
 import main from 'components/main/Main';

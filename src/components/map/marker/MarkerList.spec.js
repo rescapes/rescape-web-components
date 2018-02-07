@@ -1,31 +1,33 @@
 import React from 'react';
 import {shallow} from 'enzyme';
-import {reqPathThrowing} from 'rescape-ramda';
+import {onlyOneValue, reqPathThrowing} from 'rescape-ramda';
 import {mapStateToProps} from './MarkerListContainer';
 import {geojsonByType} from 'rescape-helpers-component';
-
-import {sampleConfig, initialState} from 'rescape-sample-data'
+import {createSampleConfig, createInitialState} from 'rescape-sample-data';
 import * as R from 'ramda';
-import MarkerList from './MarkerList'
-jest.mock('query-overpass');
-const state = initialState(config);
-const currentKey = reqPathThrowing(['regions', 'currentKey'], state);
+import MarkerList from './MarkerList';
 import {LA_SAMPLE} from 'rescape-sample-data';
+import {activeUserSelectedRegionsSelector} from 'selectors/regionSelectors';
+
+jest.mock('query-overpass');
+const sampleConfig = createSampleConfig();
+const state = createInitialState(sampleConfig);
+const regionId = onlyOneValue(activeUserSelectedRegionsSelector()).id
 const e = React.createElement;
 
 const props = mapStateToProps(state, {
-    region: R.set(
-        R.lensProp('geojson'),
-        geojsonByType(LA_SAMPLE),
-        reqPathThrowing(['regions', currentKey], state)
-    )
+  region: R.set(
+    R.lensProp('geojson'),
+    geojsonByType(LA_SAMPLE),
+    reqPathThrowing(['regions', regionId], state)
+  )
 });
 
 describe('MarkerList', () => {
-    it('MarkerList can mount', () => {
-        const wrapper = shallow(e(MarkerList, props));
-        expect(wrapper).toMatchSnapshot();
-    });
+  it('MarkerList can mount', () => {
+    const wrapper = shallow(e(MarkerList, props));
+    expect(wrapper).toMatchSnapshot();
+  });
 });
 
 /*

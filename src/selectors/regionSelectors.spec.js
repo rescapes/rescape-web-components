@@ -10,7 +10,7 @@
  */
 
 import * as R from 'ramda';
-import {STATUS} from './selectorHelpers'
+import {STATUS} from 'rescape-helpers'
 import {
   activeUserSelectedRegionsSelector, activeUserRegionsSelector,
   regionsSelector,  regionIdsSelector

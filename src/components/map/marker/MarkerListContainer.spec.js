@@ -13,10 +13,11 @@ import thunk from 'redux-thunk'
 import {mapStateToProps} from 'components/map/marker/MarkerListContainer';
 import configureStore from 'redux-mock-store';
 
-import {sampleConfig} from 'rescape-sample-data'
+import {createSampleConfig} from 'rescape-sample-data'
 import initialState from 'data/initialState'
 import {reqPathThrowing} from 'rescape-ramda'
 
+const sampleConfig = createSampleConfig();
 const middlewares = [thunk];
 const mockStore = configureStore(middlewares);
 
