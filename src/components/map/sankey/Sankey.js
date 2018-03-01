@@ -20,7 +20,7 @@ import * as R from 'ramda';
 import {applyMatchingStyles, mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
 import {Component} from 'react';
 import {sankeyGenerator, sankeyGeospatialTranslate} from 'rescape-helpers-component';
-import {linkStages, resolveLinkStage, resolveNodeStage, resolveNodeName, stages} from 'data/belgium/brusselsSankeySample';
+import {linkStages, resolveLinkStage, resolveNodeStage, resolveNodeName, stages} from 'rescape-sample-data'
 import PropTypes from 'prop-types';
 import {sankeyLinkHorizontal} from 'd3-sankey';
 import {format as d3Format} from 'd3-format';
@@ -28,7 +28,6 @@ import {scaleOrdinal, schemeCategory10} from 'd3-scale';
 import {resolveSvgReact} from 'rescape-helpers-component';
 import {Flex as flex} from 'rebass';
 import sankeyNodeLegend from './SankeyNodeLegend'
-import sankeyLinkLegend from './SankeyLinkLegend'
 import sankeyFilterer from './SankeyFilterer';
 import {styleArithmetic} from 'rescape-helpers-component';
 
