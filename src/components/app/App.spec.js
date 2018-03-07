@@ -3,23 +3,16 @@ import app from './App'
 import {createSampleConfig, initialState} from 'rescape-sample-data'
 import {eMap} from 'rescape-helpers-component';
 import {mapStateToProps} from './AppContainer';
-onst [App] = eMap([app]);
+import {sampleInitialState} from 'helpers/helpers';
+const [App] = eMap([app]);
 
-describe('The current application', () => {
-  const sampleConfig = createSampleConfig
-  const state = initialState(sampleConfig);
+describe('App', () => {
+  // Top-level, probably won't get props from anyone
+  const props = {};
 
-  const props = {
-    // Style proportional to the browser size
-    style: {
-      width: 0.5,
-      height: 0.5
-    }
-  };
-
-  test('Current can mount', () => {
+  test('Can mount', () => {
     const wrapper = shallow(
-      App(mapStateToProps(state, props))
+      App(mapStateToProps(sampleInitialState, props))
     );
     expect(wrapper).toMatchSnapshot();
   });

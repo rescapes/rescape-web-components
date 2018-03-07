@@ -250,7 +250,7 @@ const UserType = new GraphQLObjectType({
     name: {type: GraphQLString},
     email: {type: GraphQLString},
     password: {type: GraphQLString},
-    permissions: {type: new GraphQLList(PermissionType)},
+    //permissions: {type: new GraphQLList(PermissionType)},
     regions: {type: new GraphQLList(UserRegionType)}
   })
 });

@@ -6,7 +6,7 @@ Object {
     "error": false,
     "loading": false,
     "region": Object {
-      "id": "belgium",
+      "id": "oakland",
       "isSelected": true,
     },
     "settings": Object {
@@ -43,29 +43,23 @@ Object {
     },
     "store": Object {},
     "user": Object {
-      "id": "belgiumManager",
+      "id": "californiaManager",
       "isActive": true,
-      "name": "Belgium Manager",
+      "name": "Jerry Brown",
       "permissions": Array [
         "manage",
       ],
       "regions": Array [
         Object {
-          "id": "belgium",
+          "id": "oakland",
           "isSelected": true,
         },
       ],
     },
   },
   "style": Object {
-    "MozAppearance": "none",
-    "WebkitAppearance": "none",
-    "color": "black",
-    "fontFamily": "inherit",
-    "fontSize": "inherit",
-    "height": 0,
-    "textDecoration": "none",
-    "width": 0,
+    "height": 720,
+    "width": 1080,
   },
 }
 `;

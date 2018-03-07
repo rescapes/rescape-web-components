@@ -12,7 +12,7 @@ import thunk from 'redux-thunk';
 import {createLogger} from 'redux-logger';
 import {applyMiddleware, compose, createStore} from 'redux';
 import rootReducer from 'reducers';
-import initialStateCreator from 'data/initialState';
+import createInitialState from './initialState';
 import {composeWithDevTools} from 'redux-devtools-extension';
 import createDebounce from 'redux-debounced';
 
@@ -33,7 +33,7 @@ export default (config, testEnhancers = []) => {
 
   return createStore(
     rootReducer(),
-    initialStateCreator(config),
+    createInitialState(config),
     composedEnhancers
   );
 }

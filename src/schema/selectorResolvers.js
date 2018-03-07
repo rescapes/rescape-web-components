@@ -33,14 +33,14 @@ const parentSelectorValues = (parentKey, selector) => (parent, props, {options: 
 
 // Original example from: https://github.com/apollographql/graphql-tools
 const makeSelectorResolvers = data => ({
-  Operation: {
+  //Operation: {
 
-  },
-  Permission: {
-    operations: objectValues('operations')
-  },
+  //},
+  //Permission: {
+  //  operations: objectValues('operations')
+  //},
   User: {
-    permissions: objectValues('permissions'),
+    //permissions: objectValues('permissions'),
     regions: objectValues('regions')
   },
   OpenStreetMap: {

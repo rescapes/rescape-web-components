@@ -9,6 +9,7 @@ import {gql} from 'apollo-client-preset';
 import {createSelector} from 'reselect';
 import {bindActionCreators} from 'redux';
 import {mergeDeep} from 'rescape-ramda';
+import {apolloTestPropsFunction} from 'helpers/helpers';
 
 export const mapStateToProps = (state, props) => {
   const {style, ...data} = props;
@@ -92,8 +93,6 @@ const ContainerWithData = graphql(
   queries.allUserRegions.args)
 (Main);
 
-// Returns a function that expects state and ownProps for testing
-export const testPropsMaker = apolloTestPropsFunction(mapStateToProps, mapDispatchToProps, queries.allUserRegions);
 
 // Using R.merge to ignore ownProps, which were already merged by mapStateToProps
 export default connect(mapStateToProps, mapDispatchToProps, R.merge)(ContainerWithData);

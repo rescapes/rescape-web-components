@@ -5,11 +5,12 @@ import {testPropsMaker} from './MapboxContainer';
 import {propsFromSampleStateAndContainer} from 'rescape-helpers-component';
 
 import {eMap} from 'rescape-helpers-component';
+import {sampleInitialState} from 'helpers/helpers';
 const [MapGL, Mapbox] = eMap([mapGL, mapbox]);
 
 describe('Mapbox', () => {
   test('Can mount', () => {
-    const props = propsFromSampleStateAndContainer(testPropsMaker,
+    const props = propsFromSampleStateAndContainer(sampleInitialState, testPropsMaker,
       {
         // style dimensions are normally from the parent
         style: {

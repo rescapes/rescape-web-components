@@ -8,6 +8,8 @@ import {makeActiveUserRegionsAndSettingsSelector} from 'selectors/storeSelectors
 import {makeBrowserProportionalDimensionsSelector} from 'selectors/styleSelectors';
 import {mergeDeep} from 'rescape-ramda';
 import {apolloTestPropsFunction} from 'helpers/helpers';
+import PropTypes from 'prop-types'
+import {v} from 'rescape-validate'
 
 /**
  * Combined selector that:
@@ -19,7 +21,7 @@ import {apolloTestPropsFunction} from 'helpers/helpers';
  * @param {Object} [props] The optional props to override the state.
  * @returns {Object} The state and own props mapped to props for the component
  */
-export const mapStateToProps = (state, props) => {
+export const mapStateToProps = v((state, props) => {
   const {style, ...data} = props;
   return createSelector(
     [
@@ -35,7 +37,14 @@ export const mapStateToProps = (state, props) => {
       style: R.merge(dimensions, style)
     })
   )(state, props);
-}
+},
+  [
+    ['state', PropTypes.shape().isRequired],
+    ['props', PropTypes.shape({
+      style: PropTypes.shape()
+    })],
+  ],
+  'mapStateToProps');
 
 export const mapDispatchToProps = (dispatch) => {
   return {
@@ -84,7 +93,7 @@ export const queries = {
           userId: user.id
         },
         // Pass through error so we can handle it in the component
-        errorPolicy: 'none'
+        errorPolicy: 'all'
       }),
       props: ({data, ownProps}) => mergeDeep(
         ownProps,

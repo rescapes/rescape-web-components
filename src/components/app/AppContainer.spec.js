@@ -4,15 +4,17 @@ import * as R from 'ramda';
 import {c} from 'components/app/App';
 import {gql} from 'apollo-client-preset';
 import {apolloContainerTests} from 'rescape-helpers-component';
-import {MemoryRouter as memoryRouter} from 'react-router-dom'
-import {makeSchema} from 'rescape-sample-data'
-const schema = makeSchema()
+import {MemoryRouter as memoryRouter} from 'react-router-dom';
+import makeSchema from 'schema/schema';
+import {sampleInitialState} from 'helpers/helpers';
+
+const schema = makeSchema();
 
 const [AppContainer, MemoryRouter] = eMap([appContainer, memoryRouter]);
 // Test this container with a memory router so we can test the main route
-const Container = (...args) => MemoryRouter({initialEntries: [ '/' ]},
+const Container = (...args) => MemoryRouter({initialEntries: ['/']},
   AppContainer(...args)
-)
+);
 
 // Find this React component
 const componentName = 'App';
@@ -28,12 +30,12 @@ const query = gql`${queries.userRegions.query}`;
 const queryVariables = props => ({
   userId: props.data.user.id
 });
+// Set an invalid user id to query
 const errorMaker = parentProps => R.set(R.lensPath(['user', 'id']), 'foo', parentProps);
 
-/**
- * Nothing to do here, since App has no parent component
- */
-describe('AppContainer', () => apolloContainerTests({
+describe('AppContainer', () => {
+  const {testMapStateToProps, testQuery, testRenderError, testRender} = apolloContainerTests({
+    initialState: sampleInitialState,
     schema,
     Container,
     componentName,
@@ -44,5 +46,9 @@ describe('AppContainer', () => apolloContainerTests({
     query,
     queryVariables,
     errorMaker
-  })
-);
+  });
+  test('testMapStateToProps', testMapStateToProps);
+  test('testQuery', testQuery);
+  test('testRenderError', testRenderError);
+  test('testRender', testRender);
+});

@@ -23,6 +23,10 @@ export const c = nameLookup({
   appError: true
 });
 
+/**
+ * App is the outermost component of the application.
+ * It contains top-level route switching
+ */
 class App extends Component {
   render() {
     const props = App.views(this.props);

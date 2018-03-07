@@ -42,7 +42,6 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
   return bindActionCreators({}, dispatch);
 };
 
-// Returns a function that expects ownProps for testing
-export const testPropsMaker = makeTestPropsFunction(mapStateToProps, mapDispatchToProps);
+
 
 export default connect(mapStateToProps, mapDispatchToProps)(Current);

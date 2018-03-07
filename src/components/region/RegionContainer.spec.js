@@ -9,8 +9,11 @@ import Current, {c as cCurrent} from 'components/current/Current';
 import {c} from 'components/region/Region';
 import {gql} from 'apollo-client-preset';
 import {apolloContainerTests} from 'rescape-helpers-component';
-import {makeSchema} from 'rescape-sample-data'
-const schema = makeSchema()
+import makeSchema from 'schema/schema';
+import {sampleInitialState} from 'helpers/helpers';
+import {sampleAsyncParentProps} from 'components/current/CurrentContainer.sample';
+
+const schema = makeSchema();
 
 // Test this container
 const [Container] = eMap([RegionContainer]);
@@ -29,15 +32,10 @@ const queryVariables = props => ({
   regionId: props.data.region.id
 });
 const errorMaker = parentProps => R.set(R.lensPath(['region', 'id']), 'foo', parentProps);
-
-const asyncParentProps = () => new Promise((resolve) => {
-  const currentProps = propsFromSampleStateAndContainer(currentPropsMaker, {});
-  const currentViews = Current.views(currentProps).views;
-  const parentProps = currentViews[cCurrent.currentRegion];
-  resolve(parentProps);
-});
+const asyncParentProps = sampleAsyncParentProps(cCurrent.currentRegion);
 
 describe('RegionContainer', () => apolloContainerTests({
+    initialState: sampleInitialState,
     schema,
     Container,
     componentName,

@@ -50,7 +50,7 @@ export const usersSelector = reqPathThrowing(['users']);
  * @param {Object} params Object of properties and value to match on
  */
 export const userSelector = (state, {params}) => {
-  return findOneValueByParams(params, reqPathThrowing(['users'], state))
+  return findOneValueByParamsThrowing(params, reqPathThrowing(['users'], state))
 }
 
 /**

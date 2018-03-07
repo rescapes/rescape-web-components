@@ -10,13 +10,15 @@
  */
 
 import {eMap} from 'rescape-helpers-component';
-import Sankey, {c as cSankey} from 'components/map/sankey/Sankey'
+import Sankey, {c as cSankey} from 'components/map/sankey/Sankey';
 import SankeyNodeLegend, {c} from 'components/map/sankey/SankeyNodeLegend';
 import {apolloContainerTests} from 'rescape-helpers-component';
 import {asyncParentPropsForSankey} from 'components/map/sankey/SankeyContainer.spec';
 import {testPropsMaker} from 'components/map/sankey/SankeyContainer';
-import {makeSchema} from 'rescape-sample-data'
-const schema = makeSchema()
+import makeSchema from 'schema/schema';
+import {sampleInitialState} from 'helpers/helpers';
+
+const schema = makeSchema();
 
 // Test this container
 const [Container] = eMap([SankeyNodeLegend]);
@@ -35,16 +37,17 @@ const asyncParentPropsForSankeyNodeLegend = async () => {
   return asyncParentPropsForSankey().then(
     testPropsMaker
   ).then(props => Sankey.views({data: props}).views[cSankey.sankeyLegendLink]
-  )
+  );
 };
 
 describe('SankeyNodeLegend', () => apolloContainerTests({
+    initialState: sampleInitialState,
     schema,
     Container,
     componentName,
     childClassDataName,
     childClassLoadingName,
     childClassErrorName,
-    asyncParentProps: asyncParentPropsForSankeyNodeLegend,
+    asyncParentProps: asyncParentPropsForSankeyNodeLegend
   })
 );

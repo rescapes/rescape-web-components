@@ -10,13 +10,15 @@
  */
 
 import {eMap} from 'rescape-helpers-component';
-import Sankey, {c as cSankey} from 'components/map/sankey/Sankey'
+import Sankey, {c as cSankey} from 'components/map/sankey/Sankey';
 import SankeyLinkLegend, {c} from 'components/map/sankey/SankeyLinkLegend';
 import {apolloContainerTests} from 'rescape-helpers-component';
 import {asyncParentPropsForSankey} from 'components/map/sankey/SankeyContainer.spec';
 import {testPropsMaker} from 'components/map/sankey/SankeyContainer';
-import {makeSchema} from 'rescape-sample-data'
-const schema = makeSchema()
+import makeSchema from 'schema/schema';
+import {sampleInitialState} from 'helpers/helpers';
+
+const schema = makeSchema();
 
 // Test this container
 const [Container] = eMap([SankeyLinkLegend]);
@@ -33,18 +35,19 @@ const childClassErrorName = c.sankeyError;
 // This returns a promise for consistency across tests. Some parent test props are async
 const asyncParentPropsForSankeyLinkLegend = async () => {
   return asyncParentPropsForSankey().then(
-      testPropsMaker
+    testPropsMaker
   ).then(props => Sankey.views({data: props}).views[cSankey.sankeyLegendLink]
-  )
+  );
 };
 
 describe('SankeyLinkLegend', () => apolloContainerTests({
+    initialState: sampleInitialState,
     schema,
     Container,
     componentName,
     childClassDataName,
     childClassLoadingName,
     childClassErrorName,
-    asyncParentProps: asyncParentPropsForSankeyLinkLegend,
+    asyncParentProps: asyncParentPropsForSankeyLinkLegend
   })
 );

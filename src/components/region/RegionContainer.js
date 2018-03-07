@@ -105,6 +105,7 @@ const ContainerWithData = graphql(
   gql`${queries.region.query}`,
   queries.region.args)(Region);
 
+
 // Returns a function that expects state and ownProps for testing
 export const testPropsMaker = apolloTestPropsFunction(mapStateToProps, mapDispatchToProps, queries.region);
 

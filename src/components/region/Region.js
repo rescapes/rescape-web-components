@@ -16,7 +16,7 @@ import {
   nameLookup, eMap, propsFor, renderChoicepoint, composeViews,
   propsForSansClass, renderLoadingDefault, renderErrorDefault
 } from 'rescape-helpers-component';
-import {strPathThrowing} from 'rescape-ramda';
+import {reqStrPathThrowing} from 'rescape-ramda';
 import {Component} from 'react';
 
 const [Sankey, Div] = eMap([sankey, 'div']);
@@ -81,7 +81,7 @@ Region.viewStyles = ({style}) => {
 
 Region.viewProps = () => {
   // region is expected from the query result
-  const region = strPathThrowing('data.store.region');
+  const region = reqStrPathThrowing('data.store.region');
   return {
     [c.region]: {region},
     [c.regionMapbox]: {region},

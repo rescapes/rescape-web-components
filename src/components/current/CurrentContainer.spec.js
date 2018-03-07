@@ -8,28 +8,38 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import {mapStateToProps} from './CurrentContainer';
-import {propsFromSampleStateAndContainer, wrapWithMockGraphqlAndStore} from 'rescape-helpers-component';
+import {
+  apolloContainerTests, propsFromSampleStateAndContainer,
+  wrapWithMockGraphqlAndStore
+} from 'rescape-helpers-component';
 import CurrentContainer from './CurrentContainer';
 import {eMap} from 'rescape-helpers-component';
 import React from 'react';
-import {testPropsMaker} from 'components/current/CurrentContainer';
+import {sampleInitialState} from 'helpers/helpers';
+import {c as cMain} from 'components/main/Main';
+import {c} from 'components/current/Current';
+import {sampleAsyncParentProps} from 'components/main/MainContainer.sample.js'
+
+// Test this container
+const [Container] = eMap([CurrentContainer]);
+// Find this React component
+const componentName = 'Current';
+// Find this class in the data renderer
+const childClassDataName = c.current;
+const initialState = sampleInitialState;
+// Get sample parent props from Main for Current
+const asyncParentProps = sampleAsyncParentProps(cMain.mainCurrent);
 
 describe('CurrentContainer', () => {
-  const parentProps = {
-    style: {}
-  }
-  // Get the test props for CurrentContainer
-  const props = propsFromSampleStateAndContainer(testPropsMaker, parentProps);
-
-  test('mapStateToProps', () => {
-    expect(props).toMatchSnapshot();
+  const {testMapStateToProps, testQuery, testRenderError, testRender} = apolloContainerTests({
+    Container,
+    componentName,
+    childClassDataName,
+    initialState,
+    asyncParentProps
   });
-
-  test('render', () => {
-    const [regionContainer] = eMap([CurrentContainer]);
-    const wrapper = wrapWithMockGraphqlAndStore(regionContainer(parentProps));
-    const component = wrapper.find('Current');
-    expect(component.props()).toMatchSnapshot();
-  });
+  test('testMapStateToProps', testMapStateToProps);
+  test('testQuery', testQuery);
+  test('testRenderError', testRenderError);
+  test('testRender', testRender);
 });

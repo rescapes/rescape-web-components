@@ -14,7 +14,7 @@ import {shallow, render, mount} from 'enzyme';
 // Enzyme setup
 import enzyme from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
-import * as R from 'ramda'
+import * as R from 'ramda';
 
 enzyme.configure({adapter: new Adapter()});
 
@@ -23,7 +23,9 @@ import {JSDOM} from 'jsdom';
 global.shallow = shallow;
 global.render = render;
 global.mount = mount;
-global.navigator = {};
+global.navigator = {
+  userAgent: 'node.js'
+};
 
 // jsdom, window, document, navigator setup
 // http://airbnb.io/enzyme/docs/guides/jsdom.html
@@ -47,8 +49,9 @@ global.navigator = {
   userAgent: 'node.js'
 };
 copyProps(window, global);
-window.URL = window.URL || {}
-window.URL.createObjectURL = () => {}
+window.URL = window.URL || {};
+window.URL.createObjectURL = () => {
+};
 
 Error.stackTraceLimit = Infinity;
 // Have exceptions traces traverse async processes

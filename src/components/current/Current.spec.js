@@ -1,3 +1,5 @@
+import {sampleInitialState} from 'helpers/helpers';
+
 jest.dontMock('./Current');
 import current from './Current'
 import {eMap} from 'rescape-helpers-component';
@@ -6,7 +8,7 @@ import {propsFromSampleStateAndContainer, shallowWrap} from 'rescape-helpers-com
 const [Current] = eMap([current]);
 
 describe('The current application', () => {
-  const props = propsFromSampleStateAndContainer(testPropsMaker,
+  const props = propsFromSampleStateAndContainer(sampleInitialState, testPropsMaker,
     {
       // style dimensions are normally from the parent
       style: {

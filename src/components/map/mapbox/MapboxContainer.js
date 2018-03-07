@@ -23,13 +23,15 @@ import * as R from 'ramda';
 import {graphql} from 'react-apollo';
 import {gql} from 'apollo-client-preset';
 import {apolloTestPropsFunction} from 'helpers/helpers';
+import {v} from 'rescape-validate'
+import PropTypes from 'prop-types'
 
 /**
  * Selects the current user from state
  * and the Viewport for the region in the props
  * @returns {Object} The props
  */
-export const mapStateToProps = (state, props) => {
+export const mapStateToProps = v((state, props) => {
   const {style, ...data} = props
   return createSelector(
     [
@@ -48,7 +50,11 @@ export const mapStateToProps = (state, props) => {
       style: R.merge(defaultStyle, style)
     })
   )(state, props);
-};
+},
+[
+  ['state', PropTypes.shape().isRequired],
+  ['props', PropTypes.shape().isRequired],
+], 'mapStateToProps');
 
 export const mapDispatchToProps = (dispatch, ownProps) => {
   return bindActionCreators({

@@ -10,7 +10,9 @@ import Region, {c as cRegion} from 'components/region/Region';
 import Mapbox, {c} from 'components/map/mapbox/Mapbox';
 import {gql} from 'apollo-client-preset';
 import {apolloContainerTests} from 'rescape-helpers-component';
-import {makeSchema} from 'rescape-sample-data';
+import {createSampleConfig} from 'rescape-sample-data';
+import makeSchema from 'schema/schema';
+import {sampleInitialState} from 'helpers/helpers';
 
 const schema = makeSchema();
 
@@ -37,11 +39,11 @@ const errorMaker = parentProps => R.set(R.lensPath(['region', 'id']), 'foo', par
 // This returns a promise for consistency across tests. Some parent test props are async
 const asyncParentProps = () => {
   // Build up the correct parent props from Current and Region
-  const currentProps = propsFromSampleStateAndContainer(currentPropsMaker, {});
+  const currentProps = propsFromSampleStateAndContainer(sampleInitialState, currentPropsMaker, {});
   const currentViews = Current.views(currentProps).views;
   const currentRegionView = currentViews[cCurrent.currentRegion];
   // Get async props from the RegionContainer and then resolve the Region.views
-  return asyncPropsFromSampleStateAndContainer(regionPropsMaker, currentRegionView)
+  return asyncPropsFromSampleStateAndContainer(sampleInitialState, regionPropsMaker, currentRegionView)
     .then(props =>
       R.merge(
         {
@@ -56,6 +58,7 @@ const asyncParentProps = () => {
 };
 
 describe('MapboxContainer', () => apolloContainerTests({
+    initialState: sampleInitialState,
     schema,
     Container,
     componentName,

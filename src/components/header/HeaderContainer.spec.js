@@ -10,7 +10,7 @@
  */
 
 import {
-  asyncPropsFromSampleStateAndContainer,
+  asyncPropsFromSampleStateAndContainer
 } from 'rescape-helpers-component';
 import headerContainer, {testPropsMaker, queries} from 'components/header/HeaderContainer';
 import {testPropsMaker as appPropsMaker} from 'components/app/AppContainer';
@@ -18,11 +18,13 @@ import {eMap, withRebassProvider} from 'rescape-helpers-component';
 import App, {c as cApp} from 'components/app/App';
 import {c} from 'components/header/Header';
 import {apolloContainerTests} from 'rescape-helpers-component';
-import mockRouter from 'react-mock-router'
-import * as R from 'ramda'
-import {Provider as provider} from 'rebass'
-import {makeSchema} from 'rescape-sample-data'
-const schema = makeSchema()
+import mockRouter from 'react-mock-router';
+import * as R from 'ramda';
+import {Provider as provider} from 'rebass';
+import makeSchema from 'schema/schema';
+import {sampleInitialState} from 'helpers/helpers';
+
+const schema = makeSchema();
 
 // Test this container
 const [HeaderContainer, MockRouter, Provider] = eMap([headerContainer, mockRouter, provider]);
@@ -30,7 +32,7 @@ const Container = R.compose(
   // Wrap a MemoryRouter since Headers have Routing Links
   c => MockRouter({initialEntries: ['/']}, c),
   HeaderContainer
-)
+);
 
 // Find this React component
 const componentName = 'Header';
@@ -38,7 +40,7 @@ const componentName = 'Header';
 const childClassDataName = c.headerLinkHolder;
 
 const asyncParentProps = () =>
-  asyncPropsFromSampleStateAndContainer(appPropsMaker, {}).then(
+  asyncPropsFromSampleStateAndContainer(sampleInitialState, appPropsMaker, {}).then(
     appProps => {
       const appViews = App.views(appProps).views;
       const parentProps = appViews[cApp.appHeader];
@@ -46,6 +48,7 @@ const asyncParentProps = () =>
     });
 
 describe('HeaderContainer', () => apolloContainerTests({
+    initialState: sampleInitialState,
     schema,
     Container,
     componentName,

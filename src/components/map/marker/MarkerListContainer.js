@@ -12,6 +12,7 @@
 import {connect} from 'react-redux';
 import MarkerList from './MarkerList'
 import * as R from 'ramda';
+import {reqStrPathThrowing} from 'rescape-ramda'
 //import {actionCreators} from 'redux/geojson/geojsonReducer';
 
 /**
@@ -25,7 +26,7 @@ export const mapStateToProps = (state, {region}) => {
     return R.merge(
         R.pick(['geojson', 'id'], region),
         {
-            mapboxApiAccessToken: region.mapbox.mapboxApiAccessToken
+            mapboxApiAccessToken: reqStrPathThrowing('settings.mapbox.mapboxApiAccessToken', state)
         }
     );
 };
