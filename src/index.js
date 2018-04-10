@@ -12,6 +12,8 @@ import {eMap} from 'rescape-helpers-component';
 import * as R from 'ramda';
 import {mockApolloClientWithSamples} from 'rescape-helpers-component';
 import {resolvedSchema} from 'helpers/helpers'
+const environment = process.env.NODE_ENV;
+
 
 import {calculateResponsiveState} from 'redux-responsive';
 const [BrowserRouter, ApolloProvider, Provider, App] = eMap([browserRouter, apolloProvider, provider, app]);
@@ -24,9 +26,9 @@ store.dispatch(calculateResponsiveState(window))
 
 // Set the client to the mockApolloClient for testingj
 const client = R.cond([
-  [R.equals('test'), () => mockApolloClientWithSamples(resolvedSchema)],
+  [R.equals('test'), () => mockApolloClientWithSamples(store.getState(), resolvedSchema)],
   [R.T, () => createClient()]
-])(process.env.NODE_ENV);
+])(environment);
 
 // Render the React components
 // BrowserRouter routes anything defined in a child component Switch

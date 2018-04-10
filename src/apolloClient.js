@@ -16,7 +16,9 @@ import {WebSocketLink} from 'apollo-link-ws';
 import fetch from 'node-fetch';
 import {createHttpLink} from 'apollo-link-http';
 import config from './config';
+
 const {settings: {graphcool: {authTokenKey, serviceIdKey}}} = config;
+
 
 /**
  * Creates an ApolloClient
@@ -54,8 +56,18 @@ export default () => {
     }
   }) : null;
 
+  const errorLink = onError(({graphQLErrors, networkError}) => {
+    if (graphQLErrors)
+      graphQLErrors.map(({message, locations, path}) =>
+        console.log(
+          `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
+        )
+      );
+    if (networkError) console.log(`[Network error]: ${networkError}`);
+  });
+
   // Split queries between HTTP for Queries/Mutations and Websockets for Subscriptions.
-  const link =  process.browser ? split(
+  const link = process.browser ? split(
     // query is the Operation
     ({query}) => {
       const {kind, operation} = getMainDefinition(query);
@@ -63,21 +75,11 @@ export default () => {
     },
     // Use WebSocketLink
     wsLink,
+    errorLink,
     // Else use HttpLink with auth token
     httpLinkWithAuthToken
-  ) : httpLinkWithAuthToken
+  ) : httpLinkWithAuthToken;
 
-  /*
-  const errorLink = onError(({ graphQLErrors, networkError }) => {
-    if (graphQLErrors)
-      graphQLErrors.map(({ message, locations, path }) =>
-        console.log(
-          `[GraphQL error]: Message: ${message}, Location: ${locations}, Path: ${path}`
-        )
-      );
-    if (networkError) console.log(`[Network error]: ${networkError}`);
-  });
-  */
 
   // Create the ApolloClient using the following ApolloClientOptions
   return new ApolloClient({

@@ -88,6 +88,8 @@ module.exports = {
       // Support React Native Web
       // https://www.smashingmagazine.com/2016/08/a-glimpse-into-the-future-with-react-native-for-web/
       'react-native': 'react-native-web',
+      // https://www.styled-components.com/docs/faqs#why-am-i-getting-a-warning-about-several-instances-of-module-on-the-page
+      'styled-components': path.resolve('node_modules', 'styled-components'),
     },
     plugins: [
       // Prevents users from importing files from outside of src/ (or node_modules/).

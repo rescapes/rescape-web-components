@@ -164,7 +164,7 @@ export const queries = {
         variables: {
           regionId: region.id
         },
-        errorPolicy: 'none'
+        errorPolicy: 'all'
       }),
       props: ({data, ownProps}) => {
         let filteredData = data;
@@ -203,7 +203,7 @@ export const queries = {
     query: filterSankeyNodesMutation,
     args: {
       options: {
-        errorPolicy: 'none'
+        errorPolicy: 'all'
       },
       props: ({mutate}) => ({
         onSankeyFilterChange:
