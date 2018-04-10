@@ -19,6 +19,8 @@ export const c = nameLookup({
   app: true,
   appHeader: true,
   appBody: true,
+  appMain: true,
+  appLogin: true,
   appLoading: true,
   appError: true
 });
@@ -84,6 +86,13 @@ App.viewProps = () => {
     },
     [c.appBody]: {
       key: c.appBody
+    },
+    // TODO, I don't know if I can wire these up via the routing
+    [c.appMain]: {
+      key: c.appMain
+    },
+    [c.appLogin]: {
+      key: c.appLogin
     }
   };
 };

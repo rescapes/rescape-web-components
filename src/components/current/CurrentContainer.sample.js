@@ -12,8 +12,12 @@
 import {makeTestPropsFunction, propsFromSampleStateAndContainer} from 'rescape-helpers-component';
 import {mapDispatchToProps, mapStateToProps} from 'components/current/CurrentContainer';
 import {sampleInitialState} from 'helpers/helpers';
-import Current, {c} from './Current';
 import {reqStrPathThrowing} from 'rescape-ramda';
+import Main, {c} from 'components/main/Main'
+
+/**
+ * @file Links sample props from a Main component to a Current component
+ */
 
 /**
  * Returns a function that expects ownProps for testing
@@ -22,11 +26,10 @@ export const samplePropsMaker = makeTestPropsFunction(mapStateToProps, mapDispat
 
 /**
  * Returns a function that when called returns a promise of sample parentProps
- * @param {String} viewName The view of the parent component representing the child Component whose props are sought
  * @return {function(): Promise<any>}
  */
-export const sampleAsyncParentProps = (viewName) => () => new Promise((resolve) => {
+export const sampleAsyncParentProps = () => new Promise((resolve) => {
   const currentProps = propsFromSampleStateAndContainer(sampleInitialState, samplePropsMaker, {});
-  const parentProps = reqStrPathThrowing(viewName, Current.views(currentProps).views);
+  const parentProps = reqStrPathThrowing(c.mainCurrent, Main.views(currentProps));
   resolve(parentProps);
 });

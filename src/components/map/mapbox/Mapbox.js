@@ -63,8 +63,8 @@ Mapbox.viewProps = (props) => {
     [c.mapboxReactMapGl]: R.mergeAll([
       {
         // Width and height are calculated in viewStyles
-        width: reqPathThrowing(['views', [c.mapboxReactMapGl], 'style', 'width']),
-        height: reqPathThrowing(['views', [c.mapboxReactMapGl], 'style', 'height'])
+        width: reqStrPathThrowing(`views.${c.mapboxReactMapGl}.style.width`),
+        height: reqStrPathThrowing(`views.${c.mapboxReactMapGl}.style.height`)
       },
       // Pass anything in mapbox
       reqStrPathThrowing('data.mapbox', props),

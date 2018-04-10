@@ -14,60 +14,80 @@ import {createSelector} from 'reselect';
 import * as R from 'ramda';
 import {mapboxSettingsSelector} from 'selectors/settingsSelectors';
 import {fromImmutable} from 'rescape-helpers';
+import {v} from 'rescape-validate'
+import PropTypes from 'prop-types'
 
 /**
- * Selects mapbox properties
- * @param state
- * @param region
- * @param mapbox
- * @return {*}
+ * @typedef {Object} Viewport The Mapbox viewport
  */
-export const mapboxSelector = (state, {region, mapbox}) => {
+
+/**
+ * @typedef {Object} Mapbox Properties pertaining to a Mapbox map
+ * @property {Object} settings The Mapbox settings
+ * @property {Viewport} viewport The mapbox viewport
+ */
+
+/**
+ * Creates a Mapbox object by combining state.settings.mapbox with region.mapbox
+ * @param {Object} state Redux state
+ * @param {Object} region Region containing mapbox
+ * @return {Mapbox} A complete Mapbox object
+ */
+export const mapboxSelector = v((state, {region}) => {
+  const mapbox = reqStrPathThrowing('mapbox', region)
   return createSelector(
     [
       mapboxSettingsSelector,
-      viewportSelector
+      () => viewportSelector(state, {mapbox})
     ],
     (mapboxSettings, viewport) => R.merge(
-      // Merge
+      // state.settings.mapbox is lowest priority, it might be overriden with region.mapbox.settings
       R.defaultTo({}, mapboxSettings),
-      // Set the viewport with the results of the viewportSelector, which merges settings and resolves an immutable
+      // Set the viewport with the results of the viewportSelector, which merges viewport settings and resolves an immutable
       R.set(
         R.lensProp('viewport'),
         viewport,
-        region ?
-          reqPathThrowing(['mapbox'], region) :
-          reqPathThrowing(['viewport'], mapbox)
+        mapbox)
       )
-    )
   )(state, {region});
-}
+}, [
+  ['state', PropTypes.shape().isRequired],
+  ['props', PropTypes.shape({
+    region: PropTypes.shape()
+  }).isRequired],
+], 'mapboxSelector');
 
 /**
- * Selects the viewport from the given Region's mapbox and merges it with the state's mapbox settings
+ * Creates a Viewport object by combining state.settings.mapbox.viewport with mapbox.viewport
  * @param {Object} state The redux State
- * @param {Object} [region] The Region Supply either this or mapbox
- * @param {Object} [mapbox] The Mapbox Supply either this or region
- * @returns A selector which extracts the viewport from the region's mapbox and merges it with the state's mapbox settings
+ * @param {Object} mapbox The Mapbox object
+ * @returns {Object} The selector function expecting state and props
  */
-export const viewportSelector = (state, {region, mapbox}) => {
+export const viewportSelector = v((state, {mapbox}) => {
+  const viewport = reqStrPathThrowing('viewport', mapbox)
   return createSelector(
     [mapboxSettingsSelector],
     // Viewport is stored as an immutable, since react-map-gl's createViewportReducer expects it
     // If we don't need the reducer we should be able to get rid of the immutable
     mapboxSettings => mergeDeepAll([
-      // Merge
+      // state.mapbox.settings gets lowest priority
       R.defaultTo({}, mapboxSettings.viewport),
-      fromImmutable(
-        region ?
-          reqStrPathThrowing('mapbox.viewport', region) :
-          reqStrPathThrowing('viewport', mapbox)
-      ),
+      // Get mutable form from mapbox
+      fromImmutable(viewport)
       // Temporarily merge the updated viewport from the state, since we are updating it via redux
+      // Should not be needed, refetch in the container should update regions.[id].mapbox.viewport
+      // to the reduced version
+      /*
       fromImmutable(
           reqPathThrowing(['regions', region.id, 'mapbox', 'viewport'], state)
       )
+      */
     ])
-  )(state, {region});
-}
+  )(state, {mapbox});
+}, [
+  ['state', PropTypes.shape().isRequired],
+  ['props', PropTypes.shape({
+    mapbox: PropTypes.shape()
+  }).isRequired],
+], 'viewportSelector');
 

@@ -11,7 +11,7 @@ import {gql} from 'apollo-client-preset';
 import {apolloContainerTests} from 'rescape-helpers-component';
 import makeSchema from 'schema/schema';
 import {sampleInitialState} from 'helpers/helpers';
-import {sampleAsyncParentProps} from 'components/current/CurrentContainer.sample';
+import {sampleAsyncParentProps} from 'components/region/RegionContainer.sample';
 
 const schema = makeSchema();
 
@@ -32,7 +32,7 @@ const queryVariables = props => ({
   regionId: props.data.region.id
 });
 const errorMaker = parentProps => R.set(R.lensPath(['region', 'id']), 'foo', parentProps);
-const asyncParentProps = sampleAsyncParentProps(cCurrent.currentRegion);
+const asyncParentProps = sampleAsyncParentProps;
 
 describe('RegionContainer', () => apolloContainerTests({
     initialState: sampleInitialState,

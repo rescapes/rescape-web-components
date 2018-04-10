@@ -13,6 +13,7 @@ import {apolloContainerTests} from 'rescape-helpers-component';
 import {createSampleConfig} from 'rescape-sample-data';
 import makeSchema from 'schema/schema';
 import {sampleInitialState} from 'helpers/helpers';
+import {sampleAsyncParentProps} from 'components/map/mapbox/MapboxContainer.sample';
 
 const schema = makeSchema();
 
@@ -34,10 +35,11 @@ const queryVariables = props => ({
 });
 // Use this to make a query that errors
 const errorMaker = parentProps => R.set(R.lensPath(['region', 'id']), 'foo', parentProps);
+const asyncParentProps = sampleAsyncParentProps;
 
 // Use this to get properties from parent containers to test our container
 // This returns a promise for consistency across tests. Some parent test props are async
-const asyncParentProps = () => {
+const oldAsyncParentProps = () => {
   // Build up the correct parent props from Current and Region
   const currentProps = propsFromSampleStateAndContainer(sampleInitialState, currentPropsMaker, {});
   const currentViews = Current.views(currentProps).views;
@@ -56,19 +58,21 @@ const asyncParentProps = () => {
       )[cRegion.regionMapbox]
     );
 };
-
-describe('MapboxContainer', () => apolloContainerTests({
-    initialState: sampleInitialState,
-    schema,
-    Container,
-    componentName,
-    childClassDataName,
-    childClassLoadingName,
-    childClassErrorName,
-    testPropsMaker,
-    asyncParentProps,
-    query,
-    queryVariables,
-    errorMaker
-  })
-);
+const {testMapStateToProps, testQuery, testRenderError, testRender} = apolloContainerTests({
+  initialState: sampleInitialState,
+  schema,
+  Container,
+  componentName,
+  childClassDataName,
+  childClassLoadingName,
+  childClassErrorName,
+  testPropsMaker,
+  query,
+  asyncParentProps,
+  queryVariables,
+  errorMaker
+});
+test('testMapStateToProps', testMapStateToProps);
+test('testQuery', testQuery);
+test('testRender', testRender);
+test('testRenderError', testRenderError);

@@ -1,20 +1,17 @@
 import {asyncPropsFromSampleStateAndContainer, propsFromSampleStateAndContainer} from 'rescape-helpers-component';
 import {queries, testPropsMaker} from 'components/map/sankey/SankeyContainer';
-import {testPropsMaker as currentPropsMaker} from 'components/current/CurrentContainer';
-import {testPropsMaker as regionPropsMaker} from 'components/region/RegionContainer';
 import {eMap} from 'rescape-helpers-component';
 import SankeyContainer from 'components/map/sankey/SankeyContainer';
 import * as R from 'ramda';
-import Current, {c as cCurrent} from 'components/current/Current';
-import Region, {c as cRegion} from 'components/region/Region';
 import {c} from 'components/map/sankey/Sankey';
 import {gql} from 'apollo-client-preset';
 import {apolloContainerTests} from 'rescape-helpers-component';
 import makeSchema from 'schema/schema';
 import {createSampleConfig} from 'rescape-sample-data';
 import {sampleInitialState} from 'helpers/helpers';
+import {sampleAsyncParentProps} from 'components/map/sankey/SankeyContainer.sample';
 
-const schema = makeSchema()
+const schema = makeSchema();
 
 // Test this container
 const [Container] = eMap([SankeyContainer]);
@@ -34,21 +31,11 @@ const queryVariables = props => ({
 });
 // Use this to make a query that errors
 const errorMaker = parentProps => R.set(R.lensPath(['region', 'id']), 'foo', parentProps);
-
-// Use this to get properties from parent containers to test our container
-// This returns a promise for consistency across tests. Some parent test props are async
-export const asyncParentPropsForSankey = () => {
-  // Build up the correct parent props from Current and Region
-  const currentProps = propsFromSampleStateAndContainer(sampleInitialState, currentPropsMaker, {});
-  const currentViews = Current.views(currentProps).views;
-  const currentRegionView = currentViews[cCurrent.currentRegion];
-  // Get async props from the RegionContainer and then resolve the Region.views
-  return asyncPropsFromSampleStateAndContainer(sampleInitialState, regionPropsMaker, currentRegionView)
-    .then(props => Region.views(props).views[cRegion.regionSankey]);
-};
+const initialState = sampleInitialState;
+const asyncParentProps = sampleAsyncParentProps;
 
 describe('SankeyContainer', () => apolloContainerTests({
-    initialState: sampleInitialState,
+    initialState,
     schema,
     Container,
     componentName,
@@ -56,7 +43,7 @@ describe('SankeyContainer', () => apolloContainerTests({
     childClassLoadingName,
     childClassErrorName,
     testPropsMaker,
-    asyncParentProps: asyncParentPropsForSankey,
+    asyncParentProps,
     query,
     queryVariables,
     errorMaker

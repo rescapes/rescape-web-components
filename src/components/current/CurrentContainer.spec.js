@@ -16,9 +16,8 @@ import CurrentContainer from './CurrentContainer';
 import {eMap} from 'rescape-helpers-component';
 import React from 'react';
 import {sampleInitialState} from 'helpers/helpers';
-import {c as cMain} from 'components/main/Main';
 import {c} from 'components/current/Current';
-import {sampleAsyncParentProps} from 'components/main/MainContainer.sample.js'
+import {sampleAsyncParentProps} from 'components/main/MainContainer.sample.js';
 
 // Test this container
 const [Container] = eMap([CurrentContainer]);
@@ -28,7 +27,7 @@ const componentName = 'Current';
 const childClassDataName = c.current;
 const initialState = sampleInitialState;
 // Get sample parent props from Main for Current
-const asyncParentProps = sampleAsyncParentProps(cMain.mainCurrent);
+const asyncParentProps = sampleAsyncParentProps;
 
 describe('CurrentContainer', () => {
   const {testMapStateToProps, testQuery, testRenderError, testRender} = apolloContainerTests({

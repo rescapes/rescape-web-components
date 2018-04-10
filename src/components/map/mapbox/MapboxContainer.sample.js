@@ -10,23 +10,24 @@
  */
 
 import {apolloTestPropsFunction, sampleInitialState} from 'helpers/helpers';
-import {mapStateToProps, mapDispatchToProps, queries} from './MainContainer';
-import {asyncPropsFromSampleStateAndContainer} from 'rescape-helpers-component';
+import {mapStateToProps, mapDispatchToProps, queries} from './MapboxContainer';
+import {asyncPropsFromSampleStateAndContainer, propsFromSampleStateAndContainer} from 'rescape-helpers-component';
 import {reqStrPath} from 'rescape-ramda';
-import {samplePropsMaker as appSamplePropsMaker} from 'components/app/AppContainer'
-import App, {c} from 'components/app/App'
+import {views} from 'components/region/Region'
+import {samplePropsMaker as regionSamplePropsMaker} from 'components/region/RegionContainer'
 
 /**
  * Returns a function that expects state and ownProps for testing
  */
-export const samplePropsMaker = apolloTestPropsFunction(mapStateToProps, mapDispatchToProps, queries.allUserRegions);
+export const samplePropsMaker = apolloTestPropsFunction(mapStateToProps, mapDispatchToProps, queries.geojson);
 
 /**
- * Sample props for a view of Main
- * @return {Promise<any>} A promise of the sample propsk
+ * Sample parent props for a view of Mapbox using Region as the parent
+ * @param {String} viewName one of Region's views
+ * @return {Promise<any>} A promise of the sample props
  */
-export const sampleAsyncParentProps = () => {
-  asyncPropsFromSampleStateAndContainer(sampleInitialState, appSamplePropsMaker, {}).then(props => {
-    return reqStrPath(c.appMain, App.views(props));
+export const sampleAsyncParentProps = (viewName) => () => {
+  asyncPropsFromSampleStateAndContainer(sampleInitialState, regionSamplePropsMaker, {}).then(props => {
+    return reqStrPath(viewName, views(props).views);
   });
 };

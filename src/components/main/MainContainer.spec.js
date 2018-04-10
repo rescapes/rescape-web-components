@@ -8,6 +8,7 @@ import {eMap} from 'rescape-helpers-component';
 import React from 'react';
 import {sampleInitialState} from 'helpers/helpers';
 import {c} from 'components/main/Main';
+import {sampleAsyncParentProps} from 'components/main/MainContainer.sample';
 
 // Test this container
 const [Container] = eMap([MainContainer]);
@@ -16,12 +17,14 @@ const componentName = 'Main';
 // Find this class in the data renderer
 const childClassDataName = c.main;
 const initialState = sampleInitialState;
+const asyncParentProps = sampleAsyncParentProps;
 
 describe('MainContainer', () => {
   const {testMapStateToProps} = apolloContainerTests({
     Container,
     componentName,
     childClassDataName,
+    asyncParentProps,
     initialState
   });
   // No Apollo, just run one test

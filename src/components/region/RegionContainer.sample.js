@@ -8,25 +8,28 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-
-import {apolloTestPropsFunction, sampleInitialState} from 'helpers/helpers';
-import {mapStateToProps, mapDispatchToProps, queries} from './MainContainer';
-import {asyncPropsFromSampleStateAndContainer} from 'rescape-helpers-component';
-import {reqStrPath} from 'rescape-ramda';
-import {samplePropsMaker as appSamplePropsMaker} from 'components/app/AppContainer'
-import App, {c} from 'components/app/App'
-
-/**
- * Returns a function that expects state and ownProps for testing
- */
-export const samplePropsMaker = apolloTestPropsFunction(mapStateToProps, mapDispatchToProps, queries.allUserRegions);
+import {makeTestPropsFunction, propsFromSampleStateAndContainer} from 'rescape-helpers-component';
+import {mapDispatchToProps, mapStateToProps} from 'components/region/RegionContainer';
+import {sampleInitialState} from 'helpers/helpers';
+import {reqStrPathThrowing} from 'rescape-ramda';
+import {samplePropsMaker as currentSamplePropsMaker} from 'components/current/CurrentContainer'
+import Current, {c} from 'components/current/Current'
 
 /**
- * Sample props for a view of Main
- * @return {Promise<any>} A promise of the sample propsk
+ * @file Links sample props from a Current component to a Region component
  */
-export const sampleAsyncParentProps = () => {
-  asyncPropsFromSampleStateAndContainer(sampleInitialState, appSamplePropsMaker, {}).then(props => {
-    return reqStrPath(c.appMain, App.views(props));
-  });
-};
+
+/**
+ * Returns a function that expects ownProps for testing
+ */
+export const samplePropsMaker = makeTestPropsFunction(mapStateToProps, mapDispatchToProps);
+
+/**
+ * Returns a function that when called returns a promise of sample parentProps
+ * @return {function(): Promise<any>}
+ */
+export const sampleAsyncParentProps = () => new Promise((resolve) => {
+  const regionProps = propsFromSampleStateAndContainer(sampleInitialState, currentSamplePropsMaker, {});
+  const parentProps = reqStrPathThrowing(c.currentRegion, Current.views(regionProps));
+  resolve(parentProps);
+});

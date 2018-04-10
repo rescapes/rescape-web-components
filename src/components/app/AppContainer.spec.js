@@ -49,6 +49,6 @@ describe('AppContainer', () => {
   });
   test('testMapStateToProps', testMapStateToProps);
   test('testQuery', testQuery);
-  test('testRenderError', testRenderError);
   test('testRender', testRender);
+  test('testRenderError', testRenderError);
 });

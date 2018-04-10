@@ -93,7 +93,7 @@ export const queries = {
           userId: user.id
         },
         // Pass through error so we can handle it in the component
-        errorPolicy: 'all'
+        errorPolicy: 'none'
       }),
       props: ({data, ownProps}) => mergeDeep(
         ownProps,
@@ -110,7 +110,7 @@ const ContainerWithData = graphql(
   queries.userRegions.args)(App)
 
 // Returns a function that expects state and ownProps for testing
-export const testPropsMaker = apolloTestPropsFunction(mapStateToProps, mapDispatchToProps, queries.userRegions);
+export const samplePropsMaker = apolloTestPropsFunction(mapStateToProps, mapDispatchToProps, queries.userRegions);
 
 // Using R.merge to ignore ownProps, which were already merged by mapStateToProps
 export default connect(mapStateToProps, mapDispatchToProps, R.merge)(ContainerWithData);
