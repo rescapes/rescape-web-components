@@ -91,10 +91,12 @@ export const queries = {
         // Pass through error so we can handle it in the component
         errorPolicy: 'all'
       }),
-      props: ({data, ownProps}) => mergeDeep(
-        ownProps,
-        {data}
-      )
+      props: ({data, ownProps}) => {
+        return mergeDeep(
+          ownProps,
+          {data}
+        )
+      }
     }
   }
 };

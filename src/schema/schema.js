@@ -154,10 +154,22 @@ const SankeyGraphType = new GraphQLObjectType({
   }
 });
 
+const SankeyStageType = new GraphQLObjectType({
+  name: "SankeyStage" ,
+  fields: {
+    key: {type: GraphQLString},
+    name: {type: GraphQLString},
+    target: {type: new GraphQLList((GraphQLString))}
+  }
+});
+
 const SankeyType = new GraphQLObjectType({
   name: 'Sankey',
   fields: {
-    graph: {type: SankeyGraphType}
+    graph: {type: SankeyGraphType},
+    stages: {type: new GraphQLList(SankeyStageType)},
+    stageKey: {type: GraphQLString},
+    valueKey: {type: GraphQLString}
   }
 });
 

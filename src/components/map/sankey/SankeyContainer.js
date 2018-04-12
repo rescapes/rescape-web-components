@@ -134,7 +134,9 @@ const geojsonQuery = `
                             value
                           }
                       }
-                          
+                      stages
+                      stageKey
+                      valueKey
                     }
                 }
             },
