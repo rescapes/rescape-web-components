@@ -134,7 +134,11 @@ const geojsonQuery = `
                             value
                           }
                       }
-                      stages
+                      stages {
+                        key
+                        name
+                        target
+                      }
                       stageKey
                       valueKey
                     }

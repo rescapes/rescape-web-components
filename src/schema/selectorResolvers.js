@@ -50,9 +50,6 @@ const makeSelectorResolvers = data => ({
     features: objectValues('features')
   },
   Sankey: {
-    stages: (...args) => {
-      return args
-    }
   },
 
   SankeyGraph: {

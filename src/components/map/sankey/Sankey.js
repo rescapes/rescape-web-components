@@ -24,7 +24,8 @@ import {sankeyGeospatialTranslate, sankeyGenerator, makeLinkStages, resolveLinkS
 import PropTypes from 'prop-types';
 import {sankeyLinkHorizontal} from 'd3-sankey';
 import {format as d3Format} from 'd3-format';
-import {scaleOrdinal, schemeCategory10} from 'd3-scale';
+import {scaleOrdinal} from 'd3-scale';
+import {schemeCategory10} from 'd3-scale-chromatic'
 import {Flex as flex} from 'rebass';
 import sankeyNodeLegend from './SankeyNodeLegend';
 import sankeyFilterer from './SankeyFilterer';
@@ -193,18 +194,18 @@ Sankey.viewProps = props => {
   const {graph, stages, stageKey, valueKey, nodes, links} = sankey ?
     {
       graph: reqStrPathThrowing('graph', sankey),
+      nodes: reqStrPathThrowing('graph.nodes', sankey),
+      links: reqStrPathThrowing('graph.links', sankey),
       stages: reqStrPathThrowing('stages', sankey),
       stageKey: reqStrPathThrowing('stageKey', sankey),
-      valueKey: reqStrPathThrowing('valueKey', sankey),
-      nodes: reqStrPathThrowing('nodes', graph),
-      links: reqStrPathThrowing('links', graph)
+      valueKey: reqStrPathThrowing('valueKey', sankey)
     } : {
       graph: {},
+      nodes: [],
+      links: [],
       stages: [],
       stageKey: null,
-      valueKey: null,
-      nodes: [],
-      links: []
+      valueKey: null
     };
 
   return {
