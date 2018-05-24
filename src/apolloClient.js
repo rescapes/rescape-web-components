@@ -16,6 +16,7 @@ import {WebSocketLink} from 'apollo-link-ws';
 import fetch from 'node-fetch';
 import {createHttpLink} from 'apollo-link-http';
 import config from './config';
+import { onError } from 'apollo-link-error';
 
 const {settings: {graphcool: {authTokenKey, serviceIdKey}}} = config;
 

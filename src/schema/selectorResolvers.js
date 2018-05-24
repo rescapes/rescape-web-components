@@ -11,25 +11,25 @@
 
 import {makeGeojsonSelector} from 'selectors/geojsonSelectors';
 import {addResolveFunctionsToSchema} from 'graphql-tools';
-import * as R from 'ramda'
-import {reqPathThrowing} from 'rescape-ramda'
+import * as R from 'ramda';
+import {reqPathThrowing} from 'rescape-ramda';
 import {activeUserSelectedRegionsSelector, regionSelector} from 'selectors/regionSelectors';
-import { settingsSelector} from 'selectors/settingsSelectors';
+import {settingsSelector} from 'selectors/settingsSelectors';
 import {
   activeUserSelectedRegionSelector, activeUsersSelector, userSelector
 } from 'selectors/userSelectors';
 import {mapboxSelector} from 'selectors/mapboxSelectors';
 
 // Trivial resolver for our dataSource, just strips object keys and returns values
-const objectValues = field => parent => R.values(reqPathThrowing([field], parent))
+const objectValues = field => parent => R.values(reqPathThrowing([field], parent));
 // Calls the given selector, treating the dataSource state and passing props through
-const selectorValues = selector => (parent, params, {options: {dataSource}}) => R.values(selector(dataSource, {params}))
-const selectorValue = selector => (parent, params, {options: {dataSource}}) => selector(dataSource, {params})
+const selectorValues = selector => (parent, params, {options: {dataSource}}) => R.values(selector(dataSource, {params}));
+const selectorValue = selector => (parent, params, {options: {dataSource}}) => selector(dataSource, {params});
 
 // Calls the given selector with the parent merged into the props at the given parentKey
 const parentSelectorValues = (parentKey, selector) => (parent, props, {options: {dataSource}}) => {
-  return selector(dataSource, R.merge(props, {[parentKey]: parent}))
-}
+  return selector(dataSource, R.merge(props, {[parentKey]: parent}));
+};
 
 // Original example from: https://github.com/apollographql/graphql-tools
 const makeSelectorResolvers = data => ({
@@ -49,34 +49,21 @@ const makeSelectorResolvers = data => ({
   Location: {
     features: objectValues('features')
   },
-  Sankey: {
-  },
+  Sankey: {},
 
-  SankeyGraph: {
-  },
+  SankeyGraph: {},
 
-  SankeyLink: {
-  },
+  SankeyLink: {},
 
-  SankeyStage: {
+  SankeyStage: {},
 
-  },
+  Geojson: {},
 
-  Geojson: {
+  Bounds: {},
+  Geospatial: {},
+  Viewport: {},
 
-  },
-
-  Bounds: {
-
-  },
-  Geospatial: {
-  },
-  Viewport: {
-
-  },
-
-  Mapbox: {
-  },
+  Mapbox: {},
 
   Region: {
     geojson: parentSelectorValues('region', makeGeojsonSelector()),
@@ -95,8 +82,7 @@ const makeSelectorResolvers = data => ({
     // Default Resolve store.settings.overpass
   },
 
-  Settings: {
-  },
+  Settings: {},
 
   // The resolvers here limit the user to the active user and regions to the active region(s)
   // A different resolver setup could load all regions of a user (for user admin) or all regions for (overall admin)
@@ -109,23 +95,23 @@ const makeSelectorResolvers = data => ({
     // Resolves the active user in a container
     users: selectorValues(activeUsersSelector),
     // Resolves the specified user
-    user: selectorValue(userSelector),
+    user: selectorValue(userSelector)
   },
 
   Query: {
     store(obj, args) {
-      return data
-    },
+      return data;
+    }
   },
 
   Mutation: {
-    filterSankeyNodes(_, { filterNodeCategory, filterNodeValue }, {options: {dataSource}}) {
-      const region = activeUserSelectedRegionSelector(dataSource)
-      region.geojson = region.geojson || {}
-      region.geojson.sankey = region.geojson.sankey || {}
-      region.geojson.sankey.selected = R.merge(region.geojson.sankey.selected, {[filterNodeCategory]: filterNodeValue})
-    },
-  },
+    filterSankeyNodes(_, {filterNodeCategory, filterNodeValue}, {options: {dataSource}}) {
+      const region = activeUserSelectedRegionSelector(dataSource);
+      region.geojson = region.geojson || {};
+      region.geojson.sankey = region.geojson.sankey || {};
+      region.geojson.sankey.selected = R.merge(region.geojson.sankey.selected, {[filterNodeCategory]: filterNodeValue});
+    }
+  }
 });
 
 /**
@@ -138,6 +124,6 @@ const makeSelectorResolvers = data => ({
  * @returns {Object} The given GraphQLSchema with resolvers added
  */
 export const createSelectorResolvedSchema = (schema, data) => {
-  addResolveFunctionsToSchema(schema, makeSelectorResolvers(data))
+  addResolveFunctionsToSchema({schema, resolvers: makeSelectorResolvers(data)});
   return schema;
-}
+};

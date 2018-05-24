@@ -70,12 +70,34 @@ For any rescape packages that you are editing, link them locally
 
 To undo any of these repeat the steps and run yarn unlink
 
+```sh
+    yarn unlink rescape-cycle
+    yarn unlink rescape-helpers
+    yarn unlink rescape-helpers-component
+    yarn unlink rescape-ramda
+    yarn unlink rescape-sample-data
+    yarn unlink rescape-validate
+    cd ../rescape-cycle
+    yarn unlink
+    cd ../rescape-helpers
+    yarn unlink
+    cd ../rescape-helpers-component
+    yarn unlink
+    cd ../rescape-ramda
+    yarn unlink
+    cd ../rescape-sample-data
+    yarn unlink
+    cd ../rescape-validate
+    yarn unlink
+    cd ../rescape-web
+```
+
 This allows rescape-web to use the local build of the other rescape-packages
 You still have to build the other packages if you make any edits to them.
 It should be possible to simply reference the es6 source code of the packages instead of the build,
 but I can't figure out how to do it with the mess of trying to use es6 source directly in node (for jest tests)
 
-If you link rescape-helpers-component, its local graphql needs to be linked to resacpe-web's
+If you link rescape-helpers-component, its local graphql needs to be linked to rescape-web's
 ```sh
     cd ../rescape-helpers-component
     npm link ../rescape-web/node_modules/graphql

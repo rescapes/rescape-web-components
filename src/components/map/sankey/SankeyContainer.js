@@ -127,6 +127,8 @@ const geojsonQuery = `
                                 type
                                 coordinates
                               }
+                              name
+                              value
                           }
                           links {
                             source 

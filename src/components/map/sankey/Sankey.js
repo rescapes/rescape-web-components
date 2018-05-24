@@ -9,26 +9,30 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import 'mapbox-gl/dist/mapbox-gl.css';
-import reactMapGl, {SVGOverlay as svgOverlay} from 'react-map-gl';
-import {strPath, reqStrPathThrowing} from 'rescape-ramda';
+import reactMapGl, {SVGOverlay as svgOverlay, NavigationControl as navigationControl} from 'react-map-gl';
+import {reqStrPathThrowing, strPath, reqStrPath} from 'rescape-ramda';
 import {
   composeViews, eMap, renderChoicepoint, itemizeProps, mergePropsForViews, nameLookup, propsFor,
-  propsForSansClass, renderErrorDefault, renderLoadingDefault, keyWith
-} from 'rescape-helpers-component';
+  propsForSansClass, renderErrorDefault, renderLoadingDefault
+} from 'rescape-helpers-component'
 import * as R from 'ramda';
 import {applyMatchingStyles, mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
 import {Component} from 'react';
-import {styleArithmetic, resolveSvgReact} from 'rescape-helpers-component';
-import {sankeyGeospatialTranslate, sankeyGenerator, makeLinkStages, resolveLinkStage, resolveNodeStage, resolveNodeName} from 'rescape-helpers';
+import {sankeyGenerator, sankeyGeospatialTranslate} from 'rescape-helpers';
+import {
+  linkStages, resolveLinkStage, resolveNodeStage, resolveNodeName, stages,
+  resolveLinkOpacity
+} from 'rescape-sample-data';
 import PropTypes from 'prop-types';
-import {sankeyLinkHorizontal} from 'd3-sankey';
+import {sankeyLinkHorizontal} from 'rescape-geospatial-sankey'
 import {format as d3Format} from 'd3-format';
-import {scaleOrdinal} from 'd3-scale';
-import {schemeCategory10} from 'd3-scale-chromatic'
+import {scaleOrdinal, schemeCategory10} from 'd3-scale';
+import {resolveSvgReact} from 'rescape-helpers';
 import {Flex as flex} from 'rebass';
 import sankeyNodeLegend from './SankeyNodeLegend';
+import sankeyLinkLegend from './SankeyLinkLegend';
 import sankeyFilterer from './SankeyFilterer';
+import {styleArithmetic} from 'rescape-helpers-component'
 
 // Sankey settings. These should be moved to style
 const nodeWidth = 15;
@@ -44,8 +48,8 @@ const color = scaleOrdinal(schemeCategory10);
 const linkHorizontal = sankeyLinkHorizontal();
 
 
-const [ReactMapGl, SVGOverlay, G, Text, TSpan, Title, Path, Div, Flex, SankeyNodeLegend, SankeyFilterer] =
-  eMap([reactMapGl, svgOverlay, 'g', 'text', 'tspan', 'title', 'path', 'div', flex, sankeyNodeLegend, sankeyFilterer]);
+const [ReactMapGl, SVGOverlay, G, Text, TSpan, Title, Path, Div, Flex, SankeyNodeLegend, SankeyLinkLegend, SankeyFilterer, NavigationControl] =
+  eMap([reactMapGl, svgOverlay, 'g', 'text', 'tspan', 'title', 'path', 'div', flex, sankeyNodeLegend, sankeyLinkLegend, sankeyFilterer, navigationControl]);
 
 const styles = {
   sankeyLegendsFontFamily: 'sans-serif'
@@ -54,6 +58,8 @@ const styles = {
 export const c = nameLookup({
   sankey: true,
   sankeyReactMapGl: true,
+  sankeyReactMapGlNavigationOuter: true,
+  sankeyReactMapGlNavigation: true,
   sankeySvgOverlay: true,
   sankeySvg: true,
   sankeySvgLinks: true,
@@ -94,6 +100,7 @@ Sankey.renderData = ({views}) => {
 
   return [
     ReactMapGl(propsSansClass(c.sankeyReactMapGl),
+      Div(props(c.sankeyReactMapGlNavigationOuter), NavigationControl(propsSansClass(c.sankeyReactMapGlNavigation))),
       SVGOverlay(
         R.merge(
           props(c.sankeySvgOverlay),
@@ -155,6 +162,13 @@ Sankey.viewStyles = ({style}) => {
 
     [c.sankeyReactMapGl]: applyMatchingStyles(style, {}),
 
+    [c.sankeyReactMapGlNavigationOuter]: applyMatchingStyles(style, {
+      position: 'absolute',
+      right: 0,
+      padding: '5px',
+      height: '100px'
+    }),
+
     [c.sankeySvgOverlay]: applyMatchingStyles(style, {}),
 
     [c.sankeyLegends]: applyMatchingStyles(style, {
@@ -188,14 +202,28 @@ Sankey.viewStyles = ({style}) => {
 
 Sankey.viewProps = props => {
   // Rely on the width and height calculated in viewStyles
-  const width = reqStrPathThrowing(`views.${c.sankey}.style.width`, props);
-  const height = reqStrPathThrowing(`views.${c.sankey}.style.height`, props);
+  const width = reqStrPath(`views.${c.sankey}.style.width`, props);
+  const height = reqStrPath(`views.${c.sankey}.style.height`, props);
+  const zoom = R.defaultTo(0, strPath('data.viewport.zoom', props));
+
   const sankey = strPath('data.store.region.geojson.sankey', props);
+  const nodeByIndex = R.indexBy(R.prop('index'), nodes);
+  const linkKeys = ['source', 'target'];
   const {graph, stages, stageKey, valueKey, nodes, links} = sankey ?
     {
       graph: reqStrPathThrowing('graph', sankey),
-      nodes: reqStrPathThrowing('graph.nodes', sankey),
-      links: reqStrPathThrowing('graph.links', sankey),
+      // Filter nodes by isVisible
+      nodes: R.filter(
+        R.either(
+          R.compose(R.isNil, R.prop('isVisible')),
+          R.prop('isVisible')
+        ),
+        reqStrPathThrowing('graph.nodes', sankey)
+      ),
+      links: R.filter(
+        link => R.all(key => R.has(link[key], nodeByIndex), linkKeys),
+        R.defaultTo([], reqStrPathThrowing('graph.links', sankey))
+      ),
       stages: reqStrPathThrowing('stages', sankey),
       stageKey: reqStrPathThrowing('stageKey', sankey),
       valueKey: reqStrPathThrowing('valueKey', sankey)
@@ -216,7 +244,7 @@ Sankey.viewProps = props => {
     },
     [c.sankey]: {
       graph: {
-        nodes: R.filter(R.either(R.compose(R.isNil, R.prop('isVisible')), R.prop('isVisible')), nodes),
+        nodes,
         links
       }
     },
@@ -226,9 +254,9 @@ Sankey.viewProps = props => {
         height
       },
       // Pass anything in mapbox
-      reqStrPathThrowing('data.mapbox', props),
+      reqStrPath('data.mapbox', props),
       // Pass anything in viewport
-      reqStrPathThrowing('data.viewport', props)
+      reqStrPath('data.viewport', props)
     ]),
 
     [c.sankeySvgOverlay]: {
@@ -242,12 +270,12 @@ Sankey.viewProps = props => {
     },
 
     [c.sankeySvgNode]: {
-      key: R.always(R.join('-', [reqStrPathThrowing('material'), reqStrPathThrowing('name')]))
+      key: R.always(d => d.index.toString())
     },
 
-    [c.sankeySvgNodeTitle]: {
-      key: 'svgNodeTitle',
-      children: R.always(d => `${d.name}\n${format(d.value)}`)
+    [c.sankeySvgNodeText]: {
+      key: 'svgNodeText',
+      display: R.always(zoom < 10 ? 'none' : 'inline')
     },
 
     [c.sankeySvgLinks]: {
@@ -257,26 +285,13 @@ Sankey.viewProps = props => {
     },
 
     [c.sankeyLegendNode]: {
-      items: R.map(
-        stage => {
-          return R.merge(stage, {color: color(stage.name)});
-        },
-        stages
-      ),
+      items: R.map(stage => R.merge(stage, {color: color(stage.name)}), stages),
       // Pass on Apollo status indicator
       data: props.data
     },
 
     [c.sankeyLegendLink]: {
-      items: R.map(
-        linkStage => {
-          return R.merge(
-            linkStage,
-            {color: color(linkStage.target.name)}
-          );
-        },
-        makeLinkStages(stages)
-      ),
+      items: R.map(linkStage => R.merge(linkStage, {color: color(linkStage.target.name)}), linkStages),
       // Pass on Apollo status indicator
       data: props.data
     },
@@ -286,7 +301,7 @@ Sankey.viewProps = props => {
         node => ({material: node.material}),
         R.uniqBy(
           R.prop('material'),
-          R.defaultTo([], strPath('nodes', graph))
+          R.defaultTo([], strPath('data.store.region.geojson.sankey.graph.nodes', props))
         )
       ),
       // Pass on Apollo status indicator
@@ -312,16 +327,8 @@ Sankey.viewPropsAtRender = ({views, opt}) => {
   // (Since the node is itself a feature)
   const geospatialPositioner = sankeyGeospatialTranslate(opt);
   // Generate the sankey diagram at default distributed positions across the map view
-  const {links, nodes} = sankeyGenerator(
-    {width, height, nodeWidth, nodePadding, geospatialPositioner},
-    reqStrPathThrowing('graph', propsFor(views, c.sankey))
-  );
-
-  const stageKey = reqStrPathThrowing('stageKey', propsFor(views, 'extra'));
-  const valueKey = reqStrPathThrowing('valueKey', propsFor(views, 'extra'));
-  const linkStage = resolveLinkStage(stageKey);
-  const nodeStage = resolveNodeStage(stageKey);
-  const nodeName = resolveNodeName(valueKey);
+  const {links, nodes} = sankeyGenerator({width, height, nodeWidth, nodePadding, geospatialPositioner},
+    reqStrPath('graph', propsFor(views, c.sankey)));
 
   return mergePropsForViews({
     [c.sankeySvgLinks]: {
@@ -332,9 +339,13 @@ Sankey.viewPropsAtRender = ({views, opt}) => {
     },
 
     [c.sankeySvgNodeShape]: {
+      key: R.always(d => d.index.toString())
+    },
+
+    [c.sankeySvgNodeShape]: {
       key: c.sankeySvgNodeShape,
       pointData: R.always(d => d.pointData.bbox),
-      fill: R.always(d => color(nodeStage(d))),
+      fill: R.always(d => color(resolveNodeStage(d))),
       stroke: '#000',
       strokeWidth: '1'
     },
@@ -358,28 +369,29 @@ Sankey.viewPropsAtRender = ({views, opt}) => {
           R.always('start'),
           R.always('end')
         )(d),
-        children: nodeName(d),
+        children: resolveNodeName(d),
         height: R.subtract(d.y1, d.y0),
         width: R.subtract(d.x1, d.x0),
-        fill: color(nodeStage(d)),
+        fill: color(resolveNodeStage(d)),
         stroke: '#000'
       };
     }),
 
-    [c.sankeySvgLink]: keyWith('title', {
+    [c.sankeySvgLink]: {
+      key: R.always(d => d.index.toString()),
       fill: 'none',
-      stroke: R.always(d => color(linkStage(d))),
-      strokeOpacity: 0.2,
+      stroke: R.always(d => color(resolveLinkStage(d))),
+      strokeOpacity: R.always(resolveLinkOpacity),
       // The d element of the svg path is produced by sankeyLinkHorizontal
       // Well call the result of sankeyLinkHorizontal(), which expects a datum and assigns
       // it y0, y1, and width
       d: R.always(d => linkHorizontal(d)),
       // The stroke is based on the item, so return a unary function
       // The stroke width must be at least 1 pixel
-      strokeWidth: R.always(d => Math.max(1, reqStrPathThrowing('width', d))),
+      strokeWidth: R.always(d => Math.max(1, reqStrPath('width', d))),
       // The title is based on the item, so return a unary function
       title: R.always(d => `${d.source.name} →  ${d.target.name} \n ${format(d.value)}`)
-    })
+    }
 
   }, {views});
 };
@@ -387,6 +399,7 @@ Sankey.viewPropsAtRender = ({views, opt}) => {
 Sankey.viewActions = () => {
   return {
     [c.sankeyReactMapGl]: ['onViewportChange', 'hoverMarker', 'selectMarker'],
+    [c.sankeyReactMapGlNavigation]: ['onViewportChange'],
     [c.sankeyFilterer]: ['onSankeyFilterChange']
   };
 };
@@ -401,8 +414,8 @@ const SankeySvgNode = ({node, shape, text, title}) => {
         x: text.x,
         dy: styleArithmetic(R.add, index * 1.2, text.dy)
       }, segment), R.split('\n', text.children))
-    ),
-    Title(title)
+    )
+    //Title(title)
   );
 };
 
