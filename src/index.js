@@ -4,16 +4,11 @@ import app from 'components/app';
 import registerServiceWorker from './registerServiceWorker';
 import {BrowserRouter as browserRouter} from 'react-router-dom';
 import {ApolloProvider as apolloProvider} from 'react-apollo';
-import createClient from './apolloClient';
 import {Provider as provider} from 'react-redux';
 import storeCreator from './store';
 import {getCurrentConfig} from 'rescape-sample-data'
 import {eMap} from 'rescape-helpers-component';
-import * as R from 'ramda';
-import {mockApolloClientWithSamples} from 'rescape-helpers-component';
-import {resolvedSchema} from 'helpers/helpers'
-const environment = process.env.NODE_ENV;
-
+import createClient from './apolloClient'
 
 import {calculateResponsiveState} from 'redux-responsive';
 const [BrowserRouter, ApolloProvider, Provider, App] = eMap([browserRouter, apolloProvider, provider, app]);
@@ -24,11 +19,7 @@ window.addEventListener('resize', () => store.dispatch(calculateResponsiveState(
 // Initialize
 store.dispatch(calculateResponsiveState(window))
 
-// Set the client to the mockApolloClient for testingj
-const client = R.cond([
-  [R.equals('test'), () => mockApolloClientWithSamples(store.getState(), resolvedSchema)],
-  [R.T, () => createClient()]
-])(environment);
+
 
 // Render the React components
 // BrowserRouter routes anything defined in a child component Switch
@@ -37,7 +28,7 @@ const client = R.cond([
 ReactDOM.render(
   BrowserRouter({basename: '/'},
     Provider({store},
-      ApolloProvider({client},
+      ApolloProvider({client: createClient(store)},
         App()
       )
     )

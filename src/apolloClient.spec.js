@@ -10,22 +10,35 @@
  */
 import apolloClient from './apolloClient';
 import {gql} from 'apollo-client-preset';
+import storeCreator from 'store';
+import {getCurrentConfig} from 'rescape-sample-data';
+import {reqStrPath} from 'rescape-ramda';
+import Either from 'data.either'
 
 describe('apolloClient', () => {
-  test('apolloClient', () => {
-    apolloClient().query({query: gql`
-    query userRegions {
+  test('apolloClient with sample data', async () => {
+    const store = storeCreator(getCurrentConfig());
+    const response = await apolloClient({store}).query({
+        query: gql`
+    query region($regionId: String!) {
         store {
-            users {
-                regions {
-                    id,
-                    name,
-                    description,
-                    isSelected
+            region(id: $regionId) {
+                id
+                name
+                mapbox {
+                  viewport {
+                    latitude
+                    longitude
+                    zoom
+                  }
                 }
-            }
+            },
         }
     }
-  `});
+  `,
+        variables: {regionId: "belgium"}
+      }
+    );
+    expect(reqStrPath('data.store.region.id', response)).toEqual(Either.Right('belgium'));
   });
 });

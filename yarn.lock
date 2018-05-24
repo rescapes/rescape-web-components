@@ -9640,9 +9640,9 @@ rescape-geospatial-sankey@^0.7.1:
     d3-scale "^1.0.7"
     d3-shape "^1.2.0"
 
-rescape-helpers-component@^1.4.23:
-  version "1.4.23"
-  resolved "https://registry.yarnpkg.com/rescape-helpers-component/-/rescape-helpers-component-1.4.23.tgz#ee030566bd8da5fe6f59401cd115f7374b13e338"
+rescape-helpers-component@^1.4.24:
+  version "1.4.24"
+  resolved "https://registry.yarnpkg.com/rescape-helpers-component/-/rescape-helpers-component-1.4.24.tgz#818231dbfd6e8324f7bc473c4315e96b5f448085"
   dependencies:
     apollo-client "^2.3.1"
     apollo-client-preset "^1.0.8"

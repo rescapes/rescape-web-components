@@ -13,7 +13,7 @@ import {createSampleConfig} from 'rescape-sample-data';
 import storeCreator from './store';
 import thunk from 'redux-thunk';
 import {createLogger} from 'redux-logger';
-import applyMiddleware, {compose} from 'redux';
+import {applyMiddleware, compose} from 'redux';
 
 const loggerMiddleware = createLogger();
 const middlewares = [thunk, loggerMiddleware];

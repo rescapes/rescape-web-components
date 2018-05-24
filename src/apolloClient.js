@@ -16,18 +16,25 @@ import {WebSocketLink} from 'apollo-link-ws';
 import fetch from 'node-fetch';
 import {createHttpLink} from 'apollo-link-http';
 import config from './config';
-import { onError } from 'apollo-link-error';
+import {onError} from 'apollo-link-error';
+import {resolvedSchema} from 'helpers/helpers';
+import * as R from 'ramda'
+import {mockApolloClientWithSamples} from 'rescape-helpers-component';
+
+const environment = process.env.NODE_ENV;
 
 const {settings: {graphcool: {authTokenKey, serviceIdKey}}} = config;
 
 
 /**
- * Creates an ApolloClient
+ * Creates an ApolloClient.
+ * TODO This currently connects to graph.cool but we need to figure out what to actually do
+ * in production.
  * @return {ApolloClient<NormalizedCache>}
  */
-export default () => {
+const createClient = () => {
 
-// A headerLink to our simple URI on graph.cool
+  // A headerLink to our simple URI on graph.cool
   const httpLink = createHttpLink({uri: `https://api.graph.cool/simple/v1/${serviceIdKey}`, fetch});
 
   // Middleware authentication. Relies on our constant auth token
@@ -89,5 +96,17 @@ export default () => {
     // Use InMemoryCache
     cache: new InMemoryCache()
   });
-}
+};
 
+/**
+ * Create an apolloClient for the given environment
+ * @param {String} env Defaults to process.env.NODE_ENV;
+ * @param {Object} store The redux store. Required if env is 'test'.
+ * For testing we use the store as a substitute for a remote datasource
+ * @returns {Object} An Apollo client for the given or default environment
+ */
+export default ({env = environment, store = null}) => R.cond([
+  // Set the client to the mockApolloClient for testingj
+  [R.equals('test'), () => mockApolloClientWithSamples(store.getState(), resolvedSchema)],
+  [R.T, () => createClient()]
+])(env);

@@ -55,7 +55,7 @@ describe('mapboxSelectors', () => {
   });
 
   test('viewportSelector', () => {
-    expect(viewportSelector(state, {region: oakland})).toEqual(
+    expect(viewportSelector(state, {mapbox: oakland.mapbox})).toEqual(
       R.merge(
         {foo: 1},
         reqPathThrowing(['mapbox', 'viewport'], oakland))

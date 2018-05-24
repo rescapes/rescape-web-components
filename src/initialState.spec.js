@@ -10,7 +10,7 @@
  */
 
 import createInitialState from './initialState'
-import {createSampleConfig} from 'data/samples/sampleConfig';
+import {createSampleConfig} from 'rescape-sample-data'
 
 describe('Initial State', () => {
   test('matches the current configuration', () => {

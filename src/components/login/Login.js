@@ -51,7 +51,7 @@ export default class Login extends Component {
               value: this.state.email,
               onChange: (e) => this.setState({email: e.target.value}),
               type: 'text',
-              placeholder: 'Your email addressk'
+              placeholder: 'Your email address'
             }
           ),
           input({
