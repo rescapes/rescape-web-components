@@ -1,8 +1,8 @@
 import {
   propsFromSampleStateAndContainer
 } from 'rescape-helpers-component';
-import RegionContainer, {testPropsMaker, queries} from 'components/region/RegionContainer';
-import {testPropsMaker as currentPropsMaker} from 'components/current/CurrentContainer';
+import RegionContainer, {samplePropsMaker, queries} from 'components/region/RegionContainer';
+import {samplePropsMaker as currentPropsMaker} from 'components/current/CurrentContainer';
 import {eMap} from 'rescape-helpers-component';
 import * as R from 'ramda';
 import Current, {c as cCurrent} from 'components/current/Current';
@@ -42,7 +42,7 @@ describe('RegionContainer', () => apolloContainerTests({
     childClassDataName,
     childClassLoadingName,
     childClassErrorName,
-    testPropsMaker,
+    samplePropsMaker,
     asyncParentProps,
     query,
     queryVariables,

@@ -14,7 +14,7 @@ import Sankey, {c as cSankey} from 'components/map/sankey/Sankey';
 import SankeyLinkLegend, {c} from 'components/map/sankey/SankeyLinkLegend';
 import {apolloContainerTests} from 'rescape-helpers-component';
 import {asyncParentPropsForSankey} from 'components/map/sankey/SankeyContainer.spec';
-import {testPropsMaker} from 'components/map/sankey/SankeyContainer';
+import {samplePropsMaker} from 'components/map/sankey/SankeyContainer';
 import makeSchema from 'schema/schema';
 import {sampleInitialState} from 'helpers/helpers';
 
@@ -35,7 +35,7 @@ const childClassErrorName = c.sankeyError;
 // This returns a promise for consistency across tests. Some parent test props are async
 const asyncParentPropsForSankeyLinkLegend = async () => {
   return asyncParentPropsForSankey().then(
-    testPropsMaker
+    samplePropsMaker
   ).then(props => Sankey.views({data: props}).views[cSankey.sankeyLegendLink]
   );
 };

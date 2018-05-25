@@ -1,11 +1,11 @@
 import {propsFromSampleStateAndContainer, shallowWrap} from 'rescape-helpers-component';
 import region from './Region'
 import {eMap} from 'rescape-helpers-component';
-import {testPropsMaker} from 'components/current/CurrentContainer';
+import {samplePropsMaker} from 'components/current/CurrentContainer';
 const [Region] = eMap([region]);
 
 describe('Region', () => {
-  const props = propsFromSampleStateAndContainer(testPropsMaker,
+  const props = propsFromSampleStateAndContainer(samplePropsMaker,
     {
       // style dimensions are normally from the parent
       style: {

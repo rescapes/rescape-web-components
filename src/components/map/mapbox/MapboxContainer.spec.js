@@ -1,7 +1,7 @@
 import {asyncPropsFromSampleStateAndContainer, propsFromSampleStateAndContainer} from 'rescape-helpers-component';
-import {queries, testPropsMaker} from 'components/map/mapbox/MapboxContainer';
-import {testPropsMaker as currentPropsMaker} from 'components/current/CurrentContainer';
-import {testPropsMaker as regionPropsMaker} from 'components/region/RegionContainer';
+import {queries, samplePropsMaker} from 'components/map/mapbox/MapboxContainer';
+import {samplePropsMaker as currentPropsMaker} from 'components/current/CurrentContainer';
+import {samplePropsMaker as regionPropsMaker} from 'components/region/RegionContainer';
 import {eMap} from 'rescape-helpers-component';
 import MapboxContainer from 'components/map/mapbox/MapboxContainer';
 import * as R from 'ramda';
@@ -66,7 +66,7 @@ const {testMapStateToProps, testQuery, testRenderError, testRender} = apolloCont
   childClassDataName,
   childClassLoadingName,
   childClassErrorName,
-  testPropsMaker,
+  samplePropsMaker,
   query,
   asyncParentProps,
   queryVariables,

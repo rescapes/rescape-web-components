@@ -12,8 +12,8 @@
 import {
   asyncPropsFromSampleStateAndContainer
 } from 'rescape-helpers-component';
-import headerContainer, {testPropsMaker, queries} from 'components/header/HeaderContainer';
-import {testPropsMaker as appPropsMaker} from 'components/app/AppContainer';
+import headerContainer, {samplePropsMaker, queries} from 'components/header/HeaderContainer';
+import {samplePropsMaker as appPropsMaker} from 'components/app/AppContainer';
 import {eMap, withRebassProvider} from 'rescape-helpers-component';
 import App, {c as cApp} from 'components/app/App';
 import {c} from 'components/header/Header';
@@ -53,7 +53,7 @@ describe('HeaderContainer', () => apolloContainerTests({
     Container,
     componentName,
     childClassDataName,
-    testPropsMaker,
+    samplePropsMaker,
     asyncParentProps
   })
 );

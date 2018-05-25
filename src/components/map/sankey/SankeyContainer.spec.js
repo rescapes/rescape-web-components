@@ -1,5 +1,5 @@
 import {asyncPropsFromSampleStateAndContainer, propsFromSampleStateAndContainer} from 'rescape-helpers-component';
-import {queries, testPropsMaker} from 'components/map/sankey/SankeyContainer';
+import {queries, samplePropsMaker} from 'components/map/sankey/SankeyContainer';
 import {eMap} from 'rescape-helpers-component';
 import SankeyContainer from 'components/map/sankey/SankeyContainer';
 import * as R from 'ramda';
@@ -42,7 +42,7 @@ describe('SankeyContainer', () => apolloContainerTests({
     childClassDataName,
     childClassLoadingName,
     childClassErrorName,
-    testPropsMaker,
+    samplePropsMaker,
     asyncParentProps,
     query,
     queryVariables,

@@ -1,4 +1,4 @@
-import appContainer, {testPropsMaker, queries} from 'components/app/AppContainer';
+import appContainer, {samplePropsMaker, queries} from 'components/app/AppContainer';
 import {eMap} from 'rescape-helpers-component';
 import * as R from 'ramda';
 import {c} from 'components/app/App';
@@ -12,7 +12,8 @@ const schema = makeSchema();
 
 const [AppContainer, MemoryRouter] = eMap([appContainer, memoryRouter]);
 // Test this container with a memory router so we can test the main route
-const Container = (...args) => MemoryRouter({initialEntries: ['/']},
+
+const Container = (...args) => MemoryRouter({initialEntries: [{pathname: '/', key: 'testKey'}]},
   AppContainer(...args)
 );
 
@@ -42,7 +43,7 @@ describe('AppContainer', () => {
     childClassDataName,
     childClassLoadingName,
     childClassErrorName,
-    testPropsMaker,
+    samplePropsMaker,
     query,
     queryVariables,
     errorMaker

@@ -109,7 +109,7 @@ const ContainerWithData = graphql(
 
 
 // Returns a function that expects state and ownProps for testing
-export const testPropsMaker = apolloTestPropsFunction(mapStateToProps, mapDispatchToProps, queries.region);
+export const samplePropsMaker = apolloTestPropsFunction(mapStateToProps, mapDispatchToProps, queries.region);
 
 // Using R.merge to ignore ownProps, which were already merged by mapStateToProps
 export default connect(mapStateToProps, mapDispatchToProps, R.merge)(ContainerWithData);

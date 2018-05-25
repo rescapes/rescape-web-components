@@ -28,7 +28,7 @@ export const mapDispatchToProps = (dispatch) => {
 };
 
 // Returns a function that expects state and ownProps for testing
-export const testPropsMaker = makeTestPropsFunction(mapStateToProps, mapDispatchToProps)
+export const samplePropsMaker = makeTestPropsFunction(mapStateToProps, mapDispatchToProps)
 
 export default connect(mapStateToProps, mapDispatchToProps)(Header)
 

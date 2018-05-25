@@ -105,6 +105,14 @@ const makeSelectorResolvers = data => ({
   },
 
   Mutation: {
+    /***
+     * Selects or deselects the sankey diagram of the given filterNodeCategory string. The selection of others
+     * is not impacted
+     * @param {void} _ Unused parameter
+     * @param {String} filterNodeCategory The category name of the sankey diagram being selected/deselected
+     * @param {Boolean} filterNodeValue true to select, false to deselect
+     * @param dataSource
+     */
     filterSankeyNodes(_, {filterNodeCategory, filterNodeValue}, {options: {dataSource}}) {
       const region = activeUserSelectedRegionSelector(dataSource);
       region.geojson = region.geojson || {};

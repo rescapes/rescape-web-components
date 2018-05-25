@@ -12,7 +12,6 @@
 import {createSelector} from 'reselect';
 import {filterWithKeys, reqPathThrowing} from 'rescape-ramda';
 import * as R from 'ramda';
-import prettyFormat from 'pretty-format'
 
 /**
  * Extracts the browser window dimensions from the state to pass to props
@@ -92,7 +91,7 @@ export const applyMatchingStyles = (parentStyle, style) => {
       R.is(Function)
     )(value), style)
   if (R.length(R.keys(badKeyValues))) {
-    throw Error(`Some style keys with function values don't have corresponding parentStyle values: ${prettyFormat(badKeyValues)} of
+    throw Error(`Some style keys with function values don't have corresponding parentStyle values: ${JSON.stringify(badKeyValues)} of
     style keys ${R.join(', ', R.keys(style))} and
     parentStyle keys ${R.join(', ', R.keys(parentStyle))}`)
   }
