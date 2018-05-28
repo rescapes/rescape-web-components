@@ -11,7 +11,7 @@
 
 import {
   composeViews, eMap, renderChoicepoint, itemizeProps, nameLookup, propsFor,
-  propsForSansClass, renderErrorDefault, renderLoadingDefault
+  propsForSansClass, renderErrorDefault, renderLoadingDefault, keyWithDatum
 } from 'rescape-helpers-component';
 import * as R from 'ramda';
 import {
@@ -137,14 +137,15 @@ SankeyNodeLegend.viewProps = props => {
     [c.sankeyNodeLegendItems]: {
       items: reqStrPathThrowing('items', props)
     },
-    [c.sankeyNodeLegendItem]: {
+    [c.sankeyNodeLegendItem]: R.always(d => keyWithDatum('key', d, {
       px: 2,
-      key: R.always(reqStrPathThrowing('key'))
-    },
+    })),
     [c.sankeyNodeLegendIcon]: {
+      key: c.sankeyNodeLegendIcon,
     },
     [c.sankeyNodeLegendText]: {
-      children: R.always(reqStrPathThrowing('name'))
+      key: c.sankeyNodeLegendText,
+      children: R.always(d => reqStrPathThrowing('name', d))
     }
   };
 };

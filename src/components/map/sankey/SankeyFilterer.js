@@ -11,7 +11,7 @@
 
 import {
   composeViews, eMap, renderChoicepoint, itemizeProps, nameLookup, propsFor,
-  propsForSansClass, renderErrorDefault, renderLoadingDefault
+  propsForSansClass, renderErrorDefault, renderLoadingDefault, keyWithDatum
 } from 'rescape-helpers-component';
 import * as R from 'ramda';
 import {
@@ -148,10 +148,10 @@ SankeyFilterer.viewProps = props => {
     },
     [c.sankeyFiltererCheckbox]: {
       defaultChecked: true,
-      name: R.always(reqStrPathThrowing('material'))
+      name: R.always(d => reqStrPathThrowing('material', d))
     },
     [c.sankeyFiltererText]: {
-      children: R.always(reqStrPathThrowing('material'))
+      children: R.always(d => reqStrPathThrowing('material', d))
     }
   };
 };

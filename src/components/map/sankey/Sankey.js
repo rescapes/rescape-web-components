@@ -13,7 +13,7 @@ import reactMapGl, {SVGOverlay as svgOverlay, NavigationControl as navigationCon
 import {reqStrPathThrowing, strPath, reqStrPath} from 'rescape-ramda';
 import {
   composeViews, eMap, renderChoicepoint, itemizeProps, mergePropsForViews, nameLookup, propsFor,
-  propsForSansClass, renderErrorDefault, renderLoadingDefault
+  propsForSansClass, renderErrorDefault, renderLoadingDefault, keyWithDatum
 } from 'rescape-helpers-component';
 import * as R from 'ramda';
 import {applyMatchingStyles, mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
@@ -25,13 +25,16 @@ import {
 import PropTypes from 'prop-types';
 import {sankeyLinkHorizontal} from 'rescape-geospatial-sankey';
 import {format as d3Format} from 'd3-format';
-import {scaleOrdinal, schemeCategory10} from 'd3-scale';
-import {resolveSvgReact} from 'rescape-helpers';
+import {scaleOrdinal} from 'd3-scale'
+import {schemeCategory10} from 'd3-scale-chromatic';
+import {resolveSvgReact} from 'rescape-helpers-component';
 import {Flex as flex} from 'rebass';
 import sankeyNodeLegend from './SankeyNodeLegend';
 import sankeyLinkLegend from './SankeyLinkLegend';
 import sankeyFilterer from './SankeyFilterer';
-import {styleArithmetic} from 'rescape-helpers-component';
+import sankeySvgNode from './SankeySvgNode';
+import sankeySvgLink from './SankeySvgLink';
+import {styleArithmetic, keyWith} from 'rescape-helpers-component';
 
 // Sankey settings. These should be moved to style
 const nodeWidth = 15;
@@ -47,8 +50,8 @@ const color = scaleOrdinal(schemeCategory10);
 const linkHorizontal = sankeyLinkHorizontal();
 
 
-const [ReactMapGl, SVGOverlay, G, Text, TSpan, Title, Path, Div, Flex, SankeyNodeLegend, SankeyLinkLegend, SankeyFilterer, NavigationControl] =
-  eMap([reactMapGl, svgOverlay, 'g', 'text', 'tspan', 'title', 'path', 'div', flex, sankeyNodeLegend, sankeyLinkLegend, sankeyFilterer, navigationControl]);
+const [ReactMapGl, SVGOverlay, G, Div, Flex, SankeySvgNode, SankeySvgLink, SankeyNodeLegend, SankeyLinkLegend, SankeyFilterer, NavigationControl] =
+  eMap([reactMapGl, svgOverlay, 'g', 'div', flex, sankeySvgNode, sankeySvgLink, sankeyNodeLegend, sankeyLinkLegend, sankeyFilterer, navigationControl]);
 
 const styles = {
   sankeyLegendsFontFamily: 'sans-serif'
@@ -199,6 +202,8 @@ Sankey.viewStyles = ({style}) => {
   };
 };
 
+
+
 Sankey.viewProps = props => {
   // Rely on the width and height calculated in viewStyles
   const width = reqStrPathThrowing(`views.${c.sankey}.style.width`, props);
@@ -235,7 +240,7 @@ Sankey.viewProps = props => {
 
   return {
     ['extra']: {
-      // Used only by viewPropsAtRender
+      // Used only by viewPropsAtRender. We don't need to pass these on to any child component
       stageKey,
       valueKey
     },
@@ -247,6 +252,7 @@ Sankey.viewProps = props => {
     },
     [c.sankeyReactMapGl]: R.mergeAll([
       {
+        key: c.sankeyReactMapGl,
         width,
         height
       },
@@ -257,43 +263,48 @@ Sankey.viewProps = props => {
     ]),
 
     [c.sankeySvgOverlay]: {
+      key: c.sankeySvgOverlay,
       viewBox: `0 0 ${width} ${height}`
     },
 
+    // Container of nodes
     [c.sankeySvgNodes]: {
-      key: 'svgNodes',
+      key: c.sankeySvgNodes,
       fontFamily: 'sans-serif',
       fontSize: 10
     },
 
-    [c.sankeySvgNode]: {
-      key: R.always(d => d.index.toString())
-    },
-
-    [c.sankeySvgNodeText]: {
-      key: 'svgNodeText',
-      display: R.always(zoom < 10 ? 'none' : 'inline')
-    },
-
+    // Container of links
     [c.sankeySvgLinks]: {
-      key: 'svgLinks',
+      key: c.sankeySvgLinks,
       fontFamily: 'sans-serif',
       fontSize: 10
     },
 
+    // Container of legends
+    [c.sankeyLegends]: {
+      key: c.sankeyLegends,
+    },
+
+    // Node legend
     [c.sankeyLegendNode]: {
+      key: c.sankeyLegendNode,
       items: R.map(stage => R.merge(stage, {color: color(stage.name)}), stages),
       // Pass on Apollo status indicator
       data: props.data
     },
 
+    // Link Legend
     [c.sankeyLegendLink]: {
-      items: R.map(linkStage => R.merge(linkStage, {color: color(linkStage.target.name)}), makeLinkStages(stages)),
+      key: c.sankeyLegendLink,
+      items: R.map(linkStage => R.merge(linkStage, {key: linkStage.name, color: color(linkStage.target.name)}), makeLinkStages(stages)),
       // Pass on Apollo status indicator
       data: props.data
     },
 
+    // Filters Sankey nodes that are visible
     [c.sankeyFilterer]: {
+      key: c.sankeyFilterer,
       items: R.map(
         node => ({material: node.material}),
         R.uniqBy(
@@ -303,7 +314,32 @@ Sankey.viewProps = props => {
       ),
       // Pass on Apollo status indicator
       data: props.data
-    }
+    },
+
+    // Node for each datum
+    [c.sankeySvgNode]: R.always(d => keyWithDatum('index', d, {
+
+    })),
+
+    // Node text for each datum
+    [c.sankeySvgNodeText]: R.always(d => keyWithDatum('index', d, {
+      // Only display at a high zoom level
+      display: R.always(zoom < 10 ? 'none' : 'inline')
+    })),
+
+    // Node title for each datum
+    [c.sankeySvgNodeTitle]: R.always(d => keyWithDatum('index', d, {
+    })),
+
+    // Node shape for each dataum
+    [c.sankeySvgNodeShape]: R.always(d => keyWithDatum('index', d, {
+
+    })),
+
+    // Link for each datum
+    [c.sankeySvgLink]: R.always(d => keyWithDatum('index', d, {
+
+    })),
   };
 };
 
@@ -323,8 +359,9 @@ Sankey.viewPropsAtRender = ({views, opt}) => {
   // Tranlate's a node's position (x0, y0, x1, y1) to that of the node's feature geometry
   // (Since the node is itself a feature)
   const geospatialPositioner = sankeyGeospatialTranslate(opt);
+  const {valueKey, stageKey} = propsFor(views, 'extra');
   // Generate the sankey diagram at default distributed positions across the map view
-  const {links, nodes} = sankeyGenerator({width, height, nodeWidth, nodePadding, geospatialPositioner},
+  const {links, nodes} = sankeyGenerator({width, height, nodeWidth, nodePadding, geospatialPositioner, valueKey},
     reqStrPathThrowing('graph', propsFor(views, c.sankey)));
 
   return mergePropsForViews({
@@ -336,11 +373,6 @@ Sankey.viewPropsAtRender = ({views, opt}) => {
     },
 
     [c.sankeySvgNodeShape]: {
-      key: R.always(d => d.index.toString())
-    },
-
-    [c.sankeySvgNodeShape]: {
-      key: c.sankeySvgNodeShape,
       pointData: R.always(d => d.pointData.bbox),
       fill: R.always(d => color(resolveNodeStage(d))),
       stroke: '#000',
@@ -349,9 +381,7 @@ Sankey.viewPropsAtRender = ({views, opt}) => {
 
     // Make this whole thing a function that ignores props and expects the datum, since we combine
     // properties of the datum to make new properties (e.g. x0 and x1 to make x)
-    [c.sankeySvgNodeText]: R.always(d => {
-      return {
-        key: c.sankeySvgNodeText,
+    [c.sankeySvgNodeText]: R.always(d => ({
         x: R.ifElse(
           // Position text based on the condition
           nodeTextCond,
@@ -371,13 +401,11 @@ Sankey.viewPropsAtRender = ({views, opt}) => {
         width: R.subtract(d.x1, d.x0),
         fill: color(resolveNodeStage(d)),
         stroke: '#000'
-      };
-    }),
+    })),
 
     [c.sankeySvgLink]: {
-      key: R.always(d => d.index.toString()),
       fill: 'none',
-      stroke: R.always(d => color(resolveLinkStage(d))),
+      stroke: R.always(d => color(resolveLinkStage(stageKey, d))),
       strokeOpacity: R.always(.2),
       // The d element of the svg path is produced by sankeyLinkHorizontal
       // Well call the result of sankeyLinkHorizontal(), which expects a datum and assigns
@@ -401,24 +429,6 @@ Sankey.viewActions = () => {
   };
 };
 
-
-const SankeySvgNode = ({node, shape, text, title}) => {
-  return G(node,
-    resolveSvgReact(shape),
-    Text(R.omit(['children'], text),
-      // Split text by new line, adding index * 1.2em to the dy each line
-      R.addIndex(R.map)((segment, index) => TSpan({
-        x: text.x,
-        dy: styleArithmetic(R.add, index * 1.2, text.dy)
-      }, segment), R.split('\n', text.children))
-    )
-    //Title(title)
-  );
-};
-
-const SankeySvgLink = (props) => {
-  return Path(props);
-};
 
 
 /**

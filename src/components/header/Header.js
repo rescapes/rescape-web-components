@@ -137,6 +137,7 @@ Header.renderData = ({views}) => {
   ];
 };
 
+
 Header.viewProps = () => {
   return {
     [c.headerLogo]: {
