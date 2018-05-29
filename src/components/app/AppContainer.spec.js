@@ -1,4 +1,4 @@
-import appContainer, {samplePropsMaker, queries} from 'components/app/AppContainer';
+import appContainer, {queries} from 'components/app/AppContainer';
 import {eMap} from 'rescape-helpers-component';
 import * as R from 'ramda';
 import {c} from 'components/app/App';
@@ -7,6 +7,8 @@ import {apolloContainerTests} from 'rescape-helpers-component';
 import {MemoryRouter as memoryRouter} from 'react-router-dom';
 import makeSchema from 'schema/schema';
 import {sampleInitialState} from 'helpers/helpers';
+import {chainedSamplePropsTask} from 'components/app/AppContainer.sample';
+import {samplePropsMaker} from 'components/map/mapbox/MapboxContainer';
 
 const schema = makeSchema();
 
@@ -43,6 +45,8 @@ describe('AppContainer', () => {
     childClassDataName,
     childClassLoadingName,
     childClassErrorName,
+    // TODO this will be just a Task when I refactor apolloContainerTests to use Tasks
+    asyncParentProps: () => taskToPromise(chainedSamplePropsTask),
     samplePropsMaker,
     query,
     queryVariables,

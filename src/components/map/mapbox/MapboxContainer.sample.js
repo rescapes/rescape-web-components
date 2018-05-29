@@ -9,25 +9,23 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import {apolloTestPropsFunction, sampleInitialState} from 'helpers/helpers';
+import {
+  apolloTestPropsTaskMaker, sampleParentPropsTask
+} from 'helpers/helpers';
 import {mapStateToProps, mapDispatchToProps, queries} from './MapboxContainer';
-import {asyncPropsFromSampleStateAndContainer, propsFromSampleStateAndContainer} from 'rescape-helpers-component';
-import {reqStrPath} from 'rescape-ramda';
-import {views} from 'components/region/Region'
-import {samplePropsMaker as regionSamplePropsMaker} from 'components/region/RegionContainer'
+import {chainedSamplePropsTask as parentContainerSamplePropsTask} from 'components/region/RegionContainer.sample'
+import Parent, {c as parentC} from 'components/region/Region';
 
 /**
- * Returns a function that expects state and ownProps for testing
+ * Returns a function that expects state and parentProps for testing and returns a Task that resolves the propsj
  */
-export const samplePropsMaker = apolloTestPropsFunction(mapStateToProps, mapDispatchToProps, queries.geojson);
+export const samplePropsTaskMaker = apolloTestPropsTaskMaker(mapStateToProps, mapDispatchToProps, queries.geojson);
 
 /**
- * Sample parent props for a view of Mapbox using Region as the parent
+ * Sample chained props for a view of Mapbox Container using Region as the parent
  * @param {String} viewName one of Region's views
- * @return {Promise<any>} A promise of the sample props
+ * @return {Task} A Task that resolves the parent container/component props and uses them to form this container's props
  */
-export const sampleAsyncParentProps = (viewName) => () => {
-  asyncPropsFromSampleStateAndContainer(sampleInitialState, regionSamplePropsMaker, {}).then(props => {
-    return reqStrPath(viewName, views(props).views);
-  });
-};
+export const chainedSamplePropsTask = sampleParentPropsTask(
+  parentContainerSamplePropsTask, samplePropsTaskMaker, Parent.views, parentC.Mapbox
+);

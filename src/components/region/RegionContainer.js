@@ -6,7 +6,6 @@ import {mergeDeep} from 'rescape-ramda';
 import * as R from 'ramda';
 import {createSelector} from 'reselect';
 import Region from './Region';
-import {apolloTestPropsFunction} from 'helpers/helpers';
 
 /**
  * RegionContainer expects the state to contain the active user and that user's Regions
@@ -108,8 +107,6 @@ const ContainerWithData = graphql(
   queries.region.args)(Region);
 
 
-// Returns a function that expects state and ownProps for testing
-export const samplePropsMaker = apolloTestPropsFunction(mapStateToProps, mapDispatchToProps, queries.region);
 
 // Using R.merge to ignore ownProps, which were already merged by mapStateToProps
 export default connect(mapStateToProps, mapDispatchToProps, R.merge)(ContainerWithData);

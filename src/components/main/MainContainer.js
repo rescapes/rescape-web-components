@@ -9,7 +9,6 @@ import {gql} from 'apollo-client-preset';
 import {createSelector} from 'reselect';
 import {bindActionCreators} from 'redux';
 import {mergeDeep} from 'rescape-ramda';
-import {apolloTestPropsFunction} from 'helpers/helpers';
 
 export const mapStateToProps = (state, props) => {
   const {style, ...data} = props;

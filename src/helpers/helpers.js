@@ -11,9 +11,21 @@
 
 import {createSampleConfig, getCurrentConfig} from 'rescape-sample-data';
 import makeSchema from 'schema/schema';
-import {makeApolloTestPropsFunction, makeSampleInitialState} from 'rescape-helpers-component';
+import {
+  makeApolloTestPropsFunction, makeSampleInitialState,
+  asyncPropsFromSampleStateAndContainer, propsFromSampleStateAndContainer,
+  makeTestPropsFunction
+} from 'rescape-helpers-component';
 import {createSelectorResolvedSchema} from 'schema/selectorResolvers';
 import createInitialState from 'initialState';
+import {promiseToTask, taskToPromise, reqStrPathThrowing} from 'rescape-ramda';
+import {of} from 'folktale/concurrency/task';
+
+/**
+ *
+ * These helpers are trivial functions that use rescape-sample-data and rescape-helpers-component togther,
+ * creating functions that are seeded with sample data for testing
+ */
 
 const sampleConfig = createSampleConfig();
 /**
@@ -28,6 +40,67 @@ export const sampleInitialState = makeSampleInitialState(createInitialState, sam
 export const resolvedSchema = createSelectorResolvedSchema(makeSchema(), getCurrentConfig());
 
 /**
- * Creates an apolloTestsPropsFunction using the resolvedSchema and sampleConfig for tests
+ * Calls makeApolloTestPropsFunction with the given * 3 arguments:
+ * mapStateToProps, mapDispatchToProps, {query, args}
+ * See makeApolloTestPropsFunction for details.
+ * The resulting promise is wrapped in a Task.
+ * @param {Function} mapStateToProps
+ * @param {Function} mapDispatchToProps
+ * @param {Object} queryInfo
+ * @returns {Function} A 2 arity function called with state and props that results in a Task that
+ * resolves the props
  */
-export const apolloTestPropsFunction = makeApolloTestPropsFunction(resolvedSchema, sampleConfig);
+export const apolloTestPropsTaskMaker = (mapStateToProps, mapDispatchToProps, queryInfo) =>
+  (state, props) => promiseToTask(
+    makeApolloTestPropsFunction(resolvedSchema, sampleConfig, mapStateToProps, mapDispatchToProps, queryInfo)(state, props)
+  );
+
+/**
+ * Calls makeTestPropsFunction on a non Apollo container. This is a synchronous but wrapped in a
+ * Task to match calls to apolloTestPropsTaskMaker
+ * @param mapStateToProps
+ * @param mapDispatchToProps
+ * @return {Function} A 2 arity function called with state and props that results in a Task that
+ * resolves the props
+ */
+export const testPropsTaskMaker = (mapStateToProps, mapDispatchToProps) => of(
+  makeTestPropsFunction(mapStateToProps, mapDispatchToProps)
+);
+
+/**
+ * Given a Task to fetch parent container props and a task to fetch the current container props,
+ * Fetches the parent props and then samplePropsTaskMaker with the initial state and parent props
+ * @param {Task} parentContainerSamplePropsTask Task that resolves to the parent container props
+ * @param {Function} samplePropsTaskMaker 2 arity function expecting state and parent props.
+ * Returns a Task from a container that expects a sample state and sampleOwnProps
+ * and then applies the container's mapStateToProps, mapDispatchToProps, and optional mergeProps
+ * @returns {Task} A Task to asynchronously return the parentContainer props merged with sampleOwnProps
+ */
+export const asyncParentPropsTask = (parentContainerSamplePropsTask, samplePropsTaskMaker) =>
+  // TODO asyncPropsFromSampleStateAndContainer needs to be refactored to accept tasks,
+  // then we can remove promiseToTask and taskToPromise
+  parentContainerSamplePropsTask.chain(parentContainerSampleProps => promiseToTask(
+    asyncPropsFromSampleStateAndContainer(
+      sampleInitialState,
+      (state, props) => taskToPromise(samplePropsTaskMaker(state, props)),
+      parentContainerSampleProps
+    )
+  ));
+
+/**
+ * Asynchronously fetches sample parent container props and then uses them
+ * to resolve the props of a defined view of the parent component.
+ * This allows the container being tested to reliably have sample props from entire hierarchy above it.
+ * This makes for more of functional test then a unit test, since the parent hierarchy of data uses
+ * the ancestor containers and components.
+ * @param {Task} parentContainerSamplePropsTask A Task that resolves to the sample props of the parent container
+ * @param {Function} samplePropsTaskMaker 2-arity function expecting state and parent props.
+ * It returns a Task that resolves to the sample props of this container
+ * @param parentComponentViews
+ * @param viewName
+ * @return {Task} A Task that fetches the parentContainerSampleProps then extracts the props from those
+ * results that match the given viewName of the given parentComponentViews
+ */
+export const sampleParentPropsTask = (parentContainerSamplePropsTask, samplePropsTaskMaker, parentComponentViews, viewName) => {
+  asyncParentPropsTask(parentContainerSamplePropsTask, samplePropsTaskMaker).map(props => reqStrPathThrowing(viewName, parentComponentViews(props)));
+};

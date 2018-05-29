@@ -22,7 +22,6 @@ import Mapbox from './Mapbox';
 import * as R from 'ramda';
 import {graphql} from 'react-apollo';
 import {gql} from 'apollo-client-preset';
-import {apolloTestPropsFunction} from 'helpers/helpers';
 import {v} from 'rescape-validate'
 import PropTypes from 'prop-types'
 
@@ -130,8 +129,7 @@ const ContainerWithData = graphql(
 )
 (Mapbox);
 
-// Returns a function that expects state and ownProps for testing
-export const samplePropsMaker = apolloTestPropsFunction(mapStateToProps, mapDispatchToProps, queries.geojson);
+
 
 // Using R.merge to ignore ownProps, which were already merged by mapStateToProps
 export default connect(mapStateToProps, mapDispatchToProps, R.merge)(ContainerWithData);

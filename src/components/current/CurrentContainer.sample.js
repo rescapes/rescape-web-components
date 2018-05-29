@@ -9,27 +9,25 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import {makeTestPropsFunction, propsFromSampleStateAndContainer} from 'rescape-helpers-component';
 import {mapDispatchToProps, mapStateToProps} from 'components/current/CurrentContainer';
-import {sampleInitialState} from 'helpers/helpers';
-import {reqStrPathThrowing} from 'rescape-ramda';
-import Main, {c} from 'components/main/Main'
+import {sampleParentPropsTask, testPropsTaskMaker} from 'helpers/helpers';
+import {chainedSamplePropsTask as parentContainerSamplePropsTask} from 'components/main/MainContainer.sample';
+import Parent, {c as parentC} from 'components/main/Main'
 
 /**
- * @file Links sample props from a Main component to a Current component
+ * @file Links sample props from a Current component to a Region component
  */
 
 /**
- * Returns a function that expects ownProps for testing
+ * Returns a function that expects state and parentProps for testing and returns a Task that resolves the props
  */
-export const samplePropsMaker = makeTestPropsFunction(mapStateToProps, mapDispatchToProps);
+export const samplePropsTaskMaker = testPropsTaskMaker(mapStateToProps, mapDispatchToProps);
 
 /**
- * Returns a function that when called returns a promise of sample parentProps
- * @return {function(): Promise<any>}
+ * Sample chained props for a view of Current Container using Main as the parent
+ * @param {String} viewName one of Region's views
+ * @return {Task} A Task that resolves the parent container/component props and uses them to form this container's props
  */
-export const sampleAsyncParentProps = () => new Promise((resolve) => {
-  const currentProps = propsFromSampleStateAndContainer(sampleInitialState, samplePropsMaker, {});
-  const parentProps = reqStrPathThrowing(c.mainCurrent, Main.views(currentProps));
-  resolve(parentProps);
-});
+export const chainedSamplePropsTask = sampleParentPropsTask(
+  parentContainerSamplePropsTask, samplePropsTaskMaker, Parent.views, parentC.mainCurrent
+);

@@ -21,7 +21,6 @@ import Sankey from './Sankey';
 import * as R from 'ramda';
 import {graphql} from 'react-apollo';
 import {gql} from 'apollo-client-preset';
-import {apolloTestPropsFunction} from 'helpers/helpers';
 
 /**
  * Selects the current user from state
@@ -233,9 +232,6 @@ const ContainerWithData = R.compose(
     queries.filterSankeyNodes.args
   )
 )(Sankey);
-
-// Returns a function that expects state and ownProps for testing
-export const samplePropsMaker = apolloTestPropsFunction(mapStateToProps, mapDispatchToProps, queries.geojson);
 
 // Using R.merge to ignore ownProps, which were already merged by mapStateToProps
 export default connect(mapStateToProps, mapDispatchToProps, R.merge)(ContainerWithData);

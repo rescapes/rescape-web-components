@@ -24,6 +24,7 @@ describe('MainContainer', () => {
     Container,
     componentName,
     childClassDataName,
+    samplePropsMaker: chainedSamplePropsTask,
     asyncParentProps,
     initialState
   });
