@@ -13,7 +13,7 @@ import {gql} from 'apollo-client-preset';
 import storeCreator from 'store';
 import {getCurrentConfig} from 'rescape-sample-data';
 import {reqStrPath} from 'rescape-ramda';
-import Either from 'data.either'
+import * as Either from 'data.either';
 
 describe('apolloClient', () => {
   test('apolloClient with sample data', async () => {

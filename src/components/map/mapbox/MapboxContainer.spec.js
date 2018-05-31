@@ -1,4 +1,4 @@
-import {asyncPropsFromSampleStateAndContainer, propsFromSampleStateAndContainer} from 'rescape-helpers-component';
+import {propsFromSampleStateAndContainer} from 'rescape-helpers-component';
 import {queries} from 'components/map/mapbox/MapboxContainer';
 import {eMap} from 'rescape-helpers-component';
 import MapboxContainer from 'components/map/mapbox/MapboxContainer';
@@ -9,7 +9,7 @@ import {apolloContainerTests} from 'rescape-helpers-component';
 import {createSampleConfig} from 'rescape-sample-data';
 import makeSchema from 'schema/schema';
 import {sampleInitialState} from 'helpers/helpers';
-import {chainedSamplePropsTask, samplePropsTaskMaker} from 'components/map/mapbox/MapboxContainer.sample';
+import {chainedSamplePropsTask} from './MapboxContainer.sample';
 import {taskToPromise} from 'rescape-ramda'
 
 const schema = makeSchema();
@@ -33,29 +33,6 @@ const queryVariables = props => ({
 // Use this to make a query that errors
 const errorMaker = parentProps => R.set(R.lensPath(['region', 'id']), 'foo', parentProps);
 
-/*
-// Use this to get properties from parent containers to test our container
-// This returns a promise for consistency across tests. Some parent test props are async
-const oldAsyncParentProps = () => {
-  // Build up the correct parent props from Current and Region
-  const currentProps = propsFromSampleStateAndContainer(sampleInitialState, currentPropsMaker, {});
-  const currentViews = Current.views(currentProps).views;
-  const currentRegionView = currentViews[cCurrent.currentRegion];
-  // Get async props from the RegionContainer and then resolve the Region.views
-  return asyncPropsFromSampleStateAndContainer(sampleInitialState, regionPropsMaker, currentRegionView)
-    .then(props =>
-      R.merge(
-        {
-          style: {
-            width: 500,
-            height: 500
-          }
-        },
-        Region.views(props).views
-      )[cRegion.regionMapbox]
-    );
-};
-*/
 const {testMapStateToProps, testQuery, testRenderError, testRender} = apolloContainerTests({
   initialState: sampleInitialState,
   schema,
@@ -65,8 +42,7 @@ const {testMapStateToProps, testQuery, testRenderError, testRender} = apolloCont
   childClassLoadingName,
   childClassErrorName,
   query,
-  // TODO this will be just a Task when I refactor apolloContainerTests to use Tasks
-  asyncParentProps: () => taskToPromise(chainedSamplePropsTask),
+  chainedSamplePropsTask,
   queryVariables,
   errorMaker
 });

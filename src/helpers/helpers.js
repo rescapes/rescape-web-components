@@ -12,14 +12,17 @@
 import {createSampleConfig, getCurrentConfig} from 'rescape-sample-data';
 import makeSchema from 'schema/schema';
 import {
-  makeApolloTestPropsFunction, makeSampleInitialState,
+  makeApolloTestPropsTaskFunction, makeSampleInitialState,
   asyncPropsFromSampleStateAndContainer, propsFromSampleStateAndContainer,
   makeTestPropsFunction
 } from 'rescape-helpers-component';
 import {createSelectorResolvedSchema} from 'schema/selectorResolvers';
 import createInitialState from 'initialState';
-import {promiseToTask, taskToPromise, reqStrPathThrowing} from 'rescape-ramda';
+import {promiseToTask, taskToPromise, reqPathThrowing} from 'rescape-ramda';
 import {of} from 'folktale/concurrency/task';
+import PropTypes from 'prop-types';
+import {v} from 'rescape-validate';
+import * as Either from 'data.either';
 
 /**
  *
@@ -40,7 +43,7 @@ export const sampleInitialState = makeSampleInitialState(createInitialState, sam
 export const resolvedSchema = createSelectorResolvedSchema(makeSchema(), getCurrentConfig());
 
 /**
- * Calls makeApolloTestPropsFunction with the given * 3 arguments:
+ * Calls makenApolloTestPropsFunction with the given * 3 arguments:
  * mapStateToProps, mapDispatchToProps, {query, args}
  * See makeApolloTestPropsFunction for details.
  * The resulting promise is wrapped in a Task.
@@ -48,12 +51,15 @@ export const resolvedSchema = createSelectorResolvedSchema(makeSchema(), getCurr
  * @param {Function} mapDispatchToProps
  * @param {Object} queryInfo
  * @returns {Function} A 2 arity function called with state and props that results in a Task that
- * resolves the props
+ * resolves the props as A Right if no errors and a Left if errors
  */
-export const apolloTestPropsTaskMaker = (mapStateToProps, mapDispatchToProps, queryInfo) =>
-  (state, props) => promiseToTask(
-    makeApolloTestPropsFunction(resolvedSchema, sampleConfig, mapStateToProps, mapDispatchToProps, queryInfo)(state, props)
-  );
+export const apolloTestPropsTaskMaker = v((mapStateToProps, mapDispatchToProps, queryInfo) =>
+  (state, props) => makeApolloTestPropsTaskFunction(resolvedSchema, sampleConfig, mapStateToProps, mapDispatchToProps, queryInfo)(state, props)
+, [
+    ['mapStateToProps', PropTypes.func.isRequired],
+    ['mapDispatchToProps', PropTypes.func.isRequired],
+    ['queryInfo', PropTypes.shape().isRequired],
+  ], 'apolloTestPropsTaskMaker');
 
 /**
  * Calls makeTestPropsFunction on a non Apollo container. This is a synchronous but wrapped in a
@@ -63,9 +69,9 @@ export const apolloTestPropsTaskMaker = (mapStateToProps, mapDispatchToProps, qu
  * @return {Function} A 2 arity function called with state and props that results in a Task that
  * resolves the props
  */
-export const testPropsTaskMaker = (mapStateToProps, mapDispatchToProps) => of(
-  makeTestPropsFunction(mapStateToProps, mapDispatchToProps)
-);
+export const testPropsTaskMaker = (mapStateToProps, mapDispatchToProps) =>
+  // Wrap function result in a Task to match apolloTestPropsTaskMaker
+  (state, props) => of(Either.Right(makeTestPropsFunction(mapStateToProps, mapDispatchToProps)(state, props)));
 
 /**
  * Given a Task to fetch parent container props and a task to fetch the current container props,
@@ -75,17 +81,20 @@ export const testPropsTaskMaker = (mapStateToProps, mapDispatchToProps) => of(
  * Returns a Task from a container that expects a sample state and sampleOwnProps
  * and then applies the container's mapStateToProps, mapDispatchToProps, and optional mergeProps
  * @returns {Task} A Task to asynchronously return the parentContainer props merged with sampleOwnProps
+ * in an Either.Right. If anything goes wrong an Either.Left is returned
  */
 export const asyncParentPropsTask = (parentContainerSamplePropsTask, samplePropsTaskMaker) =>
   // TODO asyncPropsFromSampleStateAndContainer needs to be refactored to accept tasks,
   // then we can remove promiseToTask and taskToPromise
-  parentContainerSamplePropsTask.chain(parentContainerSampleProps => promiseToTask(
-    asyncPropsFromSampleStateAndContainer(
-      sampleInitialState,
-      (state, props) => taskToPromise(samplePropsTaskMaker(state, props)),
-      parentContainerSampleProps
-    )
-  ));
+  parentContainerSamplePropsTask.chain(parentContainerSamplePropsEither =>
+    parentContainerSamplePropsEither.chain(parentContainerSampleProps => promiseToTask(
+      asyncPropsFromSampleStateAndContainer(
+        sampleInitialState,
+        (state, props) => taskToPromise(samplePropsTaskMaker(state, props)),
+        parentContainerSampleProps
+      )
+    ).map(value => value))
+  );
 
 /**
  * Asynchronously fetches sample parent container props and then uses them
@@ -99,8 +108,18 @@ export const asyncParentPropsTask = (parentContainerSamplePropsTask, sampleProps
  * @param parentComponentViews
  * @param viewName
  * @return {Task} A Task that fetches the parentContainerSampleProps then extracts the props from those
- * results that match the given viewName of the given parentComponentViews
+ * results that match the given viewName of the given parentComponentViews. The value is wrapped in
+ * an Either.Right to match the result of asyncParentPropsTask
  */
-export const sampleParentPropsTask = (parentContainerSamplePropsTask, samplePropsTaskMaker, parentComponentViews, viewName) => {
-  asyncParentPropsTask(parentContainerSamplePropsTask, samplePropsTaskMaker).map(props => reqStrPathThrowing(viewName, parentComponentViews(props)));
-};
+export const sampleParentPropsTask = v(
+  (parentContainerSamplePropsTask, samplePropsTaskMaker, parentComponentViews, viewName) =>
+    asyncParentPropsTask(parentContainerSamplePropsTask, samplePropsTaskMaker).map(
+      props => Either.Right(reqPathThrowing(['views', viewName], parentComponentViews(props)))
+    ),
+  [
+    ['parentContainerSamplePropsTask', PropTypes.shape().isRequired],
+    ['samplePropsTaskMaker', PropTypes.func.isRequired],
+    ['parentComponentViews', PropTypes.func.isRequired],
+    ['viewName', PropTypes.string.isRequired]
+  ],
+  'sampleParentPropsTask');

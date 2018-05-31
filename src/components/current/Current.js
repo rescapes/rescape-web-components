@@ -66,7 +66,7 @@ Current.viewStyles = ({style}) => {
 
 Current.viewProps = () => {
   return {
-    [c.currentRegion]: {region: reqStrPathThrowing('data.region')}
+    [c.currentRegion]: {region: prop => reqStrPathThrowing('data.region', prop)}
   };
 };
 

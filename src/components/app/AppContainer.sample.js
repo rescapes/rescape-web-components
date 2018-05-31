@@ -9,8 +9,12 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import {apolloTestPropsTaskMaker, sampleInitialState} from 'helpers/helpers';
+import {apolloTestPropsTaskMaker, sampleParentPropsTask} from 'helpers/helpers';
 import {mapStateToProps, mapDispatchToProps, queries} from './AppContainer';
+import {chainedSamplePropsTask as parentContainerSamplePropsTask} from 'components/app/AppContainer.sample';
+import Parent, {c as parentC} from 'components/app/App';
+import {of} from 'folktale/concurrency/task';
+import Either from 'data.either'
 
 /**
  * @file Links sample props from a Current component to a Region component
@@ -19,11 +23,14 @@ import {mapStateToProps, mapDispatchToProps, queries} from './AppContainer';
 /**
  * Returns a function that expects state and parentProps for testing and returns a Task that resolves the props
  */
-export const samplePropsTaskMaker = apolloTestPropsTaskMaker(mapStateToProps, mapDispatchToProps, queries.allUserRegions);
+export const samplePropsTaskMaker = apolloTestPropsTaskMaker(mapStateToProps, mapDispatchToProps, queries.userRegions);
 
 /**
- * Sample chained props for a view of App Container. Since this is the top-level there is nothing to chain
- * @param {String} viewName one of Region's views
- * @return {Task} A Task that resolves the parent container/component props and uses them to form this container's props
+ * Since there is no parent, just supply {} for the parent and
  */
-export const chainedSamplePropsTask = samplePropsTaskMaker(sampleInitialState, {});
+export const chainedSamplePropsTask = sampleParentPropsTask(
+  of(Either.Right({})),
+  samplePropsTaskMaker,
+  props => ({generic: props.data}),
+  'generic'
+);

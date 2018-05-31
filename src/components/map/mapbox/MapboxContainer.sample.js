@@ -27,5 +27,5 @@ export const samplePropsTaskMaker = apolloTestPropsTaskMaker(mapStateToProps, ma
  * @return {Task} A Task that resolves the parent container/component props and uses them to form this container's props
  */
 export const chainedSamplePropsTask = sampleParentPropsTask(
-  parentContainerSamplePropsTask, samplePropsTaskMaker, Parent.views, parentC.Mapbox
+  parentContainerSamplePropsTask, samplePropsTaskMaker, Parent.views, parentC.regionMapbox
 );
