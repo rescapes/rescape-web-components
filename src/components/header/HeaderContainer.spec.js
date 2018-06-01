@@ -9,9 +9,6 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import {
-  asyncPropsFromSampleStateAndContainer
-} from 'rescape-helpers-component';
 import headerContainer, {samplePropsMaker, queries} from 'components/header/HeaderContainer';
 import {samplePropsMaker as appPropsMaker} from 'components/app/AppContainer';
 import {eMap, withRebassProvider} from 'rescape-helpers-component';
@@ -40,12 +37,13 @@ const componentName = 'Header';
 const childClassDataName = c.headerLinkHolder;
 
 const asyncParentProps = () =>
-  asyncPropsFromSampleStateAndContainer(sampleInitialState, appPropsMaker, {}).then(
+  appPropsMaker(sampleInitialState, {}).map(
     appProps => {
       const appViews = App.views(appProps).views;
       const parentProps = appViews[cApp.appHeader];
       return parentProps;
-    });
+    }
+  );
 
 describe('HeaderContainer', () => apolloContainerTests({
     initialState: sampleInitialState,

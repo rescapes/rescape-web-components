@@ -8,8 +8,8 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import {mapDispatchToProps, mapStateToProps} from 'components/region/RegionContainer';
-import {sampleParentPropsTask, testPropsTaskMaker} from 'helpers/helpers';
+import {mapDispatchToProps, mapStateToProps, queries} from 'components/region/RegionContainer';
+import {apolloTestPropsTaskMaker, asyncParentPropsTask} from 'helpers/helpers';
 import {chainedSamplePropsTask as parentContainerSamplePropsTask} from 'components/current/CurrentContainer.sample';
 import Parent, {c as parentC} from 'components/current/Current';
 
@@ -20,14 +20,14 @@ import Parent, {c as parentC} from 'components/current/Current';
 /**
  * Returns a function that expects state and parentProps for testing and returns a Task that resolves the props
  */
-export const samplePropsTaskMaker = testPropsTaskMaker(mapStateToProps, mapDispatchToProps);
+export const samplePropsTaskMaker = apolloTestPropsTaskMaker(mapStateToProps, mapDispatchToProps, queries.region);
 
 /**
  * Sample chained props for a view of Mapbox Container using Region as the parent
  * @param {String} viewName one of Region's views
  * @return {Task} A Task that resolves the parent container/component props and uses them to form this container's props
  */
-export const chainedSamplePropsTask = sampleParentPropsTask(
+export const chainedSamplePropsTask = asyncParentPropsTask(
   parentContainerSamplePropsTask, samplePropsTaskMaker, Parent.views, parentC.currentRegion
-);
+).map(value => value);
 

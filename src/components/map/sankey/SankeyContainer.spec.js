@@ -1,4 +1,4 @@
-import {asyncPropsFromSampleStateAndContainer, propsFromSampleStateAndContainer} from 'rescape-helpers-component';
+import {propsFromSampleStateAndContainer} from 'rescape-helpers-component';
 import {queries, samplePropsMaker} from 'components/map/sankey/SankeyContainer';
 import {eMap} from 'rescape-helpers-component';
 import SankeyContainer from 'components/map/sankey/SankeyContainer';

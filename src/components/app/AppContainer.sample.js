@@ -9,10 +9,8 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import {apolloTestPropsTaskMaker, sampleParentPropsTask} from 'helpers/helpers';
+import {apolloTestPropsTaskMaker, asyncParentPropsTask} from 'helpers/helpers';
 import {mapStateToProps, mapDispatchToProps, queries} from './AppContainer';
-import {chainedSamplePropsTask as parentContainerSamplePropsTask} from 'components/app/AppContainer.sample';
-import Parent, {c as parentC} from 'components/app/App';
 import {of} from 'folktale/concurrency/task';
 import Either from 'data.either'
 
@@ -28,9 +26,9 @@ export const samplePropsTaskMaker = apolloTestPropsTaskMaker(mapStateToProps, ma
 /**
  * Since there is no parent, just supply {} for the parent and
  */
-export const chainedSamplePropsTask = sampleParentPropsTask(
+export const chainedSamplePropsTask = asyncParentPropsTask(
   of(Either.Right({})),
   samplePropsTaskMaker,
-  props => ({generic: props.data}),
+  props => ({views: {generic: {}}}),
   'generic'
 );

@@ -10,7 +10,7 @@
  */
 
 import {mapDispatchToProps, mapStateToProps} from 'components/current/CurrentContainer';
-import {sampleParentPropsTask, testPropsTaskMaker} from 'helpers/helpers';
+import {asyncParentPropsTask, testPropsTaskMaker} from 'helpers/helpers';
 import {chainedSamplePropsTask as parentContainerSamplePropsTask} from 'components/main/MainContainer.sample';
 import Parent, {c as parentC} from 'components/main/Main'
 
@@ -28,6 +28,6 @@ export const samplePropsTaskMaker = testPropsTaskMaker(mapStateToProps, mapDispa
  * @param {String} viewName one of Region's views
  * @return {Task} A Task that resolves the parent container/component props and uses them to form this container's props
  */
-export const chainedSamplePropsTask = sampleParentPropsTask(
+export const chainedSamplePropsTask = asyncParentPropsTask(
   parentContainerSamplePropsTask, samplePropsTaskMaker, Parent.views, parentC.mainCurrent
-);
+)
