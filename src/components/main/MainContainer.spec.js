@@ -8,7 +8,7 @@ import {eMap} from 'rescape-helpers-component';
 import React from 'react';
 import {sampleInitialState} from 'helpers/helpers';
 import {c} from 'components/main/Main';
-import {sampleAsyncParentProps} from 'components/main/MainContainer.sample';
+import {chainedSamplePropsTask, sampleAsyncParentProps} from 'components/main/MainContainer.sample';
 
 // Test this container
 const [Container] = eMap([MainContainer]);
@@ -24,7 +24,7 @@ describe('MainContainer', () => {
     Container,
     componentName,
     childClassDataName,
-    samplePropsMaker: chainedSamplePropsTask,
+    chainedSamplePropsTask,
     asyncParentProps,
     initialState
   });

@@ -75,7 +75,7 @@ export const mergeAndApplyMatchingStyles = (parentStyle, style) => mergeDeepWith
 );
 
 /**
- * Like MergeAndApplyStyles but doesn't merge the parentStyles. It simply applies the ones where
+ * Like mergeAndApplyStyles but doesn't merge the parentStyles. It simply applies the ones where
  * there are child styles with the same name that are a function. If the child has a matching style
  * that isn't a function then the parent's value is ignored
  * @param parentStyle
@@ -89,28 +89,32 @@ export const applyMatchingStyles = (parentStyle, style) => {
     R.both(
       () => R.complement(R.has)(key, parentStyle),
       R.is(Function)
-    )(value), style)
+    )(value), style);
   if (R.length(R.keys(badKeyValues))) {
     throw Error(`Some style keys with function values don't have corresponding parentStyle values: ${JSON.stringify(badKeyValues)} of
     style keys ${R.join(', ', R.keys(style))} and
-    parentStyle keys ${R.join(', ', R.keys(parentStyle))}`)
+    parentStyle keys ${R.join(', ', R.keys(parentStyle))}`);
   }
+
+  // Find the parentStyle values that match style values by key
+  const matchingParentStyle = R.fromPairs(R.innerJoin(
+    ([parentStyleKey], [styleKey]) => R.equals(parentStyleKey, styleKey),
+    R.toPairs(parentStyle),
+    R.toPairs(style)
+  ));
+
   return mergeDeepWith(
     (stateStyleValue, propStyleValue) =>
       // If keys match, the propStyleValue trumps unless it is a function, in which case the stateStyleValue
       // is passed to the propStyleValue function
       R.when(
         R.is(Function),
-        x => R.compose(x)(stateStyleValue)
+        propStyleValueFunc => propStyleValueFunc(stateStyleValue)
       )(propStyleValue),
-    R.fromPairs(R.innerJoin(
-      ([parentStyleKey], [styleKey]) => R.equals(parentStyleKey, styleKey),
-      R.toPairs(parentStyle),
-      R.toPairs(style)
-    )),
+    matchingParentStyle,
     style
   );
-}
+};
 
 /**
  * Returns a function that creates a selector to

@@ -88,7 +88,7 @@ export const testPropsTaskMaker = (mapStateToProps, mapDispatchToProps) =>
 export const asyncParentPropsTask = v((parentContainerSamplePropsTask, samplePropsTaskMaker, parentComponentViews, viewName) =>
     parentContainerSamplePropsTask.map(
       // the parent props to the props of the desired view in an Either.Right
-      props => Either.Right(reqPathThrowing(['views', viewName], parentComponentViews(props)))
+      propsEither => propsEither.map(props => reqPathThrowing(['views', viewName], parentComponentViews(props)))
     ).chain(parentContainerSamplePropsEither => parentContainerSamplePropsEither
       // Chain the Either.Right value to a Task combine the parent props with the props maker
         .chain(parentContainerSampleProps => samplePropsTaskMaker(sampleInitialState, parentContainerSampleProps))

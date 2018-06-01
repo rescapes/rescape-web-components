@@ -4,13 +4,12 @@ import {eMap} from 'rescape-helpers-component';
 import MapboxContainer from 'components/map/mapbox/MapboxContainer';
 import * as R from 'ramda';
 import Mapbox, {c} from 'components/map/mapbox/Mapbox';
-import {gql} from 'apollo-client-preset';
 import {apolloContainerTests} from 'rescape-helpers-component';
 import {createSampleConfig} from 'rescape-sample-data';
 import makeSchema from 'schema/schema';
 import {sampleInitialState} from 'helpers/helpers';
 import {chainedSamplePropsTask} from './MapboxContainer.sample';
-import {taskToPromise} from 'rescape-ramda'
+import {taskToPromise, reqStrPathThrowing} from 'rescape-ramda'
 
 const schema = makeSchema();
 
@@ -24,12 +23,9 @@ const childClassDataName = c.mapboxMapReactGlOuter;
 const childClassLoadingName = c.mapboxLoading;
 // Find this class in the error renderer
 const childClassErrorName = c.mapboxError;
-// Run this apollo query
-const query = gql`${queries.geojson.query}`;
-// Use these query variables
-const queryVariables = props => ({
-  regionId: props.data.region.id
-});
+const queryConfig = queries.geojson
+
+
 // Use this to make a query that errors
 const errorMaker = parentProps => R.set(R.lensPath(['region', 'id']), 'foo', parentProps);
 
