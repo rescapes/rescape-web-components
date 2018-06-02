@@ -9,13 +9,14 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import {apolloTestPropsTaskMaker, asyncParentPropsTask} from 'helpers/helpers';
+import {apolloTestPropsTaskMaker, propsFromParentPropsTask} from 'helpers/helpers';
 import {mapStateToProps, mapDispatchToProps, queries} from './MainContainer';
 import {chainedSamplePropsTask as parentContainerSamplePropsTask} from 'components/app/AppContainer.sample';
 import Parent, {c as parentC} from 'components/app/App';
+import {parentPropsForContainerTask} from 'rescape-helpers-component'
 
 /**
- * @file Links sample props from a Current component to a Region component
+ * @file Links sample props from an Application component to a Main component
  */
 
 /**
@@ -24,10 +25,11 @@ import Parent, {c as parentC} from 'components/app/App';
 export const samplePropsTaskMaker = apolloTestPropsTaskMaker(mapStateToProps, mapDispatchToProps, queries.allUserRegions);
 
 /**
- * Sample chained props for a view of Main Container using App as the parent
- * @param {String} viewName one of Region's views
- * @return {Task} A Task that resolves the parent container/component props and uses them to form this container's props
+ * Task returning sample parent props from all the way up the view hierarchy
  */
-export const chainedSamplePropsTask = asyncParentPropsTask(
-  parentContainerSamplePropsTask, samplePropsTaskMaker, Parent.views, parentC.appMain
-)
+export const chainedParentPropsTask = parentPropsForContainerTask(parentContainerSamplePropsTask, Parent.views, parentC.appMain);
+
+/**
+ * Task returning sample props from all the way up the view hierarchy
+ */
+export const chainedSamplePropsTask = propsFromParentPropsTask(chainedParentPropsTask, samplePropsTaskMaker);

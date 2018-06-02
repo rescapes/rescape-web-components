@@ -9,12 +9,11 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import {
-  apolloTestPropsTaskMaker, asyncParentPropsTask
-} from 'helpers/helpers';
+import { apolloTestPropsTaskMaker, propsFromParentPropsTask } from 'helpers/helpers';
 import {mapStateToProps, mapDispatchToProps, queries} from './MapboxContainer';
 import {chainedSamplePropsTask as parentContainerSamplePropsTask} from 'components/region/RegionContainer.sample'
 import Parent, {c as parentC} from 'components/region/Region';
+import {parentPropsForContainerTask} from 'rescape-helpers-component'
 
 /**
  * Returns a function that expects state and parentProps for testing and returns a Task that resolves the
@@ -23,10 +22,11 @@ import Parent, {c as parentC} from 'components/region/Region';
 export const samplePropsTaskMaker = apolloTestPropsTaskMaker(mapStateToProps, mapDispatchToProps, queries.geojson);
 
 /**
- * Sample chained props for a view of Mapbox Container using Region as the parent
- * @param {String} viewName one of Region's views
- * @return {Task} A Task that resolves the parent container/component props and uses them to form this container's props
+ * Task returning sample parent props from all the way up the view hierarchy
  */
-export const chainedSamplePropsTask = asyncParentPropsTask(
-  parentContainerSamplePropsTask, samplePropsTaskMaker, Parent.views, parentC.regionMapbox
-);
+export const chainedParentPropsTask = parentPropsForContainerTask(parentContainerSamplePropsTask, Parent.views, parentC.regionMapbox)
+
+/**
+ * Task returning sample props from all the way up the view hierarchy
+ */
+export const chainedSamplePropsTask = propsFromParentPropsTask(chainedParentPropsTask, samplePropsTaskMaker);

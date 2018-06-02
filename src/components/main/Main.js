@@ -12,17 +12,20 @@
 import {styleMultiplier} from 'rescape-helpers-component';
 import {
   composeViews, eMap, renderChoicepoint, nameLookup, propsFor,
-  propsForSansClass
+  propsForSansClass, renderErrorDefault, renderLoadingDefault
 } from 'rescape-helpers-component';
 import current from 'components/current';
 import {Component} from 'react'
 import PropTypes from 'prop-types'
 import {applyMatchingStyles, mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
+import Mapbox from 'components/map/mapbox/Mapbox';
 const [Div, Current] = eMap(['div', current]);
 
 export const c = nameLookup({
   main: true,
-  mainCurrent: true
+  mainCurrent: true,
+  mainLoading: true,
+  mainError: true
 });
 
 class Main extends Component {
@@ -92,10 +95,10 @@ Main.views = composeViews(
 /**
  * Loading, Error, or Data based on the props
  */
-Main.choicepoint = renderChoicepoint(
-  Main.renderError,
-  Main.renderLoading,
-  Main.renderData
+Mapbox.choicepoint = renderChoicepoint(
+  renderErrorDefault(c.mapboxError),
+  renderLoadingDefault(c.mapboxLoading),
+  Mapbox.renderData
 );
 
 Main.propTypes = {

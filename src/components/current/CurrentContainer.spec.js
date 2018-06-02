@@ -8,34 +8,30 @@
  *
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-import {
-  apolloContainerTests, propsFromSampleStateAndContainer,
-  wrapWithMockGraphqlAndStore
-} from 'rescape-helpers-component';
-import CurrentContainer from './CurrentContainer';
+import { apolloContainerTests } from 'rescape-helpers-component';
 import {eMap} from 'rescape-helpers-component';
 import React from 'react';
 import {sampleInitialState} from 'helpers/helpers';
-import {c} from 'components/current/Current';
-import {sampleAsyncParentProps} from 'components/main/MainContainer.sample.js';
+import {c} from './Current';
+import currentContainer, {mapStateToProps} from './CurrentContainer';
+import {chainedParentPropsTask} from './CurrentContainer.sample'
 
 // Test this container
-const [Container] = eMap([CurrentContainer]);
+const [Container] = eMap([currentContainer]);
 // Find this React component
 const componentName = 'Current';
 // Find this class in the data renderer
 const childClassDataName = c.current;
 const initialState = sampleInitialState;
-// Get sample parent props from Main for Current
-const asyncParentProps = sampleAsyncParentProps;
 
 describe('CurrentContainer', () => {
   const {testMapStateToProps, testQuery, testRenderError, testRender} = apolloContainerTests({
+    initialState,
     Container,
     componentName,
     childClassDataName,
-    initialState,
-    asyncParentProps
+    chainedParentPropsTask,
+    mapStateToProps,
   });
   test('testMapStateToProps', testMapStateToProps);
   test('testQuery', testQuery);

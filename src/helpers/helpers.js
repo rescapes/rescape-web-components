@@ -14,7 +14,7 @@ import makeSchema from 'schema/schema';
 import {
   makeApolloTestPropsTaskFunction, makeSampleInitialState,
   propsFromSampleStateAndContainer,
-  makeTestPropsFunction
+  makeTestPropsFunction, chainedParentPropsTask, samplePropsTaskMaker
 } from 'rescape-helpers-component';
 import {createSelectorResolvedSchema} from 'schema/selectorResolvers';
 import createInitialState from 'initialState';
@@ -22,7 +22,6 @@ import {promiseToTask, taskToPromise, reqPathThrowing} from 'rescape-ramda';
 import {of} from 'folktale/concurrency/task';
 import PropTypes from 'prop-types';
 import {v} from 'rescape-validate';
-import * as Either from 'data.either';
 
 /**
  *
@@ -61,17 +60,6 @@ export const apolloTestPropsTaskMaker = v((mapStateToProps, mapDispatchToProps, 
     ['queryInfo', PropTypes.shape().isRequired]
   ], 'apolloTestPropsTaskMaker');
 
-/**
- * Calls makeTestPropsFunction on a non Apollo container. This is a synchronous but wrapped in a
- * Task to match calls to apolloTestPropsTaskMaker
- * @param mapStateToProps
- * @param mapDispatchToProps
- * @return {Function} A 2 arity function called with state and props that results in a Task that
- * resolves the props
- */
-export const testPropsTaskMaker = (mapStateToProps, mapDispatchToProps) =>
-  // Wrap function result in a Task to match apolloTestPropsTaskMaker
-  (state, props) => of(Either.Right(makeTestPropsFunction(mapStateToProps, mapDispatchToProps)(state, props)));
 
 /**
  * Given a Task to fetch parent container props and a task to fetch the current container props,
@@ -80,25 +68,21 @@ export const testPropsTaskMaker = (mapStateToProps, mapDispatchToProps) =>
  * @param {Function} samplePropsTaskMaker 2 arity function expecting state and parent props.
  * Returns a Task from a container that expects a sample state and sampleOwnProps
  * and then applies the container's mapStateToProps, mapDispatchToProps, and optional mergeProps
- * @param parentComponentViews
- * @param viewName
+ * @param parentComponentViews A function expecting props that returns an object keyed by view names
+ * and valued by view props, where views are the child containers/components of the component
+ * @param viewName The viewName in the parent component of the target container
  * @returns {Task} A Task to asynchronously return the parentContainer props merged with sampleOwnProps
  * in an Either.Right. If anything goes wrong an Either.Left is returned
  */
-export const asyncParentPropsTask = v((parentContainerSamplePropsTask, samplePropsTaskMaker, parentComponentViews, viewName) =>
-    parentContainerSamplePropsTask.map(
-      // the parent props to the props of the desired view in an Either.Right
-      propsEither => propsEither.map(props => reqPathThrowing(['views', viewName], parentComponentViews(props)))
-    ).chain(parentContainerSamplePropsEither => parentContainerSamplePropsEither
-      // Chain the Either.Right value to a Task combine the parent props with the props maker
-        .chain(parentContainerSampleProps => samplePropsTaskMaker(sampleInitialState, parentContainerSampleProps))
+export const propsFromParentPropsTask = v((chainedParentPropsTask, samplePropsTaskMaker) =>
+    chainedParentPropsTask.chain(parentContainerSamplePropsEither =>
+      parentContainerSamplePropsEither.chain(parentContainerSampleProps =>
+        // Chain the Either.Right value to a Task combine the parent props with the props maker
+        samplePropsTaskMaker(sampleInitialState, parentContainerSampleProps))
     ).map(value => value),
   [
-    ['parentContainerSamplePropsTask', PropTypes.shape().isRequired],
+    ['chainedParentPropsTask', PropTypes.shape().isRequired],
     ['samplePropsTaskMaker', PropTypes.func.isRequired],
-    ['parentComponentViews', PropTypes.func.isRequired],
-    ['viewName', PropTypes.string.isRequired]
   ],
-  'asyncParentPropsTask');
-
+  'propsFromParentPropsTask');
 

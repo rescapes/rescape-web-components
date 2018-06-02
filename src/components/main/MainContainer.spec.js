@@ -1,14 +1,14 @@
-import {mapStateToProps} from './MainContainer';
-import {
-  apolloContainerTests, propsFromSampleStateAndContainer,
-  wrapWithMockGraphqlAndStore
-} from 'rescape-helpers-component';
+import {apolloContainerTests} from 'rescape-helpers-component';
 import MainContainer from './MainContainer';
 import {eMap} from 'rescape-helpers-component';
 import React from 'react';
 import {sampleInitialState} from 'helpers/helpers';
 import {c} from 'components/main/Main';
-import {chainedSamplePropsTask, sampleAsyncParentProps} from 'components/main/MainContainer.sample';
+import {chainedParentPropsTask} from './MainContainer.sample';
+import {mapStateToProps} from './MainContainer';
+import schema from 'schema/schema';
+import {queries} from './MainContainer';
+import * as R from 'ramda'
 
 // Test this container
 const [Container] = eMap([MainContainer]);
@@ -16,17 +16,26 @@ const [Container] = eMap([MainContainer]);
 const componentName = 'Main';
 // Find this class in the data renderer
 const childClassDataName = c.main;
+const childClassLoadingName = c.mainLoading;
+const childClassErrorName = c.mainError;
+const queryConfig = queries.allUserRegions;
 const initialState = sampleInitialState;
-const asyncParentProps = sampleAsyncParentProps;
+// Use this to make a query that errors
+const errorMaker = parentProps => R.set(R.lensPath(['user', 'id']), 'foo', parentProps);
 
 describe('MainContainer', () => {
   const {testMapStateToProps} = apolloContainerTests({
+    initialState,
+    schema,
     Container,
     componentName,
     childClassDataName,
-    chainedSamplePropsTask,
-    asyncParentProps,
-    initialState
+    childClassLoadingName,
+    childClassErrorName,
+    queryConfig,
+    chainedParentPropsTask,
+    mapStateToProps,
+    errorMaker
   });
   // No Apollo, just run one test
   test('testMapStateToProps', testMapStateToProps);

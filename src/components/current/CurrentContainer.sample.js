@@ -10,9 +10,10 @@
  */
 
 import {mapDispatchToProps, mapStateToProps} from 'components/current/CurrentContainer';
-import {asyncParentPropsTask, testPropsTaskMaker} from 'helpers/helpers';
+import {propsFromParentPropsTask} from 'helpers/helpers';
 import {chainedSamplePropsTask as parentContainerSamplePropsTask} from 'components/main/MainContainer.sample';
 import Parent, {c as parentC} from 'components/main/Main'
+import {parentPropsForContainerTask, testPropsTaskMaker} from 'rescape-helpers-component'
 
 /**
  * @file Links sample props from a Current component to a Region component
@@ -24,10 +25,11 @@ import Parent, {c as parentC} from 'components/main/Main'
 export const samplePropsTaskMaker = testPropsTaskMaker(mapStateToProps, mapDispatchToProps);
 
 /**
- * Sample chained props for a view of Current Container using Main as the parent
- * @param {String} viewName one of Region's views
- * @return {Task} A Task that resolves the parent container/component props and uses them to form this container's props
+ * Task returning sample parent props from all the way up the view hierarchy
  */
-export const chainedSamplePropsTask = asyncParentPropsTask(
-  parentContainerSamplePropsTask, samplePropsTaskMaker, Parent.views, parentC.mainCurrent
-)
+export const chainedParentPropsTask = parentPropsForContainerTask(parentContainerSamplePropsTask,  Parent.views, parentC.mainCurrent);
+
+/**
+ * Task returning sample props from all the way up the view hierarchy
+ */
+export const chainedSamplePropsTask = propsFromParentPropsTask(chainedParentPropsTask, samplePropsTaskMaker);

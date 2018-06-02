@@ -9,10 +9,11 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import {apolloTestPropsTaskMaker, asyncParentPropsTask} from 'helpers/helpers';
+import {apolloTestPropsTaskMaker, propsFromParentPropsTask} from 'helpers/helpers';
 import {mapStateToProps, mapDispatchToProps, queries} from './AppContainer';
 import {of} from 'folktale/concurrency/task';
-import Either from 'data.either'
+import {parentPropsForContainerTask} from 'rescape-helpers-component'
+import * as Either from 'data.either'
 
 /**
  * @file Links sample props from a Current component to a Region component
@@ -24,11 +25,11 @@ import Either from 'data.either'
 export const samplePropsTaskMaker = apolloTestPropsTaskMaker(mapStateToProps, mapDispatchToProps, queries.userRegions);
 
 /**
- * Since there is no parent, just supply {} for the parent and
+ * Task returning sample parent props from all the way up the view hierarchy
  */
-export const chainedSamplePropsTask = asyncParentPropsTask(
-  of(Either.Right({})),
-  samplePropsTaskMaker,
-  props => ({views: {generic: {}}}),
-  'generic'
-);
+export const chainedParentPropsTask = parentPropsForContainerTask(of(Either.Right({})), props => ({views: {generic: {}}}), 'generic')
+
+/**
+ * Task returning sample props from all the way up the view hierarchy
+ */
+export const chainedSamplePropsTask = propsFromParentPropsTask(chainedParentPropsTask, samplePropsTaskMaker);
