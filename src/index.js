@@ -28,7 +28,7 @@ store.dispatch(calculateResponsiveState(window));
 ReactDOM.render(
   BrowserRouter({basename: '/'},
     Provider({store},
-      ApolloProvider({client: createClient(store)},
+      ApolloProvider({client: createClient({store})},
         App()
       )
     )

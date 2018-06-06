@@ -15,10 +15,10 @@ import {
   propsForSansClass, renderErrorDefault, renderLoadingDefault
 } from 'rescape-helpers-component';
 import current from 'components/current';
-import {Component} from 'react'
-import PropTypes from 'prop-types'
+import {Component} from 'react';
+import PropTypes from 'prop-types';
 import {applyMatchingStyles, mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
-import Mapbox from 'components/map/mapbox/Mapbox';
+
 const [Div, Current] = eMap(['div', current]);
 
 export const c = nameLookup({
@@ -95,15 +95,15 @@ Main.views = composeViews(
 /**
  * Loading, Error, or Data based on the props
  */
-Mapbox.choicepoint = renderChoicepoint(
-  renderErrorDefault(c.mapboxError),
-  renderLoadingDefault(c.mapboxLoading),
-  Mapbox.renderData
+Main.choicepoint = renderChoicepoint(
+  renderErrorDefault(c.mainError),
+  renderLoadingDefault(c.mainLoading),
+  Main.renderData
 );
 
 Main.propTypes = {
   data: PropTypes.shape().isRequired,
   style: PropTypes.shape().isRequired
-}
+};
 
 export default Main;

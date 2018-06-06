@@ -6,9 +6,9 @@ import {sampleInitialState} from 'helpers/helpers';
 import {c} from 'components/main/Main';
 import {chainedParentPropsTask} from './MainContainer.sample';
 import {mapStateToProps} from './MainContainer';
-import schema from 'schema/schema';
+import makeSchema from 'schema/schema';
 import {queries} from './MainContainer';
-import * as R from 'ramda'
+import * as R from 'ramda';
 
 // Test this container
 const [Container] = eMap([MainContainer]);
@@ -22,6 +22,7 @@ const queryConfig = queries.allUserRegions;
 const initialState = sampleInitialState;
 // Use this to make a query that errors
 const errorMaker = parentProps => R.set(R.lensPath(['user', 'id']), 'foo', parentProps);
+const schema = makeSchema();
 
 describe('MainContainer', () => {
   const {testMapStateToProps} = apolloContainerTests({
