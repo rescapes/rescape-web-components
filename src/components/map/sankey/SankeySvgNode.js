@@ -31,6 +31,7 @@ export default ({node, shape, text, title}) => {
     Text(R.omit(['children'], text),
       // Split text by new line, adding index * 1.2em to the dy each line
       R.addIndex(R.map)((segment, index) => TSpan({
+        key: index.toString(),
         x: text.x,
         dy: styleArithmetic(R.add, index * 1.2, text.dy)
       }, segment), R.split('\n', text.children))

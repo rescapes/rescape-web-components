@@ -18,11 +18,11 @@ import {
   applyMatchingStyles, mergeAndApplyMatchingStyles
 } from 'selectors/styleSelectors';
 import {Component} from 'react';
-import {Flex as flex, Checkbox as checkbox, Group as group} from 'rebass';
-import {Grid as grid} from 'components/atoms';
+import {Flex, Checkbox, Group} from 'rebass';
+import {Grid} from 'components/atoms';
 import {reqStrPathThrowing} from 'rescape-ramda';
 
-const [Div, Flex, Checkbox, Group, Grid] = eMap(['div', flex, checkbox, group, grid]);
+const [Div, flex, checkbox, group, grid] = eMap(['div', Flex, Checkbox, Group, Grid]);
 
 export const c = nameLookup({
   sankeyFilterer: true,
@@ -59,14 +59,14 @@ SankeyFilterer.renderData = ({views}) => {
   const sankeyLinkLegendTextProps = itemizeProps(props(c.sankeyFiltererText));
   return Div(props(c.sankeyFiltererBox), [
     Div(props(c.sankeyFiltererTitle)),
-    Flex(sankeyLinkLegendItemsProps,
+    flex(sankeyLinkLegendItemsProps,
       R.map(
         d => {
           return SankeyFiltererItem({
             [c.sankeyFiltererItem]: sankeyLinkLegendItemProps(d),
             [c.sankeyFiltererCheckbox]: sankeyLinkLegendCheckboxProps(d),
             [c.sankeyFiltererText]: sankeyLinkLegendTextProps(d)
-          })
+          });
         },
         items
       )
@@ -76,10 +76,19 @@ SankeyFilterer.renderData = ({views}) => {
 
 const SankeyFiltererItem = (views) => {
   const props = R.prop(R.__, views);
-  const checkboxProps = props(c.sankeyFiltererCheckbox)
-  return Group(props(c.sankeyFiltererItem), [
-    Checkbox(R.merge(checkboxProps, {onChange: e => checkboxProps.onSankeyFilterChange(e.target.name, R.equals('on', e.target.value))})),
-    Grid(props(c.sankeyFiltererText))
+  const checkboxProps = props(c.sankeyFiltererCheckbox);
+  return group(props(c.sankeyFiltererItem), [
+    checkbox(
+      R.merge(
+        R.omit(['onSankeyFilterChange'], checkboxProps),
+        {
+          onChange: e => {
+            return checkboxProps.onSankeyFilterChange(e.target.name, R.equals('on', e.target.value))
+          }
+        }
+      )
+    ),
+    grid(props(c.sankeyFiltererText))
   ]);
 };
 
@@ -87,7 +96,7 @@ SankeyFilterer.viewStyles = ({style}) => {
   return {
     [c.sankeyFilterer]: mergeAndApplyMatchingStyles(style, {
       paddingTop: 4,
-      paddingBottom: 4,
+      paddingBottom: 4
     }),
 
     [c.sankeyFiltererBox]: {
@@ -133,6 +142,7 @@ SankeyFilterer.viewProps = props => {
   return {
     [c.sankeyFilterer]: {},
     [c.sankeyFiltererTitle]: {
+      key: c.sankeyFiltererTitle,
       children: 'Filter by Material',
       fontSize: '12px',
       fontFamily: 'sans-serif',
@@ -140,6 +150,7 @@ SankeyFilterer.viewProps = props => {
     },
     [c.sankeyFiltererBox]: {},
     [c.sankeyFiltererItems]: {
+      key: c.sankeyFiltererItems,
       items: reqStrPathThrowing('items', props)
     },
     [c.sankeyFiltererItem]: {
@@ -147,10 +158,12 @@ SankeyFilterer.viewProps = props => {
       key: R.always(reqStrPathThrowing('material'))
     },
     [c.sankeyFiltererCheckbox]: {
+      key: c.sankeyFiltererCheckbox,
       defaultChecked: true,
       name: R.always(d => reqStrPathThrowing('material', d))
     },
     [c.sankeyFiltererText]: {
+      key: c.sankeyFiltererText,
       children: R.always(d => reqStrPathThrowing('material', d))
     }
   };

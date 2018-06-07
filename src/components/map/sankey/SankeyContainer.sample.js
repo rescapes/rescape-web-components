@@ -16,17 +16,20 @@ import Parent, {c as parentC} from 'components/region/Region';
 import {parentPropsForContainerTask} from 'rescape-helpers-component'
 
 /**
- * Returns a function that expects state and parentProps for testing and returns a Task that resolves the
- * properties the properties in an Either.Right or if there's an error gives an Either.Left
+ * Returns a function that expects state and parentProps for testing and returns a Task that run the parentProps
+ * through the container's mapStateToProps, mapDispatchToProps, and apollo query.
  */
 export const samplePropsTaskMaker = apolloTestPropsTaskMaker(mapStateToProps, mapDispatchToProps, queries.geojson);
 
 /**
- * Task returning sample parent props from all the way up the view hierarchy
+ * Task returning sample parent props from all the way up the view hierarchy. These are the props to give
+ * to this container's mapStateToProps
  */
 export const chainedParentPropsTask = parentPropsForContainerTask(parentContainerSamplePropsTask, Parent.views, parentC.regionSankey)
 
 /**
- * Task returning sample props from all the way up the view hierarchy
+ * Task returning sample props from all the way up the view hierarchy. These are the props to
+ * produced by this Container given a hierarchy of Containers/Components producing props above it.
+ * These are props to give to this Component
  */
 export const chainedSamplePropsTask = propsFromParentPropsTask(chainedParentPropsTask, samplePropsTaskMaker);

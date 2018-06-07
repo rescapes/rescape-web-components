@@ -127,14 +127,20 @@ SankeyNodeLegend.viewStyles = ({style}) => {
 
 SankeyNodeLegend.viewProps = props => {
   return {
-    [c.sankeyNodeLegend]: {},
+    [c.sankeyNodeLegend]: {
+      key: c.sankeyNodeLegend
+    },
     [c.sankeyNodeLegendTitle]: {
+      key: c.sankeyNodeLegendTitle,
       children: 'Stages',
       fontSize: '12px',
       fontWeight: 'bold'
     },
-    [c.sankeyNodeLegendBox]: {},
+    [c.sankeyNodeLegendBox]: {
+      key: c.sankeyNodeLegendBox
+    },
     [c.sankeyNodeLegendItems]: {
+      key: c.sankeyNodeLegendItems,
       items: reqStrPathThrowing('items', props)
     },
     [c.sankeyNodeLegendItem]: R.always(d => keyWithDatum('key', d, {

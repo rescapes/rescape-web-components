@@ -17,6 +17,12 @@ import {eMap} from 'rescape-helpers-component';
 
 const [Path] = eMap(['path']);
 
-export default props => {
+/**
+ * A Sankey Svg Link is simply an SVG path
+ * @param key
+ * @param props
+ * @return {*}
+ */
+export default (props) => {
   return Path(props);
 };

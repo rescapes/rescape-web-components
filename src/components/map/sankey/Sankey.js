@@ -25,7 +25,7 @@ import {
 import PropTypes from 'prop-types';
 import {sankeyLinkHorizontal} from 'rescape-geospatial-sankey';
 import {format as d3Format} from 'd3-format';
-import {scaleOrdinal} from 'd3-scale'
+import {scaleOrdinal} from 'd3-scale';
 import {schemeCategory10} from 'd3-scale-chromatic';
 import {resolveSvgReact} from 'rescape-helpers-component';
 import {Flex as flex} from 'rebass';
@@ -59,6 +59,7 @@ const styles = {
 
 export const c = nameLookup({
   sankey: true,
+  sankeyReactMapGlOuter: true,
   sankeyReactMapGl: true,
   sankeyReactMapGlNavigationOuter: true,
   sankeyReactMapGlNavigation: true,
@@ -101,49 +102,51 @@ Sankey.renderData = ({views}) => {
   const nodeTitleProps = itemizeProps(props(c.sankeySvgNodeTitle));
 
   return [
-    ReactMapGl(propsSansClass(c.sankeyReactMapGl),
-      Div(props(c.sankeyReactMapGlNavigationOuter), NavigationControl(propsSansClass(c.sankeyReactMapGlNavigation))),
-      SVGOverlay(
-        R.merge(
-          props(c.sankeySvgOverlay),
-          {
-            // The redraw property of SVGOverlay
-            redraw: opt => {
-              // Update props that are dependent on the opt.project method
-              const {views: projectedViews} = Sankey.viewPropsAtRender({views, opt});
-              const projectedProps = propsFor(projectedViews);
+    Div(props(c.sankeyReactMapGlOuter),
+      ReactMapGl(propsSansClass(c.sankeyReactMapGl),
+        Div(props(c.sankeyReactMapGlNavigationOuter), NavigationControl(propsSansClass(c.sankeyReactMapGlNavigation))),
+        SVGOverlay(
+          R.merge(
+            props(c.sankeySvgOverlay),
+            {
+              // The redraw property of SVGOverlay
+              redraw: opt => {
+                // Update props that are dependent on the opt.project method
+                const {views: projectedViews} = Sankey.viewPropsAtRender({views, opt});
+                const projectedProps = propsFor(projectedViews);
 
-              // Separate out our links and nodes, which are for iterating, from the container props
-              const {links, ...linksProps} = projectedProps(c.sankeySvgLinks);
-              const {nodes, ...nodesProps} = projectedProps(c.sankeySvgNodes);
+                // Separate out our links and nodes, which are for iterating, from the container props
+                const {links, ...linksProps} = projectedProps(c.sankeySvgLinks);
+                const {nodes, ...nodesProps} = projectedProps(c.sankeySvgNodes);
 
-              // These run per item (per node or link) and need access to the opt in order to project the points
-              const itemizeProjectedProps = R.compose(itemizeProps, projectedProps);
-              const nodeShapeProps = itemizeProjectedProps(c.sankeySvgNodeShape);
-              const nodeTextProps = itemizeProjectedProps(c.sankeySvgNodeText);
-              const linkProps = itemizeProjectedProps(c.sankeySvgLink);
+                // These run per item (per node or link) and need access to the opt in order to project the points
+                const itemizeProjectedProps = R.compose(itemizeProps, projectedProps);
+                const nodeShapeProps = itemizeProjectedProps(c.sankeySvgNodeShape);
+                const nodeTextProps = itemizeProjectedProps(c.sankeySvgNodeText);
+                const linkProps = itemizeProjectedProps(c.sankeySvgLink);
 
-              return [
-                G(linksProps,
-                  R.map(
-                    d => SankeySvgLink(linkProps(d)),
-                    links
+                return [
+                  G(linksProps,
+                    R.map(
+                      d => SankeySvgLink(linkProps(d)),
+                      links
+                    )
+                  ),
+                  G(nodesProps,
+                    R.map(
+                      d => SankeySvgNode({
+                        node: nodeProps(d),
+                        shape: nodeShapeProps(d),
+                        text: nodeTextProps(d),
+                        title: nodeTitleProps(d)
+                      }),
+                      nodes
+                    )
                   )
-                ),
-                G(nodesProps,
-                  R.map(
-                    d => SankeySvgNode({
-                      node: nodeProps(d),
-                      shape: nodeShapeProps(d),
-                      text: nodeTextProps(d),
-                      title: nodeTitleProps(d)
-                    }),
-                    nodes
-                  )
-                )
-              ];
+                ];
+              }
             }
-          }
+          )
         )
       )
     ),
@@ -162,7 +165,8 @@ Sankey.viewStyles = ({style}) => {
       position: 'relative'
     }),
 
-    [c.sankeyReactMapGl]: applyMatchingStyles(style, {}),
+    [c.sankeyReactMapGl]: applyMatchingStyles(style, {
+    }),
 
     [c.sankeyReactMapGlNavigationOuter]: applyMatchingStyles(style, {
       position: 'absolute',
@@ -203,11 +207,12 @@ Sankey.viewStyles = ({style}) => {
 };
 
 
-
 Sankey.viewProps = props => {
   // Rely on the width and height calculated in viewStyles
+  // These are needed for sankeySvgOverlay's viewbox
   const width = reqStrPathThrowing(`views.${c.sankey}.style.width`, props);
   const height = reqStrPathThrowing(`views.${c.sankey}.style.height`, props);
+
   const zoom = R.defaultTo(0, strPath('data.viewport.zoom', props));
 
   const sankey = strPath('data.store.region.geojson.sankey', props);
@@ -220,7 +225,7 @@ Sankey.viewProps = props => {
       R.prop('isVisible')
     ),
     reqStrPathThrowing('nodes', graph)
-  ): [];
+  ) : [];
   const nodeByIndex = R.indexBy(R.prop('index'), nodes);
   const {stages, stageKey, valueKey, links} = sankey ?
     {
@@ -250,9 +255,13 @@ Sankey.viewProps = props => {
         links
       }
     },
+    [c.sankeyReactMapGlOuter]: {
+      key: c.sankeyReactMapGl
+    },
     [c.sankeyReactMapGl]: R.mergeAll([
       {
         key: c.sankeyReactMapGl,
+        // Width and height are required by Mapbox
         width,
         height
       },
@@ -283,7 +292,7 @@ Sankey.viewProps = props => {
 
     // Container of legends
     [c.sankeyLegends]: {
-      key: c.sankeyLegends,
+      key: c.sankeyLegends
     },
 
     // Node legend
@@ -297,7 +306,10 @@ Sankey.viewProps = props => {
     // Link Legend
     [c.sankeyLegendLink]: {
       key: c.sankeyLegendLink,
-      items: R.map(linkStage => R.merge(linkStage, {key: linkStage.name, color: color(linkStage.target.name)}), makeLinkStages(stages)),
+      items: R.map(linkStage => R.merge(linkStage, {
+        key: linkStage.name,
+        color: color(linkStage.target.name)
+      }), makeLinkStages(stages)),
       // Pass on Apollo status indicator
       data: props.data
     },
@@ -317,29 +329,28 @@ Sankey.viewProps = props => {
     },
 
     // Node for each datum
-    [c.sankeySvgNode]: R.always(d => keyWithDatum('index', d, {
+    [c.sankeySvgNode]: R.always(d => keyWithDatum('index', d, {})),
 
-    })),
-
+    // TODO SvgNodeText, SvgNodeTitle and SvgNodeShape should be moved to SankeyNode
     // Node text for each datum
-    [c.sankeySvgNodeText]: R.always(d => keyWithDatum('index', d, {
+    [c.sankeySvgNodeText]: R.always(d => ({
       // Only display at a high zoom level
-      display: R.always(zoom < 10 ? 'none' : 'inline')
+      display: R.always(zoom < 10 ? 'none' : 'inline'),
+      // The key needs to be specific to this element so it doesn't clash with the node shape key
+      key: `${c.sankeySvgNodeText}_${d.index}`
     })),
 
     // Node title for each datum
-    [c.sankeySvgNodeTitle]: R.always(d => keyWithDatum('index', d, {
-    })),
+    [c.sankeySvgNodeTitle]: R.always(d => keyWithDatum('index', d, {})),
 
     // Node shape for each dataum
-    [c.sankeySvgNodeShape]: R.always(d => keyWithDatum('index', d, {
-
+    [c.sankeySvgNodeShape]: R.always(d => ({
+      // The key needs to be specific to this element so it doesn't clash with the text key
+      key: `${c.sankeySvgNodeShape}_${d.index}`
     })),
 
     // Link for each datum
-    [c.sankeySvgLink]: R.always(d => keyWithDatum('index', d, {
-
-    })),
+    [c.sankeySvgLink]: R.always(d => keyWithDatum('index', d, {}))
   };
 };
 
@@ -382,25 +393,25 @@ Sankey.viewPropsAtRender = ({views, opt}) => {
     // Make this whole thing a function that ignores props and expects the datum, since we combine
     // properties of the datum to make new properties (e.g. x0 and x1 to make x)
     [c.sankeySvgNodeText]: R.always(d => ({
-        x: R.ifElse(
-          // Position text based on the condition
-          nodeTextCond,
-          d => R.add(d.x1, 6),
-          d => R.subtract(d.x0, 6)
-        )(d),
-        y: R.divide(R.add(d.y1, d.y0), 2),
-        dy: '0.35em',
-        // Anchor text based on the condition
-        textAnchor: R.ifElse(
-          nodeTextCond,
-          R.always('start'),
-          R.always('end')
-        )(d),
-        children: resolveNodeName(d),
-        height: R.subtract(d.y1, d.y0),
-        width: R.subtract(d.x1, d.x0),
-        fill: color(resolveNodeStage(d)),
-        stroke: '#000'
+      x: R.ifElse(
+        // Position text based on the condition
+        nodeTextCond,
+        d => R.add(d.x1, 6),
+        d => R.subtract(d.x0, 6)
+      )(d),
+      y: R.divide(R.add(d.y1, d.y0), 2),
+      dy: '0.35em',
+      // Anchor text based on the condition
+      textAnchor: R.ifElse(
+        nodeTextCond,
+        R.always('start'),
+        R.always('end')
+      )(d),
+      children: resolveNodeName(d),
+      height: R.subtract(d.y1, d.y0),
+      width: R.subtract(d.x1, d.x0),
+      fill: color(resolveNodeStage(d)),
+      stroke: '#000'
     })),
 
     [c.sankeySvgLink]: {
@@ -428,7 +439,6 @@ Sankey.viewActions = () => {
     [c.sankeyFilterer]: ['onSankeyFilterChange']
   };
 };
-
 
 
 /**

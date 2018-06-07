@@ -5210,7 +5210,7 @@ from2@^2.1.0:
     inherits "^2.0.1"
     readable-stream "^2.0.0"
 
-fs-extra@6.0.1:
+fs-extra@6.0.1, fs-extra@^6.0.1:
   version "6.0.1"
   resolved "https://registry.yarnpkg.com/fs-extra/-/fs-extra-6.0.1.tgz#8abc128f7946e310135ddc93b98bddb410e7a34b"
   dependencies:
@@ -9535,8 +9535,8 @@ rescape-geospatial-sankey@^0.7.1:
     d3-shape "^1.2.0"
 
 rescape-helpers-component@^1.5.13:
-  version "1.5.13"
-  resolved "https://registry.yarnpkg.com/rescape-helpers-component/-/rescape-helpers-component-1.5.13.tgz#5b4a52310c3d01f460ef10db52c70b0f373d72fd"
+  version "1.5.18"
+  resolved "https://registry.yarnpkg.com/rescape-helpers-component/-/rescape-helpers-component-1.5.18.tgz#11df9b2b093d58b8f1a8aed5475c57f3e09ed287"
   dependencies:
     apollo-client "^2.3.2"
     apollo-client-preset "^1.0.8"
@@ -9604,17 +9604,18 @@ rescape-ramda@^1.4.38:
     ramda-maybe "^0.18.0"
     util "^0.10.3"
 
-rescape-ramda@^1.4.40:
-  version "1.4.40"
-  resolved "https://registry.yarnpkg.com/rescape-ramda/-/rescape-ramda-1.4.40.tgz#97313a40e2e5b890c8b0bf9fdcef866b91f25e34"
+rescape-ramda@^1.4.40, rescape-ramda@^1.4.43:
+  version "1.4.43"
+  resolved "https://registry.yarnpkg.com/rescape-ramda/-/rescape-ramda-1.4.43.tgz#d0a7fd3babdbeca2761dd0f4b4e7165e994adaf4"
   dependencies:
+    data.either "^1.5.1"
     data.maybe "^1.2.2"
     folktale "^2.1.0"
-    fs-extra "^5.0.0"
+    fs-extra "^6.0.1"
     ramda "^0.25.0"
     ramda-fantasy "^0.8.0"
     ramda-maybe "^0.18.0"
-    util "^0.10.3"
+    util "^0.10.4"
 
 rescape-sample-data@^1.2.18:
   version "1.2.18"
@@ -11063,13 +11064,13 @@ util.promisify@1.0.0, util.promisify@^1.0.0:
     define-properties "^1.1.2"
     object.getownpropertydescriptors "^2.0.3"
 
-util@0.10.3, util@^0.10.3:
+util@0.10.3:
   version "0.10.3"
   resolved "https://registry.yarnpkg.com/util/-/util-0.10.3.tgz#7afb1afe50805246489e3db7fe0ed379336ac0f9"
   dependencies:
     inherits "2.0.1"
 
-util@^0.10.4:
+util@^0.10.3, util@^0.10.4:
   version "0.10.4"
   resolved "https://registry.yarnpkg.com/util/-/util-0.10.4.tgz#3aa0125bfe668a4672de58857d3ace27ecb76901"
   dependencies:

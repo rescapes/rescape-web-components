@@ -36,7 +36,6 @@ export const mapStateToProps = (state, props) => {
       mapboxSelector
     ],
     (userAndSettings, defaultStyle, {viewport, ...mapbox}) => {
-
       return {
         data: R.mergeAll([
           userAndSettings,
@@ -58,8 +57,9 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
   return bindActionCreators({
     // react-map-gl renamed this, redux-map-gl did not
     // add the region to the payload so the reducer knows what region we are
-    onViewportChange: mapState => {
-      // Debounce to reduce actions
+    onViewportChange: newViewport => {
+      // Debounce to reduce actions. Debounce works by adding a meta: {debounce ...} to to the event arguments,
+      // which will be interpreted by redux-debounced middleware
       return R.set(
         R.lensProp('meta'),
         {
@@ -69,7 +69,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
           }
         },
         onChangeViewport(
-          R.set(R.lensProp('region'), reqStrPathThrowing('region', ownProps), mapState)
+          R.set(R.lensProp('region'), reqStrPathThrowing('region', ownProps), newViewport)
         )
       );
     }

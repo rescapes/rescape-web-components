@@ -14,8 +14,8 @@ import {createSelector} from 'reselect';
 import * as R from 'ramda';
 import {mapboxSettingsSelector} from 'selectors/settingsSelectors';
 import {fromImmutable} from 'rescape-helpers';
-import {v} from 'rescape-validate'
-import PropTypes from 'prop-types'
+import {v} from 'rescape-validate';
+import PropTypes from 'prop-types';
 
 /**
  * @typedef {Object} Viewport The Mapbox viewport
@@ -34,27 +34,30 @@ import PropTypes from 'prop-types'
  * @return {Mapbox} A complete Mapbox object
  */
 export const mapboxSelector = v((state, {region}) => {
-  const mapbox = reqStrPathThrowing('mapbox', region)
+  const mapbox = reqStrPathThrowing('mapbox', region);
   return createSelector(
     [
       mapboxSettingsSelector,
       () => viewportSelector(state, {mapbox})
     ],
-    (mapboxSettings, viewport) => R.merge(
-      // state.settings.mapbox is lowest priority, it might be overriden with region.mapbox.settings
-      R.defaultTo({}, mapboxSettings),
-      // Set the viewport with the results of the viewportSelector, which merges viewport settings and resolves an immutable
-      R.set(
-        R.lensProp('viewport'),
-        viewport,
-        mapbox)
-      )
+    (mapboxSettings, viewport) => {
+      console.log(JSON.stringify(viewport));
+      return R.merge(
+        // state.settings.mapbox is lowest priority, it might be overriden with region.mapbox.settings
+        R.defaultTo({}, mapboxSettings),
+        // Set the viewport with the results of the viewportSelector, which merges viewport settings and resolves an immutable
+        R.set(
+          R.lensProp('viewport'),
+          viewport,
+          mapbox)
+      );
+    }
   )(state, {region});
 }, [
   ['state', PropTypes.shape().isRequired],
   ['props', PropTypes.shape({
-    region: PropTypes.shape()
-  }).isRequired],
+    region: PropTypes.shape().isRequired
+  }).isRequired]
 ], 'mapboxSelector');
 
 /**
@@ -64,7 +67,7 @@ export const mapboxSelector = v((state, {region}) => {
  * @returns {Object} The selector function expecting state and props
  */
 export const viewportSelector = v((state, {mapbox}) => {
-  const viewport = reqStrPathThrowing('viewport', mapbox)
+  const viewport = reqStrPathThrowing('viewport', mapbox);
   return createSelector(
     [mapboxSettingsSelector],
     // Viewport is stored as an immutable, since react-map-gl's createViewportReducer expects it
@@ -88,6 +91,6 @@ export const viewportSelector = v((state, {mapbox}) => {
   ['state', PropTypes.shape().isRequired],
   ['props', PropTypes.shape({
     mapbox: PropTypes.shape()
-  }).isRequired],
+  }).isRequired]
 ], 'viewportSelector');
 

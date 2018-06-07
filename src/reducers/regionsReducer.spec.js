@@ -9,7 +9,7 @@ import * as R from 'ramda';
 const sampleConfig = createSampleConfig();
 
 describe('mabpox reducer', () => {
-  it('should return the initial state', () => {
+  test('should return the initial state', () => {
     const state = createInitialState(sampleConfig);
     expect(
       Map(reducer(
@@ -18,7 +18,7 @@ describe('mabpox reducer', () => {
       ).toJS()
     ).toMatchSnapshot();
   });
-  it('should update the current region', () => {
+  test('should update the current region', () => {
     const state = createInitialState(sampleConfig);
     expect(
       reducer(
@@ -38,7 +38,7 @@ describe('mabpox reducer', () => {
   });
   // This is really internal to redux-map-gl's reducer, but good to have here to document what
   // it does
-  it('should handle CHANGE_VIEWPORT', () => {
+  test('should handle CHANGE_VIEWPORT', () => {
     const state = initialState(sampleConfig);
     const region = R.head(R.values(state.regions))
     const regionId = region.id
