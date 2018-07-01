@@ -149,12 +149,21 @@ const geojsonQuery = `
     }
 `;
 
+/**
+ * Mutates the selected filterNodeCategories by passing the category and value that have changed
+ * @type {string}
+ */
 const filterSankeyNodesMutation = `
     mutation filterSankeyNodes($filterNodeCategory: String!, $filterNodeValue: Boolean!) {
         filterSankeyNodes(filterNodeCategory: $filterNodeCategory, filterNodeValue: $filterNodeValue) {
           material
         }
     }
+`;
+
+const onViewportChangeMutation = `
+  mutation onViewportChange() {
+  }
 `;
 
 /**

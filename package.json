@@ -116,6 +116,7 @@
     "redux-mock-store": "^1.5.1",
     "redux-responsive": "^4.3.7",
     "redux-thunk": "^2.3.0",
+    "rescape-apollo": "^0.0.10",
     "rescape-cycle": "^1.6.3",
     "rescape-geospatial-sankey": "^0.7.1",
     "rescape-helpers": "^1.1.33",

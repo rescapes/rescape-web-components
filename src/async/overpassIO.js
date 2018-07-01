@@ -10,7 +10,7 @@
  */
 
 import queryOverpass from 'query-overpass';
-import Task from 'data.task';
+import {of} from 'folktale/concurrency/task';
 import * as R from 'ramda';
 import {mergeAllWithKey, removeDuplicateObjectsByProp} from 'rescape-ramda';
 import os from 'os';
@@ -56,15 +56,15 @@ export const fetchTransit = R.curry((options, bounds) => {
     `;
 
     // Wrap overpass helper's execution and callback in a Task
-    return new Task(function (reject, resolve) {
+    return task(resolver => {
         // Possibly delay each call to query_overpass to avoid request rate threshold
         // Since we are executing calls sequentially, this will pause sleepBetweenCalls before each call
         setTimeout(() =>
             queryOverpass(query(boundsAsString), (error, data) => {
                 if (!error) {
-                    resolve(data);
+                    resolver.resolve(data);
                 } else {
-                    reject(error);
+                    resolver.reject(error);
                 }
             }, options),
             options.sleepBetweenCalls || 0);
@@ -110,7 +110,7 @@ const fetchTransitCelled = ({cellSize, sleepBetweenCalls, testBounds}, bounds) =
     // sequenced :: Task (Array Object)
     // const sequenced = R.sequence(Task.of, fetchTasks);
     return chainedTasks.chain(results =>
-        Task.of(
+        of(
             R.pipe(
                 mergeAllWithKey(concatFeatures), // combine the results into one obj with concatinated features
                 R.over( // remove features with the same id

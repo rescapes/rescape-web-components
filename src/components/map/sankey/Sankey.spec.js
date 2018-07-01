@@ -1,14 +1,16 @@
-import mapGL from 'react-map-gl';
 import sankey from './Sankey';
-import {shallow} from 'enzyme';
+import {mount} from 'enzyme';
 import {chainedSamplePropsTask} from './SankeyContainer.sample';
 import {propsFromSampleStateAndContainer} from 'rescape-helpers-component';
-import {defaultRunToEitherConfig} from 'rescape-ramda';
+import {defaultRunConfig, defaultRunToEitherConfig} from 'rescape-ramda';
+import {fromPromised, task} from 'folktale/concurrency/task';
+import {createWaitForElement} from 'enzyme-wait';
+import reactMapGl from 'react-map-gl';
 
 import {eMap} from 'rescape-helpers-component';
-import {sampleInitialState} from 'helpers/helpers';
+import {c} from 'components/map/sankey/Sankey';
 
-const [MapGL, Sankey] = eMap([mapGL, sankey]);
+const [Sankey] = eMap([sankey]);
 
 describe('Sankey', () => {
   test('Can mount', (done) => {
@@ -28,7 +30,7 @@ describe('Sankey', () => {
   test('Can update viewport', (done) => {
     chainedSamplePropsTask.chain(containerPropsEither => containerPropsEither.map(
       containerProps => {
-        const wrapper = shallow(
+        const wrapper = mount(
           Sankey(containerProps)
         );
         // Change the viewport
@@ -43,18 +45,23 @@ describe('Sankey', () => {
           minPitch: 0,
           minZoom: 0,
           pitch: 0,
-          transitionDuration: 0,
-          transitionInterpolator: {propNames: Array(5)},
-          transitionInterruption: 1,
           width: 1408,
           zoom: 7
         });
-      }
-    )).
-    run().listen(
-      defaultRunToEitherConfig({
-        onResolved: containerProps => {
 
+        // Wait for onViewportChange action to propogate
+        return task(resolver =>
+          setTimeout(() => {
+            resolver.resolve(wrapper.find(reactMapGl));
+          }, 1000)
+        );
+      }
+      // This means return the resulting Right value, which in our case is the task we created
+      ).get()
+    ).run().listen(
+      defaultRunConfig({
+        onResolved: wrapper => {
+          expect(wrapper.props().latitude).toEqual(50.598474100413014);
           done();
         }
       })

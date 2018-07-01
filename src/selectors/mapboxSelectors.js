@@ -41,7 +41,6 @@ export const mapboxSelector = v((state, {region}) => {
       () => viewportSelector(state, {mapbox})
     ],
     (mapboxSettings, viewport) => {
-      console.log(JSON.stringify(viewport));
       return R.merge(
         // state.settings.mapbox is lowest priority, it might be overriden with region.mapbox.settings
         R.defaultTo({}, mapboxSettings),
@@ -68,6 +67,8 @@ export const mapboxSelector = v((state, {region}) => {
  */
 export const viewportSelector = v((state, {mapbox}) => {
   const viewport = reqStrPathThrowing('viewport', mapbox);
+  console.log(viewport.latitude);
+  console.log(reqPathThrowing(['regions', 'belgium', 'mapbox', 'viewport'], state).toJS().latitude)
   return createSelector(
     [mapboxSettingsSelector],
     // Viewport is stored as an immutable, since react-map-gl's createViewportReducer expects it
@@ -76,15 +77,13 @@ export const viewportSelector = v((state, {mapbox}) => {
       // state.mapbox.settings gets lowest priority
       R.defaultTo({}, mapboxSettings.viewport),
       // Get mutable form from mapbox
-      fromImmutable(viewport)
+      fromImmutable(viewport),
       // Temporarily merge the updated viewport from the state, since we are updating it via redux
       // Should not be needed, refetch in the container should update regions.[id].mapbox.viewport
       // to the reduced version
-      /*
       fromImmutable(
-          reqPathThrowing(['regions', region.id, 'mapbox', 'viewport'], state)
+          reqPathThrowing(['regions', 'belgium', 'mapbox', 'viewport'], state)
       )
-      */
     ])
   )(state, {mapbox});
 }, [

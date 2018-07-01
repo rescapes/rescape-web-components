@@ -165,14 +165,14 @@ Sankey.viewStyles = ({style}) => {
       position: 'relative'
     }),
 
-    [c.sankeyReactMapGl]: applyMatchingStyles(style, {
-    }),
-
     [c.sankeyReactMapGlNavigationOuter]: applyMatchingStyles(style, {
       position: 'absolute',
       right: 0,
       padding: '5px',
       height: '100px'
+    }),
+
+    [c.sankeyReactMapGl]: applyMatchingStyles(style, {
     }),
 
     [c.sankeySvgOverlay]: applyMatchingStyles(style, {}),
@@ -255,8 +255,9 @@ Sankey.viewProps = props => {
         links
       }
     },
+    // This element currently only exists so we have something with a className to look for whilst testing
     [c.sankeyReactMapGlOuter]: {
-      key: c.sankeyReactMapGl
+      key: c.sankeyReactMapGlOuter
     },
     [c.sankeyReactMapGl]: R.mergeAll([
       {

@@ -1,7 +1,7 @@
 import reducer from './regionsReducer';
 //import {actions} from './geojsonReducer'
 import {Map} from 'immutable';
-import {createSampleConfig} from 'rescape-sample-data'
+import {createSampleConfig} from 'rescape-sample-data';
 import createInitialState from 'initialState';
 import {reqPathThrowing} from 'rescape-ramda';
 import * as R from 'ramda';
@@ -39,9 +39,9 @@ describe('mabpox reducer', () => {
   // This is really internal to redux-map-gl's reducer, but good to have here to document what
   // it does
   test('should handle CHANGE_VIEWPORT', () => {
-    const state = initialState(sampleConfig);
-    const region = R.head(R.values(state.regions))
-    const regionId = region.id
+    const state = createInitialState(sampleConfig);
+    const region = R.head(R.values(state.regions));
+    const regionId = region.id;
     const viewport = {
       bearing: 0,
       isDragging: false,
@@ -50,23 +50,21 @@ describe('mabpox reducer', () => {
       pitch: 40,
       startDragLngLat: null,
       zoom: 4,
+      // The region has to be reference in the viewport so we know how to resolve it, since there are multiple regions
       region
     };
-    expect(
-      reqPathThrowing(
-        [regionId, 'mapbox', 'viewport'],
-        reducer(
-          state.regions,
-          {
-            type: 'map/CHANGE_VIEWPORT',
-            payload: {
-              mapState: viewport
-            }
-          })
-      ).toJS()
-    ).toEqual(
-      viewport
-    );
+    const reductionViewport = reqPathThrowing(
+      [regionId, 'mapbox', 'viewport'],
+      reducer(
+        state.regions,
+        {
+          type: 'map/CHANGE_VIEWPORT',
+          payload: {
+            mapState: viewport
+          }
+        })
+    ).toJS();
+    expect(R.omit(['region'], reductionViewport)).toEqual(R.omit(['region'], viewport));
   });
 });
 
