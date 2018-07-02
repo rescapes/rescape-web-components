@@ -1,6 +1,9 @@
 export default {
   // Settings is merged into the overall application state
   settings: {
+    api: {
+      url: 'http://localhost:7000/api/graphql'
+    },
     // Graphcool configuration. This probably belongs in a graphcool config
     graphcool: {
       userId: 'graphcool-user-id',

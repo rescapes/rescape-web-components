@@ -18,20 +18,19 @@ import {
 import {authClientOrLoginTask} from 'rescape-apollo';
 import {defaultLocationCategorizationConfig} from './resource.sample';
 import {testAuthorization} from 'rescape-apollo';
-import {defaultRunConfig} from 'rescape-ramda'
+import {defaultRunConfig} from 'rescape-ramda';
+import config from '../config';
+
+const {settings: {api: {url}}} = config;
 
 describe('location', () => {
   test('queryLocations', (done) => {
     R.pipeK(
-      authClientOrLoginTask,
+      args => authClientOrLoginTask(url, args),
       // Query on different values and combine the results into a single Task
-      ({authClient}) => R.traverse(
-        of,
-        value => queryLocationsTask(
-          authClient,
-          {city: "Washington", data: {sidewalk: value}}
-        ),
-        [0, 1]
+      ({authClient}) => queryLocationsTask(
+        authClient,
+        {name: "Candy"}
       )
     )(testAuthorization).run().listen(defaultRunConfig({
         onResolved:

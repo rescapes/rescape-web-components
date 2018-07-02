@@ -11,7 +11,6 @@
 
 import * as R from 'ramda';
 import {compactEmpty, mapKeys, mapObjToValues} from 'rescape-ramda';
-import {authClientRequest} from './client';
 import {makeQuery, authClientRequest} from 'rescape-apollo';
 
 // data would default to Object, so we need to map it to the right type
@@ -22,20 +21,53 @@ const inputParamTypeMapper = {
 // Later we'll let the user specify
 const outputParams = [
   'id',
-  'blockname',
-  'intersc1',
-  'intersc2',
-  'city',
-  'state',
-  'country',
+  'name',
   {
-    data: [
-      'plazaSq',
-      'sidewalk'
+    'data': [
+      {
+        'settings': [
+          'defaultLocation',
+          {
+            'stages': [
+              'key',
+              'targets'
+            ]
+          }
+        ]
+      },
+      'rawData',
+      'material',
+      {
+        'graph': [
+          {
+            'nodes': [
+              'name',
+              'type',
+              'value',
+              {
+                'geometry': [
+                  'type',
+                  'coordinates'
+                ]
+              },
+              'properties',
+              'propertyValues'
+            ]
+          },
+          {
+            'links': [
+              'value',
+              'source',
+              'target'
+            ]
+          }
+        ]
+      }
     ]
   }
 ];
-const makeLocationsQuery = makeQuery('dataPoints', inputParamTypeMapper, outputParams);
+
+const makeLocationsQuery = makeQuery('resources', inputParamTypeMapper, outputParams);
 
 /**
  * Query locations

@@ -9554,9 +9554,9 @@ requires-port@^1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/requires-port/-/requires-port-1.0.0.tgz#925d2601d39ac485e091cf0da5c6e694dc3dcaff"
 
-rescape-apollo@^0.0.10:
-  version "0.0.10"
-  resolved "https://registry.yarnpkg.com/rescape-apollo/-/rescape-apollo-0.0.10.tgz#e30bc4ec0132b47573afb9fd93691a1118397344"
+rescape-apollo@^0.0.19:
+  version "0.0.19"
+  resolved "https://registry.yarnpkg.com/rescape-apollo/-/rescape-apollo-0.0.19.tgz#17f5aba1a2c84d74ef560cee6fa5147be9679071"
   dependencies:
     data.either "^1.5.1"
     data.maybe "^1.2.2"
