@@ -8,7 +8,7 @@ import {Provider as provider} from 'react-redux';
 import storeCreator from './store';
 import {getCurrentConfig} from 'rescape-sample-data';
 import {eMap} from 'rescape-helpers-component';
-import createClient from './apolloClient';
+import createClient from 'rescape-apollo';
 
 import {calculateResponsiveState} from 'redux-responsive';
 

@@ -2,7 +2,8 @@ export default {
   // Settings is merged into the overall application state
   settings: {
     api: {
-      url: 'http://localhost:7000/api/graphql'
+      // TODO how do we configured this for a live server vs dev server?
+      url: 'http://localhost:8000/api/graphql'
     },
     // Graphcool configuration. This probably belongs in a graphcool config
     graphcool: {
