@@ -9,25 +9,25 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import {apolloTestPropsTaskMaker, propsFromParentPropsTask} from 'helpers/helpers';
-import {mapStateToProps, mapDispatchToProps, queries} from './AppContainer';
-import {of} from 'folktale/concurrency/task';
-import {parentPropsForContainerTask} from 'rescape-helpers-component'
-import * as Result from 'folktale/result'
+import {mapDispatchToProps, mapStateToProps} from 'components/current/CurrentContainer';
+import {propsFromParentPropsTask} from 'helpers/helpers';
+import {chainedSamplePropsTask as parentContainerSamplePropsTask} from 'components/app/AppContainer.sample';
+import Parent, {c as parentC} from 'components/app/App'
+import {parentPropsForContainerTask, testPropsTaskMaker} from 'rescape-helpers-component'
 
 /**
- * @file Links sample props from a Current component to a Region component
+ * @file Links sample props from a App component to a Header component
  */
 
 /**
  * Returns a function that expects state and parentProps for testing and returns a Task that resolves the props
  */
-export const samplePropsTaskMaker = apolloTestPropsTaskMaker(mapStateToProps, mapDispatchToProps, queries.userRegions);
+export const samplePropsTaskMaker = testPropsTaskMaker(mapStateToProps, mapDispatchToProps);
 
 /**
  * Task returning sample parent props from all the way up the view hierarchy
  */
-export const chainedParentPropsTask = parentPropsForContainerTask(of(Result.Ok({})), props => ({views: {generic: {}}}), 'generic')
+export const chainedParentPropsTask = parentPropsForContainerTask(parentContainerSamplePropsTask,  Parent.views, parentC.appHeader);
 
 /**
  * Task returning sample props from all the way up the view hierarchy

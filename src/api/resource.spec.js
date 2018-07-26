@@ -12,110 +12,65 @@
 import * as R from 'ramda';
 import {task, of} from 'folktale/concurrency/task';
 import {
-  locationsToCategorizedODPairs, locationToODPair, queryLocations,
-  queryLocationsTask
+  resourcesToCategorizedODPairs, locationToODPair, queryResources,
+  queryResourcesTask
 } from './resource';
 import {authClientOrLoginTask} from 'rescape-apollo';
 import {defaultLocationCategorizationConfig} from './resource.sample';
 import {testAuthorization} from 'rescape-apollo';
 import {defaultRunConfig} from 'rescape-ramda';
 import config from '../config';
+import {sample_resources} from 'api/resource.sample';
 
 const {settings: {api: {url}}} = config;
-
+const craeteResource = () => {
+  const resources = sample_resources;
+  const task = R.pipeK(
+    args => authClientOrLoginTask(url, args),
+    // Query on different values and combine the results into a single Task
+    ({authClient}) => queryResourcesTask(
+      authClient,
+      {name: "Minerals"}
+    )
+  )(testAuthorization);
+};
 describe('location', () => {
-  test('queryLocations', (done) => {
-    R.pipeK(
+
+  test('cerewateResources', (done) => {
+    const task = R.pipeK(
       args => authClientOrLoginTask(url, args),
       // Query on different values and combine the results into a single Task
-      ({authClient}) => queryLocationsTask(
+      ({authClient}) => mutateResourcesTask(
         authClient,
-        {name: "Candy"}
-      )
-    )(testAuthorization).run().listen(defaultRunConfig({
+        sample_resources)
+    )(testAuthorization);
+    task.run().listen(defaultRunConfig({
         onResolved:
           response => {
-            R.forEach(
-              ({locations}) => expect(R.length(locations)).toBeGreaterThan(0),
-              response
-            );
+            expect(R.length(response.resources)).toEqual(1);
+            done();
+          }
+      })
+    );
+  }, 5000)
+
+  test('queryResources', (done) => {
+    const task = R.pipeK(
+      args => authClientOrLoginTask(url, args),
+      // Query on different values and combine the results into a single Task
+      ({authClient}) => queryResourcesTask(
+        authClient,
+        {name: "Minerals"}
+      )
+    )(testAuthorization);
+    task.run().listen(defaultRunConfig({
+        onResolved:
+          response => {
+            expect(R.length(response.resources)).toEqual(1);
             done();
           }
       })
     );
   }, 5000);
 
-  test('locationsToCategorizedODPairs', () => {
-    const locations = [
-      {
-        id: 11,
-        blockname: 'Main St',
-        intersc1: 'Elm St',
-        intersc2: 'Maple St',
-        city: 'Normal',
-        state: 'Denial',
-        country: 'USA',
-        data: {Sidewalk: 0}
-      },
-      {
-        id: 22,
-        blockname: 'Broadway',
-        intersc1: 'Almond Rd',
-        intersc2: 'Walnut Rd',
-        city: 'Anytown',
-        state: 'Denial',
-        country: 'USA',
-        data: {Sidewalk: 0}
-      },
-      {
-        id: 33,
-        blockname: 'Kongensgate',
-        intersc1: 'Karl Johans gate',
-        intersc2: 'Prinsens gate',
-        city: 'Oslo',
-        country: 'Norway',
-        data: {Sidewalk: 1}
-      },
-      {
-        id: 44,
-        blockname: 'Kirkegate',
-        intersc1: 'Karl Johans gate',
-        intersc2: 'Prinsens gate',
-        city: 'Oslo',
-        country: 'Norway',
-        data: {Sidewalk: 1}
-      }
-    ];
-    expect(locationsToCategorizedODPairs(
-      defaultLocationCategorizationConfig,
-      locations
-    )).toEqual(
-      {
-        sidewalk: {
-          no: {
-            11: ['Main St and Elm St, Normal, Denial, USA', 'Main St and Maple St, Normal, Denial, USA'],
-            22: ['Broadway and Almond Rd, Anytown, Denial, USA', 'Broadway and Walnut Rd, Anytown, Denial, USA']
-          },
-          yes: {
-            33: ['Kongensgate and Karl Johans gate, Oslo, Norway', 'Kongensgate and Prinsens gate, Oslo, Norway'],
-            44: ['Kirkegate and Karl Johans gate, Oslo, Norway', 'Kirkegate and Prinsens gate, Oslo, Norway']
-          }
-        }
-      }
-    );
-  });
-
-  test('locationToODPair', () => {
-    const location = {
-      blockname: 'Main St',
-      intersc1: 'Elm St',
-      intersc2: 'Maple St',
-      city: 'Anytown',
-      state: 'Ohio',
-      country: 'USA'
-    };
-    expect(locationToODPair(location)).toEqual(
-      ['Main St and Elm St, Anytown, Ohio, USA', 'Main St and Maple St, Anytown, Ohio, USA']
-    );
-  });
 });

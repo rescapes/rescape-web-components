@@ -67,8 +67,6 @@ export const mapboxSelector = v((state, {region}) => {
  */
 export const viewportSelector = v((state, {mapbox}) => {
   const viewport = reqStrPathThrowing('viewport', mapbox);
-  console.log(viewport.latitude);
-  console.log(reqPathThrowing(['regions', 'belgium', 'mapbox', 'viewport'], state).toJS().latitude)
   return createSelector(
     [mapboxSettingsSelector],
     // Viewport is stored as an immutable, since react-map-gl's createViewportReducer expects it

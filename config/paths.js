@@ -41,7 +41,10 @@ function getServedPath(appPackageJson) {
 // config after eject: we're in ./config/
 module.exports = {
   dotenv: resolveApp('.env'),
-  appBuild: resolveApp('build'),
+  // Special bundle so django-webpack-loader can symlink and dynamically resolve the bundle files
+  appBuild: resolveApp('../assets/bundles/'),
+  // Where webpack-stats json is stored for use by django-webpack-loader
+  statsRoot: resolveApp('../assets'),
   appPublic: resolveApp('public'),
   appHtml: resolveApp('public/index.html'),
   appIndexJs: resolveApp('src/index.js'),

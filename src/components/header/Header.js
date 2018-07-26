@@ -5,47 +5,42 @@ import {
   composeViews, renderChoicepoint, nameLookup, propsFor,
   renderErrorDefault, renderLoadingDefault, keyWith, propsForItem
 } from 'rescape-helpers-component';
-import {eMap} from 'rescape-helpers-component'
+import {eMap} from 'rescape-helpers-component';
 import * as R from 'ramda';
 import {Grid as grid, Logo as logo} from 'components/atoms';
 import {
-  Box as box, Flex as flex, Button as button, ButtonOutline as buttonOutline, Group as group, createComponent
+  Box as box, Flex as flex, Button as button, ButtonOutline as buttonOutline, Group as group
 } from 'rebass';
 import {util} from 'rebass';
 import logoImage from 'media/sampleLogo.png';
 import {mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
+import styled from 'styled-components';
 
-// Override Group to be vertical instead of horizontal
-const verticalGroup = createComponent({
-  name: 'VerticalGroup',
-  type: 'Group',
-  props: {},
-  style: props => {
-    const R = util.px(props.theme.radius || 4);
-    return {
+const verticalGroup = styled(group).attrs({
+  // Set or default the radius prop to use in the computed style values below
+  radius: props => R.propOr(4, props.theme.radius)
+})`
       '& > *': {
         borderRadius: 0
       },
       '& > *:first-child': {
-        borderRadius: `${R} ${R} 0 0`,
+        borderRadius: ${({radius}) => `${radius} ${radius} 0 0`},
         // Force overlap with bottom button
         marginBottom: '-1px'
       },
       '& > *:last-child': {
-        borderRadius: `0 0 ${R} ${R}`,
+        borderRadius: ${({radius}) => `0 0 ${radius} ${radius}`},
         borderTopWidth: 0,
         // Force overlap with top button
         marginTop: '-1px'
       }
     };
-  }
-});
+  }`;
 
 const
   [Div, Link, Grid, Flex, Box, Logo, Button, ButtonOutline, Group, VerticalGroup] = eMap(
     ['div', link, grid, flex, box, logo, button, buttonOutline, group, verticalGroup]
   );
-
 
 const links = [
   {
@@ -162,7 +157,7 @@ Header.viewProps = () => {
     [c.headerAccountButton]: R.always(d => keyWith('children', d)),
 
     [c.headerLanguageChooser]: {
-      children: 'Language',
+      children: 'Language'
     }
   };
 };
@@ -179,7 +174,7 @@ Header.viewStyles = ({style}) => {
     }),
 
     [c.headerLogo]: {
-      width: 300,
+      width: 300
     },
 
     [c.headerLinkHolder]: {

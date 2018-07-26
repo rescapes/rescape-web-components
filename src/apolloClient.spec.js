@@ -13,7 +13,7 @@ import {gql} from 'apollo-client-preset';
 import storeCreator from 'store';
 import {getCurrentConfig} from 'rescape-sample-data';
 import {reqStrPath} from 'rescape-ramda';
-import * as Either from 'data.either';
+import * as Result from 'folktale/result';
 
 describe('apolloClient', () => {
   test('apolloClient with sample data', async () => {
@@ -39,6 +39,6 @@ describe('apolloClient', () => {
         variables: {regionId: "belgium"}
       }
     );
-    expect(reqStrPath('data.store.region.id', response)).toEqual(Either.Right('belgium'));
+    expect(reqStrPath('data.store.region.id', response)).toEqual(Result.Ok('belgium'));
   });
 });

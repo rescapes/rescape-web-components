@@ -9,10 +9,8 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import headerContainer, {samplePropsMaker, queries} from 'components/header/HeaderContainer';
-import {samplePropsMaker as appPropsMaker} from 'components/app/AppContainer';
+import headerContainer, {queries} from 'components/header/HeaderContainer';
 import {eMap, withRebassProvider} from 'rescape-helpers-component';
-import App, {c as cApp} from 'components/app/App';
 import {c} from 'components/header/Header';
 import {apolloContainerTests} from 'rescape-helpers-component';
 import mockRouter from 'react-mock-router';
@@ -20,6 +18,8 @@ import * as R from 'ramda';
 import {Provider as provider} from 'rebass';
 import makeSchema from 'schema/schema';
 import {sampleInitialState} from 'helpers/helpers';
+import {chainedParentPropsTask} from 'components/header/HeaderContainer.sample';
+import {mapStateToProps} from 'components/header/HeaderContainer';
 
 const schema = makeSchema();
 
@@ -36,22 +36,15 @@ const componentName = 'Header';
 // Find this class in the data renderer
 const childClassDataName = c.headerLinkHolder;
 
-const asyncParentProps = () =>
-  appPropsMaker(sampleInitialState, {}).map(
-    appProps => {
-      const appViews = App.views(appProps).views;
-      const parentProps = appViews[cApp.appHeader];
-      return parentProps;
-    }
-  );
+const {testMapStateToProps, testRenderError, testRender} = apolloContainerTests({
+  initialState: sampleInitialState,
+  schema,
+  Container,
+  componentName,
+  childClassDataName,
+  chainedParentPropsTask,
+  mapStateToProps,
+});
 
-describe('HeaderContainer', () => apolloContainerTests({
-    initialState: sampleInitialState,
-    schema,
-    Container,
-    componentName,
-    childClassDataName,
-    samplePropsMaker,
-    asyncParentProps
-  })
-);
+test('testMapStateToProps', testMapStateToProps);
+test('testRender', testRender);

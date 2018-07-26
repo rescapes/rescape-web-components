@@ -18,7 +18,7 @@ import {
 import * as R from 'ramda';
 import {applyMatchingStyles, mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
 import {Component} from 'react';
-import {sankeyGenerator, sankeyGeospatialTranslate} from 'rescape-helpers';
+import {sankeyGenerator, sankeyGeospatialTranslate} from 'rescape-geospatial-sankey';
 import {
   makeLinkStages, resolveLinkStage, resolveNodeStage, resolveNodeName, stages
 } from 'rescape-helpers';

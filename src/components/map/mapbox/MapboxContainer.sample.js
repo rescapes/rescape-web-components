@@ -17,7 +17,7 @@ import {parentPropsForContainerTask} from 'rescape-helpers-component'
 
 /**
  * Returns a function that expects state and parentProps for testing and returns a Task that resolves the
- * properties the properties in an Either.Right or if there's an error gives an Either.Left
+ * properties the properties in an Result.Ok or if there's an error gives an Result.Error
  */
 export const samplePropsTaskMaker = apolloTestPropsTaskMaker(mapStateToProps, mapDispatchToProps, queries.geojson);
 

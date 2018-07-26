@@ -72,12 +72,12 @@ export const apolloTestPropsTaskMaker = v((mapStateToProps, mapDispatchToProps, 
  * and valued by view props, where views are the child containers/components of the component
  * @param viewName The viewName in the parent component of the target container
  * @returns {Task} A Task to asynchronously return the parentContainer props merged with sampleOwnProps
- * in an Either.Right. If anything goes wrong an Either.Left is returned
+ * in an Result.Ok. If anything goes wrong an Result.Error is returned
  */
 export const propsFromParentPropsTask = v((chainedParentPropsTask, samplePropsTaskMaker) =>
     chainedParentPropsTask.chain(parentContainerSamplePropsEither =>
       parentContainerSamplePropsEither.chain(parentContainerSampleProps =>
-        // Chain the Either.Right value to a Task combine the parent props with the props maker
+        // Chain the Result.Ok value to a Task combine the parent props with the props maker
         samplePropsTaskMaker(sampleInitialState, parentContainerSampleProps))
     ).map(value => value),
   [
