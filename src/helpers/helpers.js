@@ -22,6 +22,7 @@ import {promiseToTask, taskToPromise, reqPathThrowing} from 'rescape-ramda';
 import {of} from 'folktale/concurrency/task';
 import PropTypes from 'prop-types';
 import {v} from 'rescape-validate';
+import {queries} from 'components/map/sankey/SankeyContainer';
 
 /**
  *
@@ -82,7 +83,24 @@ export const propsFromParentPropsTask = v((chainedParentPropsTask, samplePropsTa
     ).map(value => value),
   [
     ['chainedParentPropsTask', PropTypes.shape().isRequired],
-    ['samplePropsTaskMaker', PropTypes.func.isRequired],
+    ['samplePropsTaskMaker', PropTypes.func.isRequired]
   ],
   'propsFromParentPropsTask');
 
+
+/**
+ * Maps each query obj in a queries object to a react-apollo graphql connector.
+ * These are then composed
+ * @param queries
+ * @return {Function} A function that composes the graghql calls. This function can then
+ * be called with a Component e.g. queriesToGraphql(queries)(MyComponent)
+ */
+export const queriesToGraphql = queries => R.compose(
+  ...R.map(
+    queryObj => graphql(
+      gql`${queryObj.query}`,
+      queryObj.args
+    ),
+    R.values(queries)
+  )
+);

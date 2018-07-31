@@ -4,8 +4,8 @@ import {connect} from 'react-redux';
 import App from 'components/app/App';
 import * as R from 'ramda';
 import {createSelector} from 'reselect';
-import {makeActiveUserRegionsAndSettingsSelector} from 'selectors/storeSelectors';
-import {makeBrowserProportionalDimensionsSelector} from 'selectors/styleSelectors';
+import {makeActiveUserRegionsAndSettingsSelector} from 'rescape-apollo';
+import {makeBrowserProportionalDimensionsSelector} from 'rescape-apollo';
 import {mergeDeep} from 'rescape-ramda';
 import PropTypes from 'prop-types'
 import {v} from 'rescape-validate'

@@ -18,7 +18,7 @@ import {
 import {eMap, nameLookup} from 'rescape-helpers-component'
 import * as R from 'ramda';
 import {styleMultiplier} from 'rescape-helpers-component';
-import {applyMatchingStyles, mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
+import {applyMatchingStyles, mergeAndApplyMatchingStyles} from 'rescape-apollo';
 import {Component} from 'react'
 import PropTypes from 'prop-types';
 

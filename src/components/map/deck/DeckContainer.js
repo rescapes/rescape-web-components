@@ -15,7 +15,7 @@ import {actionCreators} from 'reducers/geojsonReducer';
 import {onViewportChange} from 'redux-map-gl';
 import {createSelector} from 'reselect';
 import * as R from 'ramda';
-import {viewportSelector} from 'selectors/mapboxSelectors';
+import {viewportSelector} from 'rescape-apollo';
 const {hoverMarker, selectMarker} = actionCreators;
 
 /**

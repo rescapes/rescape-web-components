@@ -12,9 +12,9 @@
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {onViewportChange} from 'redux-map-gl';
-import {makeMergeDefaultStyleWithProps} from 'selectors/styleSelectors';
-import {mapboxSelector, viewportSelector} from 'selectors/mapboxSelectors';
-import {makeActiveUserAndSettingsSelector} from 'selectors/storeSelectors';
+import {makeMergeDefaultStyleWithProps} from 'rescape-apollo';
+import {mapboxSelector, viewportSelector} from 'rescape-apollo';
+import {makeActiveUserAndSettingsSelector} from 'rescape-apollo';
 import {createSelector} from 'reselect';
 import {makeApolloTestPropsFunction} from 'rescape-helpers-component';
 import {mergeDeep} from 'rescape-ramda';
@@ -24,6 +24,7 @@ import {graphql} from 'react-apollo';
 import {gql} from 'apollo-client-preset';
 import {v} from 'rescape-validate'
 import PropTypes from 'prop-types'
+import {queriesToGraphql} from 'helpers/helpers';
 
 /**
  * Selects the current user from state
@@ -71,7 +72,7 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
  * Resolves:
  *  The geojson of the Region
  * Without prerequisites:
- *  Skip render
+ *  Skip render, although in the future we'll want to use this component to choose a region
  */
 const geojsonQuery = `
     query geojson($regionId: String!) {
@@ -96,6 +97,12 @@ const geojsonQuery = `
     }
 `;
 
+const viewportMutation = `
+  mutation mutateViewport($isConnected: Boolean) {
+    mutateViewport(isConnected: $isConnected) @client
+  }
+`;
+
 /**
  * All queries used by the container
  */
@@ -118,18 +125,24 @@ export const queries = {
         {data}
       )
     }
+  },
+  // Mutate the Mapbox viewport, storing it in local cache
+  mutateViewport: {
+    query: viewportMutation,
+    args: {
+      options: {
+        errorPolicy: 'all'
+      },
+      props: ({mutate}) => ({
+        mutateViewport:
+          (filterNodeCategory, filterNodeValue) => mutate({variables: {filterNodeCategory, filterNodeValue}})
+      })
+    }
   }
 };
 
 // Create the GraphQL Container.
-// TODO We should handle all queries in queries here
-const ContainerWithData = graphql(
-  gql`${queries.geojson.query}`,
-  queries.geojson.args
-)
-(Mapbox);
-
-
+const ContainerWithData = queriesToGraphql(queries)(Mapbox);
 
 // Using R.merge to ignore ownProps, which were already merged by mapStateToProps
 export default connect(mapStateToProps, mapDispatchToProps, R.merge)(ContainerWithData);

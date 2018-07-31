@@ -16,7 +16,7 @@ import configureStore from 'redux-mock-store';
 import {createSampleConfig} from 'rescape-sample-data'
 import initialState from 'initialState'
 import {reqPathThrowing} from 'rescape-ramda'
-import {activeUserSelectedRegionsSelector} from 'selectors/regionSelectors';
+import {activeUserSelectedRegionsSelector} from 'rescape-apollo';
 
 const sampleConfig = createSampleConfig();
 const middlewares = [thunk];

@@ -6,6 +6,7 @@ export default {
       url: 'http://localhost:8000/api/graphql'
     },
     // Graphcool configuration. This probably belongs in a graphcool config
+    /*
     graphcool: {
       userId: 'graphcool-user-id',
       authTokenKey: 'graphcool-auth-token',
@@ -13,6 +14,7 @@ export default {
       // This is just from the tutorial code
       linksPerPage: 5,
     },
+    */
     // Overpass API configuration to play nice with the server's strict throttling
     overpass: {
       cellSize: 100,

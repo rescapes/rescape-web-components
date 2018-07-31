@@ -16,7 +16,7 @@ import {
 import * as R from 'ramda';
 import {
   applyMatchingStyles, mergeAndApplyMatchingStyles
-} from 'selectors/styleSelectors';
+} from 'rescape-apollo';
 import {Component} from 'react';
 import {Flex, Checkbox, Group} from 'rebass';
 import {Grid} from 'components/atoms';

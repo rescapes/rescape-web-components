@@ -1,8 +1,8 @@
 import {graphql} from 'react-apollo';
 import {connect} from 'react-redux';
 import * as R from 'ramda';
-import {makeActiveUserRegionsAndSettingsSelector} from 'selectors/storeSelectors';
-import {makeBrowserProportionalDimensionsSelector, makeMergeDefaultStyleWithProps} from 'selectors/styleSelectors';
+import {makeActiveUserRegionsAndSettingsSelector} from 'rescape-apollo';
+import {makeBrowserProportionalDimensionsSelector, makeMergeDefaultStyleWithProps} from 'rescape-apollo';
 import {loadingCompleteStatus, makeApolloTestPropsFunction} from 'rescape-helpers-component';
 import Main from 'components/main/Main';
 import {gql} from 'apollo-client-preset';

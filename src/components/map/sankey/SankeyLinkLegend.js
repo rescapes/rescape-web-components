@@ -16,7 +16,7 @@ import {
 import * as R from 'ramda';
 import {
   applyMatchingStyles, mergeAndApplyMatchingStyles
-} from 'selectors/styleSelectors';
+} from 'rescape-apollo';
 import {Component} from 'react';
 import {Flex as flex} from 'rebass';
 import {reqStrPathThrowing} from 'rescape-ramda';

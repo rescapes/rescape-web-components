@@ -11,7 +11,7 @@
 import {styleMultiplier} from 'rescape-helpers-component';
 import sankey from 'components/map/sankey/SankeyContainer';
 import PropTypes from 'prop-types';
-import {applyMatchingStyles, mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
+import {applyMatchingStyles, mergeAndApplyMatchingStyles} from 'rescape-apollo';
 import {
   nameLookup, eMap, propsFor, renderChoicepoint, composeViews,
   propsForSansClass, renderLoadingDefault, renderErrorDefault

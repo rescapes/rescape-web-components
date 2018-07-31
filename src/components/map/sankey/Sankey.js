@@ -16,7 +16,7 @@ import {
   propsForSansClass, renderErrorDefault, renderLoadingDefault, keyWithDatum
 } from 'rescape-helpers-component';
 import * as R from 'ramda';
-import {applyMatchingStyles, mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
+import {applyMatchingStyles, mergeAndApplyMatchingStyles} from 'rescape-apollo';
 import {Component} from 'react';
 import {sankeyGenerator, sankeyGeospatialTranslate} from 'rescape-geospatial-sankey';
 import {

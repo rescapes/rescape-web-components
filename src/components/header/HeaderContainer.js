@@ -1,11 +1,11 @@
 import React, {Component} from 'react';
 import {mergeDeep} from 'rescape-ramda';
 import {loadingCompleteStatus, makeTestPropsFunction, mergeActionsForViews} from 'rescape-helpers-component';
-import {makeMergeDefaultStyleWithProps} from 'selectors/styleSelectors';
+import {makeMergeDefaultStyleWithProps} from 'rescape-apollo';
 import {createSelector} from 'reselect';
 import {connect} from 'react-redux';
 import Header from 'components/header/Header';
-import {makeActiveUserRegionsAndSettingsSelector} from 'selectors/storeSelectors';
+import {makeActiveUserRegionsAndSettingsSelector} from 'rescape-apollo';
 import * as R from 'ramda';
 
 export const mapStateToProps =

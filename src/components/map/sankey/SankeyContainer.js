@@ -12,15 +12,16 @@
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
 import {onChangeViewport} from 'redux-map-gl';
-import {makeMergeDefaultStyleWithProps} from 'selectors/styleSelectors';
-import {mapboxSelector} from 'selectors/mapboxSelectors';
-import {makeActiveUserAndSettingsSelector} from 'selectors/storeSelectors';
+import {makeMergeDefaultStyleWithProps} from 'rescape-apollo';
+import {mapboxSelector} from 'rescape-apollo';
+import {makeActiveUserAndSettingsSelector} from 'rescape-apollo';
 import {createSelector} from 'reselect';
 import {mergeDeep, reqStrPathThrowing} from 'rescape-ramda';
 import Sankey from './Sankey';
 import * as R from 'ramda';
 import {graphql} from 'react-apollo';
 import {gql} from 'apollo-client-preset';
+import {queriesToGraphql} from 'helpers/helpers';
 
 /**
  * Selects the current user from state
@@ -154,8 +155,8 @@ const geojsonQuery = `
  * @type {string}
  */
 const filterSankeyNodesMutation = `
-    mutation filterSankeyNodes($filterNodeCategory: String!, $filterNodeValue: Boolean!) {
-        filterSankeyNodes(filterNodeCategory: $filterNodeCategory, filterNodeValue: $filterNodeValue) {
+    mutation filterSankeyNodesMutation($filterNodeCategory: String!, $filterNodeValue: Boolean!) {
+        filterSankeyNodesMutation(filterNodeCategory: $filterNodeCategory, filterNodeValue: $filterNodeValue) {
           material
         }
     }
@@ -185,12 +186,15 @@ export const queries = {
       props: ({data, ownProps}) => {
         let filteredData = data;
         if (data.store) {
+          // Who is the user of the region
           const userRegion = R.find(R.eqProps('id', ownProps.data.region), ownProps.data.user.regions);
+          // Get all selected categories that are marked true
           const selectedSankeyNodeCategories =
             R.filter(
               R.identity,
               R.defaultTo({}, R.view(R.lensPath(['geojson', 'sankey', 'selected']), userRegion)));
 
+          // If there are any selected categories, set them deep down in the sankey data
           filteredData = R.length(selectedSankeyNodeCategories) ?
             R.over(
               R.lensPath(['store', 'region', 'geojson', 'sankey', 'graph', 'nodes']),
@@ -208,6 +212,7 @@ export const queries = {
               data
             ) : data;
         }
+        // Merge the work we did with the rest of the props
         return mergeDeep(
           ownProps,
           {data: filteredData}
@@ -215,7 +220,7 @@ export const queries = {
       }
     }
   },
-  filterSankeyNodes: {
+  filterSankeyNodesMutation: {
     query: filterSankeyNodesMutation,
     args: {
       options: {
@@ -230,17 +235,7 @@ export const queries = {
 };
 
 // Create the GraphQL Container.
-// TODO We should handle all queries in queries here
-const ContainerWithData = R.compose(
-  graphql(
-    gql`${queries.geojson.query}`,
-    queries.geojson.args
-  ),
-  graphql(
-    gql`${queries.filterSankeyNodes.query}`,
-    queries.filterSankeyNodes.args
-  )
-)(Sankey);
+const ContainerWithData = queriesToGraphql(queries)(Sankey);
 
 // Using R.merge to ignore ownProps, which were already merged by mapStateToProps
 export default connect(mapStateToProps, mapDispatchToProps, R.merge)(ContainerWithData);

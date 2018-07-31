@@ -7,7 +7,7 @@ import {createSampleConfig, createInitialState} from 'rescape-sample-data';
 import * as R from 'ramda';
 import MarkerList from './MarkerList';
 import {LA_SAMPLE} from 'rescape-sample-data';
-import {activeUserSelectedRegionsSelector} from 'selectors/regionSelectors';
+import {activeUserSelectedRegionsSelector} from 'rescape-apollo';
 
 jest.mock('query-overpass');
 const sampleConfig = createSampleConfig();

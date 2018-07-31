@@ -4,8 +4,8 @@ import * as R from 'ramda';
 import {createSelector} from 'reselect';
 import {
   makeActiveUserSelectedRegionAndSettingsSelector,
-} from 'selectors/storeSelectors';
-import {makeBrowserProportionalDimensionsSelector, makeMergeDefaultStyleWithProps} from 'selectors/styleSelectors';
+} from 'rescape-apollo';
+import {makeBrowserProportionalDimensionsSelector, makeMergeDefaultStyleWithProps} from 'rescape-apollo';
 import {mergeDeep} from 'rescape-ramda';
 import {loadingCompleteStatus, makeTestPropsFunction} from 'rescape-helpers-component';
 import {bindActionCreators} from 'redux';

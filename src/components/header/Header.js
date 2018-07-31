@@ -13,7 +13,7 @@ import {
 } from 'rebass';
 import {util} from 'rebass';
 import logoImage from 'media/sampleLogo.png';
-import {mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
+import {mergeAndApplyMatchingStyles} from 'rescape-apollo';
 import styled from 'styled-components';
 
 const verticalGroup = styled(group).attrs({

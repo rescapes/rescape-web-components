@@ -1,5 +1,5 @@
 import {connect} from 'react-redux';
-import {makeMergeDefaultStyleWithProps} from 'selectors/styleSelectors';
+import {makeMergeDefaultStyleWithProps} from 'rescape-apollo';
 import {gql} from 'apollo-client-preset';
 import {graphql} from 'react-apollo';
 import {mergeDeep} from 'rescape-ramda';

@@ -14,7 +14,7 @@ import React from 'react';
 import {composeViews, eMap, renderChoicepoint, nameLookup, propsFor} from 'rescape-helpers-component';
 import {reqStrPathThrowing} from 'rescape-ramda'
 import * as R from 'ramda';
-import {mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
+import {mergeAndApplyMatchingStyles} from 'rescape-apollo';
 import {styleArithmetic} from 'rescape-helpers-component';
 
 const [Div, Region] =

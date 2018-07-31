@@ -42,11 +42,12 @@ function getServedPath(appPackageJson) {
 module.exports = {
   dotenv: resolveApp('.env'),
   // Special bundle so django-webpack-loader can symlink and dynamically resolve the bundle files
-  appBuild: resolveApp('../assets/bundles/'),
+  appBuild: resolveApp('assets/bundles/'),
   // Where webpack-stats json is stored for use by django-webpack-loader
-  statsRoot: resolveApp('../assets'),
+  statsRoot: resolveApp('assets'),
   appPublic: resolveApp('public'),
-  appHtml: resolveApp('public/index.html'),
+  // This file is served by Django for now, because it embeds user data
+  // appHtml: resolveApp('public/index.html'),
   appIndexJs: resolveApp('src/index.js'),
   appPackageJson: resolveApp('package.json'),
   appSrc: resolveApp('src'),

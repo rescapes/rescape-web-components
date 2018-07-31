@@ -353,7 +353,7 @@ const QueryType = new GraphQLObjectType({
 const MutationType = new GraphQLObjectType({
   name: 'Mutation',
   fields: {
-    filterSankeyNodes: {
+    filterSankeyNodesMutation: {
       type: SankeyNodeType,
       args: {
         filterNodeCategory: { type: new GraphQLNonNull(GraphQLString) },

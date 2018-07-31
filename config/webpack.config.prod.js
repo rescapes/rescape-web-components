@@ -7,6 +7,7 @@ const SWPrecacheWebpackPlugin = require('sw-precache-webpack-plugin');
 const eslintFormatter = require('react-dev-utils-for-webpack4/eslintFormatter');
 const ModuleScopePlugin = require('react-dev-utils-for-webpack4/ModuleScopePlugin');
 const paths = require('./paths');
+const BundleTracker = require('webpack-bundle-tracker');
 const getClientEnvironment = require('./env');
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
@@ -178,6 +179,12 @@ module.exports = {
     ],
   },
   plugins: [
+    // This writes to webpack-stats.json, telling Django where to find the latest build
+    new BundleTracker({path: paths.statsRoot, filename: 'webpack-stats.prod.json'}),
+    new MiniCssExtractPlugin({
+      // Don't include a hash because BundleTracker can't handle dynamic css files yet
+      filename: '[name].css'
+    }),
     // Makes some environment variables available to the JS code, for example:
     // if (process.env.NODE_ENV === 'production') { ... }. See `./env.js`.
     // It is absolutely essential that NODE_ENV was set to production here.

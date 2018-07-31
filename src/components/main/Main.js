@@ -17,7 +17,7 @@ import {
 import current from 'components/current';
 import {Component} from 'react';
 import PropTypes from 'prop-types';
-import {applyMatchingStyles, mergeAndApplyMatchingStyles} from 'selectors/styleSelectors';
+import {applyMatchingStyles, mergeAndApplyMatchingStyles} from 'rescape-apollo';
 
 const [Div, Current] = eMap(['div', current]);
 
