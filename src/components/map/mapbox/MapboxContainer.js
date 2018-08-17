@@ -20,8 +20,6 @@ import {makeApolloTestPropsFunction} from 'rescape-helpers-component';
 import {mergeDeep} from 'rescape-ramda';
 import Mapbox from './Mapbox';
 import * as R from 'ramda';
-import {graphql} from 'react-apollo';
-import {gql} from 'apollo-client-preset';
 import {v} from 'rescape-validate'
 import PropTypes from 'prop-types'
 import {queriesToGraphql} from 'helpers/helpers';
@@ -97,6 +95,7 @@ const geojsonQuery = `
     }
 `;
 
+// TODO this needs to take viewport args
 const viewportMutation = `
   mutation mutateViewport($isConnected: Boolean) {
     mutateViewport(isConnected: $isConnected) @client

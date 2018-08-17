@@ -16,7 +16,7 @@ import {
   propsFromSampleStateAndContainer,
   makeTestPropsFunction, chainedParentPropsTask, samplePropsTaskMaker
 } from 'rescape-helpers-component';
-import {createSelectorResolvedSchema} from 'schema/selectorResolvers';
+import {createSelectorResolvedSchema} from 'rescape-apollo';
 import createInitialState from 'initialState';
 import {promiseToTask, taskToPromise, reqPathThrowing} from 'rescape-ramda';
 import {of} from 'folktale/concurrency/task';
