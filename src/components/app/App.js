@@ -1,5 +1,6 @@
 import {Component} from 'react';
 import Login from 'components/login';
+import Logout from 'components/logout';
 import Main from 'components/main';
 import {Switch as switchy, Route as route} from 'react-router-dom';
 import { eMap, renderChoicepoint, nameLookup, propsFor, propsForSansClass, renderErrorDefault, renderLoadingDefault,
@@ -49,7 +50,8 @@ App.renderData = ({views}) => {
     Grid(props(c.appBody),
       Switch({}, [
         Route({key: '/', exact: true, path: '/', component: Main}),
-        Route({key: '/login', exact: true, path: '/login', component: Login})
+        Route({key: '/login', exact: true, path: '/login', component: Login}),
+        Route({key: '/logout', exact: true, path: '/logout', component: Logout})
       ])
     )
   ]

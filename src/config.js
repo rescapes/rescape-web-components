@@ -3,13 +3,13 @@ export default {
   settings: {
     api: {
       // TODO how do we configured this for a live server vs dev server?
-      url: 'http://localhost:8000/api/graphql'
+      url: 'http://localhost:8000/api/graphql',
+      authTokenKey: 'default_test_api_key',
     },
     // Graphcool configuration. This probably belongs in a graphcool config
     /*
     graphcool: {
       userId: 'graphcool-user-id',
-      authTokenKey: 'graphcool-auth-token',
       serviceIdKey:'cjajyycub38710185wt87zsm8',
       // This is just from the tutorial code
       linksPerPage: 5,
