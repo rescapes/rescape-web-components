@@ -1,15 +1,13 @@
 import React from 'react';
 import {graphql, compose} from 'react-apollo';
-import gql from 'graphql-tag';
-import Login from 'components/login/Login';
 import {connect} from 'react-redux';
 import {makeMergeDefaultStyleWithProps} from 'rescape-apollo';
 import {gql} from 'apollo-client-preset';
-import {graphql} from 'react-apollo';
 import {mergeDeep} from 'rescape-ramda';
 import * as R from 'ramda';
-import {createSelector} from 'reselect';
-import Region from './Region';
+import Region from 'components/region/'
+import {composeGraphqlQueryDefinitions} from 'helpers/helpers';
+import Login from 'components/login/Login';
 
 /**
  * RegionContainer expects the state to contain the active user and that user's Regions
@@ -135,18 +133,9 @@ export const queries = {
   }
 };
 
+
 // Create the GraphQL Container.
-// TODO We should handle all queries in queries here
-const ContainerWithData = graphql(
-  gql`${queries.region.query}`,
-  queries.region.args)(Region);
-
-
+const ContainerWithData = composeGraphqlQueryDefinitions(queries)(Logout);
 
 // Using R.merge to ignore ownProps, which were already merged by mapStateToProps
 export default connect(mapStateToProps, mapDispatchToProps, R.merge)(ContainerWithData);
-
-export default compose(
-  graphql(SIGNUP_USER_MUTATION, {name: 'signupUserMutation'}),
-  graphql(AUTHENTICATE_USER_MUTATION, {name: 'authenticateUserMutation'})
-)(Login);

@@ -81,7 +81,7 @@ Region.viewStyles = ({style}) => {
 
 Region.viewProps = (props) => {
   // region is expected from the query result
-  const region = strPath('data.store.region', props);
+  const region = strPath('data.region', props);
   return {
     [c.region]: {region},
     [c.regionMapbox]: {region},

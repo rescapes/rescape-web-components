@@ -29,7 +29,7 @@ describe('schema', () => {
     `;
 
     graphql(makeSchema(), query).then((result) => {
-      expect(strPath('data.store.regions', result)).not.toBe(null);
+      expect(strPath('data.regions', result)).not.toBe(null);
       done();
     });
   });

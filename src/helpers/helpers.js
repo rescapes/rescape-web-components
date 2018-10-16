@@ -9,38 +9,44 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import {createSampleConfig, getCurrentConfig} from 'rescape-sample-data';
+import {getCurrentConfig} from 'rescape-sample-data';
 import makeSchema from 'schema/schema';
-import {
-  makeApolloTestPropsTaskFunction, makeSampleInitialState,
-  propsFromSampleStateAndContainer,
-  makeTestPropsFunction, chainedParentPropsTask, samplePropsTaskMaker
-} from 'rescape-helpers-component';
+import {graphql} from 'react-apollo';
 import {createSelectorResolvedSchema} from 'rescape-apollo';
 import createInitialState from 'initialState';
-import {promiseToTask, taskToPromise, reqPathThrowing} from 'rescape-ramda';
 import {of} from 'folktale/concurrency/task';
 import PropTypes from 'prop-types';
 import {v} from 'rescape-validate';
-import {queries} from 'components/map/sankey/SankeyContainer';
+import {environmentConfig as testConfig} from 'environments/testConfig'
+import {environmentConfig as devConfig} from 'environments/developmentConfig'
+import {environmentConfig as prodConfig} from 'environments/productionConfig'
+import * as R from 'ramda'
+import {makeSampleInitialState, makeApolloTestPropsTaskFunction} from 'rescape-helpers-test'
+
+const env = process.env.NODE_ENV;
+const environmentConfig = R.cond([
+  [ R.equals('test'), R.always(testConfig) ],
+  [ R.equals('dev'), R.always(devConfig) ],
+  [ R.equals('prod'), R.always(prodConfig) ]
+])(env);
 
 /**
  *
  * These helpers are trivial functions that use rescape-sample-data and rescape-helpers-component togther,
  * creating functions that are seeded with sample data for testing
  */
+export const currentConfig = getCurrentConfig(environmentConfig);
 
-const sampleConfig = createSampleConfig();
 /**
  * Sample initial state for tests
  */
-export const sampleInitialState = makeSampleInitialState(createInitialState, sampleConfig);
+export const sampleInitialState = makeSampleInitialState(createInitialState, currentConfig);
 
 /**
  * Resolved schema for tests
  * @type {Object}
  */
-export const resolvedSchema = createSelectorResolvedSchema(makeSchema(), getCurrentConfig());
+export const resolvedSchema = createSelectorResolvedSchema(makeSchema(), currentConfig);
 
 /**
  * Calls makenApolloTestPropsFunction with the given * 3 arguments:
@@ -54,7 +60,7 @@ export const resolvedSchema = createSelectorResolvedSchema(makeSchema(), getCurr
  * resolves the props as A Right if no errors and a Left if errors
  */
 export const apolloTestPropsTaskMaker = v((mapStateToProps, mapDispatchToProps, queryInfo) =>
-    (state, props) => makeApolloTestPropsTaskFunction(resolvedSchema, sampleConfig, mapStateToProps, mapDispatchToProps, queryInfo)(state, props)
+    (state, props) => makeApolloTestPropsTaskFunction(resolvedSchema, currentConfig, mapStateToProps, mapDispatchToProps, queryInfo)(state, props)
   , [
     ['mapStateToProps', PropTypes.func.isRequired],
     ['mapDispatchToProps', PropTypes.func.isRequired],
@@ -104,3 +110,34 @@ export const queriesToGraphql = queries => R.compose(
     R.values(queries)
   )
 );
+
+/**
+ * TODO move to recape-component-helpers
+ * Composes all queries/mutations in queryDefinitions.
+ * @param {Object} queryDefinitions Object keyed by name and valued by an object containing a query and args.
+ * @param {String} queryDefinitions.query The query/mutation string. Not gql wrapped yet
+ * @param {Object} queryDefinitions.args Arguments for the query as per the graphql() function
+ * @param {Object|Function} queryDefinitions.args.options Query options like errorPolicy: 'all'. Can also be a function
+ * to set create query variables. Example:
+ * options: ({data: {region}}) => ({
+        variables: {
+          regionId: region.id
+        },
+        // Pass through error so we can handle it in the component
+        errorPolicy: 'all'
+      }),
+ * @param {Object|Function} queryDefinitions.args.prop Prop function that merge the Apollo data object with ownProps. Example:
+ props: ({data, ownProps}) => {
+        return mergeDeep(
+          ownProps,
+          {data}
+        )
+      }
+ */
+export const composeGraphqlQueryDefinitions = queryDefinitions => {
+  R.compose(
+    // Each graphql call calls the next
+    ...R.map(queryDefintion => graphql(gql`${R.prop('query', queryDefintion)}`, R.prop('args', queryDefintion))),
+    R.values,
+  )(queryDefinitions)
+};

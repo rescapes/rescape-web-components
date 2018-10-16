@@ -5,11 +5,11 @@ import registerServiceWorker from './registerServiceWorker';
 import {BrowserRouter as browserRouter} from 'react-router-dom';
 import {ApolloProvider as apolloProvider} from 'react-apollo';
 import {Provider as provider} from 'react-redux';
-import {getCurrentConfig} from 'rescape-sample-data';
 import {eMap} from 'rescape-helpers-component';
 import createClient from 'rescape-apollo';
 import rootReducer from 'reducers';
 import {createReduxStore} from 'rescape-helpers'
+import {currentConfig} from 'helpers/helpers'
 
 import {calculateResponsiveState} from 'redux-responsive';
 import createInitialState from 'initialState';
@@ -17,8 +17,7 @@ import createInitialState from 'initialState';
 const [BrowserRouter, ApolloProvider, Provider, App] = eMap([browserRouter, apolloProvider, provider, app]);
 
 // Create a store based on the configured environment (development, production, test)
-const config = getCurrentConfig()
-const initialState = createInitialState(config);
+const initialState = createInitialState(currentConfig);
 
 const store = createReduxStore(initialState, rootReducer);
 window.addEventListener('resize', () => store.dispatch(calculateResponsiveState(window)));

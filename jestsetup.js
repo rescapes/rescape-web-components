@@ -81,8 +81,6 @@ class LocalStorageMock {
   }
 };
 
-global.localStorage = new LocalStorageMock;
-
 // Fail tests on any warning
 /*
 console.error = message => {

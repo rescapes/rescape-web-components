@@ -1,15 +1,9 @@
 import React from 'react';
-import {graphql, compose} from 'react-apollo';
-import gql from 'graphql-tag';
-import Login from 'components/login/Login';
 import {connect} from 'react-redux';
 import {makeMergeDefaultStyleWithProps} from 'rescape-apollo';
-import {gql} from 'apollo-client-preset';
-import {graphql} from 'react-apollo';
-import {mergeDeep} from 'rescape-ramda';
 import * as R from 'ramda';
-import {createSelector} from 'reselect';
-import Region from './Region';
+import Login from 'components/login/Login';
+import {composeGraphqlQueryDefinitions} from 'helpers/helpers';
 
 /**
  * RegionContainer expects the state to contain the active user and that user's Regions
@@ -40,18 +34,16 @@ export const mapDispatchToProps = (dispatch) => {
  */
 const regionQuery = ` 
     query region($regionId: String!) {
-        store {
-            region(id: $regionId) {
-                id
-                name
-                mapbox {
-                  viewport {
-                    latitude
-                    longitude
-                    zoom
-                  }
+          region(id: $regionId) {
+              id
+              name
+              mapbox {
+                viewport {
+                  latitude
+                  longitude
+                  zoom
                 }
-            },
+              }
         }
     }
 `;
@@ -86,27 +78,6 @@ const authenticateUserMutation = `
  * @type {{region: {query: *, args: {options: (function({data: *}): {variables: {regionId}}), props: (function({data: *, ownProps?: *}): *)}}}}
  */
 export const queries = {
-  /**
-   * Expect a region stub with an id and resolves the full region from the data layer
-   */
-  region: {
-    query: regionQuery,
-    args: {
-      options: ({data: {region}}) => ({
-        variables: {
-          regionId: region.id
-        },
-        // Pass through error so we can handle it in the component
-        errorPolicy: 'all'
-      }),
-      props: ({data, ownProps}) => {
-        return mergeDeep(
-          ownProps,
-          {data}
-        )
-      }
-    }
-  },
   // Signup the User
   mutateSignupUser: {
     query: signupUserMutation,
@@ -135,18 +106,9 @@ export const queries = {
   }
 };
 
+
 // Create the GraphQL Container.
-// TODO We should handle all queries in queries here
-const ContainerWithData = graphql(
-  gql`${queries.region.query}`,
-  queries.region.args)(Region);
-
-
+const ContainerWithData = composeGraphqlQueryDefinitions(queries)(Login);
 
 // Using R.merge to ignore ownProps, which were already merged by mapStateToProps
 export default connect(mapStateToProps, mapDispatchToProps, R.merge)(ContainerWithData);
-
-export default compose(
-  graphql(SIGNUP_USER_MUTATION, {name: 'signupUserMutation'}),
-  graphql(AUTHENTICATE_USER_MUTATION, {name: 'authenticateUserMutation'})
-)(Login);

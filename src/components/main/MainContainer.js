@@ -9,6 +9,8 @@ import {gql} from 'apollo-client-preset';
 import {createSelector} from 'reselect';
 import {bindActionCreators} from 'redux';
 import {mergeDeep} from 'rescape-ramda';
+import App from 'components/app/App';
+import {composeGraphqlQueryDefinitions} from 'helpers/helpers';
 
 export const mapStateToProps = (state, props) => {
   const {style, ...data} = props;
@@ -45,18 +47,16 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
  */
 const allUserRegionsQuery = `
     query allUserRegions($userId: String!) {
-        store {
-            users(id: $userId) {
-                regions {
-                    # Need minimum properties to let the user choose a region
-                    id
-                    name
-                    description
-                    # Is a region already selected
-                    isSelected
-                }
-            }
-        }
+          users(id: $userId) {
+              regions {
+                  # Need minimum properties to let the user choose a region
+                  id
+                  name
+                  description
+                  # Is a region already selected
+                  isSelected
+              }
+          }
     }
 `;
 
@@ -84,14 +84,8 @@ export const queries = {
   }
 };
 
-
 // Create the GraphQL Container.
-// TODO We should handle all queries in queries here
-const ContainerWithData = graphql(
-  gql`${queries.allUserRegions.query}`,
-  queries.allUserRegions.args)
-(Main);
-
+const ContainerWithData = composeGraphqlQueryDefinitions(queries)(Main);
 
 // Using R.merge to ignore ownProps, which were already merged by mapStateToProps
 export default connect(mapStateToProps, mapDispatchToProps, R.merge)(ContainerWithData);

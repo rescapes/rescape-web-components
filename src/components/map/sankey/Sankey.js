@@ -215,7 +215,7 @@ Sankey.viewProps = props => {
 
   const zoom = R.defaultTo(0, strPath('data.viewport.zoom', props));
 
-  const sankey = strPath('data.store.region.geojson.sankey', props);
+  const sankey = strPath('data.region.geojson.sankey', props);
   const linkKeys = ['source', 'target'];
   const graph = sankey ? reqStrPathThrowing('graph', sankey) : {};
   // Filter nodes by isVisible
@@ -322,7 +322,7 @@ Sankey.viewProps = props => {
         node => ({material: node.material}),
         R.uniqBy(
           R.prop('material'),
-          R.defaultTo([], strPath('data.store.region.geojson.sankey.graph.nodes', props))
+          R.defaultTo([], strPath('data.region.geojson.sankey.graph.nodes', props))
         )
       ),
       // Pass on Apollo status indicator

@@ -22,7 +22,7 @@ import Mapbox from './Mapbox';
 import * as R from 'ramda';
 import {v} from 'rescape-validate'
 import PropTypes from 'prop-types'
-import {queriesToGraphql} from 'helpers/helpers';
+import {composeGraphqlQueryDefinitions, queriesToGraphql} from 'helpers/helpers';
 
 /**
  * Selects the current user from state
@@ -74,23 +74,21 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
  */
 const geojsonQuery = `
     query geojson($regionId: String!) {
-        store {
-            region(id: $regionId) {
-                id
-                geojson {
-                    osm {
-                        features {
-                            id
-                            type
-                            geometry {
-                                type
-                                coordinates
-                            }
-                            properties
-                        }
-                    }
-                }
-            },
+          region(id: $regionId) {
+              id
+              geojson {
+                  osm {
+                      features {
+                          id
+                          type
+                          geometry {
+                              type
+                              coordinates
+                          }
+                          properties
+                      }
+                  }
+              }
         }
     }
 `;
@@ -141,7 +139,7 @@ export const queries = {
 };
 
 // Create the GraphQL Container.
-const ContainerWithData = queriesToGraphql(queries)(Mapbox);
+const ContainerWithData = composeGraphqlQueryDefinitions(queries)(Mapbox);
 
 // Using R.merge to ignore ownProps, which were already merged by mapStateToProps
 export default connect(mapStateToProps, mapDispatchToProps, R.merge)(ContainerWithData);

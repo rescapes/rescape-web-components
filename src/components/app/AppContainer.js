@@ -9,6 +9,8 @@ import {makeBrowserProportionalDimensionsSelector} from 'rescape-apollo';
 import {mergeDeep} from 'rescape-ramda';
 import PropTypes from 'prop-types'
 import {v} from 'rescape-validate'
+import {composeGraphqlQueryDefinitions} from 'helpers/helpers';
+import Login from 'components/login/Login';
 
 /**
  * Combined selector that:
@@ -103,10 +105,7 @@ export const queries = {
 };
 
 // Create the GraphQL Container.
-// TODO We should handle all queries in queries here
-const ContainerWithData = graphql(
-  gql`${queries.userRegions.query}`,
-  queries.userRegions.args)(App)
+const ContainerWithData = composeGraphqlQueryDefinitions(queries)(App);
 
 // Using R.merge to ignore ownProps, which were already merged by mapStateToProps
 export default connect(mapStateToProps, mapDispatchToProps, R.merge)(ContainerWithData);

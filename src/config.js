@@ -1,4 +1,12 @@
 export default {
+  // Required element in the config. We probably want to put a global region here
+  regions: {
+
+  },
+  // Required element in the config. We probably want to put an admin user here or further up in one of the env configs
+  users: {
+
+  },
   // Settings is merged into the overall application state
   settings: {
     api: {

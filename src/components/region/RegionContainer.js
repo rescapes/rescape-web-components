@@ -6,6 +6,7 @@ import {mergeDeep} from 'rescape-ramda';
 import * as R from 'ramda';
 import {createSelector} from 'reselect';
 import Region from './Region';
+import {composeGraphqlQueryDefinitions} from 'helpers/helpers';
 
 /**
  * RegionContainer expects the state to contain the active user and that user's Regions
@@ -101,11 +102,7 @@ export const queries = {
 };
 
 // Create the GraphQL Container.
-// TODO We should handle all queries in queries here
-const ContainerWithData = graphql(
-  gql`${queries.region.query}`,
-  queries.region.args)(Region);
-
+const ContainerWithData = composeGraphqlQueryDefinitions(queries)(Region);
 
 
 // Using R.merge to ignore ownProps, which were already merged by mapStateToProps

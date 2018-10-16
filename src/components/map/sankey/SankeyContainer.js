@@ -21,7 +21,8 @@ import Sankey from './Sankey';
 import * as R from 'ramda';
 import {graphql} from 'react-apollo';
 import {gql} from 'apollo-client-preset';
-import {queriesToGraphql} from 'helpers/helpers';
+import {composeGraphqlQueryDefinitions, queriesToGraphql} from 'helpers/helpers';
+import Login from 'components/login/Login';
 
 /**
  * Selects the current user from state
@@ -96,56 +97,54 @@ export const mapDispatchToProps = (dispatch, ownProps) => {
  */
 const geojsonQuery = `
     query geojson($regionId: String!) {
-        store {
-            region(id: $regionId) {
-                id
-                geojson {
-                    osm {
-                        features {
-                            id
+          region(id: $regionId) {
+              id
+              geojson {
+                  osm {
+                      features {
+                          id
+                          type
+                          geometry {
+                              type
+                              coordinates
+                          }
+                          properties
+                      }
+                  }
+                  sankey {
+                    graph {
+                        nodes {
+                            siteName
+                            location
+                            coordinates
+                            junctionStage
+                            annualTonnage
+                            index
+                            material
+                            isGeneralized
                             type
                             geometry {
-                                type
-                                coordinates
+                              type
+                              coordinates
                             }
-                            properties
+                            name
+                            value
+                        }
+                        links {
+                          source 
+                          target 
+                          value
                         }
                     }
-                    sankey {
-                      graph {
-                          nodes {
-                              siteName
-                              location
-                              coordinates
-                              junctionStage
-                              annualTonnage
-                              index
-                              material
-                              isGeneralized
-                              type
-                              geometry {
-                                type
-                                coordinates
-                              }
-                              name
-                              value
-                          }
-                          links {
-                            source 
-                            target 
-                            value
-                          }
-                      }
-                      stages {
-                        key
-                        name
-                        target
-                      }
-                      stageKey
-                      valueKey
+                    stages {
+                      key
+                      name
+                      target
                     }
-                }
-            },
+                    stageKey
+                    valueKey
+                  }
+              }
         }
     }
 `;
@@ -197,7 +196,7 @@ export const queries = {
           // If there are any selected categories, set them deep down in the sankey data
           filteredData = R.length(selectedSankeyNodeCategories) ?
             R.over(
-              R.lensPath(['store', 'region', 'geojson', 'sankey', 'graph', 'nodes']),
+              R.lensPath(['region', 'geojson', 'sankey', 'graph', 'nodes']),
               nodes => R.map(node => R.merge(
                 node,
                 {
@@ -235,7 +234,7 @@ export const queries = {
 };
 
 // Create the GraphQL Container.
-const ContainerWithData = queriesToGraphql(queries)(Sankey);
+const ContainerWithData = composeGraphqlQueryDefinitions(queries)(Sankey);
 
 // Using R.merge to ignore ownProps, which were already merged by mapStateToProps
 export default connect(mapStateToProps, mapDispatchToProps, R.merge)(ContainerWithData);

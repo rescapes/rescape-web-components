@@ -71,7 +71,7 @@ Mapbox.viewProps = (props) => {
       // Pass anything in viewport
       reqStrPathThrowing('data.viewport', props)
     ])
-    //osm: 'store.region.geojson.osm'
+    //osm: 'region.geojson.osm'
   };
 };
 
