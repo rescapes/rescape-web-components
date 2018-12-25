@@ -10,7 +10,7 @@ import * as R from 'ramda';
 import {Provider as provider} from 'rebass';
 import {theme} from 'styles/styles';
 import {withRouter} from 'react-router';
-import {Grid as grid} from 'components/atoms';
+import {Grid as grid} from 'rescape-helpers-component';
 import {applyMatchingStyles, mergeAndApplyMatchingStyles} from 'rescape-apollo';
 
 const [Provider, Div, Header, Switch, Route, Grid] = eMap([provider, 'div', header, switchy, route, grid]);

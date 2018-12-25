@@ -2,7 +2,7 @@ import sankey from './Sankey';
 import {mount} from 'enzyme';
 import {chainedSamplePropsTask} from './SankeyContainer.sample';
 import {propsFromSampleStateAndContainer} from 'rescape-helpers-component';
-import {defaultRunConfig, defaultRunToEitherConfig} from 'rescape-ramda';
+import {defaultRunConfig, defaultRunToResultConfig} from 'rescape-ramda';
 import {fromPromised, task} from 'folktale/concurrency/task';
 import {createWaitForElement} from 'enzyme-wait';
 import reactMapGl from 'react-map-gl';
@@ -15,7 +15,7 @@ const [Sankey] = eMap([sankey]);
 describe('Sankey', () => {
   test('Can mount', (done) => {
     chainedSamplePropsTask.run().listen(
-      defaultRunToEitherConfig({
+      defaultRunToResultConfig({
         onResolved: containerProps => {
           const wrapper = shallow(
             Sankey(containerProps)

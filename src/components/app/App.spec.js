@@ -3,7 +3,7 @@ import app from './App'
 import {createSampleConfig, initialState} from 'rescape-sample-data'
 import {eMap} from 'rescape-helpers-component';
 import {mapStateToProps} from './AppContainer';
-import {sampleInitialState} from 'helpers/helpers';
+import {sampleInitialState} from 'helpers/testHelpers';
 const [App] = eMap([app]);
 
 describe('App', () => {

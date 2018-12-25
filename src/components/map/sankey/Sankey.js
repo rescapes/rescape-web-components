@@ -213,6 +213,7 @@ Sankey.viewProps = props => {
   const width = reqStrPathThrowing(`views.${c.sankey}.style.width`, props);
   const height = reqStrPathThrowing(`views.${c.sankey}.style.height`, props);
 
+  // Used by the nodes for positioning based on zoom level
   const zoom = R.defaultTo(0, strPath('data.viewport.zoom', props));
 
   const sankey = strPath('data.region.geojson.sankey', props);

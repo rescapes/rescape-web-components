@@ -6,7 +6,7 @@ import {mergeDeep} from 'rescape-ramda';
 import * as R from 'ramda';
 import {createSelector} from 'reselect';
 import Region from './Region';
-import {composeGraphqlQueryDefinitions} from 'helpers/helpers';
+import {composeGraphqlQueryDefinitions} from 'helpers/testHelpers';
 
 /**
  * RegionContainer expects the state to contain the active user and that user's Regions

@@ -21,7 +21,7 @@ import Sankey from './Sankey';
 import * as R from 'ramda';
 import {graphql} from 'react-apollo';
 import {gql} from 'apollo-client-preset';
-import {composeGraphqlQueryDefinitions, queriesToGraphql} from 'helpers/helpers';
+import {composeGraphqlQueryDefinitions} from 'rescape-helpers-component'
 import Login from 'components/login/Login';
 
 /**

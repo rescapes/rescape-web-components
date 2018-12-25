@@ -9,7 +9,7 @@ import {eMap} from 'rescape-helpers-component';
 import createClient from 'rescape-apollo';
 import rootReducer from 'reducers';
 import {createReduxStore} from 'rescape-helpers'
-import {currentConfig} from 'helpers/helpers'
+import {currentConfig} from 'helpers/testHelpers'
 
 import {calculateResponsiveState} from 'redux-responsive';
 import createInitialState from 'initialState';

@@ -19,7 +19,7 @@ import {
 } from 'rescape-apollo';
 import {Component} from 'react';
 import {Flex, Checkbox, Group} from 'rebass';
-import {Grid} from 'components/atoms';
+import {Grid} from 'rescape-helpers-component'
 import {reqStrPathThrowing} from 'rescape-ramda';
 
 const [Div, flex, checkbox, group, grid] = eMap(['div', Flex, Checkbox, Group, Grid]);

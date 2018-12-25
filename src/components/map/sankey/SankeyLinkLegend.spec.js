@@ -16,7 +16,7 @@ import {apolloContainerTests} from 'rescape-helpers-component';
 import {asyncParentPropsForSankey} from 'components/map/sankey/SankeyContainer.spec';
 import {samplePropsMaker} from 'components/map/sankey/SankeyContainer';
 import makeSchema from 'schema/schema';
-import {sampleInitialState} from 'helpers/helpers';
+import {sampleInitialState} from 'helpers/testHelpers';
 
 const schema = makeSchema();
 

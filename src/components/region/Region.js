@@ -58,17 +58,17 @@ Region.viewStyles = ({style}) => {
     [c.regionMapboxOuter]: applyMatchingStyles(style, {
       width: '100%',
       height: '100%'
-    }, [c.sankeyFiltererItem]),
+    }),
 
     [c.regionMapbox]: applyMatchingStyles(style, {
       width: styleMultiplier(1),
       height: styleMultiplier(1)
-    }, [c.sankeyFiltererItem]),
+    }),
 
     [c.regionSankey]: applyMatchingStyles(style, {
       width: styleMultiplier(1),
       height: styleMultiplier(1)
-    }, [c.sankeyFiltererItem]),
+    }),
 
     [c.regionLocationsOuter]: {
       position: 'absolute',
@@ -98,22 +98,22 @@ Region.viewActions = () => {
 };
 
 Region.renderData = ({views}) => {
-  const props = propsFor(views);
-  const propsSansClass = propsForSansClass(views);
+    const props = propsFor(views);
+    const propsSansClass = propsForSansClass(views);
 
-  return [
-    Div(props(c.regionMapboxOuter),
-      //Mapbox(
-      //  propsSansClass(c.regionMapbox)
-      //),
-      Sankey(
-        propsSansClass(c.regionSankey)
+    return [
+      Div(props(c.regionMapboxOuter),
+        //Mapbox(
+        //  propsSansClass(c.regionMapbox)
+        //),
+        Sankey(
+          propsSansClass(c.regionSankey)
+        )
       )
-    )
-    //Div(props(c.regionLocationsOuter),
-    //  MarkerList(propsSansClass(c.regionLocations))
-    //)
-  ];
+      //Div(props(c.regionLocationsOuter),
+      //  MarkerList(propsSansClass(c.regionLocations))
+      //)
+    ];
 };
 
 

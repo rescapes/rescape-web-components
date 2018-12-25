@@ -17,7 +17,7 @@ import mockRouter from 'react-mock-router';
 import * as R from 'ramda';
 import {Provider as provider} from 'rebass';
 import makeSchema from 'schema/schema';
-import {sampleInitialState} from 'helpers/helpers';
+import {sampleInitialState} from 'helpers/testHelpers';
 import {chainedParentPropsTask} from 'components/header/HeaderContainer.sample';
 import {mapStateToProps} from 'components/header/HeaderContainer';
 

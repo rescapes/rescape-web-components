@@ -2,7 +2,7 @@ import {apolloContainerTests} from 'rescape-helpers-component';
 import MainContainer from './MainContainer';
 import {eMap} from 'rescape-helpers-component';
 import React from 'react';
-import {sampleInitialState} from 'helpers/helpers';
+import {sampleInitialState} from 'helpers/testHelpers';
 import {c} from 'components/main/Main';
 import {chainedParentPropsTask} from './MainContainer.sample';
 import {mapStateToProps} from './MainContainer';

@@ -6,7 +6,7 @@ import {gql} from 'apollo-client-preset';
 import {mergeDeep} from 'rescape-ramda';
 import * as R from 'ramda';
 import Region from 'components/region/'
-import {composeGraphqlQueryDefinitions} from 'helpers/helpers';
+import {composeGraphqlQueryDefinitions} from 'helpers/testHelpers';
 import Login from 'components/login/Login';
 
 /**

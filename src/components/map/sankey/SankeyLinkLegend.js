@@ -24,15 +24,15 @@ import {reqStrPathThrowing} from 'rescape-ramda';
 const [Div, Flex] = eMap(['div', flex]);
 
 export const c = nameLookup({
-  sankeyFilterer: true,
-  sankeyFiltererBox: true,
-  sankeyFiltererTitle: true,
-  sankeyFiltererItems: true,
-  sankeyFiltererItem: true,
+  sankeyLinkLegend: true,
+  sankeyLinkLegendBox: true,
+  sankeyLinkLegendTitle: true,
+  sankeyLinkLegendItems: true,
+  sankeyLinkLegendItem: true,
   sankeyLinkLegendIcon: true,
-  sankeyFiltererText: true,
-  sankeyFiltererLoading: true,
-  sankeyFiltererError: true
+  sankeyLinkLegendText: true,
+  sankeyLinkLegendLoading: true,
+  sankeyLinkLegendError: true
 });
 
 /**
@@ -41,7 +41,7 @@ export const c = nameLookup({
 class SankeyLinkLegend extends Component {
   render() {
     const props = SankeyLinkLegend.views(this.props);
-    return Div(propsFor(props.views, c.sankeyFilterer),
+    return Div(propsFor(props.views, c.sankeyLinkLegend),
       SankeyLinkLegend.choicepoint(props)
     );
   }
@@ -52,18 +52,18 @@ SankeyLinkLegend.renderData = ({views}) => {
    We have to apply the width and height fractions of this container to them.
    */
   const props = propsFor(views);
-  const {items, ...sankeyLinkLegendItemsProps} = props(c.sankeyFiltererItems);
-  const sankeyLinkLegendItemProps = itemizeProps(props(c.sankeyFiltererItem));
+  const {items, ...sankeyLinkLegendItemsProps} = props(c.sankeyLinkLegendItems);
+  const sankeyLinkLegendItemProps = itemizeProps(props(c.sankeyLinkLegendItem));
   const sankeyLinkLegendIconProps = itemizeProps(props(c.sankeyLinkLegendIcon));
-  const sankeyLinkLegendTextProps = itemizeProps(props(c.sankeyFiltererText));
-  return Div(props(c.sankeyFiltererBox), [
-    Div(props(c.sankeyFiltererTitle)),
+  const sankeyLinkLegendTextProps = itemizeProps(props(c.sankeyLinkLegendText));
+  return Div(props(c.sankeyLinkLegendBox), [
+    Div(props(c.sankeyLinkLegendTitle)),
     Flex(sankeyLinkLegendItemsProps,
       R.map(
         d => SankeyLinkLegendItem({
-          [c.sankeyFiltererItem]: sankeyLinkLegendItemProps(d),
+          [c.sankeyLinkLegendItem]: sankeyLinkLegendItemProps(d),
           [c.sankeyLinkLegendIcon]: sankeyLinkLegendIconProps(d),
-          [c.sankeyFiltererText]: sankeyLinkLegendTextProps(d)
+          [c.sankeyLinkLegendText]: sankeyLinkLegendTextProps(d)
         }),
         items
       )
@@ -73,38 +73,38 @@ SankeyLinkLegend.renderData = ({views}) => {
 
 const SankeyLinkLegendItem = (views) => {
   const props = R.prop(R.__, views);
-  return Flex(props(c.sankeyFiltererItem), [
+  return Flex(props(c.sankeyLinkLegendItem), [
     Div(props(c.sankeyLinkLegendIcon)),
-    Div(props(c.sankeyFiltererText))
+    Div(props(c.sankeyLinkLegendText))
   ]);
 };
 
 SankeyLinkLegend.viewStyles = ({style}) => {
   return {
-    [c.sankeyFilterer]: mergeAndApplyMatchingStyles(style, {
+    [c.sankeyLinkLegend]: mergeAndApplyMatchingStyles(style, {
       paddingTop: 4,
       paddingBottom: 4,
       paddingLeft: 16,
       paddingRight: 16
     }),
-    [c.sankeyFiltererBox]: {
+    [c.sankeyLinkLegendBox]: {
       backgroundColor: 'rgba(255, 255, 255, 0.3)',
       borderRadius: '5px',
       padding: '2px'
     },
-    [c.sankeyFiltererTitle]: {
+    [c.sankeyLinkLegendTitle]: {
       top: 0,
       height: '20px',
       marginBottom: '5px'
     },
-    [c.sankeyFiltererItems]: applyMatchingStyles(style, {
+    [c.sankeyLinkLegendItems]: applyMatchingStyles(style, {
       fontSize: '10px',
       fontFamily: 'sans-serif',
       width: '100%',
       flexDirection: 'column',
       justifyContent: 'space-between'
     }),
-    [c.sankeyFiltererItem]: {
+    [c.sankeyLinkLegendItem]: {
       marginTop: '2px',
       marginBottom: '2px',
       width: '100%',
@@ -118,30 +118,30 @@ SankeyLinkLegend.viewStyles = ({style}) => {
       marginRight: '4px',
       backgroundColor: reqStrPathThrowing('color')
     },
-    [c.sankeyFiltererText]: {
+    [c.sankeyLinkLegendText]: {
     }
   };
 };
 
 SankeyLinkLegend.viewProps = props => {
   return {
-    [c.sankeyFilterer]: {},
-    [c.sankeyFiltererTitle]: {
+    [c.sankeyLinkLegend]: {},
+    [c.sankeyLinkLegendTitle]: {
       children: 'Links',
       fontSize: '12px',
       fontWeight: 'bold'
     },
-    [c.sankeyFiltererBox]: {},
-    [c.sankeyFiltererItems]: {
+    [c.sankeyLinkLegendBox]: {},
+    [c.sankeyLinkLegendItems]: {
       items: reqStrPathThrowing('items', props)
     },
-    [c.sankeyFiltererItem]: {
+    [c.sankeyLinkLegendItem]: {
       px: 2,
       key: R.always(reqStrPathThrowing('key'))
     },
     [c.sankeyLinkLegendIcon]: {
     },
-    [c.sankeyFiltererText]: {
+    [c.sankeyLinkLegendText]: {
       children: R.always(reqStrPathThrowing('name'))
     }
   };
@@ -167,8 +167,8 @@ SankeyLinkLegend.views = composeViews(
  * Loading, Error, or Data based on the props
  */
 SankeyLinkLegend.choicepoint = renderChoicepoint(
-  renderErrorDefault(c.sankeyFiltererError),
-  renderLoadingDefault(c.sankeyFiltererLoading),
+  renderErrorDefault(c.sankeyLinkLegendError),
+  renderLoadingDefault(c.sankeyLinkLegendLoading),
   SankeyLinkLegend.renderData
 );
 

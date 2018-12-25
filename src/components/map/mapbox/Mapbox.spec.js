@@ -5,7 +5,7 @@ import {samplePropsMaker} from './MapboxContainer';
 import {propsFromSampleStateAndContainer} from 'rescape-helpers-component';
 
 import {eMap} from 'rescape-helpers-component';
-import {sampleInitialState} from 'helpers/helpers';
+import {sampleInitialState} from 'helpers/testHelpers';
 const [MapGL, Mapbox] = eMap([mapGL, mapbox]);
 
 describe('Mapbox', () => {

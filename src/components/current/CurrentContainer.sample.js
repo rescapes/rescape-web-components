@@ -10,7 +10,7 @@
  */
 
 import {mapDispatchToProps, mapStateToProps} from 'components/current/CurrentContainer';
-import {propsFromParentPropsTask} from 'helpers/helpers';
+import {propsFromParentPropsHelperTask} from 'helpers/testHelpers';
 import {chainedSamplePropsTask as parentContainerSamplePropsTask} from 'components/main/MainContainer.sample';
 import Parent, {c as parentC} from 'components/main/Main'
 import {parentPropsForContainerTask, testPropsTaskMaker} from 'rescape-helpers-component'
@@ -32,4 +32,4 @@ export const chainedParentPropsTask = parentPropsForContainerTask(parentContaine
 /**
  * Task returning sample props from all the way up the view hierarchy
  */
-export const chainedSamplePropsTask = propsFromParentPropsTask(chainedParentPropsTask, samplePropsTaskMaker);
+export const chainedSamplePropsTask = propsFromParentPropsHelperTask(chainedParentPropsTask, samplePropsTaskMaker);

@@ -7,7 +7,7 @@ import {
 } from 'rescape-helpers-component';
 import {eMap} from 'rescape-helpers-component';
 import * as R from 'ramda';
-import {Grid as grid, Logo as logo} from 'components/atoms';
+import {Grid as grid, Logo as logo} from 'rescape-helpers-component'
 import {
   Box as box, Flex as flex, Button as button, ButtonOutline as buttonOutline, Group as group
 } from 'rebass';
@@ -227,7 +227,6 @@ Header.viewStyles = ({style}) => {
 Header.viewActions = () => {
   return {};
 };
-;
 
 Header.renderLoading = ({data}) => {
   return [];

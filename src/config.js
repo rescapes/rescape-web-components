@@ -10,19 +10,10 @@ export default {
   // Settings is merged into the overall application state
   settings: {
     api: {
-      // TODO how do we configured this for a live server vs dev server?
+      // TODO how do we configure this for a live server vs dev server? Why not use the env configs?
       url: 'http://localhost:8000/api/graphql',
       authTokenKey: 'default_test_api_key',
     },
-    // Graphcool configuration. This probably belongs in a graphcool config
-    /*
-    graphcool: {
-      userId: 'graphcool-user-id',
-      serviceIdKey:'cjajyycub38710185wt87zsm8',
-      // This is just from the tutorial code
-      linksPerPage: 5,
-    },
-    */
     // Overpass API configuration to play nice with the server's strict throttling
     overpass: {
       cellSize: 100,

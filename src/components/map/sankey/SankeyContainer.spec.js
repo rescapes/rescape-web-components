@@ -5,7 +5,7 @@ import * as R from 'ramda';
 import {apolloContainerTests} from 'rescape-helpers-component';
 import {createSampleConfig} from 'rescape-sample-data';
 import makeSchema from 'schema/schema';
-import {sampleInitialState} from 'helpers/helpers';
+import {sampleInitialState} from 'helpers/testHelpers';
 import {taskToPromise, reqStrPathThrowing} from 'rescape-ramda';
 import Sankey, {c} from './Sankey';
 import SankeyContainer from './SankeyContainer';

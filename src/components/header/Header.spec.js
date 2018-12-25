@@ -4,7 +4,7 @@ import {propsFromSampleStateAndContainer, shallowWrap} from 'rescape-helpers-com
 import header from './Header'
 import {eMap} from 'rescape-helpers-component';
 import {samplePropsMaker} from 'components/header/headerContainer';
-import {sampleInitialState} from 'helpers/helpers';
+import {sampleInitialState} from 'helpers/testHelpers';
 const [Header] = eMap([header]);
 
 describe('Header', () => {

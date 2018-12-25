@@ -2,7 +2,7 @@ import {eMap} from 'rescape-helpers-component';
 import {propsFromSampleStateAndContainer, shallowWrap} from 'rescape-helpers-component';
 import main from 'components/main/Main';
 import {samplePropsMaker} from 'components/main/MainContainer';
-import {sampleInitialState} from 'helpers/helpers';
+import {sampleInitialState} from 'helpers/testHelpers';
 const [Main] = eMap([main]);
 
 describe('Main', () => {

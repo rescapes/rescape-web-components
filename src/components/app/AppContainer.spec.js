@@ -4,7 +4,7 @@ import {c} from 'components/app/App';
 import {apolloContainerTests} from 'rescape-helpers-component';
 import {MemoryRouter as memoryRouter} from 'react-router-dom';
 import makeSchema from 'schema/schema';
-import {sampleInitialState} from 'helpers/helpers';
+import {sampleInitialState} from 'helpers/testHelpers';
 import appContainer, {queries, mapStateToProps} from 'components/app/AppContainer';
 import {chainedParentPropsTask} from 'components/app/AppContainer.sample';
 

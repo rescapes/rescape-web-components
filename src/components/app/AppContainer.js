@@ -9,7 +9,7 @@ import {makeBrowserProportionalDimensionsSelector} from 'rescape-apollo';
 import {mergeDeep} from 'rescape-ramda';
 import PropTypes from 'prop-types'
 import {v} from 'rescape-validate'
-import {composeGraphqlQueryDefinitions} from 'helpers/helpers';
+import {composeGraphqlQueryDefinitions} from 'helpers/testHelpers';
 import Login from 'components/login/Login';
 
 /**

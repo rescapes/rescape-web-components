@@ -22,7 +22,8 @@ import Mapbox from './Mapbox';
 import * as R from 'ramda';
 import {v} from 'rescape-validate'
 import PropTypes from 'prop-types'
-import {composeGraphqlQueryDefinitions, queriesToGraphql} from 'helpers/helpers';
+import {composeGraphqlQueryDefinitions} from 'rescape-helpers-component'
+
 
 /**
  * Selects the current user from state
