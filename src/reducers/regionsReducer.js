@@ -40,7 +40,12 @@ const regionReducer = regionName => regionReducerOnce(regionName)(() =>
       mapbox: createViewportReducer()
     },
     // Implement reducers for these as/if needed
-    R.fromPairs(R.map(key => [key, (state = {}) => state], ['id', 'name', 'description', 'geojson', 'geospatial', 'travel', 'gtfs']))
+    R.fromPairs(
+      R.map(
+        key => [key, (state = {}) => state],
+        ['id', 'name', 'description', 'geojson', 'geospatial', 'travel', 'gtfs']
+      )
+    )
   ))
 );
 

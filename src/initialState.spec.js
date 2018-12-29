@@ -10,10 +10,10 @@
  */
 
 import createInitialState from './initialState'
-import {createSampleConfig} from 'rescape-sample-data'
+import {currentConfig} from './helpers/testHelpers';
 
 describe('Initial State', () => {
   test('matches the current configuration', () => {
-    expect(createInitialState(createSampleConfig())).toMatchSnapshot();
+    expect(createInitialState(currentConfig)).toMatchSnapshot();
   });
 });
