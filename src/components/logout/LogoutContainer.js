@@ -1,13 +1,9 @@
 import React from 'react';
-import {graphql, compose} from 'react-apollo';
 import {connect} from 'react-redux';
-import {makeMergeDefaultStyleWithProps} from 'rescape-apollo';
-import {gql} from 'apollo-client-preset';
 import {mergeDeep} from 'rescape-ramda';
 import * as R from 'ramda';
-import Region from 'components/region/'
-import {composeGraphqlQueryDefinitions} from 'helpers/testHelpers';
-import Login from 'components/login/Login';
+import {composeGraphqlQueryDefinitions} from 'rescape-helpers-component';
+import Logout from './Logout';
 
 /**
  * RegionContainer expects the state to contain the active user and that user's Regions

@@ -1,16 +1,17 @@
-import mapGL from 'react-map-gl'
-import mapbox from './Mapbox'
+import mapGL from 'react-map-gl';
+import mapbox from './Mapbox';
 import {shallow} from 'enzyme';
-import {samplePropsMaker} from './MapboxContainer';
-import {propsFromSampleStateAndContainer} from 'rescape-helpers-component';
-
+import {propsFromSampleStateAndContainer} from 'rescape-helpers-test';
+import {defaultRunConfig} from 'rescape-ramda';
 import {eMap} from 'rescape-helpers-component';
-import {sampleInitialState} from 'helpers/testHelpers';
+import {sampleInitialState} from '../../../helpers/testHelpers';
+import {samplePropsTaskMaker} from './MapboxContainer.sample';
+
 const [MapGL, Mapbox] = eMap([mapGL, mapbox]);
 
 describe('Mapbox', () => {
-  test('Can mount', () => {
-    const props = propsFromSampleStateAndContainer(sampleInitialState, samplePropsMaker,
+  test('Can mount', done => {
+    propsFromSampleStateAndContainer(sampleInitialState, samplePropsTaskMaker,
       {
         // style dimensions are normally from the parent
         style: {
@@ -18,12 +19,15 @@ describe('Mapbox', () => {
           height: 500
         }
       }
-    );
-
-    const wrapper = shallow(
-      Mapbox(props)
-    );
-    expect(wrapper).toMatchSnapshot();
+    ).run().listen(defaultRunConfig({
+      onResolved:
+        props => {
+          const wrapper = shallow(
+            Mapbox(props)
+          );
+          expect(wrapper).toMatchSnapshot();
+        }
+    }));
   });
 });
 

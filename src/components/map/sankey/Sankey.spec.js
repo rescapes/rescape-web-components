@@ -1,7 +1,7 @@
 import sankey from './Sankey';
 import {mount} from 'enzyme';
 import {chainedSamplePropsTask} from './SankeyContainer.sample';
-import {propsFromSampleStateAndContainer} from 'rescape-helpers-component';
+import {propsFromSampleStateAndContainer} from 'rescape-helpers-test';
 import {defaultRunConfig, defaultRunToResultConfig} from 'rescape-ramda';
 import {fromPromised, task} from 'folktale/concurrency/task';
 import {createWaitForElement} from 'enzyme-wait';

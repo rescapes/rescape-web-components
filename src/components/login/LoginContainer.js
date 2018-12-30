@@ -3,7 +3,7 @@ import {connect} from 'react-redux';
 import {makeMergeDefaultStyleWithProps} from 'rescape-apollo';
 import * as R from 'ramda';
 import Login from 'components/login/Login';
-import {composeGraphqlQueryDefinitions} from 'helpers/testHelpers';
+import {composeGraphqlQueryDefinitions} from 'rescape-helpers-component';
 
 /**
  * RegionContainer expects the state to contain the active user and that user's Regions

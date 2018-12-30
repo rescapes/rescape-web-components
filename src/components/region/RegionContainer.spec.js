@@ -4,13 +4,13 @@ import {
 import {eMap} from 'rescape-helpers-component';
 import * as R from 'ramda';
 import {apolloContainerTests} from 'rescape-helpers-component';
-import makeSchema from 'schema/schema';
-import {sampleInitialState} from 'helpers/testHelpers';
+import {createSchema} from 'rescape-sample-data'
+import {sampleInitialState} from '../../helpers/testHelpers';
 import {c} from 'components/region/Region';
 import RegionContainer, {queries, mapStateToProps} from 'components/region/RegionContainer';
 import {chainedParentPropsTask} from 'components/region/RegionContainer.sample';
 
-const schema = makeSchema();
+const schema = createSchema();
 
 // Test this container
 const [Container] = eMap([RegionContainer]);

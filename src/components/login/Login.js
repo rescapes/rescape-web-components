@@ -10,9 +10,7 @@
  */
 import {Component} from 'react';
 import {eMap} from 'rescape-helpers-component';
-import config from 'config.js';
 
-const {settings: {api: {authTokenKey}}} = config;
 const [div, h4, input, form, button] = eMap(['div', 'h4', 'input', 'form', 'button']);
 
 export default class Login extends Component {

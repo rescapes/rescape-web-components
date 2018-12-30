@@ -1,4 +1,4 @@
-import {sampleInitialState} from 'helpers/testHelpers';
+import {sampleInitialState} from '../../helpers/testHelpers';
 
 import current from './Current'
 import {eMap} from 'rescape-helpers-component';

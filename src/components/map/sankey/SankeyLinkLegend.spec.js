@@ -15,10 +15,10 @@ import SankeyLinkLegend, {c} from 'components/map/sankey/SankeyLinkLegend';
 import {apolloContainerTests} from 'rescape-helpers-component';
 import {asyncParentPropsForSankey} from 'components/map/sankey/SankeyContainer.spec';
 import {samplePropsMaker} from 'components/map/sankey/SankeyContainer';
-import makeSchema from 'schema/schema';
-import {sampleInitialState} from 'helpers/testHelpers';
+import {createSchema} from 'rescape-sample-data'
+import {sampleInitialState} from '../../helpers/testHelpers';
 
-const schema = makeSchema();
+const schema = createSchema();
 
 // Test this container
 const [Container] = eMap([SankeyLinkLegend]);

@@ -3,14 +3,14 @@ import {shallow} from 'enzyme';
 import {onlyOneValue, reqPathThrowing} from 'rescape-ramda';
 import {mapStateToProps} from './MarkerListContainer';
 import {geojsonByType} from 'rescape-helpers-component';
-import {createSampleConfig, createInitialState} from 'rescape-sample-data';
+import {getCurrentConfig, privateConfig, createInitialState} from 'rescape-sample-data';
 import * as R from 'ramda';
 import MarkerList from './MarkerList';
 import {LA_SAMPLE} from 'rescape-sample-data';
 import {activeUserSelectedRegionsSelector} from 'rescape-apollo';
 
 jest.mock('query-overpass');
-const sampleConfig = createSampleConfig();
+const sampleConfig = getCurrentConfig(privateConfig);
 const state = createInitialState(sampleConfig);
 const regionId = onlyOneValue(activeUserSelectedRegionsSelector()).id
 const e = React.createElement;

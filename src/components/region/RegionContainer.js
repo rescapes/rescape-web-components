@@ -1,4 +1,5 @@
 import {connect} from 'react-redux';
+import {composeGraphqlQueryDefinitions} from 'rescape-helpers-component';
 import {makeMergeDefaultStyleWithProps} from 'rescape-apollo';
 import {gql} from 'apollo-client-preset';
 import {graphql} from 'react-apollo';
@@ -6,7 +7,6 @@ import {mergeDeep} from 'rescape-ramda';
 import * as R from 'ramda';
 import {createSelector} from 'reselect';
 import Region from './Region';
-import {composeGraphqlQueryDefinitions} from 'helpers/testHelpers';
 
 /**
  * RegionContainer expects the state to contain the active user and that user's Regions

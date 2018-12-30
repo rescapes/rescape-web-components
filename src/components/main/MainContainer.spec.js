@@ -2,11 +2,11 @@ import {apolloContainerTests} from 'rescape-helpers-component';
 import MainContainer from './MainContainer';
 import {eMap} from 'rescape-helpers-component';
 import React from 'react';
-import {sampleInitialState} from 'helpers/testHelpers';
+import {sampleInitialState} from '../../helpers/testHelpers';
 import {c} from 'components/main/Main';
 import {chainedParentPropsTask} from './MainContainer.sample';
 import {mapStateToProps} from './MainContainer';
-import makeSchema from 'schema/schema';
+import {createSchema} from 'rescape-sample-data'
 import {queries} from './MainContainer';
 import * as R from 'ramda';
 
@@ -22,7 +22,7 @@ const queryConfig = queries.allUserRegions;
 const initialState = sampleInitialState;
 // Use this to make a query that errors
 const errorMaker = parentProps => R.set(R.lensPath(['user', 'id']), 'foo', parentProps);
-const schema = makeSchema();
+const schema = createSchema();
 
 describe('MainContainer', () => {
   const {testMapStateToProps} = apolloContainerTests({

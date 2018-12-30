@@ -10,7 +10,7 @@ import {createSelector} from 'reselect';
 import {bindActionCreators} from 'redux';
 import {mergeDeep} from 'rescape-ramda';
 import App from 'components/app/App';
-import {composeGraphqlQueryDefinitions} from 'helpers/testHelpers';
+import {composeGraphqlQueryDefinitions} from 'rescape-helpers-component';
 
 export const mapStateToProps = (state, props) => {
   const {style, ...data} = props;

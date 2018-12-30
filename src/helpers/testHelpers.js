@@ -9,33 +9,20 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import {getCurrentConfig} from 'rescape-sample-data';
-import makeSchema from 'schema/schema';
-import {graphql} from 'react-apollo';
+import {getCurrentConfig, privateConfig, createSchema, createInitialState} from 'rescape-sample-data';
 import {createSelectorResolvedSchema} from 'rescape-apollo';
-import createInitialState from 'initialState';
 import {of} from 'folktale/concurrency/task';
 import PropTypes from 'prop-types';
 import {v} from 'rescape-validate';
-import {environmentConfig as testConfig} from 'environments/testConfig'
-import {environmentConfig as devConfig} from 'environments/developmentConfig'
-import {environmentConfig as prodConfig} from 'environments/productionConfig'
-import * as R from 'ramda'
 import {makeSampleInitialState, makeApolloTestPropsTaskFunction, propsFromParentPropsTask} from 'rescape-helpers-test'
 
-const env = process.env.NODE_ENV;
-const environmentConfig = R.cond([
-  [ R.equals('test'), R.always(testConfig) ],
-  [ R.equals('dev'), R.always(devConfig) ],
-  [ R.equals('prod'), R.always(prodConfig) ]
-])(env);
 
 /**
  *
  * These helpers are trivial functions that use rescape-sample-data and rescape-helpers-component togther,
  * creating functions that are seeded with sample data for testing
  */
-export const currentConfig = getCurrentConfig(environmentConfig);
+export const currentConfig = getCurrentConfig(privateConfig);
 
 /**
  * Sample initial state for tests
@@ -46,7 +33,7 @@ export const sampleInitialState = makeSampleInitialState(createInitialState, cur
  * Resolved schema for tests
  * @type {Object}
  */
-export const resolvedSchema = createSelectorResolvedSchema(makeSchema(), currentConfig);
+export const resolvedSchema = createSelectorResolvedSchema(createSchema(), currentConfig);
 
 /**
  * Calls makenApolloTestPropsFunction with the given * 3 arguments:
@@ -60,7 +47,13 @@ export const resolvedSchema = createSelectorResolvedSchema(makeSchema(), current
  * resolves the props as A Right if no errors and a Left if errors
  */
 export const apolloTestPropsTaskMaker = v((mapStateToProps, mapDispatchToProps, queryInfo) =>
-    (state, props) => makeApolloTestPropsTaskFunction(resolvedSchema, currentConfig, mapStateToProps, mapDispatchToProps, queryInfo)(state, props)
+    (state, props) => makeApolloTestPropsTaskFunction(
+      resolvedSchema,
+      currentConfig,
+      mapStateToProps,
+      mapDispatchToProps,
+      queryInfo
+    )(state, props)
   , [
     ['mapStateToProps', PropTypes.func.isRequired],
     ['mapDispatchToProps', PropTypes.func.isRequired],
@@ -81,11 +74,11 @@ export const apolloTestPropsTaskMaker = v((mapStateToProps, mapDispatchToProps, 
  * @returns {Task} A Task to asynchronously return the parentContainer props merged with sampleOwnProps
  * in an Result.Ok. If anything goes wrong an Result.Error is returned
  */
-export const propsFromParentPropsHelperTask = v((chainedParentPropsTask, samplePropsTaskMaker) =>
+export const localPropsFromParentPropsHelperTask = v((chainedParentPropsTask, samplePropsTaskMaker) =>
   propsFromParentPropsTask(sampleInitialState, chainedParentPropsTask, samplePropsTaskMaker),
   [
     ['chainedParentPropsTask', PropTypes.shape().isRequired],
     ['samplePropsTaskMaker', PropTypes.func.isRequired]
   ],
-  'propsFromParentPropsHelperTask');
+  'localPropsFromParentPropsHelperTask');
 

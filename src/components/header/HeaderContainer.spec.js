@@ -16,12 +16,12 @@ import {apolloContainerTests} from 'rescape-helpers-component';
 import mockRouter from 'react-mock-router';
 import * as R from 'ramda';
 import {Provider as provider} from 'rebass';
-import makeSchema from 'schema/schema';
-import {sampleInitialState} from 'helpers/testHelpers';
+import {createSchema} from 'rescape-sample-data'
+import {sampleInitialState} from '../../helpers/testHelpers';
 import {chainedParentPropsTask} from 'components/header/HeaderContainer.sample';
 import {mapStateToProps} from 'components/header/HeaderContainer';
 
-const schema = makeSchema();
+const schema = createSchema();
 
 // Test this container
 const [HeaderContainer, MockRouter, Provider] = eMap([headerContainer, mockRouter, provider]);

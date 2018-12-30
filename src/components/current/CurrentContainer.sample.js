@@ -9,11 +9,11 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import {mapDispatchToProps, mapStateToProps} from 'components/current/CurrentContainer';
-import {propsFromParentPropsHelperTask} from 'helpers/testHelpers';
-import {chainedSamplePropsTask as parentContainerSamplePropsTask} from 'components/main/MainContainer.sample';
-import Parent, {c as parentC} from 'components/main/Main'
-import {parentPropsForContainerTask, testPropsTaskMaker} from 'rescape-helpers-component'
+import {mapDispatchToProps, mapStateToProps} from './CurrentContainer';
+import {localPropsFromParentPropsHelperTask} from '../../helpers/testHelpers';
+import {chainedSamplePropsTask as parentContainerSamplePropsTask} from '../main/MainContainer.sample';
+import Parent, {c as parentC} from '../main/Main'
+import {parentPropsForContainerTask, testPropsTaskMaker} from 'rescape-helpers-test'
 
 /**
  * @file Links sample props from a Current component to a Region component
@@ -32,4 +32,4 @@ export const chainedParentPropsTask = parentPropsForContainerTask(parentContaine
 /**
  * Task returning sample props from all the way up the view hierarchy
  */
-export const chainedSamplePropsTask = propsFromParentPropsHelperTask(chainedParentPropsTask, samplePropsTaskMaker);
+export const chainedSamplePropsTask = localPropsFromParentPropsHelperTask(chainedParentPropsTask, samplePropsTaskMaker);

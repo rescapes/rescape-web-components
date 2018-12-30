@@ -1,17 +1,17 @@
-import {propsFromSampleStateAndContainer} from 'rescape-helpers-component';
+import {propsFromSampleStateAndContainer} from 'rescape-helpers-test';
 import {mapStateToProps, queries} from 'components/map/mapbox/MapboxContainer';
 import {eMap} from 'rescape-helpers-component';
 import * as R from 'ramda';
 import {apolloContainerTests} from 'rescape-helpers-component';
-import {createSampleConfig} from 'rescape-sample-data';
-import makeSchema from 'schema/schema';
-import {sampleInitialState} from 'helpers/testHelpers';
+import {getCurrentConfig} from 'rescape-sample-data';
+import {createSchema} from 'rescape-sample-data'
+import {sampleInitialState} from '../../helpers/testHelpers';
 import {taskToPromise, reqStrPathThrowing} from 'rescape-ramda';
 import Mapbox, {c} from './Mapbox';
 import MapboxContainer from './MapboxContainer';
 import {chainedParentPropsTask} from './MapboxContainer.sample';
 
-const schema = makeSchema();
+const schema = createSchema();
 
 // Test this container
 const [Container] = eMap([MapboxContainer]);

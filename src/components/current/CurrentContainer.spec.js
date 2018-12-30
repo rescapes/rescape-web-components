@@ -11,7 +11,7 @@
 import { apolloContainerTests } from 'rescape-helpers-component';
 import {eMap} from 'rescape-helpers-component';
 import React from 'react';
-import {sampleInitialState} from 'helpers/testHelpers';
+import {sampleInitialState} from '../../helpers/testHelpers';
 import {c} from './Current';
 import currentContainer, {mapStateToProps} from './CurrentContainer';
 import {chainedParentPropsTask} from './CurrentContainer.sample'

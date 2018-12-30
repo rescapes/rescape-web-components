@@ -11,12 +11,11 @@
 
 import {connect} from 'react-redux';
 import {bindActionCreators} from 'redux';
-import {actionCreators} from 'reducers/geojsonReducer';
 import {onViewportChange} from 'redux-map-gl';
 import {createSelector} from 'reselect';
 import * as R from 'ramda';
 import {viewportSelector} from 'rescape-apollo';
-const {hoverMarker, selectMarker} = actionCreators;
+//const {hoverMarker, selectMarker} = actionCreators;
 
 /**
  * Uses props as state and makes convenience views
@@ -40,8 +39,8 @@ export const mapStateToProps = createSelector(
 export const mapDispatchToProps = (dispatch, ownProps) => {
   return bindActionCreators({
     onViewportChange,
-    hoverMarker,
-    selectMarker
+    //hoverMarker,
+    //selectMarker
   }, dispatch);
 };
 

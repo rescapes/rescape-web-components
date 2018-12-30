@@ -1,6 +1,6 @@
-import config from 'config';
 import {Component} from 'react';
-const {settings: {api: {authTokenKey}}} = config;
+import {eMap} from 'rescape-helpers-component';
+
 const [div, h4, input] = eMap(['div', 'h4', 'input']);
 
 export default class Logout extends Component {
@@ -8,8 +8,8 @@ export default class Logout extends Component {
   handleClick() {
     // TODO these need to be done in the Container.
     // The component shouldn't have direct knowledge of local storage or window.location
-    localStorage.removeItem('token')
-    window.location.replace('/')
+    localStorage.removeItem('token');
+    window.location.replace('/');
   }
 
   render() {
@@ -18,7 +18,7 @@ export default class Logout extends Component {
         h4({
             className: 'mv3'
           },
-          'Logout',
+          'Logout'
         ),
         div({className: 'pointer button', onClick: () => this.handleClick()},
           'Logout'

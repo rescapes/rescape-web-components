@@ -10,10 +10,10 @@
  */
 
 import {mapDispatchToProps, mapStateToProps} from 'components/current/CurrentContainer';
-import {propsFromParentPropsHelperTask} from 'helpers/testHelpers';
+import {localPropsFromParentPropsHelperTask} from '../../helpers/testHelpers';
 import {chainedSamplePropsTask as parentContainerSamplePropsTask} from 'components/app/AppContainer.sample';
 import Parent, {c as parentC} from 'components/app/App'
-import {parentPropsForContainerTask, testPropsTaskMaker} from 'rescape-helpers-component'
+import {parentPropsForContainerTask, testPropsTaskMaker} from 'rescape-helpers-test'
 
 /**
  * @file Links sample props from a App component to a Header component
@@ -32,4 +32,4 @@ export const chainedParentPropsTask = parentPropsForContainerTask(parentContaine
 /**
  * Task returning sample props from all the way up the view hierarchy
  */
-export const chainedSamplePropsTask = propsFromParentPropsHelperTask(chainedParentPropsTask, samplePropsTaskMaker);
+export const chainedSamplePropsTask = localPropsFromParentPropsHelperTask(chainedParentPropsTask, samplePropsTaskMaker);

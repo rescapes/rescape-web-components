@@ -22,6 +22,7 @@ import {applyMatchingStyles, mergeAndApplyMatchingStyles} from 'rescape-apollo';
 import {Component} from 'react'
 import PropTypes from 'prop-types';
 
+
 const [Div, ReactMapGl] = eMap(['div', reactMapGl]);
 export const c = nameLookup({
   mapbox: true,

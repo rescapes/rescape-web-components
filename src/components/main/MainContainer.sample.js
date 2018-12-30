@@ -9,12 +9,11 @@
  * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-import {apolloTestPropsTaskMaker} from 'helpers/testHelpers';
-import {propsFromParentPropsTask} from 'rescape-helpers-test'
+import {apolloTestPropsTaskMaker, localPropsFromParentPropsHelperTask} from '../../helpers/testHelpers';
 import {mapStateToProps, mapDispatchToProps, queries} from './MainContainer';
 import {chainedSamplePropsTask as parentContainerSamplePropsTask} from 'components/app/AppContainer.sample';
 import Parent, {c as parentC} from 'components/app/App';
-import {parentPropsForContainerTask} from 'rescape-helpers-component'
+import {parentPropsForContainerTask} from 'rescape-helpers-test'
 
 /**
  * @file Links sample props from an Application component to a Main component
@@ -33,4 +32,4 @@ export const chainedParentPropsTask = parentPropsForContainerTask(parentContaine
 /**
  * Task returning sample props from all the way up the view hierarchy
  */
-export const chainedSamplePropsTask = propsFromParentPropsTask(chainedParentPropsTask, samplePropsTaskMaker);
+export const chainedSamplePropsTask = localPropsFromParentPropsHelperTask(chainedParentPropsTask, samplePropsTaskMaker);

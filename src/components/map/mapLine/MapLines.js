@@ -12,7 +12,7 @@
 import React from 'react';
 import {DraggablePointsOverlay, SVGOverlay} from 'react-map-gl';
 import {resolveSvgReact} from 'rescape-helpers-component';
-import {LineLayer} from 'deck.gl';
+//import {LineLayer} from 'deck.gl';
 import PropTypes from 'prop-types';
 import * as R from 'ramda';
 const e = React.createElement;
