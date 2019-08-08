@@ -20,40 +20,55 @@ import {makeApolloTestPropsFunction} from 'rescape-helpers-component';
 import {mergeDeep} from 'rescape-ramda';
 import Mapbox from './Mapbox';
 import * as R from 'ramda';
-import {v} from 'rescape-validate'
-import PropTypes from 'prop-types'
-import {composeGraphqlQueryDefinitions} from 'rescape-helpers-component'
+import {v} from 'rescape-validate';
+import PropTypes from 'prop-types';
+import {composeGraphqlQueryDefinitions} from 'rescape-helpers-component';
 
 
 /**
  * Selects the current user from state
  * and the Viewport for the region in the props
- * @returns {Object} The props
+ * @params {Object} state
+ * @params {Object} props
+ * @params {Object} props.user User values
+ * @params {Object} props.scope Region, project, scenario, etc. defining the scope.
+ * @params {Object} props.scope.region A region containing at least an id. If Mapbox doesn't need the region pass
+ * the global region
+ * @params {Object} [props.scope.project] A project containing at least an id. If Mapbox doesn't need the region pass
+ * the global region
+ * @params {Object} [props.scope.scenario] A scenario containing at least an id.
+ * @returns {Object} The selected props
  */
 export const mapStateToProps = v((state, props) => {
-  const {style, ...data} = props
-  return createSelector(
-    [
-      makeActiveUserAndSettingsSelector(),
-      makeMergeDefaultStyleWithProps(),
-      mapboxSelector
-    ],
-    (userAndSettings, defaultStyle, {viewport, ...mapbox}) => ({
-      data: R.mergeAll([
-        userAndSettings,
-        // Mapbox is selected separately to combine region.mapbox with settings.mapbox
-        // Viewport is combined with other properties in the react-map-gl component, hence separated here
-        {viewport, mapbox},
-        data
-      ]),
-      style: R.merge(defaultStyle, style)
-    })
-  )(state, props);
-},
-[
-  ['state', PropTypes.shape().isRequired],
-  ['props', PropTypes.shape().isRequired],
-], 'mapStateToProps');
+    const {style, ...data} = props;
+    return createSelector(
+      [
+        makeActiveUserAndSettingsSelector(),
+        makeMergeDefaultStyleWithProps(),
+        mapboxSelector
+      ],
+      (userAndSettings, defaultStyle, {viewport, ...mapbox}) => ({
+        data: R.mergeAll([
+          userAndSettings,
+          // Mapbox is selected separately to combine region.mapbox with settings.mapbox
+          // Viewport is combined with other properties in the react-map-gl component, hence separated here
+          {viewport, mapbox},
+          data
+        ]),
+        style: R.merge(defaultStyle, style)
+      })
+    )(state, props);
+  },
+  [
+    ['state', PropTypes.shape().isRequired],
+    ['props', PropTypes.shape({
+      scope: PropTypes.shape({
+        region: PropTypes.shape().isRequired,
+        project: PropTypes.shape(),
+        scenario: PropTypes.shape(),
+      }).isRequired
+    }).isRequired]
+  ], 'mapStateToProps');
 
 export const mapDispatchToProps = (dispatch, ownProps) => {
   return bindActionCreators({
