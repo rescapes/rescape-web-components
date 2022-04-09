@@ -67,7 +67,7 @@
     "graphql-tag": "^2.9.2",
     "graphql-tools": "^3.1.1",
     "immutable": "^3.8.2",
-    "moment": "^2.22.2",
+    "moment": "^2.29.2",
     "object-assign": "4.1.1",
     "promise": "8.0.1",
     "prop-types": "^15.6.2",
